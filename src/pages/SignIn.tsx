@@ -78,7 +78,7 @@ const SignIn = () => {
                 <Label htmlFor="password">Password</Label>
                 <Link 
                   to="/forgot-password" 
-                  className="text-sm text-culturin-accent hover:text-culturin-gold hover:underline"
+                  className="text-sm text-culturin-accent hover:text-culturin-accent/80 hover:underline"
                 >
                   Forgot password?
                 </Link>
@@ -96,7 +96,7 @@ const SignIn = () => {
             
             <Button 
               type="submit" 
-              className="w-full h-12 bg-culturin-primary hover:bg-culturin-primary/90 text-white transition-colors border-2 border-culturin-yellow/40"
+              className="w-full h-12 bg-culturin-primary hover:bg-culturin-primary/90 text-white transition-colors border border-gray-600/40"
               disabled={isLoading}
             >
               {isLoading ? "Signing in..." : "Sign In"}
@@ -105,7 +105,7 @@ const SignIn = () => {
             <div className="flex justify-center text-sm">
               <p className="text-muted-foreground">
                 Don't have an account?{" "}
-                <Link to="/sign-up" className="text-culturin-accent hover:text-culturin-gold hover:underline font-medium">
+                <Link to="/sign-up" className="text-culturin-accent hover:text-culturin-accent/80 hover:underline font-medium">
                   Create one
                 </Link>
               </p>
@@ -127,7 +127,7 @@ const SignIn = () => {
             <Button 
               type="button" 
               variant="outline" 
-              className="w-full mt-6 h-12 border-2 border-culturin-yellow/30 hover:border-culturin-yellow/60"
+              className="w-full mt-6 h-12 border border-gray-300 hover:border-gray-400"
               onClick={() => {
                 toast({
                   title: "Google Sign In",

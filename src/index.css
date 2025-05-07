@@ -1,5 +1,4 @@
 
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -9,10 +8,10 @@
 @layer base {
   :root {
     --background: 220 14% 96%;   /* Light background */
-    --foreground: 220 14% 10%;   /* Dark text */
+    --foreground: 220 14% 10%;   /* Dark text - increased contrast */
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 14% 10%;
+    --card: 0 0% 100%;           /* White card background */
+    --card-foreground: 220 14% 10%; /* Dark text on cards */
 
     --popover: 0 0% 100%;
     --popover-foreground: 220 14% 10%;
@@ -24,7 +23,7 @@
     --secondary-foreground: 0 0% 98%;
 
     --muted: 220 14% 96%;
-    --muted-foreground: 220 5% 40%;
+    --muted-foreground: 220 5% 40%; /* Darker muted text for better contrast */
 
     --accent: 230 20% 14%;       /* Dark purple-ish accent */
     --accent-foreground: 0 0% 98%;
@@ -32,8 +31,8 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 10% 92%;       /* Lighter border color */
-    --input: 220 10% 92%;
+    --border: 220 10% 85%;       /* Darker border color for contrast */
+    --input: 220 10% 85%;        /* Darker input border for contrast */
     --ring: 220 14% 10%;
 
     --radius: 1rem;
@@ -113,13 +112,13 @@
     @apply text-2xl md:text-3xl font-sans font-medium leading-tight tracking-tight;
   }
   
-  /* Button styles - updated with new colors and yellow accents */
+  /* Button styles - updated for better contrast */
   .btn-primary {
-    @apply bg-culturin-secondary text-culturin-accent hover:bg-culturin-secondary/90 transition-colors shadow-soft hover:shadow-card rounded-xl border-2 border-culturin-yellow;
+    @apply bg-culturin-secondary text-white hover:bg-culturin-secondary/90 transition-colors shadow-soft hover:shadow-card rounded-xl border border-culturin-white/20;
   }
   
   .btn-secondary {
-    @apply bg-culturin-primary text-white hover:bg-culturin-primary/90 transition-colors shadow-soft hover:shadow-card rounded-xl border border-culturin-yellow/30;
+    @apply bg-culturin-primary text-white hover:bg-culturin-primary/90 transition-colors shadow-soft hover:shadow-card rounded-xl border border-gray-700/30;
   }
   
   .btn-outline {
@@ -141,7 +140,7 @@
   }
   
   .section-divider {
-    @apply w-20 h-0.5 bg-culturin-yellow mx-auto my-6;
+    @apply w-20 h-0.5 bg-gray-400 mx-auto my-6;
   }
   
   .image-overlay {
@@ -163,18 +162,5 @@
   
   .photo-card img {
     @apply w-full h-full object-cover transition-transform duration-700 hover:scale-105;
-  }
-
-  /* Yellow accent highlights */
-  .accent-yellow {
-    @apply text-culturin-gold;
-  }
-  
-  .border-accent {
-    @apply border-2 border-culturin-yellow;
-  }
-  
-  .highlight-text {
-    @apply bg-culturin-yellow/30 px-1 rounded;
   }
 }

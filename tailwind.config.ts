@@ -54,15 +54,13 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				culturin: {
-					primary: '#333333',   // Dark Gray (replacing clay/indigo)
-					secondary: '#8A898C', // Medium Gray (replacing mustard)
-					accent: '#1A1F2C',    // Dark Purple (replacing indigo)
-					white: '#F6F6F7',     // Light Gray (replacing bone white)
-					charcoal: '#222222',  // Darker Gray (replacing charcoal black)
-					highlight: '#8E9196', // Neutral Gray (replacing coral)
-					subtle: '#F1F1F1',    // Light Gray (replacing sage)
-					yellow: '#FEF7CD',    // Soft Yellow (new accent color)
-					gold: '#FFD700',      // Gold Yellow (stronger accent)
+					primary: '#333333',   // Dark Gray
+					secondary: '#8A898C', // Medium Gray
+					accent: '#1A1F2C',    // Dark Purple
+					white: '#F6F6F7',     // Light Gray
+					charcoal: '#222222',  // Darker Gray
+					highlight: '#8E9196', // Neutral Gray
+					subtle: '#F1F1F1',    // Light Gray
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
