@@ -154,6 +154,39 @@ const ForOperators = () => {
         </div>
       </section>
       
+      {/* NEW Cultural Delights Section with uploaded image */}
+      <section className="py-16 bg-[#F8F5F2]">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="order-2 lg:order-1">
+              <h2 className="text-3xl md:text-4xl font-medium mb-6 text-[#2B2B2B]">Share Your Cultural Delights</h2>
+              <p className="text-lg mb-6 text-[#4A4A4A] leading-relaxed">
+                From mooncakes and tea ceremonies to pasta-making and spice markets — food is more than sustenance. It's a living, breathing story of culture and identity.
+              </p>
+              <p className="text-lg mb-8 text-[#4A4A4A] leading-relaxed">
+                On Culturin, you can share your culinary traditions through hands-on experiences, tastings, market tours, and home-cooked meals that travelers remember forever.
+              </p>
+              <Button 
+                className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] text-base py-6 px-8 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02]"
+                onClick={() => navigate('/operator')}
+              >
+                Start a Culinary Experience
+              </Button>
+            </div>
+            <div className="order-1 lg:order-2">
+              <div className="rounded-2xl overflow-hidden shadow-card">
+                <Image 
+                  src="/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png"
+                  alt="Traditional mooncake and tea on an orange background" 
+                  className="w-full h-auto object-cover"
+                  aspectRatio="square"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonial Section - Enhanced for better contrast */}
       <section className="py-20 bg-culturin-indigo text-white">
         <div className="container-custom">
@@ -174,6 +207,39 @@ const ForOperators = () => {
                 <p className="font-medium">Maria Gonzalez</p>
                 <p className="text-sm opacity-80">Culinary Guide, Mexico City</p>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* NEW Local Experiences Section with uploaded image */}
+      <section className="py-16 bg-white">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="order-1">
+              <div className="rounded-2xl overflow-hidden shadow-card">
+                <Image 
+                  src="/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png"
+                  alt="Traditional cafe storefront with bicycle and people sitting outside" 
+                  className="w-full h-auto object-cover"
+                  aspectRatio="wide"
+                />
+              </div>
+            </div>
+            <div className="order-2">
+              <h2 className="text-3xl md:text-4xl font-medium mb-6 text-[#2B2B2B]">Share Local Authentic Experiences</h2>
+              <p className="text-lg mb-6 text-[#4A4A4A] leading-relaxed">
+                Every neighborhood has hidden gems that only locals know about. From family-owned cafés to artisan workshops, these authentic places tell the real story of a destination.
+              </p>
+              <p className="text-lg mb-8 text-[#4A4A4A] leading-relaxed">
+                As a Culturin host, you can guide travelers through these meaningful spaces and create connections that go far beyond typical tourism.
+              </p>
+              <Button 
+                className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] text-base py-6 px-8 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02]"
+                onClick={() => navigate('/operator')}
+              >
+                Create a Local Experience
+              </Button>
             </div>
           </div>
         </div>
