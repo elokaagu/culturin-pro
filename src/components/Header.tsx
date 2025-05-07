@@ -90,7 +90,7 @@ export const Header = ({ type }: HeaderProps) => {
                     </li>
                     <li>
                       <Link 
-                        to="/" 
+                        to="/about-us" 
                         className={`font-medium transition-colors ${
                           isScrolled 
                             ? 'text-culturin-charcoal hover:text-culturin-indigo' 
@@ -181,7 +181,7 @@ export const Header = ({ type }: HeaderProps) => {
                   <li><Link to="/" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">Discover Trips</Link></li>
                   <li><Link to="/" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">How It Works</Link></li>
                   <li><Link to="/for-operators" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">For Operators</Link></li>
-                  <li><Link to="/" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">About Us</Link></li>
+                  <li><Link to="/about-us" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">About Us</Link></li>
                 </>
               ) : (
                 <>
