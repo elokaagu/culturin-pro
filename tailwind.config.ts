@@ -133,7 +133,8 @@ export default {
 			},
 			fontFamily: {
 				'sans': ['Inter', 'system-ui', 'sans-serif'],
-				'heading': ['Inter', 'system-ui', 'sans-serif']
+				'heading': ['Inter', 'system-ui', 'sans-serif'],
+				'playfair': ['Playfair Display', 'serif']
 			},
 			boxShadow: {
 				'soft': '0 4px 20px rgba(0, 0, 0, 0.06)',
@@ -148,6 +149,9 @@ export default {
 			},
 			height: {
 				'screen-90': '90vh',
+			},
+			dropShadow: {
+				'sm': '0 1px 2px rgba(0, 0, 0, 0.15)',
 			}
 		}
 	},
