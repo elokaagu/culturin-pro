@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
@@ -152,7 +153,7 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* NEW Cultural Delights Section with uploaded image */}
+      {/* Cultural Delights Section with uploaded image */}
       <section className="py-16 bg-[#F8F5F2]">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -184,8 +185,8 @@ const ForOperators = () => {
           </div>
         </div>
       </section>
-
-      {/* Testimonial Section - Using our new component */}
+      
+      {/* Testimonial Section with Background Image */}
       <section className="py-20 bg-culturin-indigo text-white relative overflow-hidden">
         {/* Background image with overlay */}
         <div className="absolute inset-0 z-0">
@@ -220,6 +221,9 @@ const ForOperators = () => {
         </div>
       </section>
       
+      {/* HostShowcaseCarousel Component - Now with Horizontal Scrolling */}
+      <HostShowcaseCarousel />
+      
       {/* NEW Local Experiences Section with uploaded image */}
       <section className="py-16 bg-white">
         <div className="container-custom">
@@ -253,8 +257,71 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Host Showcase Carousel Section */}
-      <HostShowcaseCarousel />
+      {/* NEW Tea Ceremony Section */}
+      <section className="py-16 bg-[#F5F4F2]">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="order-2 lg:order-1">
+              <h2 className="text-3xl md:text-4xl font-medium mb-6 text-[#2B2B2B]">Share Your Cultural Heritage</h2>
+              <p className="text-lg mb-6 text-[#4A4A4A] leading-relaxed">
+                Traditional ceremonies and rituals are windows into cultural identity. From tea ceremonies to seasonal festivals, these practices tell stories of your heritage.
+              </p>
+              <p className="text-lg mb-8 text-[#4A4A4A] leading-relaxed">
+                On Culturin, you can invite travelers to participate in authentic cultural rituals that have been passed down through generations, creating unforgettable experiences.
+              </p>
+              <Button 
+                className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] text-base py-6 px-8 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02]"
+                onClick={() => navigate('/operator')}
+              >
+                Host a Cultural Ceremony
+              </Button>
+            </div>
+            <div className="order-1 lg:order-2">
+              <div className="rounded-2xl overflow-hidden shadow-card">
+                <Image 
+                  src="https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?q=80&w=1100&auto=format&fit=crop"
+                  alt="Traditional tea ceremony with mooncakes" 
+                  className="w-full h-auto object-cover"
+                  aspectRatio="square"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* NEW Local Café Experience Section */}
+      <section className="py-16 bg-white">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="order-1">
+              <div className="rounded-2xl overflow-hidden shadow-card">
+                <Image 
+                  src="https://images.unsplash.com/photo-1472396961693-142e6e269027?q=80&w=1100&auto=format&fit=crop"
+                  alt="Rural landscape with traditional architecture" 
+                  className="w-full h-auto object-cover"
+                  aspectRatio="wide"
+                />
+              </div>
+            </div>
+            <div className="order-2">
+              <h2 className="text-3xl md:text-4xl font-medium mb-6 text-[#2B2B2B]">Showcase Rural Traditions</h2>
+              <p className="text-lg mb-6 text-[#4A4A4A] leading-relaxed">
+                Rural communities hold wisdom that city life often forgets. From farming techniques to traditional crafts, these skills are living heritage that deserve to be celebrated.
+              </p>
+              <p className="text-lg mb-8 text-[#4A4A4A] leading-relaxed">
+                As a Culturin host, you can invite travelers to experience the authentic rhythms of rural life, forging connections between urban visitors and countryside traditions.
+              </p>
+              <Button 
+                className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] text-base py-6 px-8 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02]"
+                onClick={() => navigate('/operator')}
+              >
+                Share Rural Traditions
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
       
       {/* Pricing Teaser / CTA - Improved contrast and animations */}
       <section className="py-20 bg-culturin-white">
