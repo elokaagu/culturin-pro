@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
+import Image from "@/components/ui/image";
 
 const OperatorInvitation = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -33,7 +34,7 @@ const OperatorInvitation = () => {
             <Card className="bg-transparent border-0 shadow-none">
               <CardContent className="p-0">
                 <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl mb-6 leading-tight tracking-tight text-culturin-charcoal">
-                  Your Culture Is a Gift. Share It With the World.
+                  Your Culture Is a Gift.<br />Share It With the World.
                 </h2>
                 <p className="text-lg md:text-xl mb-8 leading-relaxed text-[#4A4A4A]">
                   Whether you guide people through hidden streets, host ancestral meals, or teach local rituals — your story deserves to be seen.
@@ -56,16 +57,11 @@ const OperatorInvitation = () => {
             style={{transitionDelay: '400ms'}}
           >
             <div className="photo-card shadow-card h-[550px]">
-              <img 
+              <Image 
                 src="https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?q=80&w=1374&auto=format&fit=crop" 
                 alt="Cultural host sharing meaningful traditions with travelers" 
                 className="w-full h-full object-cover rounded-xl transition-transform duration-700 ease-out hover:scale-[1.03]"
               />
-              <div className="absolute bottom-0 left-0 right-0 p-8">
-                <div className="glass-card rounded-xl p-6">
-                  <p className="text-white text-lg font-medium">Share your cultural heritage with the world</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
