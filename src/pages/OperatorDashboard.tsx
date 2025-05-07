@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
@@ -12,6 +11,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
 import Image from "@/components/ui/image";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Mock data for empty state detection
 const mockListings = [
@@ -242,8 +242,14 @@ const OperatorDashboard = () => {
                   <div className="bg-white p-6 rounded-lg shadow-sm">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-lg font-semibold">Performance Overview</h3>
-                      <HelpCircle className="w-5 h-5 text-gray-400 cursor-pointer hover:text-culturin-indigo transition-colors"
-                                 title="These metrics show how your experiences are performing" />
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="w-5 h-5 text-gray-400 cursor-pointer hover:text-culturin-indigo transition-colors" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          These metrics show how your experiences are performing
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
                     
                     <div className="space-y-6">
@@ -251,10 +257,14 @@ const OperatorDashboard = () => {
                         <div className="flex justify-between text-sm mb-2">
                           <div className="flex items-center gap-1">
                             <span>Booking Rate</span>
-                            <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
-                            <div className="absolute invisible group-hover:visible left-0 top-full mt-1 p-2 bg-black/80 text-white text-xs rounded w-60 z-10">
-                              Percentage of available slots that get booked. Improve by optimizing your title and description.
-                            </div>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Percentage of available slots that get booked. Improve by optimizing your title and description.
+                              </TooltipContent>
+                            </Tooltip>
                           </div>
                           <span className="font-semibold">65%</span>
                         </div>
@@ -266,10 +276,14 @@ const OperatorDashboard = () => {
                         <div className="flex justify-between text-sm mb-2">
                           <div className="flex items-center gap-1">
                             <span>Traveler Satisfaction</span>
-                            <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
-                            <div className="absolute invisible group-hover:visible left-0 top-full mt-1 p-2 bg-black/80 text-white text-xs rounded w-60 z-10">
-                              Based on guest ratings and feedback. Improve by delivering an authentic, well-organized experience.
-                            </div>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Based on guest ratings and feedback. Improve by delivering an authentic, well-organized experience.
+                              </TooltipContent>
+                            </Tooltip>
                           </div>
                           <span className="font-semibold">92%</span>
                         </div>
@@ -281,10 +295,14 @@ const OperatorDashboard = () => {
                         <div className="flex justify-between text-sm mb-2">
                           <div className="flex items-center gap-1">
                             <span>Profile Completion</span>
-                            <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
-                            <div className="absolute invisible group-hover:visible left-0 top-full mt-1 p-2 bg-black/80 text-white text-xs rounded w-60 z-10">
-                              How complete your host profile is. Complete profiles attract 3x more bookings.
-                            </div>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                How complete your host profile is. Complete profiles attract 3x more bookings.
+                              </TooltipContent>
+                            </Tooltip>
                           </div>
                           <span className="font-semibold">80%</span>
                         </div>
