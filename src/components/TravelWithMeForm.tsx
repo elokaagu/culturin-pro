@@ -2,237 +2,117 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { toast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+
+const travelPurposes = [
+  "Learn something new",
+  "Meet like-minded people",
+  "Explore culture deeply",
+  "Reset and reconnect"
+];
 
 const TravelWithMeForm = () => {
-  const [step, setStep] = useState<number>(1);
-  const [formData, setFormData] = useState({
-    destination: "",
-    travelMonth: "",
-    interests: [] as string[],
-    budget: 1500,
-    flexibleDates: false,
-    name: "",
-    email: "",
-    aboutYou: ""
-  });
-  
-  const interestOptions = [
-    "Food", "History", "Nature", "Art", 
-    "Spirituality", "Wellness", "Nightlife"
-  ];
-
-  const handleNext = () => {
-    if (step < 4) setStep(step + 1);
-  };
-
-  const handleBack = () => {
-    if (step > 1) setStep(step - 1);
-  };
-
-  const handleInterestToggle = (interest: string) => {
-    setFormData(prev => {
-      if (prev.interests.includes(interest)) {
-        return {
-          ...prev,
-          interests: prev.interests.filter(i => i !== interest)
-        };
-      } else {
-        return {
-          ...prev,
-          interests: [...prev.interests, interest]
-        };
-      }
-    });
-  };
+  const [destination, setDestination] = useState<string>("");
+  const [travelMonth, setTravelMonth] = useState<Date | undefined>(undefined);
+  const [travelPurpose, setTravelPurpose] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
     toast({
-      title: "Form submitted!",
-      description: "We'll match you with trips soon.",
+      title: "Travel preferences submitted!",
+      description: `We'll find journeys for ${destination} that match your interests.`,
     });
   };
 
   return (
-    <>
-      <CardHeader className="bg-culturin-indigo text-white rounded-t-xl p-8">
-        <CardTitle className="text-2xl font-serif">Find Your Perfect Group Trip</CardTitle>
-        <CardDescription className="text-white/80">Step {step} of 4</CardDescription>
-      </CardHeader>
-      <CardContent className="p-8">
-        <form onSubmit={handleSubmit}>
-          {step === 1 && (
-            <div className="space-y-6">
-              <h3 className="text-xl font-medium mb-6">Where Do You Want to Go?</h3>
-              <div className="space-y-6">
-                <div>
-                  <Label htmlFor="destination" className="text-base mb-2 block">Destination(s)</Label>
-                  <Input
-                    id="destination"
-                    placeholder="e.g., Japan, Morocco, Peru"
-                    value={formData.destination}
-                    onChange={(e) => setFormData({...formData, destination: e.target.value})}
-                    className="rounded-xl h-12"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="travelMonth" className="text-base mb-2 block">Travel Month</Label>
-                  <Input
-                    id="travelMonth"
-                    type="month"
-                    value={formData.travelMonth}
-                    onChange={(e) => setFormData({...formData, travelMonth: e.target.value})}
-                    className="rounded-xl h-12"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-6">
-              <h3 className="text-xl font-medium mb-6">What's Your Vibe?</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {interestOptions.map((interest) => (
-                  <div key={interest} className="flex items-center space-x-3">
-                    <Checkbox 
-                      id={`interest-${interest}`} 
-                      checked={formData.interests.includes(interest)}
-                      onCheckedChange={() => handleInterestToggle(interest)}
-                      className="border-culturin-indigo"
-                    />
-                    <Label 
-                      htmlFor={`interest-${interest}`}
-                      className="text-base cursor-pointer"
-                    >
-                      {interest}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="space-y-8">
-              <h3 className="text-xl font-medium mb-6">Budget + Flexibility</h3>
-              <div>
-                <div className="flex justify-between mb-4">
-                  <Label className="text-base">Trip Budget (USD)</Label>
-                  <span className="font-semibold text-lg">${formData.budget}</span>
-                </div>
-                <Slider 
-                  value={[formData.budget]} 
-                  min={500} 
-                  max={3000} 
-                  step={100} 
-                  onValueChange={(value) => setFormData({...formData, budget: value[0]})}
-                  className="py-4"
-                />
-                <div className="flex justify-between text-sm text-muted-foreground mt-2">
-                  <span>$500</span>
-                  <span>$3000+</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <Checkbox 
-                  id="flexibleDates" 
-                  checked={formData.flexibleDates}
-                  onCheckedChange={(checked) => 
-                    setFormData({...formData, flexibleDates: checked as boolean})
-                  }
-                  className="border-culturin-indigo"
-                />
-                <Label htmlFor="flexibleDates" className="text-base">I have flexible travel dates</Label>
-              </div>
-            </div>
-          )}
-
-          {step === 4 && (
-            <div className="space-y-6">
-              <h3 className="text-xl font-medium mb-6">Tell Us About You</h3>
-              <div className="space-y-6">
-                <div>
-                  <Label htmlFor="name" className="text-base mb-2 block">Name</Label>
-                  <Input
-                    id="name"
-                    placeholder="Your name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="rounded-xl h-12"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email" className="text-base mb-2 block">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="rounded-xl h-12"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="aboutYou" className="text-base mb-2 block">What makes a meaningful trip for you? (Optional)</Label>
-                  <Input
-                    id="aboutYou"
-                    placeholder="Tell us a bit about what you're looking for"
-                    value={formData.aboutYou}
-                    onChange={(e) => setFormData({...formData, aboutYou: e.target.value})}
-                    className="rounded-xl h-12"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-        </form>
-      </CardContent>
-      <CardFooter className="flex justify-between p-8 pt-0">
-        {step > 1 && (
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={handleBack}
-            className="rounded-xl py-6 px-8"
-          >
-            Back
-          </Button>
-        )}
-        <div className={step === 1 ? 'w-full' : ''}>
-          {step < 4 ? (
-            <Button 
-              type="button" 
-              className="bg-culturin-indigo hover:bg-culturin-indigo/90 w-full py-6 px-8 rounded-xl"
-              onClick={handleNext}
-            >
-              Continue
-            </Button>
-          ) : (
-            <Button 
-              type="button" 
-              className="bg-culturin-clay hover:bg-culturin-clay/90 w-full py-6 px-8 rounded-xl"
-              onClick={handleSubmit}
-            >
-              Match Me With Trips
-            </Button>
-          )}
+    <div className="p-8">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="destination">Destination(s)</Label>
+          <Input 
+            id="destination" 
+            placeholder="Where would you like to go?" 
+            value={destination} 
+            onChange={(e) => setDestination(e.target.value)}
+            className="border-[#DADADA] bg-white text-[#2B2B2B] placeholder:text-[#888888] px-5 py-4 h-auto"
+          />
         </div>
-      </CardFooter>
-    </>
+        
+        <div className="space-y-2">
+          <Label htmlFor="travel-month">Travel Month</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                id="travel-month"
+                className={cn(
+                  "w-full justify-start text-left font-normal border-[#DADADA] bg-white text-[#2B2B2B] px-5 py-4 h-auto",
+                  !travelMonth && "text-[#888888]"
+                )}
+              >
+                {travelMonth ? (
+                  format(travelMonth, "MMMM yyyy")
+                ) : (
+                  <span>When would you like to travel?</span>
+                )}
+                <CalendarIcon className="ml-auto h-4 w-4 opacity-70" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={travelMonth}
+                onSelect={setTravelMonth}
+                initialFocus
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="travel-purpose">I travel to...</Label>
+          <Select value={travelPurpose} onValueChange={setTravelPurpose}>
+            <SelectTrigger 
+              id="travel-purpose" 
+              className="border-[#DADADA] bg-white text-[#2B2B2B] px-5 py-4 h-auto"
+            >
+              <SelectValue placeholder="Why do you travel?" />
+            </SelectTrigger>
+            <SelectContent>
+              {travelPurposes.map(purpose => (
+                <SelectItem key={purpose} value={purpose}>{purpose}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <Button 
+          type="submit" 
+          className="w-full bg-[#2B2B2B] hover:bg-[#1A1A1A] text-white rounded-xl py-4 h-auto transition-transform hover:scale-[1.02] font-bold text-base"
+        >
+          Continue
+        </Button>
+        
+        <p className="text-sm text-center text-muted-foreground pt-2">
+          You're just a few steps away from something unforgettable.
+        </p>
+      </form>
+      
+      <div className="mt-8 border-t border-[#DADADA] pt-6">
+        <blockquote className="text-sm italic text-muted-foreground">
+          "I joined a Culturin trip to Peru and left with new friends for life."
+          <footer className="mt-1 font-medium text-foreground">— Zara, 27</footer>
+        </blockquote>
+      </div>
+    </div>
   );
 };
 

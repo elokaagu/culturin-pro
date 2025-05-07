@@ -2,6 +2,7 @@
 import TravelWithMeForm from "@/components/TravelWithMeForm";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
+import Image from "../ui/image";
 
 const TravelWithMeSection = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -11,17 +12,33 @@ const TravelWithMeSection = () => {
   }, []);
 
   return (
-    <section className="py-24 lg:py-30 bg-muted">
+    <section className="py-16 lg:py-24 bg-[#F5F4F2]">
       <div className="container-custom">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12 animate-fade-in" style={{animationDelay: '0.2s'}}>
-            <h2 className="heading-lg mb-4">Travel With Me</h2>
-            <p className="text-xl text-muted-foreground">Tell us your travel preferences and we'll match you with the perfect trip</p>
-          </div>
-          <div className="animate-fade-in" style={{animationDelay: '0.4s'}}>
-            <Card className="border-0 overflow-hidden rounded-2xl shadow-soft bg-card">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="animate-fade-in" style={{animationDelay: '0.2s'}}>
+            <div className="text-left mb-6">
+              <h2 className="heading-lg mb-4">Let's Find Your Kind of Journey</h2>
+              <p className="text-lg text-muted-foreground">
+                Tell us where, when, and how you like to travel — and we'll match you with meaningful
+                group trips built around connection, culture, and community.
+              </p>
+            </div>
+            <Card className="border-0 overflow-hidden rounded-2xl shadow-[0px_4px_16px_rgba(0,0,0,0.05)] bg-white">
               <TravelWithMeForm />
             </Card>
+          </div>
+          
+          <div className="hidden lg:block animate-fade-in" style={{animationDelay: '0.4s'}}>
+            <div className="rounded-2xl overflow-hidden h-full">
+              <div className="relative h-full">
+                <img 
+                  src="/placeholder.svg" 
+                  alt="Group of travelers enjoying a cultural experience together" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
