@@ -25,22 +25,25 @@ export const TripCard = ({
   imageUrl
 }: TripCardProps) => {
   return (
-    <div className="rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow bg-white">
-      <div className="relative h-48 overflow-hidden">
+    <div className="trip-card group">
+      <div className="relative h-56 overflow-hidden">
         <img 
           src={imageUrl} 
           alt={name} 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
         />
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-          <h3 className="text-white font-semibold text-xl">{name}</h3>
-          <p className="text-white/90 text-sm">{location}</p>
+        <div className="absolute bottom-0 left-0 right-0 image-overlay p-4">
+          <h3 className="text-white font-semibold text-xl mb-1">{name}</h3>
+          <p className="text-white/90 text-sm flex items-center">
+            <span className="inline-block w-2 h-2 rounded-full bg-culturin-mustard mr-2"></span>
+            {location}
+          </p>
         </div>
       </div>
       
-      <div className="p-4">
-        <div className="flex items-center mb-3">
-          <div className="w-8 h-8 rounded-full bg-culturin-sand flex items-center justify-center overflow-hidden mr-2">
+      <div className="p-5">
+        <div className="flex items-center mb-4">
+          <div className="w-10 h-10 rounded-full bg-culturin-sand flex items-center justify-center overflow-hidden mr-3 border-2 border-culturin-mustard/30">
             {operatorPhoto ? (
               <img src={operatorPhoto} alt={operatorName} className="w-full h-full object-cover" />
             ) : (
@@ -50,14 +53,21 @@ export const TripCard = ({
           <span className="font-medium text-sm">{operatorName}</span>
         </div>
         
-        <div className="flex justify-between text-sm mb-3">
-          <div className="text-gray-600">{dates}</div>
-          <div>{groupSize} travelers</div>
+        <div className="flex justify-between text-sm mb-4">
+          <div className="text-gray-600 font-medium">{dates}</div>
+          <div className="flex items-center">
+            <span className="inline-block w-2 h-2 rounded-full bg-culturin-terracotta mr-2"></span>
+            <span>{groupSize} travelers</span>
+          </div>
         </div>
         
-        <div className="flex flex-wrap gap-2 mt-2">
+        <div className="flex flex-wrap gap-2 mt-3">
           {tags.map((tag, index) => (
-            <Badge key={index} variant="outline" className="bg-culturin-sand text-culturin-indigo">
+            <Badge 
+              key={index} 
+              variant="outline" 
+              className="bg-culturin-sand text-culturin-indigo border-none font-medium"
+            >
               {tag}
             </Badge>
           ))}

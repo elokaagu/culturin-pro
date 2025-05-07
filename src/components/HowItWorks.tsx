@@ -1,5 +1,6 @@
 
 import { Check, Users, Map, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const steps = [
   {
@@ -25,33 +26,45 @@ const steps = [
 ];
 
 const HowItWorks = () => {
+  const [animateItems, setAnimateItems] = useState(false);
+
+  useEffect(() => {
+    setAnimateItems(true);
+  }, []);
+
   return (
-    <section className="py-12 bg-culturin-sand/50">
+    <section className="py-20 bg-culturin-sand/50">
       <div className="container-custom">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4">How It Works</h2>
+        <div className="text-center mb-16 animate-fade-in" style={{animationDelay: '0.2s'}}>
+          <h2 className="heading-lg mb-4">How It Works</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Your journey to authentic cultural experiences is just four simple steps away
           </p>
+          <div className="section-divider"></div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
           {steps.map((step, index) => (
             <div 
               key={index} 
-              className="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center text-center"
+              className={`bg-white p-8 rounded-xl shadow-md flex flex-col items-center text-center relative z-10 animate-fade-in`}
+              style={{animationDelay: `${0.2 + index * 0.2}s`}}
             >
-              <div className="h-16 w-16 rounded-full bg-culturin-sand/50 flex items-center justify-center mb-4">
+              <div className="h-20 w-20 rounded-full bg-culturin-sand/50 flex items-center justify-center mb-6 border-2 border-culturin-mustard/30">
                 {step.icon}
               </div>
-              <h3 className="font-playfair text-xl mb-2">{step.title}</h3>
+              <h3 className="font-playfair text-xl mb-3">{step.title}</h3>
               <p className="text-gray-600">{step.description}</p>
               
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 -translate-x-1/2">
-                  <div className="w-4 h-4 border-t-2 border-r-2 border-culturin-mustard transform rotate-45"></div>
+                <div className="hidden lg:block absolute left-full top-1/2 w-12 -translate-y-1/2 -translate-x-6 z-0">
+                  <div className="border-t-2 border-dashed border-culturin-mustard/50 w-full"></div>
                 </div>
               )}
+              
+              <div className="hidden lg:flex absolute -top-4 -left-4 w-10 h-10 bg-culturin-mustard rounded-full items-center justify-center text-white font-bold text-lg">
+                {index + 1}
+              </div>
             </div>
           ))}
         </div>
