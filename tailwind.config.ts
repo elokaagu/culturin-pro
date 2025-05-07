@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -60,6 +61,8 @@ export default {
 					charcoal: '#222222',  // Darker Gray (replacing charcoal black)
 					highlight: '#8E9196', // Neutral Gray (replacing coral)
 					subtle: '#F1F1F1',    // Light Gray (replacing sage)
+					yellow: '#FEF7CD',    // Soft Yellow (new accent color)
+					gold: '#FFD700',      // Gold Yellow (stronger accent)
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

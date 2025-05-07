@@ -1,4 +1,5 @@
 
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -112,13 +113,13 @@
     @apply text-2xl md:text-3xl font-sans font-medium leading-tight tracking-tight;
   }
   
-  /* Button styles - updated with new colors */
+  /* Button styles - updated with new colors and yellow accents */
   .btn-primary {
-    @apply bg-culturin-secondary text-culturin-accent hover:bg-culturin-secondary/90 transition-colors shadow-soft hover:shadow-card rounded-xl;
+    @apply bg-culturin-secondary text-culturin-accent hover:bg-culturin-secondary/90 transition-colors shadow-soft hover:shadow-card rounded-xl border-2 border-culturin-yellow;
   }
   
   .btn-secondary {
-    @apply bg-culturin-primary text-white hover:bg-culturin-primary/90 transition-colors shadow-soft hover:shadow-card rounded-xl;
+    @apply bg-culturin-primary text-white hover:bg-culturin-primary/90 transition-colors shadow-soft hover:shadow-card rounded-xl border border-culturin-yellow/30;
   }
   
   .btn-outline {
@@ -140,11 +141,11 @@
   }
   
   .section-divider {
-    @apply w-20 h-0.5 bg-culturin-secondary mx-auto my-6;
+    @apply w-20 h-0.5 bg-culturin-yellow mx-auto my-6;
   }
   
   .image-overlay {
-    @apply absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent;
+    @apply absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent;
   }
 
   /* New style additions */
@@ -162,5 +163,18 @@
   
   .photo-card img {
     @apply w-full h-full object-cover transition-transform duration-700 hover:scale-105;
+  }
+
+  /* Yellow accent highlights */
+  .accent-yellow {
+    @apply text-culturin-gold;
+  }
+  
+  .border-accent {
+    @apply border-2 border-culturin-yellow;
+  }
+  
+  .highlight-text {
+    @apply bg-culturin-yellow/30 px-1 rounded;
   }
 }
