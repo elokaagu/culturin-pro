@@ -1,44 +1,65 @@
 
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { useInView } from "react-intersection-observer";
 
 const OperatorInvitation = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
   const navigate = useNavigate();
   
+  const { ref: sectionRef, inView } = useInView({
+    threshold: 0.2,
+    triggerOnce: true
+  });
+  
   useEffect(() => {
-    setAnimateItems(true);
-  }, []);
+    if (inView) {
+      setAnimateItems(true);
+    }
+  }, [inView]);
   
   return (
-    <section className="py-24 lg:py-30 bg-background">
+    <section ref={sectionRef} className="py-24 lg:py-30 bg-[#F5F4F2]">
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="animate-fade-in" style={{animationDelay: '0.2s'}}>
+          <div 
+            className={`transition-all duration-700 ${
+              animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+            style={{transitionDelay: '0.2s'}}
+          >
             <Card className="bg-transparent border-0 shadow-none">
               <CardContent className="p-0">
-                <h2 className="heading-lg mb-6 text-culturin-charcoal">Are You a Local Guide, Artist, or Cultural Host?</h2>
-                <p className="text-xl mb-8 leading-relaxed text-muted-foreground">
-                  Bring your experience to the world. We give you the tools to publish, promote, and grow — with full creative freedom.
+                <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl mb-6 leading-tight tracking-tight text-culturin-charcoal">
+                  Your Culture Is a Gift. Share It With the World.
+                </h2>
+                <p className="text-lg md:text-xl mb-8 leading-relaxed text-[#4A4A4A]">
+                  Whether you guide people through hidden streets, host ancestral meals, or teach local rituals — your story deserves to be seen.
+                  Culturin gives you the tools to publish, connect, and grow — on your terms.
                 </p>
                 <Button 
-                  className="btn-secondary text-lg py-6 px-8 rounded-xl"
+                  className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] hover:scale-[1.02] text-base py-6 px-10 rounded-xl font-medium transition-all duration-300"
                   onClick={() => navigate('/for-operators')}
                 >
-                  Start Publishing
+                  Start Hosting
                 </Button>
               </CardContent>
             </Card>
           </div>
           
-          <div className="relative animate-fade-in" style={{animationDelay: '0.4s'}}>
+          <div 
+            className={`relative transition-all duration-700 ${
+              animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+            style={{transitionDelay: '0.4s'}}
+          >
             <div className="photo-card shadow-card h-[550px]">
               <img 
-                src="https://images.unsplash.com/photo-1531545514256-b1400bc00f31?q=80&w=1374&auto=format&fit=crop" 
-                alt="Local guide showing travelers authentic experiences" 
-                className="w-full h-full object-cover"
+                src="https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?q=80&w=1374&auto=format&fit=crop" 
+                alt="Cultural host sharing meaningful traditions with travelers" 
+                className="w-full h-full object-cover rounded-xl"
               />
               <div className="absolute bottom-0 left-0 right-0 p-8">
                 <div className="glass-card rounded-xl p-6">
