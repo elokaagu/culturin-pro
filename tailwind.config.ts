@@ -154,8 +154,16 @@ export default {
 			},
 			dropShadow: {
 				'sm': '0 1px 2px rgba(0, 0, 0, 0.15)',
-			}
+			},
+			textShadow: {
+				'sm': '0 1px 2px rgba(0, 0, 0, 0.25)',
+				'DEFAULT': '0 2px 4px rgba(0, 0, 0, 0.25)',
+				'lg': '0 4px 8px rgba(0, 0, 0, 0.25)',
+			},
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		require("tailwindcss-textshadow") // Adding textShadow plugin
+	],
 } satisfies Config;

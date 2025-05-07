@@ -153,52 +153,67 @@ const ForOperators = () => {
       <section className="py-20 bg-white">
         <div className="container-custom">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="heading-lg mb-6 animate-fade-in">Experience hosts growing with Culturin</h2>
+            <h2 className="heading-lg mb-6 animate-fade-in">Experience Hosts Growing With Culturin</h2>
             <p className="text-xl text-muted-foreground animate-fade-in" style={{animationDelay: '0.1s'}}>
               Join our community of cultural storytellers and grow your audience of authentic travelers.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in" style={{animationDelay: '0.2s'}}>
-            {/* Image 1 */}
-            <div className="photo-card h-[350px] shadow-card">
-              <img 
-                src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=2070&auto=format&fit=crop" 
-                alt="Local cooking class" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 p-6 text-white">
-                <p className="font-medium text-lg">Traditional Cooking Classes</p>
-                <p className="text-sm opacity-80">Share your culinary heritage</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Card 1 - Artisan Workshops */}
+            <div 
+              className="photo-card h-[350px] shadow-card rounded-2xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-500 group"
+              style={{animationDelay: '0ms'}}
+            >
+              <div className="h-full w-full overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=1969&auto=format&fit=crop" 
+                  alt="Artisan workshop" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent group-hover:from-black/50 transition-all duration-500"></div>
+                <div className="absolute bottom-0 left-0 p-6 text-white transition-all duration-500 group-hover:translate-y-[-4px]">
+                  <p className="font-bold text-lg group-hover:text-shadow-sm">Artisan Workshops</p>
+                  <p className="text-sm text-white/90">Pass on creative traditions</p>
+                </div>
               </div>
             </div>
             
-            {/* Image 2 */}
-            <div className="photo-card h-[350px] shadow-card">
-              <img 
-                src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2032&auto=format&fit=crop" 
-                alt="Cultural ritual demonstration" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 p-6 text-white">
-                <p className="font-medium text-lg">Cultural Rituals & Ceremonies</p>
-                <p className="text-sm opacity-80">Teach meaningful traditions</p>
+            {/* Card 2 - Ceremonies & Rituals */}
+            <div 
+              className="photo-card h-[350px] shadow-card rounded-2xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-500 group"
+              style={{animationDelay: '150ms'}}
+            >
+              <div className="h-full w-full overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2032&auto=format&fit=crop" 
+                  alt="Cultural ritual demonstration" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent group-hover:from-black/50 transition-all duration-500"></div>
+                <div className="absolute bottom-0 left-0 p-6 text-white transition-all duration-500 group-hover:translate-y-[-4px]">
+                  <p className="font-bold text-lg group-hover:text-shadow-sm">Ceremonies & Rituals</p>
+                  <p className="text-sm text-white/90">Share ancestral knowledge</p>
+                </div>
               </div>
             </div>
             
-            {/* Image 3 */}
-            <div className="photo-card h-[350px] shadow-card">
-              <img 
-                src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=1969&auto=format&fit=crop" 
-                alt="Artisan workshop" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 p-6 text-white">
-                <p className="font-medium text-lg">Artisan Workshops</p>
-                <p className="text-sm opacity-80">Pass on creative traditions</p>
+            {/* Card 3 - Cultural Gatherings */}
+            <div 
+              className="photo-card h-[350px] shadow-card rounded-2xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-500 group"
+              style={{animationDelay: '300ms'}}
+            >
+              <div className="h-full w-full overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=2070&auto=format&fit=crop" 
+                  alt="Cultural gathering at sunset" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent group-hover:from-black/50 transition-all duration-500"></div>
+                <div className="absolute bottom-0 left-0 p-6 text-white transition-all duration-500 group-hover:translate-y-[-4px]">
+                  <p className="font-bold text-lg group-hover:text-shadow-sm">Cultural Gatherings</p>
+                  <p className="text-sm text-white/90">Create connection through storytelling</p>
+                </div>
               </div>
             </div>
           </div>
