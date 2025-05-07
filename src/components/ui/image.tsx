@@ -19,7 +19,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
     // Prefetch image when in viewport
     React.useEffect(() => {
       if (inView && props.src && !isLoaded) {
-        const img = new Image();
+        const img = new window.Image(); // Use window.Image to avoid name conflict
         img.src = props.src.toString();
         img.onload = () => setIsLoaded(true);
       }
