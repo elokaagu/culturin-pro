@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -113,20 +114,40 @@ export default {
 						opacity: '1',
 						transform: 'translateX(0)'
 					}
+				},
+				'subtle-scale': {
+					'0%': {
+						transform: 'scale(1)'
+					},
+					'100%': {
+						transform: 'scale(1.02)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.6s ease-out forwards',
-				'fade-in-right': 'fade-in-right 0.6s ease-out forwards'
+				'fade-in-right': 'fade-in-right 0.6s ease-out forwards',
+				'hover-scale': 'subtle-scale 0.3s ease-out forwards'
 			},
 			fontFamily: {
-				'sans': ['Inter', 'system-ui', 'sans-serif']
+				'sans': ['Inter', 'system-ui', 'sans-serif'],
+				'serif': ['Canela', 'Georgia', 'serif']
 			},
 			boxShadow: {
-				'soft': '0 4px 20px rgba(0, 0, 0, 0.08)',
-				'card': '0 8px 30px rgba(0, 0, 0, 0.12)',
+				'soft': '0 4px 20px rgba(0, 0, 0, 0.06)',
+				'card': '0 8px 30px rgba(0, 0, 0, 0.08)',
+			},
+			spacing: {
+				'18': '4.5rem',
+				'30': '7.5rem',
+			},
+			maxWidth: {
+				'8xl': '88rem',
+			},
+			height: {
+				'screen-90': '90vh',
 			}
 		}
 	},

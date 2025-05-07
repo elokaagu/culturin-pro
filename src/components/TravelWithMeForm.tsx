@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
-  Card,
   CardContent,
   CardDescription,
   CardFooter,
@@ -67,33 +66,35 @@ const TravelWithMeForm = () => {
   };
 
   return (
-    <Card className="shadow-card border-0">
-      <CardHeader className="bg-culturin-indigo text-white rounded-t-xl">
-        <CardTitle className="text-xl">Find Your Perfect Group Trip</CardTitle>
+    <>
+      <CardHeader className="bg-culturin-indigo text-white rounded-t-xl p-8">
+        <CardTitle className="text-2xl font-serif">Find Your Perfect Group Trip</CardTitle>
         <CardDescription className="text-white/80">Step {step} of 4</CardDescription>
       </CardHeader>
-      <CardContent className="p-6">
+      <CardContent className="p-8">
         <form onSubmit={handleSubmit}>
           {step === 1 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium mb-4">Where Do You Want to Go?</h3>
-              <div className="space-y-4">
+            <div className="space-y-6">
+              <h3 className="text-xl font-medium mb-6">Where Do You Want to Go?</h3>
+              <div className="space-y-6">
                 <div>
-                  <Label htmlFor="destination">Destination(s)</Label>
+                  <Label htmlFor="destination" className="text-base mb-2 block">Destination(s)</Label>
                   <Input
                     id="destination"
                     placeholder="e.g., Japan, Morocco, Peru"
                     value={formData.destination}
                     onChange={(e) => setFormData({...formData, destination: e.target.value})}
+                    className="rounded-xl h-12"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="travelMonth">Travel Month</Label>
+                  <Label htmlFor="travelMonth" className="text-base mb-2 block">Travel Month</Label>
                   <Input
                     id="travelMonth"
                     type="month"
                     value={formData.travelMonth}
                     onChange={(e) => setFormData({...formData, travelMonth: e.target.value})}
+                    className="rounded-xl h-12"
                   />
                 </div>
               </div>
@@ -101,11 +102,11 @@ const TravelWithMeForm = () => {
           )}
 
           {step === 2 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium mb-4">What's Your Vibe?</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="space-y-6">
+              <h3 className="text-xl font-medium mb-6">What's Your Vibe?</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {interestOptions.map((interest) => (
-                  <div key={interest} className="flex items-center space-x-2">
+                  <div key={interest} className="flex items-center space-x-3">
                     <Checkbox 
                       id={`interest-${interest}`} 
                       checked={formData.interests.includes(interest)}
@@ -114,7 +115,7 @@ const TravelWithMeForm = () => {
                     />
                     <Label 
                       htmlFor={`interest-${interest}`}
-                      className="text-sm cursor-pointer"
+                      className="text-base cursor-pointer"
                     >
                       {interest}
                     </Label>
@@ -125,12 +126,12 @@ const TravelWithMeForm = () => {
           )}
 
           {step === 3 && (
-            <div className="space-y-6">
-              <h3 className="text-lg font-medium mb-4">Budget + Flexibility</h3>
+            <div className="space-y-8">
+              <h3 className="text-xl font-medium mb-6">Budget + Flexibility</h3>
               <div>
-                <div className="flex justify-between mb-2">
-                  <Label>Trip Budget (USD)</Label>
-                  <span className="font-medium">${formData.budget}</span>
+                <div className="flex justify-between mb-4">
+                  <Label className="text-base">Trip Budget (USD)</Label>
+                  <span className="font-semibold text-lg">${formData.budget}</span>
                 </div>
                 <Slider 
                   value={[formData.budget]} 
@@ -140,13 +141,13 @@ const TravelWithMeForm = () => {
                   onValueChange={(value) => setFormData({...formData, budget: value[0]})}
                   className="py-4"
                 />
-                <div className="flex justify-between text-sm text-gray-500">
+                <div className="flex justify-between text-sm text-muted-foreground mt-2">
                   <span>$500</span>
                   <span>$3000+</span>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3">
                 <Checkbox 
                   id="flexibleDates" 
                   checked={formData.flexibleDates}
@@ -155,41 +156,44 @@ const TravelWithMeForm = () => {
                   }
                   className="border-culturin-indigo"
                 />
-                <Label htmlFor="flexibleDates">I have flexible travel dates</Label>
+                <Label htmlFor="flexibleDates" className="text-base">I have flexible travel dates</Label>
               </div>
             </div>
           )}
 
           {step === 4 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium mb-4">Tell Us About You</h3>
-              <div className="space-y-4">
+            <div className="space-y-6">
+              <h3 className="text-xl font-medium mb-6">Tell Us About You</h3>
+              <div className="space-y-6">
                 <div>
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="name" className="text-base mb-2 block">Name</Label>
                   <Input
                     id="name"
                     placeholder="Your name"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="rounded-xl h-12"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="text-base mb-2 block">Email</Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="your@email.com"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="rounded-xl h-12"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="aboutYou">What makes a meaningful trip for you? (Optional)</Label>
+                  <Label htmlFor="aboutYou" className="text-base mb-2 block">What makes a meaningful trip for you? (Optional)</Label>
                   <Input
                     id="aboutYou"
                     placeholder="Tell us a bit about what you're looking for"
                     value={formData.aboutYou}
                     onChange={(e) => setFormData({...formData, aboutYou: e.target.value})}
+                    className="rounded-xl h-12"
                   />
                 </div>
               </div>
@@ -197,12 +201,13 @@ const TravelWithMeForm = () => {
           )}
         </form>
       </CardContent>
-      <CardFooter className="flex justify-between p-6 pt-0">
+      <CardFooter className="flex justify-between p-8 pt-0">
         {step > 1 && (
           <Button 
             type="button" 
             variant="outline" 
             onClick={handleBack}
+            className="rounded-xl py-6 px-8"
           >
             Back
           </Button>
@@ -211,7 +216,7 @@ const TravelWithMeForm = () => {
           {step < 4 ? (
             <Button 
               type="button" 
-              className="bg-culturin-indigo hover:bg-culturin-indigo/90 w-full"
+              className="bg-culturin-indigo hover:bg-culturin-indigo/90 w-full py-6 px-8 rounded-xl"
               onClick={handleNext}
             >
               Continue
@@ -219,7 +224,7 @@ const TravelWithMeForm = () => {
           ) : (
             <Button 
               type="button" 
-              className="bg-culturin-clay hover:bg-culturin-clay/90 w-full"
+              className="bg-culturin-clay hover:bg-culturin-clay/90 w-full py-6 px-8 rounded-xl"
               onClick={handleSubmit}
             >
               Match Me With Trips
@@ -227,7 +232,7 @@ const TravelWithMeForm = () => {
           )}
         </div>
       </CardFooter>
-    </Card>
+    </>
   );
 };
 
