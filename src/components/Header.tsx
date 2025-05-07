@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Menu, X, User, Globe } from 'lucide-react';
 
@@ -12,6 +12,7 @@ export const Header = ({ type }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   
@@ -20,11 +21,14 @@ export const Header = ({ type }: HeaderProps) => {
       setIsScrolled(window.scrollY > 20);
     };
     
+    // Scroll to top when location changes
+    window.scrollTo(0, 0);
+    
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [location.pathname]);
 
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${
@@ -53,8 +57,8 @@ export const Header = ({ type }: HeaderProps) => {
                         to="/" 
                         className={`font-medium transition-colors ${
                           isScrolled 
-                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
-                            : 'text-white hover:text-culturin-mustard'
+                            ? 'text-culturin-charcoal hover:text-culturin-indigo' 
+                            : 'text-white hover:text-white/80'
                         }`}
                       >
                         Discover Trips
@@ -65,8 +69,8 @@ export const Header = ({ type }: HeaderProps) => {
                         to="/" 
                         className={`font-medium transition-colors ${
                           isScrolled 
-                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
-                            : 'text-white hover:text-culturin-mustard'
+                            ? 'text-culturin-charcoal hover:text-culturin-indigo' 
+                            : 'text-white hover:text-white/80'
                         }`}
                       >
                         How It Works
@@ -77,8 +81,8 @@ export const Header = ({ type }: HeaderProps) => {
                         to="/for-operators" 
                         className={`font-medium transition-colors ${
                           isScrolled 
-                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
-                            : 'text-white hover:text-culturin-mustard'
+                            ? 'text-culturin-charcoal hover:text-culturin-indigo' 
+                            : 'text-white hover:text-white/80'
                         }`}
                       >
                         For Operators
@@ -89,8 +93,8 @@ export const Header = ({ type }: HeaderProps) => {
                         to="/" 
                         className={`font-medium transition-colors ${
                           isScrolled 
-                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
-                            : 'text-white hover:text-culturin-mustard'
+                            ? 'text-culturin-charcoal hover:text-culturin-indigo' 
+                            : 'text-white hover:text-white/80'
                         }`}
                       >
                         About Us
@@ -145,7 +149,7 @@ export const Header = ({ type }: HeaderProps) => {
               size="sm" 
               className={`flex items-center ${
                 isScrolled 
-                  ? 'border-culturin-indigo text-culturin-indigo' 
+                  ? 'border-culturin-indigo text-culturin-indigo hover:bg-culturin-indigo hover:text-white' 
                   : 'bg-white/20 backdrop-blur-md border-white/20 text-white hover:bg-white/30'
               }`}
               onClick={() => navigate('/sign-in')}
@@ -160,23 +164,24 @@ export const Header = ({ type }: HeaderProps) => {
               isScrolled ? 'text-culturin-indigo' : 'text-white'
             }`} 
             onClick={toggleMenu}
+            aria-label="Toggle menu"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
       
-      {/* Mobile menu */}
+      {/* Mobile menu with improved contrast */}
       {isMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-card z-50 p-6 animate-fade-in">
           <nav className="py-4">
             <ul className="space-y-4">
               {type === 'traveler' ? (
                 <>
-                  <li><Link to="/" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">Discover Trips</Link></li>
-                  <li><Link to="/" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">How It Works</Link></li>
-                  <li><Link to="/for-operators" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">For Operators</Link></li>
-                  <li><Link to="/" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">About Us</Link></li>
+                  <li><Link to="/" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">Discover Trips</Link></li>
+                  <li><Link to="/" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">How It Works</Link></li>
+                  <li><Link to="/for-operators" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">For Operators</Link></li>
+                  <li><Link to="/" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">About Us</Link></li>
                 </>
               ) : (
                 <>
@@ -189,7 +194,7 @@ export const Header = ({ type }: HeaderProps) => {
                 <Button 
                   variant="default" 
                   size="sm" 
-                  className="w-full bg-culturin-indigo"
+                  className="w-full bg-culturin-indigo hover:bg-culturin-indigo/80 transition-all duration-300"
                   onClick={() => {
                     navigate('/sign-in');
                     setIsMenuOpen(false);

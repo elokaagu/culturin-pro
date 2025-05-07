@@ -108,28 +108,29 @@ const HostShowcaseCarousel = () => {
                     transform: animateItems ? 'translateY(0)' : 'translateY(20px)'
                   }}
                 >
-                  <div className="relative overflow-hidden rounded-[24px] h-[350px] group transition-all duration-300 hover:scale-[1.02] shadow-md hover:shadow-lg">
+                  <div className="relative overflow-hidden rounded-[24px] h-[350px] group transition-all duration-300 hover:scale-[1.03] shadow-md hover:shadow-lg">
                     <div className="absolute inset-0 overflow-hidden">
                       <Image 
                         src={item.image} 
                         alt={item.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-transparent/20 group-hover:from-black/50 transition-all duration-500"></div>
+                      {/* Stronger gradient overlay for better text contrast */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent/20 group-hover:from-black/70 transition-all duration-500"></div>
                     </div>
                     <div className="absolute bottom-0 left-0 p-6 text-white transition-all duration-500 group-hover:translate-y-[-4px]">
                       <h3 className="font-bold text-lg text-white group-hover:text-shadow">{item.title}</h3>
-                      <p className="text-sm text-[#EAEAEA]">{item.description}</p>
+                      <p className="text-sm text-white">{item.description}</p>
                     </div>
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
             <div className="flex justify-center mt-8 gap-4">
-              <CarouselPrevious className="relative static -left-0 rounded-full bg-black/20 hover:bg-black/40 border-0 h-10 w-10">
+              <CarouselPrevious className="relative static -left-0 rounded-full bg-black/30 hover:bg-black/60 border-0 h-10 w-10 transition-all duration-300">
                 <ChevronLeft className="h-6 w-6 text-white" />
               </CarouselPrevious>
-              <CarouselNext className="relative static -right-0 rounded-full bg-black/20 hover:bg-black/40 border-0 h-10 w-10">
+              <CarouselNext className="relative static -right-0 rounded-full bg-black/30 hover:bg-black/60 border-0 h-10 w-10 transition-all duration-300">
                 <ChevronRight className="h-6 w-6 text-white" />
               </CarouselNext>
             </div>

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/sections/Footer";
 import { Button } from "@/components/ui/button";
@@ -13,21 +13,25 @@ const ForOperators = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
   const [imageLoaded, setImageLoaded] = useState<boolean>(false);
   const navigate = useNavigate();
+  const location = useLocation();
   
   useEffect(() => {
+    // Scroll to top when component mounts or route changes
+    window.scrollTo(0, 0);
+    
     setAnimateItems(true);
     
     // Preload hero image
     const img = new window.Image();
     img.src = "https://images.unsplash.com/photo-1605538058334-52290f6d4b3f?q=80&w=1920&auto=format&fit=crop";
     img.onload = () => setImageLoaded(true);
-  }, []);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header type="traveler" />
       
-      {/* Hero Section with enhanced image loading */}
+      {/* Hero Section with enhanced image loading and contrast */}
       <section className="relative min-h-[80vh] flex items-center">
         {/* Background image with optimized loading */}
         <div className="absolute inset-0 overflow-hidden z-0 bg-gray-900">
@@ -40,8 +44,8 @@ const ForOperators = () => {
             />
           </div>
           
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/10 z-10"></div>
+          {/* Enhanced gradient overlay for better text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/40 z-10"></div>
           
           {/* Grain texture overlay */}
           <div className="absolute inset-0 opacity-15 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-20"></div>
@@ -50,14 +54,14 @@ const ForOperators = () => {
         <div className="container-custom relative z-30 pt-32 pb-20">
           <div className="max-w-3xl">
             <div className="space-y-6">
-              <h1 className={`font-bold text-3xl md:text-4xl lg:text-5xl text-white tracking-tight leading-tight text-shadow transition-all duration-700 ease-out ${
+              <h1 className={`font-bold text-3xl md:text-4xl lg:text-5xl text-white tracking-tight leading-tight text-shadow-lg transition-all duration-700 ease-out ${
                 animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}>
                 You Have Culture to Share.<br />
                 We'll Help You Spread It.
               </h1>
               
-              <p className={`text-base md:text-xl text-[#EAEAEA] text-shadow transition-all duration-700 ease-out ${
+              <p className={`text-base md:text-xl text-white text-shadow transition-all duration-700 ease-out ${
                 animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
                 style={{transitionDelay: '200ms'}}
@@ -90,7 +94,7 @@ const ForOperators = () => {
                 >
                   <Button 
                     variant="outline" 
-                    className="border-[#B0B0B0] text-white hover:bg-[#F3F3F3] hover:text-[#1A1A1A] py-6 px-8 rounded-xl text-base font-medium transition-all duration-500 ease-out hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto"
+                    className="border-[#B0B0B0] text-white hover:bg-white hover:text-[#1A1A1A] py-6 px-8 rounded-xl text-base font-medium transition-all duration-500 ease-out hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto"
                   >
                     <Search className="w-5 h-5 mr-2" />
                     See Sample Listings
@@ -102,46 +106,46 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Value Props Section */}
+      {/* Value Props Section - Improved contrast and animations */}
       <section className="py-20 bg-white">
         <div className="container-custom">
           <h2 className="heading-lg text-center mb-16 animate-fade-in">How Culturin works for cultural hosts</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 animate-fade-in" style={{animationDelay: '0.2s'}}>
             {/* Value Prop 1 */}
-            <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300">
+            <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
               <CardContent className="p-8 flex flex-col items-center text-center">
                 <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
                   <Upload className="w-8 h-8 text-culturin-indigo" />
                 </div>
-                <h3 className="text-xl font-medium mb-4">Publish easily with beautiful storytelling tools</h3>
-                <p className="text-muted-foreground">
+                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Publish easily with beautiful storytelling tools</h3>
+                <p className="text-[#4A4A4A]">
                   Our intuitive platform helps you showcase your cultural expertise with rich media and compelling descriptions that travelers connect with.
                 </p>
               </CardContent>
             </Card>
             
             {/* Value Prop 2 */}
-            <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300">
+            <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
               <CardContent className="p-8 flex flex-col items-center text-center">
                 <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
                   <Users className="w-8 h-8 text-culturin-indigo" />
                 </div>
-                <h3 className="text-xl font-medium mb-4">Reach aligned travelers, globally</h3>
-                <p className="text-muted-foreground">
+                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Reach aligned travelers, globally</h3>
+                <p className="text-[#4A4A4A]">
                   Connect with travelers who value authentic cultural exchanges. Our matching algorithm brings you guests who will appreciate your unique offerings.
                 </p>
               </CardContent>
             </Card>
             
             {/* Value Prop 3 */}
-            <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300">
+            <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
               <CardContent className="p-8 flex flex-col items-center text-center">
                 <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
                   <CalendarCheck className="w-8 h-8 text-culturin-indigo" />
                 </div>
-                <h3 className="text-xl font-medium mb-4">Manage bookings + group dynamics with ease</h3>
-                <p className="text-muted-foreground">
+                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Manage bookings + group dynamics with ease</h3>
+                <p className="text-[#4A4A4A]">
                   Streamlined tools for handling reservations, communications, and fostering positive group interactions among your guests.
                 </p>
               </CardContent>
@@ -150,16 +154,16 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Testimonial Section */}
+      {/* Testimonial Section - Enhanced for better contrast */}
       <section className="py-20 bg-culturin-indigo text-white">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto text-center">
             <Globe className="w-16 h-16 mx-auto mb-8 opacity-20" />
-            <blockquote className="text-2xl md:text-3xl font-medium leading-relaxed mb-8 animate-fade-in">
+            <blockquote className="text-2xl md:text-3xl font-medium leading-relaxed mb-8 animate-fade-in text-shadow">
               "This platform helped me connect with travelers who truly cared about learning our traditions, not just taking photos. It's changed how I share my culture with the world."
             </blockquote>
             <div className="flex items-center justify-center animate-fade-in" style={{animationDelay: '0.2s'}}>
-              <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
+              <div className="w-12 h-12 rounded-full overflow-hidden mr-4 shadow-md">
                 <img 
                   src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop" 
                   alt="Host portrait" 
@@ -175,19 +179,19 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Host Showcase Carousel - NEW SECTION */}
+      {/* Host Showcase Carousel Section */}
       <HostShowcaseCarousel />
       
-      {/* Pricing Teaser / CTA */}
+      {/* Pricing Teaser / CTA - Improved contrast and animations */}
       <section className="py-20 bg-culturin-white">
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="heading-lg mb-6 animate-fade-in">Start sharing your culture, free</h2>
-            <p className="text-xl text-muted-foreground mb-10 animate-fade-in" style={{animationDelay: '0.1s'}}>
+            <p className="text-xl text-[#4A4A4A] mb-10 animate-fade-in" style={{animationDelay: '0.1s'}}>
               No upfront costs to list your experiences. We only earn when you do — with a simple commission on bookings.
             </p>
             <Button 
-              className="bg-culturin-indigo hover:bg-culturin-indigo/90 text-white py-6 px-10 rounded-xl text-lg animate-fade-in"
+              className="bg-culturin-indigo hover:bg-culturin-indigo/90 hover:scale-[1.02] text-white py-6 px-10 rounded-xl text-lg animate-fade-in transition-all duration-300"
               style={{animationDelay: '0.2s'}}
               onClick={() => navigate('/operator')}
             >
