@@ -27,7 +27,7 @@ export const Header = ({ type }: HeaderProps) => {
 
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md py-3' : 'bg-transparent py-6'
+      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-soft py-3' : 'bg-transparent py-6'
     }`}>
       <div className="container-custom">
         <div className="flex items-center justify-between">
@@ -52,7 +52,7 @@ export const Header = ({ type }: HeaderProps) => {
                         to="/" 
                         className={`font-medium transition-colors ${
                           isScrolled 
-                            ? 'text-gray-800 hover:text-culturin-terracotta' 
+                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
                             : 'text-white hover:text-culturin-mustard'
                         }`}
                       >
@@ -64,7 +64,7 @@ export const Header = ({ type }: HeaderProps) => {
                         to="/" 
                         className={`font-medium transition-colors ${
                           isScrolled 
-                            ? 'text-gray-800 hover:text-culturin-terracotta' 
+                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
                             : 'text-white hover:text-culturin-mustard'
                         }`}
                       >
@@ -76,7 +76,7 @@ export const Header = ({ type }: HeaderProps) => {
                         to="/operator" 
                         className={`font-medium transition-colors ${
                           isScrolled 
-                            ? 'text-gray-800 hover:text-culturin-terracotta' 
+                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
                             : 'text-white hover:text-culturin-mustard'
                         }`}
                       >
@@ -91,7 +91,7 @@ export const Header = ({ type }: HeaderProps) => {
                         to="/operator" 
                         className={`font-medium transition-colors ${
                           isScrolled 
-                            ? 'text-gray-800 hover:text-culturin-terracotta' 
+                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
                             : 'text-white hover:text-culturin-mustard'
                         }`}
                       >
@@ -103,7 +103,7 @@ export const Header = ({ type }: HeaderProps) => {
                         to="/operator" 
                         className={`font-medium transition-colors ${
                           isScrolled 
-                            ? 'text-gray-800 hover:text-culturin-terracotta' 
+                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
                             : 'text-white hover:text-culturin-mustard'
                         }`}
                       >
@@ -115,7 +115,7 @@ export const Header = ({ type }: HeaderProps) => {
                         to="/operator" 
                         className={`font-medium transition-colors ${
                           isScrolled 
-                            ? 'text-gray-800 hover:text-culturin-terracotta' 
+                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
                             : 'text-white hover:text-culturin-mustard'
                         }`}
                       >
@@ -154,20 +154,20 @@ export const Header = ({ type }: HeaderProps) => {
       
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg z-50 p-6 animate-fade-in">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-card z-50 p-6 animate-fade-in">
           <nav className="py-4">
             <ul className="space-y-4">
               {type === 'traveler' ? (
                 <>
-                  <li><Link to="/" className="block py-3 px-4 hover:bg-culturin-sand rounded-md font-medium">Discover</Link></li>
-                  <li><Link to="/" className="block py-3 px-4 hover:bg-culturin-sand rounded-md font-medium">How It Works</Link></li>
-                  <li><Link to="/operator" className="block py-3 px-4 hover:bg-culturin-sand rounded-md font-medium">For Operators</Link></li>
+                  <li><Link to="/" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">Discover</Link></li>
+                  <li><Link to="/" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">How It Works</Link></li>
+                  <li><Link to="/operator" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">For Operators</Link></li>
                 </>
               ) : (
                 <>
-                  <li><Link to="/operator" className="block py-3 px-4 hover:bg-culturin-sand rounded-md font-medium">Dashboard</Link></li>
-                  <li><Link to="/operator" className="block py-3 px-4 hover:bg-culturin-sand rounded-md font-medium">My Experiences</Link></li>
-                  <li><Link to="/operator" className="block py-3 px-4 hover:bg-culturin-sand rounded-md font-medium">Bookings</Link></li>
+                  <li><Link to="/operator" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">Dashboard</Link></li>
+                  <li><Link to="/operator" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">My Experiences</Link></li>
+                  <li><Link to="/operator" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">Bookings</Link></li>
                 </>
               )}
               <li>

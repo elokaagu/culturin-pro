@@ -4,22 +4,22 @@ import { useEffect, useState } from "react";
 
 const steps = [
   {
-    icon: <Check className="w-8 h-8 text-culturin-mustard" />,
+    icon: <Check className="w-8 h-8 text-culturin-clay" />,
     title: "Share your trip preferences",
     description: "Tell us where you want to go and what interests you"
   },
   {
-    icon: <Users className="w-8 h-8 text-culturin-mustard" />,
+    icon: <Users className="w-8 h-8 text-culturin-clay" />,
     title: "Get matched with others headed your way",
     description: "Connect with like-minded travelers with similar plans"
   },
   {
-    icon: <Map className="w-8 h-8 text-culturin-mustard" />,
+    icon: <Map className="w-8 h-8 text-culturin-clay" />,
     title: "Join or form a cultural group trip",
     description: "Experience authentic local culture together"
   },
   {
-    icon: <Heart className="w-8 h-8 text-culturin-mustard" />,
+    icon: <Heart className="w-8 h-8 text-culturin-clay" />,
     title: "Travel with trust and intention",
     description: "Enjoy meaningful connections and memorable experiences"
   }
@@ -33,10 +33,10 @@ const HowItWorks = () => {
   }, []);
 
   return (
-    <section className="py-20 bg-culturin-sand/50">
+    <section className="py-20 bg-culturin-white">
       <div className="container-custom">
         <div className="text-center mb-16 animate-fade-in" style={{animationDelay: '0.2s'}}>
-          <h2 className="heading-lg mb-4">How It Works</h2>
+          <h2 className="heading-lg mb-4 text-culturin-charcoal">How It Works</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Your journey to authentic cultural experiences is just four simple steps away
           </p>
@@ -47,22 +47,24 @@ const HowItWorks = () => {
           {steps.map((step, index) => (
             <div 
               key={index} 
-              className={`bg-white p-8 rounded-xl shadow-md flex flex-col items-center text-center relative z-10 animate-fade-in`}
+              className={`bg-white p-8 rounded-xl shadow-soft flex flex-col items-center text-center relative z-10 ${
+                animateItems ? 'animate-fade-in' : 'opacity-0'
+              }`}
               style={{animationDelay: `${0.2 + index * 0.2}s`}}
             >
-              <div className="h-20 w-20 rounded-full bg-culturin-sand/50 flex items-center justify-center mb-6 border-2 border-culturin-mustard/30">
+              <div className="h-20 w-20 rounded-full bg-culturin-white flex items-center justify-center mb-6 border-2 border-culturin-mustard/30">
                 {step.icon}
               </div>
-              <h3 className="font-playfair text-xl mb-3">{step.title}</h3>
+              <h3 className="font-playfair text-xl font-medium mb-3 text-culturin-indigo">{step.title}</h3>
               <p className="text-gray-600">{step.description}</p>
               
               {index < steps.length - 1 && (
                 <div className="hidden lg:block absolute left-full top-1/2 w-12 -translate-y-1/2 -translate-x-6 z-0">
-                  <div className="border-t-2 border-dashed border-culturin-mustard/50 w-full"></div>
+                  <div className="border-t-2 border-dashed border-culturin-mustard w-full"></div>
                 </div>
               )}
               
-              <div className="hidden lg:flex absolute -top-4 -left-4 w-10 h-10 bg-culturin-mustard rounded-full items-center justify-center text-white font-bold text-lg">
+              <div className="absolute -top-4 -left-4 w-10 h-10 bg-culturin-mustard rounded-full flex items-center justify-center text-culturin-indigo font-bold text-lg shadow-soft">
                 {index + 1}
               </div>
             </div>
