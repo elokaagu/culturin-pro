@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Menu, X, User, Globe } from 'lucide-react';
 
@@ -11,6 +11,7 @@ interface HeaderProps {
 export const Header = ({ type }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   
@@ -147,6 +148,7 @@ export const Header = ({ type }: HeaderProps) => {
                   ? 'border-culturin-indigo text-culturin-indigo' 
                   : 'bg-white/20 backdrop-blur-md border-white/20 text-white hover:bg-white/30'
               }`}
+              onClick={() => navigate('/sign-in')}
             >
               <User className="w-4 h-4 mr-2" />
               <span>{type === 'traveler' ? 'Sign In' : 'My Account'}</span>
@@ -184,7 +186,15 @@ export const Header = ({ type }: HeaderProps) => {
                 </>
               )}
               <li>
-                <Button variant="default" size="sm" className="w-full bg-culturin-indigo">
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  className="w-full bg-culturin-indigo"
+                  onClick={() => {
+                    navigate('/sign-in');
+                    setIsMenuOpen(false);
+                  }}
+                >
                   <User className="w-4 h-4 mr-2" />
                   <span>{type === 'traveler' ? 'Sign In' : 'My Account'}</span>
                 </Button>
