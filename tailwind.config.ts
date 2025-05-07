@@ -133,7 +133,7 @@ export default {
 			},
 			fontFamily: {
 				'sans': ['Inter', 'system-ui', 'sans-serif'],
-				'serif': ['Canela', 'Georgia', 'serif']
+				'heading': ['Inter', 'system-ui', 'sans-serif']
 			},
 			boxShadow: {
 				'soft': '0 4px 20px rgba(0, 0, 0, 0.06)',
@@ -153,3 +153,4 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+

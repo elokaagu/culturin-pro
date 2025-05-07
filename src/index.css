@@ -1,6 +1,5 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.cdnfonts.com/css/canela');
 
 @tailwind base;
 @tailwind components;
@@ -81,11 +80,7 @@
     @apply bg-background text-foreground font-sans;
   }
 
-  h1, h2, h3 {
-    @apply font-serif font-medium;
-  }
-
-  h4, h5, h6 {
+  h1, h2, h3, h4, h5, h6 {
     @apply font-sans font-medium;
   }
 }
@@ -106,15 +101,15 @@
   
   /* Text styles */
   .heading-xl {
-    @apply text-4xl md:text-5xl lg:text-6xl font-serif font-medium leading-tight tracking-tight;
+    @apply text-4xl md:text-5xl lg:text-6xl font-sans font-medium leading-tight tracking-tight;
   }
   
   .heading-lg {
-    @apply text-3xl md:text-4xl font-serif font-medium leading-tight tracking-tight;
+    @apply text-3xl md:text-4xl font-sans font-medium leading-tight tracking-tight;
   }
   
   .heading-md {
-    @apply text-2xl md:text-3xl font-serif font-medium leading-tight tracking-tight;
+    @apply text-2xl md:text-3xl font-sans font-medium leading-tight tracking-tight;
   }
   
   /* Button styles */
