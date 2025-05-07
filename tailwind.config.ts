@@ -58,7 +58,7 @@ export default {
 					secondary: '#8A898C', // Medium Gray
 					accent: '#1A1F2C',    // Dark Purple
 					white: '#F6F6F7',     // Light Gray
-					charcoal: '#222222',  // Darker Gray
+					charcoal: '#4A4A4A',  // Soft Charcoal (updated)
 					highlight: '#8E9196', // Neutral Gray
 					subtle: '#F1F1F1',    // Light Gray
 				},
@@ -139,6 +139,8 @@ export default {
 			boxShadow: {
 				'soft': '0 4px 20px rgba(0, 0, 0, 0.06)',
 				'card': '0 8px 30px rgba(0, 0, 0, 0.08)',
+				'editorial': '0px 8px 16px rgba(0, 0, 0, 0.04)',
+				'editorial-hover': '0px 12px 24px rgba(0, 0, 0, 0.03)',
 			},
 			spacing: {
 				'18': '4.5rem',

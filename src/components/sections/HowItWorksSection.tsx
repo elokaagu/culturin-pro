@@ -1,9 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
-import { ArrowRight, Check, Globe, Users } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { Check, Globe, Users } from "lucide-react";
 
 const HowItWorksSection = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -14,104 +12,62 @@ const HowItWorksSection = () => {
 
   const travelerSteps = [
     {
-      icon: <Check className="w-6 h-6 text-culturin-clay" />,
+      icon: <Check className="w-6 h-6 text-culturin-charcoal" />,
       title: "Share your travel vibe + timing",
       description: "Tell us your preferences, budget, and when you'd like to travel"
     },
     {
-      icon: <Users className="w-6 h-6 text-culturin-clay" />,
+      icon: <Users className="w-6 h-6 text-culturin-charcoal" />,
       title: "Get matched with others and curated trips",
       description: "Connect with like-minded travelers and find curated experiences"
     },
     {
-      icon: <Globe className="w-6 h-6 text-culturin-clay" />,
+      icon: <Globe className="w-6 h-6 text-culturin-charcoal" />,
       title: "Join a group and travel with purpose",
       description: "Experience authentic culture with your new travel community"
     }
   ];
 
-  const operatorSteps = [
-    {
-      icon: <Check className="w-6 h-6 text-culturin-indigo" />,
-      title: "Share your story and offer",
-      description: "Tell your unique story and showcase your cultural experiences"
-    },
-    {
-      icon: <Users className="w-6 h-6 text-culturin-indigo" />,
-      title: "Get discovered by global travelers",
-      description: "Connect with travelers seeking authentic experiences in your area"
-    },
-    {
-      icon: <Globe className="w-6 h-6 text-culturin-indigo" />,
-      title: "Build community and income",
-      description: "Create meaningful connections while growing your business"
-    }
-  ];
-  
   return (
     <section className="py-24 lg:py-30 bg-background">
-      <div className="container-custom">
-        <div className="text-center mb-12 animate-fade-in" style={{animationDelay: '0.2s'}}>
-          <h2 className="heading-lg mb-4">Culturin makes travel human again</h2>
-          <div className="section-divider"></div>
+      <div className="container max-w-6xl mx-auto px-6">
+        <div className="text-center mb-16 animate-fade-in" style={{animationDelay: '0.2s'}}>
+          <h2 className="font-playfair text-4xl md:text-5xl mb-4 tracking-tight leading-tight text-culturin-charcoal">
+            Culturin makes travel human again
+          </h2>
+          <p className="text-lg md:text-xl text-[#4A4A4A] mt-4 mb-6 max-w-2xl mx-auto leading-relaxed">
+            Because the best trips aren't booked — they're shared.
+          </p>
+          <div className="w-20 h-0.5 bg-gray-400 mx-auto mt-8"></div>
         </div>
         
-        <div className="max-w-5xl mx-auto">
-          {/* Traveler Steps */}
-          <div className="mb-16 animate-fade-in" style={{animationDelay: '0.3s'}}>
-            <h3 className="heading-md mb-8 text-culturin-indigo">For Travelers</h3>
-            <ol className="relative border-l border-muted">
-              {travelerSteps.map((step, index) => (
-                <li key={index} className="mb-10 ml-8">
-                  <div className="absolute flex items-center justify-center w-8 h-8 rounded-full -left-4 ring-8 ring-background bg-culturin-mustard/20">
-                    <span className="text-culturin-indigo font-bold">{index + 1}</span>
-                  </div>
-                  <div className="p-6 bg-card rounded-lg border shadow-soft">
-                    <div className="flex items-center mb-2">
-                      <div className="mr-2">{step.icon}</div>
-                      <h4 className="text-xl font-medium">{step.title}</h4>
-                    </div>
-                    <p className="text-muted-foreground">{step.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <div className="ml-8 mt-6">
-              <Button className="btn-primary">
-                Join a Trip
-                <ArrowRight className="ml-1 w-4 h-4" />
-              </Button>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
+          {travelerSteps.map((step, index) => (
+            <div 
+              key={index} 
+              className={`bg-white p-8 rounded-2xl shadow-[0px_8px_16px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0px_12px_24px_rgba(0,0,0,0.03)] hover:translate-y-[-4px] relative ${
+                animateItems ? 'animate-fade-in' : 'opacity-0'
+              } ${index === 1 ? 'border-t-2 border-[#D7CFC2]' : ''}`}
+              style={{animationDelay: `${0.3 + index * 0.15}s`}}
+            >
+              <div className="absolute top-4 left-8 text-xl font-medium text-gray-300">
+                {index + 1}
+              </div>
+              <div className="h-14 w-14 rounded-full bg-[#F2F2F2] flex items-center justify-center mb-6 mt-4">
+                {step.icon}
+              </div>
+              <h3 className="text-xl font-medium mb-3 text-[#4A4A4A]">{step.title}</h3>
+              <p className="text-[#4A4A4A] leading-relaxed">{step.description}</p>
             </div>
-          </div>
-          
-          <Separator className="my-12 max-w-md mx-auto" />
-          
-          {/* Operator Steps */}
-          <div className="animate-fade-in" style={{animationDelay: '0.4s'}}>
-            <h3 className="heading-md mb-8 text-culturin-clay">For Operators</h3>
-            <ol className="relative border-l border-muted">
-              {operatorSteps.map((step, index) => (
-                <li key={index} className="mb-10 ml-8">
-                  <div className="absolute flex items-center justify-center w-8 h-8 rounded-full -left-4 ring-8 ring-background bg-culturin-indigo/20">
-                    <span className="text-culturin-clay font-bold">{index + 1}</span>
-                  </div>
-                  <div className="p-6 bg-card rounded-lg border shadow-soft">
-                    <div className="flex items-center mb-2">
-                      <div className="mr-2">{step.icon}</div>
-                      <h4 className="text-xl font-medium">{step.title}</h4>
-                    </div>
-                    <p className="text-muted-foreground">{step.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <div className="ml-8 mt-6">
-              <Button className="bg-culturin-clay text-white hover:bg-culturin-clay/90">
-                Become a Host
-                <ArrowRight className="ml-1 w-4 h-4" />
-              </Button>
-            </div>
-          </div>
+          ))}
+        </div>
+        
+        <div className="flex justify-center mt-16">
+          <Button 
+            className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] hover:scale-[1.02] text-base py-6 px-10 rounded-xl font-medium transition-all duration-300"
+          >
+            Join a trip
+          </Button>
         </div>
       </div>
     </section>
