@@ -16,6 +16,15 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
       threshold: 0.1,
     })
     
+    // Prefetch image when in viewport
+    React.useEffect(() => {
+      if (inView && props.src && !isLoaded) {
+        const img = new Image();
+        img.src = props.src.toString();
+        img.onload = () => setIsLoaded(true);
+      }
+    }, [inView, props.src, isLoaded]);
+    
     const aspectRatioClass = {
       portrait: "aspect-[3/4]",
       square: "aspect-square",
@@ -41,20 +50,27 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
     )
 
     return (
-      <img
-        ref={setRefs}
-        className={cn(
-          "w-full transition-opacity duration-700",
-          cover && "object-cover",
-          aspectRatio && aspectRatioClass[aspectRatio],
-          isLoaded ? "opacity-100" : "opacity-0",
-          className
+      <div className={cn(
+        "relative w-full h-full overflow-hidden",
+        aspectRatio && aspectRatioClass[aspectRatio],
+      )}>
+        {!isLoaded && inView && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse" />
         )}
-        alt={alt}
-        onLoad={handleLoad}
-        loading="lazy"
-        {...props}
-      />
+        <img
+          ref={setRefs}
+          className={cn(
+            "w-full h-full transition-opacity duration-700",
+            cover && "object-cover",
+            isLoaded ? "opacity-100" : "opacity-0",
+            className
+          )}
+          alt={alt}
+          onLoad={handleLoad}
+          loading="lazy"
+          {...props}
+        />
+      </div>
     )
   }
 )

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -6,30 +7,42 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Globe, Upload, Users, CalendarCheck, ExternalLink, Search } from "lucide-react";
 import HostShowcaseCarousel from "@/components/sections/HostShowcaseCarousel";
+import Image from "@/components/ui/image";
 
 const ForOperators = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
+  const [imageLoaded, setImageLoaded] = useState<boolean>(false);
   const navigate = useNavigate();
   
   useEffect(() => {
     setAnimateItems(true);
+    
+    // Preload hero image
+    const img = new window.Image();
+    img.src = "https://images.unsplash.com/photo-1605538058334-52290f6d4b3f?q=80&w=1920&auto=format&fit=crop";
+    img.onload = () => setImageLoaded(true);
   }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header type="traveler" />
       
-      {/* Hero Section - Updated with background image and styling */}
+      {/* Hero Section with enhanced image loading */}
       <section className="relative min-h-[80vh] flex items-center">
-        {/* Background image with zoom effect */}
-        <div className="absolute inset-0 overflow-hidden z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1605538058334-52290f6d4b3f?q=80&w=1920&auto=format&fit=crop"
-            alt="Cultural cooking demonstration" 
-            className="w-full h-full object-cover transition-transform duration-[10000ms] ease-out scale-[1.01]"
-          />
+        {/* Background image with optimized loading */}
+        <div className="absolute inset-0 overflow-hidden z-0 bg-gray-900">
+          <div className={`w-full h-full transition-opacity duration-1000 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+            <Image 
+              src="https://images.unsplash.com/photo-1605538058334-52290f6d4b3f?q=80&w=1920&auto=format&fit=crop"
+              alt="Cultural cooking demonstration" 
+              className="w-full h-full object-cover"
+              onLoad={() => setImageLoaded(true)}
+            />
+          </div>
+          
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/10 z-10"></div>
+          
           {/* Grain texture overlay */}
           <div className="absolute inset-0 opacity-15 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-20"></div>
         </div>
