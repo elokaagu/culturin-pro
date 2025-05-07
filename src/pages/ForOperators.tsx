@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/sections/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Globe, Upload, Users, CalendarCheck, ExternalLink } from "lucide-react";
+import { Globe, Upload, Users, CalendarCheck, ExternalLink, Search } from "lucide-react";
 
 const ForOperators = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -22,29 +22,55 @@ const ForOperators = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-20 md:pt-40 md:pb-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-culturin-white to-background z-[-1]"></div>
+        {/* Optional visual texture */}
+        <div className="absolute inset-0 opacity-5 bg-[url('https://images.unsplash.com/photo-1572454591674-2739f30a2b2f?q=80&w=1600&auto=format&fit=crop')] bg-repeat z-[-1]"></div>
+        
         <div className="container-custom">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="heading-xl mb-6 text-culturin-charcoal animate-fade-in">
-              You have culture to share. We'll help you spread it.
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-10 animate-fade-in" style={{animationDelay: '0.2s'}}>
-              Join thousands of cultural hosts, local guides, and storytellers sharing authentic experiences on Culturin.
-            </p>
-            <div className="flex flex-wrap gap-4 justify-center animate-fade-in" style={{animationDelay: '0.3s'}}>
-              <Button 
-                className="bg-culturin-indigo hover:bg-culturin-indigo/90 text-white py-6 px-8 rounded-xl text-lg" 
-                onClick={() => navigate('/operator')}
+          <div className="max-w-3xl mx-auto">
+            <div className={`transition-all duration-700 ease-out ${
+                animateItems ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
+              }`}
+            >
+              <h1 className="heading-xl mb-6 text-culturin-charcoal">
+                You Have Culture to Share.<br />
+                We'll Help You Spread It.
+              </h1>
+              <p className="text-xl md:text-2xl text-muted-foreground mb-10">
+                From ancestral meals to modern crafts, your journey belongs here.<br className="hidden md:block" />
+                Culturin helps you publish and promote authentic experiences — on your terms.
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap gap-4">
+              <div 
+                className={`transition-all duration-700 ease-out ${
+                  animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+                }`}
+                style={{transitionDelay: '200ms'}}
               >
-                <Upload className="w-5 h-5 mr-2" />
-                Start Hosting
-              </Button>
-              <Button 
-                variant="outline" 
-                className="border-culturin-indigo text-culturin-indigo hover:bg-culturin-indigo/10 py-6 px-8 rounded-xl text-lg"
+                <Button 
+                  className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] hover:scale-[1.02] text-base py-6 px-8 rounded-xl font-medium transition-all duration-500 ease-out active:scale-[0.98] hover:shadow-[0_0_15px_rgba(0,0,0,0.2)]"
+                  onClick={() => navigate('/operator')}
+                >
+                  <Upload className="w-5 h-5 mr-2" />
+                  Start Hosting
+                </Button>
+              </div>
+              
+              <div 
+                className={`transition-all duration-700 ease-out ${
+                  animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+                }`}
+                style={{transitionDelay: '300ms'}}
               >
-                <ExternalLink className="w-5 h-5 mr-2" />
-                See Sample Listings
-              </Button>
+                <Button 
+                  variant="outline" 
+                  className="border-[#2B2B2B] text-[#2B2B2B] hover:bg-[#2B2B2B]/10 py-6 px-8 rounded-xl text-base font-medium transition-all duration-500 ease-out hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <Search className="w-5 h-5 mr-2" />
+                  See Sample Listings
+                </Button>
+              </div>
             </div>
           </div>
         </div>
