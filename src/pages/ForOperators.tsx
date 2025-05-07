@@ -19,57 +19,70 @@ const ForOperators = () => {
     <div className="min-h-screen flex flex-col">
       <Header type="traveler" />
       
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 md:pt-40 md:pb-24 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-culturin-white to-background z-[-1]"></div>
-        {/* Optional visual texture */}
-        <div className="absolute inset-0 opacity-5 bg-[url('https://images.unsplash.com/photo-1572454591674-2739f30a2b2f?q=80&w=1600&auto=format&fit=crop')] bg-repeat z-[-1]"></div>
+      {/* Hero Section - Updated with background image and styling */}
+      <section className="relative min-h-[80vh] flex items-center">
+        {/* Background image with zoom effect */}
+        <div className="absolute inset-0 overflow-hidden z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1605538058334-52290f6d4b3f?q=80&w=1920&auto=format&fit=crop"
+            alt="Cultural cooking demonstration" 
+            className="w-full h-full object-cover transition-transform duration-[10000ms] ease-out scale-[1.01]"
+          />
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/10 z-10"></div>
+          {/* Grain texture overlay */}
+          <div className="absolute inset-0 opacity-15 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-20"></div>
+        </div>
         
-        <div className="container-custom">
-          <div className="max-w-3xl mx-auto">
-            <div className={`transition-all duration-700 ease-out ${
-                animateItems ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
-              }`}
-            >
-              <h1 className="heading-xl mb-6 text-culturin-charcoal">
+        <div className="container-custom relative z-30 pt-32 pb-20">
+          <div className="max-w-3xl">
+            <div className="space-y-6">
+              <h1 className={`font-bold text-3xl md:text-4xl lg:text-5xl text-white tracking-tight leading-tight text-shadow transition-all duration-700 ease-out ${
+                animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}>
                 You Have Culture to Share.<br />
                 We'll Help You Spread It.
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground mb-10">
+              
+              <p className={`text-base md:text-xl text-[#EAEAEA] text-shadow transition-all duration-700 ease-out ${
+                animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
+                style={{transitionDelay: '200ms'}}
+              >
                 From ancestral meals to modern crafts, your journey belongs here.<br className="hidden md:block" />
                 Culturin helps you publish and promote authentic experiences — on your terms.
               </p>
-            </div>
-            
-            <div className="flex flex-wrap gap-4">
-              <div 
-                className={`transition-all duration-700 ease-out ${
-                  animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-                }`}
-                style={{transitionDelay: '200ms'}}
-              >
-                <Button 
-                  className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] hover:scale-[1.02] text-base py-6 px-8 rounded-xl font-medium transition-all duration-500 ease-out active:scale-[0.98] hover:shadow-[0_0_15px_rgba(0,0,0,0.2)]"
-                  onClick={() => navigate('/operator')}
-                >
-                  <Upload className="w-5 h-5 mr-2" />
-                  Start Hosting
-                </Button>
-              </div>
               
-              <div 
-                className={`transition-all duration-700 ease-out ${
-                  animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-                }`}
-                style={{transitionDelay: '300ms'}}
-              >
-                <Button 
-                  variant="outline" 
-                  className="border-[#2B2B2B] text-[#2B2B2B] hover:bg-[#2B2B2B]/10 py-6 px-8 rounded-xl text-base font-medium transition-all duration-500 ease-out hover:scale-[1.02] active:scale-[0.98]"
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <div 
+                  className={`transition-all duration-500 ease-out ${
+                    animateItems ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
+                  }`}
+                  style={{transitionDelay: '300ms'}}
                 >
-                  <Search className="w-5 h-5 mr-2" />
-                  See Sample Listings
-                </Button>
+                  <Button 
+                    className="bg-[#1A1A1A] text-white hover:bg-black hover:scale-[1.02] text-base py-6 px-8 rounded-xl font-medium transition-all duration-500 ease-out active:scale-[0.98] hover:shadow-[0_0_15px_rgba(0,0,0,0.4)] w-full sm:w-auto"
+                    onClick={() => navigate('/operator')}
+                  >
+                    <Upload className="w-5 h-5 mr-2" />
+                    Start Hosting
+                  </Button>
+                </div>
+                
+                <div 
+                  className={`transition-all duration-500 ease-out ${
+                    animateItems ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
+                  }`}
+                  style={{transitionDelay: '400ms'}}
+                >
+                  <Button 
+                    variant="outline" 
+                    className="border-[#B0B0B0] text-white hover:bg-[#F3F3F3] hover:text-[#1A1A1A] py-6 px-8 rounded-xl text-base font-medium transition-all duration-500 ease-out hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto"
+                  >
+                    <Search className="w-5 h-5 mr-2" />
+                    See Sample Listings
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

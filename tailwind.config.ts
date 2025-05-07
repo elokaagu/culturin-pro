@@ -157,9 +157,12 @@ export default {
 			},
 			textShadow: {
 				'sm': '0 1px 2px rgba(0, 0, 0, 0.25)',
-				'DEFAULT': '0 2px 4px rgba(0, 0, 0, 0.25)',
+				'DEFAULT': '0 2px 6px rgba(0, 0, 0, 0.3)',
 				'lg': '0 4px 8px rgba(0, 0, 0, 0.25)',
 			},
+			opacity: {
+				'15': '0.15',
+			}
 		}
 	},
 	plugins: [
