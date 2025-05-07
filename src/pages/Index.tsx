@@ -11,10 +11,15 @@ import JoinCommunity from "@/components/sections/JoinCommunity";
 import Footer from "@/components/sections/Footer";
 
 const Index = () => {
-  const [animateItems, setAnimateItems] = useState<boolean>(false);
-  
+  // Add a smooth scroll effect when the page loads
   useEffect(() => {
-    setAnimateItems(true);
+    // Add a smooth scroll behavior to the entire page
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Cleanup function to remove the style when component unmounts
+    return () => {
+      document.documentElement.style.scrollBehavior = '';
+    };
   }, []);
   
   return (

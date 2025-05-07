@@ -2,13 +2,21 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Check, Globe, Users } from "lucide-react";
+import { useInView } from "react-intersection-observer";
 
 const HowItWorksSection = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
   
+  const { ref: sectionRef, inView } = useInView({
+    threshold: 0.2,
+    triggerOnce: true
+  });
+  
   useEffect(() => {
-    setAnimateItems(true);
-  }, []);
+    if (inView) {
+      setAnimateItems(true);
+    }
+  }, [inView]);
 
   const travelerSteps = [
     {
@@ -29,9 +37,13 @@ const HowItWorksSection = () => {
   ];
 
   return (
-    <section className="py-24 lg:py-30 bg-background">
+    <section ref={sectionRef} className="py-24 lg:py-30 bg-background">
       <div className="container max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16 animate-fade-in" style={{animationDelay: '0.2s'}}>
+        <div 
+          className={`text-center mb-16 transition-all duration-700 ease-out ${
+            animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
           <h2 className="font-playfair text-4xl md:text-5xl mb-4 tracking-tight leading-tight text-culturin-charcoal">
             Culturin makes travel human again
           </h2>
@@ -45,10 +57,10 @@ const HowItWorksSection = () => {
           {travelerSteps.map((step, index) => (
             <div 
               key={index} 
-              className={`bg-white p-8 rounded-2xl shadow-[0px_8px_16px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0px_12px_24px_rgba(0,0,0,0.03)] hover:translate-y-[-4px] relative ${
-                animateItems ? 'animate-fade-in' : 'opacity-0'
+              className={`bg-white p-8 rounded-2xl shadow-[0px_8px_16px_rgba(0,0,0,0.04)] transition-all duration-700 ease-out hover:shadow-[0px_12px_24px_rgba(0,0,0,0.06)] hover:translate-y-[-4px] hover:scale-[1.01] relative ${
+                animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               } ${index === 1 ? 'border-t-2 border-[#D7CFC2]' : ''}`}
-              style={{animationDelay: `${0.3 + index * 0.15}s`}}
+              style={{transitionDelay: `${300 + index * 100}ms`}}
             >
               <div className="absolute top-4 left-8 text-xl font-medium text-gray-300">
                 {index + 1}
@@ -62,9 +74,14 @@ const HowItWorksSection = () => {
           ))}
         </div>
         
-        <div className="flex justify-center mt-16">
+        <div 
+          className={`flex justify-center mt-16 transition-all duration-700 ease-out ${
+            animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+          style={{transitionDelay: '700ms'}}
+        >
           <Button 
-            className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] hover:scale-[1.02] text-base py-6 px-10 rounded-xl font-medium transition-all duration-300"
+            className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] hover:scale-[1.02] text-base py-6 px-10 rounded-xl font-medium transition-all duration-500 ease-out active:scale-[0.98]"
           >
             Join a trip
           </Button>
