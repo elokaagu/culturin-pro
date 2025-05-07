@@ -7,65 +7,65 @@
 
 @layer base {
   :root {
-    --background: 40 30% 98%;    /* Slightly lighter Bone White */
-    --foreground: 0 0% 11%;      /* Charcoal Black */
+    --background: 220 14% 96%;   /* Light background */
+    --foreground: 220 14% 10%;   /* Dark text */
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 11%;
+    --card-foreground: 220 14% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 11%;
+    --popover-foreground: 220 14% 10%;
 
-    --primary: 45 76% 60%;       /* Mustard Gold */
-    --primary-foreground: 246 29% 31%;
+    --primary: 220 14% 10%;      /* Dark gray as primary */
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 14 53% 50%;     /* Terra Clay */
-    --secondary-foreground: 40 30% 98%;
+    --secondary: 220 5% 53%;     /* Medium gray */
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 40 20% 96%;
-    --muted-foreground: 246 5% 46%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 5% 40%;
 
-    --accent: 246 29% 31%;       /* Indigo Ink */
-    --accent-foreground: 40 30% 98%;
+    --accent: 230 20% 14%;       /* Dark purple-ish accent */
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 40 30% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 40 10% 92%;        /* Lighter border color */
-    --input: 40 10% 92%;
-    --ring: 45 76% 60%;
+    --border: 220 10% 92%;       /* Lighter border color */
+    --input: 220 10% 92%;
+    --ring: 220 14% 10%;
 
     --radius: 1rem;
   }
   
   .dark {
-    --background: 0 0% 10%;      /* Dark mode background */
-    --foreground: 40 30% 98%;    /* Dark mode text color */
+    --background: 220 14% 10%;   /* Dark mode background */
+    --foreground: 220 14% 96%;   /* Dark mode text color */
 
-    --card: 0 0% 12%;
-    --card-foreground: 40 30% 98%;
+    --card: 220 14% 12%;
+    --card-foreground: 220 14% 96%;
 
-    --popover: 0 0% 12%;
-    --popover-foreground: 40 30% 98%;
+    --popover: 220 14% 12%;
+    --popover-foreground: 220 14% 96%;
 
-    --primary: 45 76% 60%;       /* Mustard Gold stays the same */
-    --primary-foreground: 246 29% 95%;
+    --primary: 220 14% 96%;      /* Light gray as primary in dark mode */
+    --primary-foreground: 220 14% 10%;
 
-    --secondary: 14 53% 45%;     /* Slightly darker Terra Clay for dark mode */
-    --secondary-foreground: 40 30% 98%;
+    --secondary: 220 5% 50%;     /* Medium gray for dark mode */
+    --secondary-foreground: 220 14% 96%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 40 5% 70%;
+    --muted: 220 14% 15%;
+    --muted-foreground: 220 5% 70%;
 
-    --accent: 246 29% 45%;       /* Slightly lighter Indigo for dark mode */
-    --accent-foreground: 40 30% 98%;
+    --accent: 230 20% 25%;       /* Slightly lighter accent for dark mode */
+    --accent-foreground: 220 14% 96%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 40 30% 98%;
+    --destructive-foreground: 220 14% 96%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 45 76% 60%;
+    --border: 220 14% 20%;
+    --input: 220 14% 20%;
+    --ring: 220 14% 96%;
   }
   
   * {
@@ -112,13 +112,13 @@
     @apply text-2xl md:text-3xl font-sans font-medium leading-tight tracking-tight;
   }
   
-  /* Button styles */
+  /* Button styles - updated with new colors */
   .btn-primary {
-    @apply bg-culturin-mustard text-culturin-indigo hover:bg-culturin-mustard/90 transition-colors shadow-soft hover:shadow-card rounded-xl;
+    @apply bg-culturin-secondary text-culturin-accent hover:bg-culturin-secondary/90 transition-colors shadow-soft hover:shadow-card rounded-xl;
   }
   
   .btn-secondary {
-    @apply bg-culturin-clay text-white hover:bg-culturin-clay/90 transition-colors shadow-soft hover:shadow-card rounded-xl;
+    @apply bg-culturin-primary text-white hover:bg-culturin-primary/90 transition-colors shadow-soft hover:shadow-card rounded-xl;
   }
   
   .btn-outline {
@@ -140,7 +140,7 @@
   }
   
   .section-divider {
-    @apply w-20 h-0.5 bg-culturin-mustard mx-auto my-6;
+    @apply w-20 h-0.5 bg-culturin-secondary mx-auto my-6;
   }
   
   .image-overlay {

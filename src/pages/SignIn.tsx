@@ -46,8 +46,8 @@ const SignIn = () => {
       <div className="w-full max-w-md space-y-8 animate-fade-in">
         <div className="flex flex-col items-center text-center">
           <Link to="/" className="flex items-center mb-8 group">
-            <Globe className="w-8 h-8 mr-2 text-culturin-indigo" />
-            <span className="font-sans font-bold text-2xl text-culturin-indigo">
+            <Globe className="w-8 h-8 mr-2 text-culturin-accent" />
+            <span className="font-sans font-bold text-2xl text-culturin-accent">
               Culturin
             </span>
           </Link>
@@ -78,7 +78,7 @@ const SignIn = () => {
                 <Label htmlFor="password">Password</Label>
                 <Link 
                   to="/forgot-password" 
-                  className="text-sm text-culturin-indigo hover:underline"
+                  className="text-sm text-culturin-accent hover:underline"
                 >
                   Forgot password?
                 </Link>
@@ -96,7 +96,7 @@ const SignIn = () => {
             
             <Button 
               type="submit" 
-              className="w-full h-12 bg-culturin-clay hover:bg-culturin-clay/90 text-white transition-colors"
+              className="w-full h-12 bg-culturin-primary hover:bg-culturin-primary/90 text-white transition-colors"
               disabled={isLoading}
             >
               {isLoading ? "Signing in..." : "Sign In"}
@@ -105,7 +105,7 @@ const SignIn = () => {
             <div className="flex justify-center text-sm">
               <p className="text-muted-foreground">
                 Don't have an account?{" "}
-                <Link to="/sign-up" className="text-culturin-indigo hover:underline font-medium">
+                <Link to="/sign-up" className="text-culturin-accent hover:underline font-medium">
                   Create one
                 </Link>
               </p>

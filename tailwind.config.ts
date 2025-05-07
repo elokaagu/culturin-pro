@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -54,13 +53,13 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				culturin: {
-					clay: '#C55B3C',       // Terra Clay
-					mustard: '#E8B84D',    // Mustard Gold
-					indigo: '#3A3764',     // Indigo Ink
-					white: '#F9F7F4',      // Bone White
-					charcoal: '#1C1C1C',   // Charcoal Black
-					coral: '#F26E64',      // Soft Coral
-					sage: '#A7C0A5',       // Sage Green
+					primary: '#333333',   // Dark Gray (replacing clay/indigo)
+					secondary: '#8A898C', // Medium Gray (replacing mustard)
+					accent: '#1A1F2C',    // Dark Purple (replacing indigo)
+					white: '#F6F6F7',     // Light Gray (replacing bone white)
+					charcoal: '#222222',  // Darker Gray (replacing charcoal black)
+					highlight: '#8E9196', // Neutral Gray (replacing coral)
+					subtle: '#F1F1F1',    // Light Gray (replacing sage)
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
@@ -153,4 +152,3 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-
