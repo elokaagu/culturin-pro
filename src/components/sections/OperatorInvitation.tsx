@@ -2,9 +2,11 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 const OperatorInvitation = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
+  const navigate = useNavigate();
   
   useEffect(() => {
     setAnimateItems(true);
@@ -21,7 +23,10 @@ const OperatorInvitation = () => {
                 <p className="text-xl mb-8 leading-relaxed text-muted-foreground">
                   Bring your experience to the world. We give you the tools to publish, promote, and grow — with full creative freedom.
                 </p>
-                <Button className="btn-secondary text-lg py-6 px-8 rounded-xl">
+                <Button 
+                  className="btn-secondary text-lg py-6 px-8 rounded-xl"
+                  onClick={() => navigate('/for-operators')}
+                >
                   Start Publishing
                 </Button>
               </CardContent>
