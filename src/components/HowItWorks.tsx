@@ -55,7 +55,7 @@ const HowItWorks = () => {
               <div className="h-20 w-20 rounded-full bg-culturin-white flex items-center justify-center mb-6 border-2 border-culturin-mustard/30">
                 {step.icon}
               </div>
-              <h3 className="font-playfair text-xl font-medium mb-3 text-culturin-indigo">{step.title}</h3>
+              <h3 className="text-xl font-medium mb-3 text-culturin-indigo">{step.title}</h3>
               <p className="text-gray-600">{step.description}</p>
               
               {index < steps.length - 1 && (

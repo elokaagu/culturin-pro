@@ -33,7 +33,7 @@ export const TripCard = ({
           className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute bottom-0 left-0 right-0 image-overlay p-4">
-          <h3 className="text-white font-playfair font-semibold text-xl mb-1">{name}</h3>
+          <h3 className="text-white font-sans font-semibold text-xl mb-1">{name}</h3>
           <p className="text-white/90 text-sm flex items-center">
             <span className="inline-block w-2 h-2 rounded-full bg-culturin-mustard mr-2"></span>
             {location}

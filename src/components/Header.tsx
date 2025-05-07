@@ -36,7 +36,7 @@ export const Header = ({ type }: HeaderProps) => {
               <Globe className={`w-8 h-8 mr-2 transition-colors ${
                 isScrolled ? 'text-culturin-indigo' : 'text-white group-hover:text-culturin-mustard'
               }`} />
-              <span className={`font-playfair font-bold text-2xl transition-colors ${
+              <span className={`font-sans font-bold text-2xl transition-colors ${
                 isScrolled ? 'text-culturin-indigo' : 'text-white group-hover:text-culturin-mustard'
               }`}>Culturin</span>
             </Link>

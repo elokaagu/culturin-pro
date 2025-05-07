@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -123,7 +122,6 @@ export default {
 				'fade-in-right': 'fade-in-right 0.6s ease-out forwards'
 			},
 			fontFamily: {
-				'playfair': ['Playfair Display', 'serif'],
 				'sans': ['Inter', 'system-ui', 'sans-serif']
 			},
 			boxShadow: {
