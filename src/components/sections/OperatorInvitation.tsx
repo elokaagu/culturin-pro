@@ -22,8 +22,14 @@ const OperatorInvitation = () => {
   }, [inView]);
   
   return (
-    <section ref={sectionRef} className="py-24 lg:py-30 bg-[#F5F4F2]">
-      <div className="container-custom">
+    <section ref={sectionRef} className="py-24 lg:py-30 relative overflow-hidden">
+      {/* Background image with subtle pattern */}
+      <div className="absolute inset-0 z-0">
+        <div className="w-full h-full bg-[#F5F4F2]"></div>
+        <div className="absolute inset-0 opacity-15 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-10"></div>
+      </div>
+      
+      <div className="container-custom relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div 
             className={`transition-all duration-700 ease-out ${

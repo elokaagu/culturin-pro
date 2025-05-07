@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
@@ -35,14 +34,13 @@ const ForOperators = () => {
       <section className="relative min-h-[80vh] flex items-center">
         {/* Background image with optimized loading */}
         <div className="absolute inset-0 overflow-hidden z-0 bg-gray-900">
-          <div className={`w-full h-full transition-opacity duration-1000 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}>
-            <Image 
-              src="https://images.unsplash.com/photo-1605538058334-52290f6d4b3f?q=80&w=1920&auto=format&fit=crop"
-              alt="Cultural cooking demonstration" 
-              className="w-full h-full object-cover"
-              onLoad={() => setImageLoaded(true)}
-            />
-          </div>
+          {/* Hero background image */}
+          <Image 
+            src="https://images.unsplash.com/photo-1605538058334-52290f6d4b3f?q=80&w=1920&auto=format&fit=crop"
+            alt="Cultural cooking demonstration" 
+            className={`w-full h-full object-cover transition-opacity duration-1000 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={() => setImageLoaded(true)}
+          />
           
           {/* Enhanced gradient overlay for better text contrast */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/40 z-10"></div>
@@ -187,11 +185,21 @@ const ForOperators = () => {
         </div>
       </section>
 
-      {/* Testimonial Section - Enhanced for better contrast */}
-      <section className="py-20 bg-culturin-indigo text-white">
-        <div className="container-custom">
+      {/* Testimonial Section - Using our new component */}
+      <section className="py-20 bg-culturin-indigo text-white relative overflow-hidden">
+        {/* Background image with overlay */}
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="https://images.unsplash.com/photo-1659025435463-a039676b45a0?q=80&w=1920&auto=format&fit=crop"
+            alt="Cultural pattern background" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-culturin-indigo to-culturin-indigo/90 mix-blend-multiply"></div>
+        </div>
+        
+        <div className="container-custom relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <Globe className="w-16 h-16 mx-auto mb-8 opacity-20" />
+            <Globe className="w-16 h-16 mx-auto mb-8 opacity-30" />
             <blockquote className="text-2xl md:text-3xl font-medium leading-relaxed mb-8 animate-fade-in text-shadow">
               "This platform helped me connect with travelers who truly cared about learning our traditions, not just taking photos. It's changed how I share my culture with the world."
             </blockquote>

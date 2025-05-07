@@ -2,30 +2,50 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { QuoteIcon } from "lucide-react";
+import { useInView } from "react-intersection-observer";
+import Image from "@/components/ui/image";
 
 const TestimonialSection = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
+  const { ref, inView } = useInView({
+    threshold: 0.2,
+    triggerOnce: true
+  });
   
   useEffect(() => {
-    setAnimateItems(true);
-  }, []);
+    if (inView) {
+      setAnimateItems(true);
+    }
+  }, [inView]);
 
   return (
-    <section className="py-24 lg:py-30 bg-background">
-      <div className="container-custom max-w-5xl">
+    <section ref={ref} className="py-24 lg:py-30 relative overflow-hidden">
+      {/* Background image with overlay */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d?q=80&w=1920&auto=format&fit=crop"
+          alt="Background texture"
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-culturin-indigo to-culturin-indigo/90 mix-blend-multiply"></div>
+      </div>
+
+      <div className="container-custom max-w-5xl relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
           <div className="md:col-span-2">
-            <Card className="border-0 shadow-none bg-transparent">
-              <CardContent className="p-0">
-                <div className="animate-fade-in" style={{animationDelay: '0.2s'}}>
+            <Card className="border-0 shadow-none bg-white/10 backdrop-blur-sm">
+              <CardContent className="p-6 md:p-8">
+                <div className={`transition-all duration-700 ease-out ${
+                  animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`}>
                   <div className="flex items-start mb-6">
-                    <QuoteIcon className="w-12 h-12 text-culturin-clay flex-shrink-0 mr-4 opacity-80" />
+                    <QuoteIcon className="w-12 h-12 text-white flex-shrink-0 mr-4 opacity-80" />
                   </div>
-                  <div className="text-3xl md:text-4xl lg:text-5xl text-culturin-indigo font-serif mb-8 leading-tight tracking-tight">
+                  <div className="text-3xl md:text-4xl lg:text-5xl text-white font-serif mb-8 leading-tight tracking-tight text-shadow">
                     Culturin isn't just about travel — it's about meaning. I've never felt this seen on a trip before.
                   </div>
                   <div className="flex items-center">
-                    <div className="w-12 h-12 rounded-full bg-culturin-clay/10 overflow-hidden mr-4">
+                    <div className="w-12 h-12 rounded-full bg-white/20 overflow-hidden mr-4 shadow-md">
                       <img 
                         src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=256" 
                         alt="Sofia" 
@@ -33,8 +53,8 @@ const TestimonialSection = () => {
                       />
                     </div>
                     <div>
-                      <p className="text-xl font-medium">Sofia</p>
-                      <p className="text-muted-foreground">Solo Traveler from Barcelona</p>
+                      <p className="text-xl font-medium text-white">Sofia</p>
+                      <p className="text-white/80">Solo Traveler from Barcelona</p>
                     </div>
                   </div>
                 </div>
@@ -42,12 +62,14 @@ const TestimonialSection = () => {
             </Card>
           </div>
           
-          <div className="hidden md:block">
-            <div className="photo-card shadow-card h-80 animate-fade-in" style={{animationDelay: '0.4s'}}>
+          <div className={`hidden md:block transition-all duration-700 ease-out ${
+            animateItems ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
+          }`}>
+            <div className="photo-card shadow-card h-80">
               <img 
                 src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?q=80&w=830&auto=format&fit=crop" 
                 alt="Traveler exploring Barcelona streets" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-xl"
               />
             </div>
           </div>
