@@ -41,7 +41,7 @@ const OperatorInvitation = () => {
                   Culturin gives you the tools to publish, connect, and grow — on your terms.
                 </p>
                 <Button 
-                  className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] hover:scale-[1.02] text-base py-6 px-10 rounded-xl font-medium transition-all duration-500 ease-out active:scale-[0.98]"
+                  className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] hover:scale-[1.02] text-base py-6 px-10 rounded-xl font-medium transition-all duration-500 ease-out active:scale-[0.98] hover:shadow-[0_0_15px_rgba(0,0,0,0.2)]"
                   onClick={() => navigate('/for-operators')}
                 >
                   Start Hosting
@@ -54,12 +54,12 @@ const OperatorInvitation = () => {
             className={`relative transition-all duration-700 ease-out ${
               animateItems ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
             }`}
-            style={{transitionDelay: '400ms'}}
+            style={{transitionDelay: '350ms'}}
           >
             <div className="photo-card shadow-card h-[550px]">
               <Image 
-                src="https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?q=80&w=1374&auto=format&fit=crop" 
-                alt="Cultural host sharing meaningful traditions with travelers" 
+                src="https://images.unsplash.com/photo-1488972685288-c3fd157d7c7a?q=80&w=1600&auto=format&fit=crop" 
+                alt="Cultural host showing traditional architecture to travelers" 
                 className="w-full h-full object-cover rounded-xl transition-transform duration-700 ease-out hover:scale-[1.03]"
               />
             </div>
