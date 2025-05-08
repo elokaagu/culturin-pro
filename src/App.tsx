@@ -23,6 +23,7 @@ import ProAnalyticsPage from "./pages/ProAnalyticsPage";
 import ProMarketingPage from "./pages/ProMarketingPage";
 import ProWebsitePage from "./pages/ProWebsitePage";
 import ProTeamPage from "./pages/ProTeamPage";
+import ProSettingsPage from "./pages/ProSettingsPage";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -99,6 +100,7 @@ const App = () => (
               <Route path="/pro-dashboard/marketing" element={<ProMarketingPage />} />
               <Route path="/pro-dashboard/website" element={<ProWebsitePage />} />
               <Route path="/pro-dashboard/team" element={<ProTeamPage />} />
+              <Route path="/pro-dashboard/settings" element={<ProSettingsPage />} />
               <Route path="*" element={<PageWithFooter Component={NotFound} />} />
             </Routes>
           </div>
