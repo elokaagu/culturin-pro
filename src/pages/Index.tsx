@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/sections/Hero";
 import HowItWorksSection from "@/components/sections/HowItWorksSection";
@@ -8,7 +8,6 @@ import TestimonialSection from "@/components/sections/TestimonialSection";
 import OperatorInvitation from "@/components/sections/OperatorInvitation";
 import TravelWithMeSection from "@/components/sections/TravelWithMeSection";
 import JoinCommunity from "@/components/sections/JoinCommunity";
-import Footer from "@/components/sections/Footer";
 
 const Index = () => {
   // Add a smooth scroll effect when the page loads
@@ -32,7 +31,7 @@ const Index = () => {
       <OperatorInvitation />
       <TravelWithMeSection />
       <JoinCommunity />
-      <Footer />
+      {/* Footer is now rendered in App.tsx for all pages */}
     </div>
   );
 };

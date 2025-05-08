@@ -256,40 +256,40 @@ const DiscoverTrips = () => {
         </div>
         
         <section className="container mx-auto px-6 mb-16 mt-12">
-          {/* Filters */}
+          {/* Filters - Updated with dark backgrounds and better contrast */}
           <div className="flex flex-wrap gap-3 mb-10">
             <Button 
               variant={selectedFilter === 'all' ? "default" : "outline"} 
               onClick={() => setSelectedFilter('all')}
-              className={selectedFilter === 'all' ? "bg-culturin-indigo" : ""}
+              className={selectedFilter === 'all' ? "bg-[#1E1E1E] text-white" : "bg-gray-100 text-[#2B2B2B] hover:bg-gray-200"}
             >
               All Experiences
             </Button>
             <Button 
               variant={selectedFilter === 'food' ? "default" : "outline"} 
               onClick={() => setSelectedFilter('food')}
-              className={selectedFilter === 'food' ? "bg-culturin-mustard text-black" : ""}
+              className={selectedFilter === 'food' ? "bg-[#1E1E1E] text-white" : "bg-gray-100 text-[#2B2B2B] hover:bg-gray-200"}
             >
               Food & Cuisine
             </Button>
             <Button 
               variant={selectedFilter === 'craft' ? "default" : "outline"} 
               onClick={() => setSelectedFilter('craft')}
-              className={selectedFilter === 'craft' ? "bg-culturin-terracotta" : ""}
+              className={selectedFilter === 'craft' ? "bg-[#1E1E1E] text-white" : "bg-gray-100 text-[#2B2B2B] hover:bg-gray-200"}
             >
               Arts & Crafts
             </Button>
             <Button 
               variant={selectedFilter === 'photography' ? "default" : "outline"} 
               onClick={() => setSelectedFilter('photography')}
-              className={selectedFilter === 'photography' ? "bg-culturin-charcoal" : ""}
+              className={selectedFilter === 'photography' ? "bg-[#1E1E1E] text-white" : "bg-gray-100 text-[#2B2B2B] hover:bg-gray-200"}
             >
               Photography
             </Button>
             <Button 
               variant={selectedFilter === 'wellness' ? "default" : "outline"} 
               onClick={() => setSelectedFilter('wellness')}
-              className={selectedFilter === 'wellness' ? "bg-culturin-clay" : ""}
+              className={selectedFilter === 'wellness' ? "bg-[#1E1E1E] text-white" : "bg-gray-100 text-[#2B2B2B] hover:bg-gray-200"}
             >
               Wellness
             </Button>
