@@ -19,7 +19,11 @@ const TestimonialSection = () => {
   }, [inView]);
 
   return (
-    <section ref={ref} className="py-24 lg:py-30 relative overflow-hidden bg-culturin-indigo">
+    <section ref={ref} className="py-24 lg:py-30 relative overflow-hidden bg-gradient-to-r from-[#1A1F2C] to-[#2A2F3C]">
+      <div className="absolute inset-0 opacity-15">
+        <div className="bg-[url('https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?q=80&w=2070')] bg-cover bg-center h-full w-full opacity-10"></div>
+      </div>
+      
       <div className="container-custom max-w-5xl relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
           <div className="md:col-span-2">
@@ -35,14 +39,14 @@ const TestimonialSection = () => {
                     Culturin isn't just about travel — it's about meaning. I've never felt this seen on a trip before.
                   </div>
                   <div className="flex items-center">
-                    <div className="w-12 h-12 rounded-full bg-white/20 overflow-hidden mr-4 shadow-md">
+                    <div className="w-12 h-12 rounded-full bg-[#403E43] overflow-hidden mr-4 shadow-md">
                       <img 
                         src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=256" 
                         alt="Sofia" 
                         className="w-full h-full object-cover" 
                       />
                     </div>
-                    <div>
+                    <div className="bg-[#403E43]/80 backdrop-blur-sm px-4 py-2 rounded-lg">
                       <p className="text-xl font-medium text-white">Sofia</p>
                       <p className="text-white/80">Solo Traveler from Barcelona</p>
                     </div>
