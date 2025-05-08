@@ -18,8 +18,8 @@ const ProCta: React.FC<ProCtaProps> = ({ selectedTier }) => {
       description: `Starting your upgrade to Culturin Pro - ${selectedTier.charAt(0).toUpperCase() + selectedTier.slice(1)} plan.`,
       variant: "default",
     });
-    // Navigate to the dedicated Culturin Pro page
-    navigate('/culturin-pro');
+    // Navigate to the dedicated Pro Dashboard
+    navigate('/pro-dashboard');
   };
 
   return (
