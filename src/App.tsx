@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +21,7 @@ import ProBookingPage from "./pages/ProBookingPage";
 import ProCRMPage from "./pages/ProCRMPage";
 import ProAnalyticsPage from "./pages/ProAnalyticsPage";
 import ProMarketingPage from "./pages/ProMarketingPage";
+import ProWebsitePage from "./pages/ProWebsitePage";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -94,6 +96,7 @@ const App = () => (
               <Route path="/pro-dashboard/crm" element={<ProCRMPage />} />
               <Route path="/pro-dashboard/analytics" element={<ProAnalyticsPage />} />
               <Route path="/pro-dashboard/marketing" element={<ProMarketingPage />} />
+              <Route path="/pro-dashboard/website" element={<ProWebsitePage />} />
               <Route path="*" element={<PageWithFooter Component={NotFound} />} />
             </Routes>
           </div>
