@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
@@ -27,12 +26,12 @@ import BookingsTab from "@/components/BookingsTab";
 import OperatorExperienceCard from "@/components/OperatorExperienceCard";
 import CulturinPro from "@/components/CulturinPro";
 
-// Mock experiences data
+// Mock experiences data with correct type for status
 const mockExperiences = [
   {
     id: "1",
     title: "Traditional Pottery Workshop",
-    status: "live",
+    status: "live" as "live", // Type assertion to ensure it's the correct literal type
     bookingPercentage: 75,
     price: 45,
     location: "Oaxaca, Mexico",
@@ -44,7 +43,7 @@ const mockExperiences = [
   {
     id: "2",
     title: "Desert Stargazing Experience",
-    status: "live",
+    status: "live" as "live",
     bookingPercentage: 60,
     price: 85,
     location: "Marrakech, Morocco",
@@ -56,7 +55,7 @@ const mockExperiences = [
   {
     id: "3",
     title: "Farm to Table Cooking Class",
-    status: "draft",
+    status: "draft" as "draft",
     bookingPercentage: 0,
     price: 65,
     location: "Bali, Indonesia",
@@ -70,7 +69,7 @@ const mockExperiences = [
 
 const OperatorDashboard = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
-  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "live" | "draft">("all");
   const { toast } = useToast();
   const location = useLocation();
   
@@ -95,7 +94,7 @@ const OperatorDashboard = () => {
     });
   };
   
-  const handleFilterChange = (status: string) => {
+  const handleFilterChange = (status: "all" | "live" | "draft") => {
     setFilterStatus(status);
     toast({
       title: `Filter: ${status.charAt(0).toUpperCase() + status.slice(1)}`,
