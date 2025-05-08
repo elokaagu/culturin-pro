@@ -54,7 +54,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
       <div className={cn(
         "relative w-full h-full overflow-hidden",
         aspectRatio && !fill && aspectRatioClass[aspectRatio],
-        fill && "h-full"
+        fill && "h-full w-full"
       )}>
         {!isLoaded && inView && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
@@ -64,7 +64,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
           className={cn(
             "w-full h-full transition-opacity duration-700",
             cover && "object-cover",
-            fill && "absolute inset-0",
+            fill && "absolute inset-0 object-cover w-full h-full",
             isLoaded ? "opacity-100" : "opacity-0",
             className
           )}

@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Footer from "./components/sections/Footer";
 import Index from "./pages/Index";
 import OperatorDashboard from "./pages/OperatorDashboard";
@@ -18,6 +18,21 @@ import Privacy from "./pages/Privacy";
 
 const queryClient = new QueryClient();
 
+// Page wrapper component to control footer display
+const PageWithFooter = ({ Component }) => {
+  const location = useLocation();
+  
+  // ForOperators already includes its own Footer
+  const hideFooter = location.pathname === '/for-operators';
+  
+  return (
+    <>
+      <Component />
+      {!hideFooter && <Footer />}
+    </>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -27,19 +42,18 @@ const App = () => (
         <div className="flex flex-col min-h-screen">
           <div className="flex-grow">
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/operator" element={<OperatorDashboard />} />
+              <Route path="/" element={<PageWithFooter Component={Index} />} />
+              <Route path="/operator" element={<PageWithFooter Component={OperatorDashboard} />} />
               <Route path="/for-operators" element={<ForOperators />} />
-              <Route path="/sign-in" element={<SignIn />} />
-              <Route path="/about-us" element={<AboutUs />} />
-              <Route path="/discover-trips" element={<DiscoverTrips />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/faqs" element={<FAQs />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="/sign-in" element={<PageWithFooter Component={SignIn} />} />
+              <Route path="/about-us" element={<PageWithFooter Component={AboutUs} />} />
+              <Route path="/discover-trips" element={<PageWithFooter Component={DiscoverTrips} />} />
+              <Route path="/contact" element={<PageWithFooter Component={Contact} />} />
+              <Route path="/faqs" element={<PageWithFooter Component={FAQs} />} />
+              <Route path="/privacy" element={<PageWithFooter Component={Privacy} />} />
+              <Route path="*" element={<PageWithFooter Component={NotFound} />} />
             </Routes>
           </div>
-          <Footer />
         </div>
       </BrowserRouter>
     </TooltipProvider>

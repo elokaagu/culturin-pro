@@ -4,8 +4,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/sections/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Globe, Upload, Users, CalendarCheck, ExternalLink, Compass } from "lucide-react";
+import { Globe, Upload, Users, CalendarCheck, Compass } from "lucide-react";
 import HostShowcaseCarousel from "@/components/sections/HostShowcaseCarousel";
+import TestimonialSection from "@/components/sections/TestimonialSection";
 import Image from "@/components/ui/image";
 
 const ForOperators = () => {
@@ -21,7 +22,7 @@ const ForOperators = () => {
     setAnimateItems(true);
     
     // Preload hero image
-    const img = new window.Image();
+    const img = new Image();
     img.src = "/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png";
     img.onload = () => setImageLoaded(true);
   }, [location.pathname]);
@@ -30,16 +31,15 @@ const ForOperators = () => {
     <div className="min-h-screen flex flex-col">
       <Header type="traveler" />
       
-      {/* Hero Section with enhanced image loading and contrast */}
+      {/* Hero Section */}
       <section className="relative min-h-[80vh] flex items-center">
-        {/* Background image with optimized loading */}
+        {/* Hero background image */}
         <div className="absolute inset-0 overflow-hidden z-0 bg-gray-900">
-          {/* Hero background image - UPDATED TO NEW IMAGE */}
           <Image 
-            src="/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png"
-            alt="Travelers looking at a map or guide" 
+            src="/lovable-uploads/1b4ba777-0a40-4904-98a9-11b727de21a6.png" 
+            alt="Cultural hosts sharing traditional experiences" 
             fill={true}
-            className={`w-full h-full object-cover transition-opacity duration-1000 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            className={`w-full h-full transition-opacity duration-1000 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setImageLoaded(true)}
           />
           
@@ -93,6 +93,7 @@ const ForOperators = () => {
                 >
                   <Button 
                     className="bg-white text-[#1A1A1A] hover:bg-[#F0F0F0] hover:text-black py-6 px-8 rounded-xl text-base font-medium transition-all duration-500 ease-out hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] w-full sm:w-auto border border-[#E0E0E0]"
+                    onClick={() => navigate('/discover-trips')}
                   >
                     <Compass className="w-5 h-5 mr-2 text-[#333333]" />
                     Explore Experiences
@@ -104,7 +105,7 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Value Props Section - Improved contrast and animations */}
+      {/* Value Props Section */}
       <section className="py-20 bg-white">
         <div className="container-custom">
           <h2 className="heading-lg text-center mb-16 animate-fade-in">How Culturin works for cultural hosts</h2>
@@ -152,7 +153,7 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Cultural Delights Section with uploaded image - FIXED ASPECT RATIO */}
+      {/* Cultural Delights Section */}
       <section className="py-16 bg-[#F8F5F2]">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -174,9 +175,9 @@ const ForOperators = () => {
             <div className="order-1 lg:order-2">
               <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
-                  src="/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png"
-                  alt="Traditional mooncake and tea on an orange background" 
-                  fill={true}
+                  src="/lovable-uploads/e30f800c-e41d-43ef-a759-96b3c4554c5e.png"
+                  alt="Traditional food experience" 
+                  aspectRatio="wide"
                   className="w-full h-full"
                 />
               </div>
@@ -185,46 +186,13 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Testimonial Section with Background Image - IMPROVED CONTRAST */}
-      <section className="py-20 bg-culturin-indigo text-white relative overflow-hidden">
-        {/* Background image with enhanced overlay */}
-        <div className="absolute inset-0 z-0">
-          <Image 
-            src="/lovable-uploads/57645fce-47c3-43f5-82f6-080cd2577e06.png"
-            alt="Cultural pattern background" 
-            fill={true}
-            className="w-full h-full object-cover opacity-30"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 to-black/80 mix-blend-multiply"></div>
-        </div>
-        
-        <div className="container-custom relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <Globe className="w-16 h-16 mx-auto mb-8 opacity-50 text-white" />
-            <blockquote className="text-2xl md:text-3xl font-medium leading-relaxed mb-8 animate-fade-in text-shadow-lg">
-              "This platform helped me connect with travelers who truly cared about learning our traditions, not just taking photos. It's changed how I share my culture with the world."
-            </blockquote>
-            <div className="flex items-center justify-center animate-fade-in bg-black/30 inline-flex rounded-full px-4 py-2" style={{animationDelay: '0.2s'}}>
-              <div className="w-12 h-12 rounded-full overflow-hidden mr-4 shadow-md border-2 border-white/30">
-                <img 
-                  src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop" 
-                  alt="Host portrait" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="text-left">
-                <p className="font-medium text-white">Maria Gonzalez</p>
-                <p className="text-sm text-white/90">Culinary Guide, Mexico City</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Testimonial Section */}
+      <TestimonialSection />
       
       {/* HostShowcaseCarousel Component */}
       <HostShowcaseCarousel />
       
-      {/* NEW Local Experiences Section with uploaded image - FIXED ASPECT RATIO */}
+      {/* Local Experiences Section */}
       <section className="py-16 bg-white">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -233,7 +201,7 @@ const ForOperators = () => {
                 <Image 
                   src="/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png"
                   alt="Traditional cafe storefront with bicycle and people sitting outside" 
-                  fill={true}
+                  aspectRatio="wide"
                   className="w-full h-full"
                 />
               </div>
@@ -257,7 +225,7 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Tea Ceremony Section - FIXED ASPECT RATIO */}
+      {/* Tea Ceremony Section */}
       <section className="py-16 bg-[#F5F4F2]">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -281,7 +249,7 @@ const ForOperators = () => {
                 <Image 
                   src="/lovable-uploads/2e9a9e9e-af76-4913-8148-9fce248d55c9.png"
                   alt="Traditional tea ceremony" 
-                  fill={true}
+                  aspectRatio="wide"
                   className="w-full h-full"
                 />
               </div>
@@ -290,16 +258,16 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Rural Traditions Section - FIXED ASPECT RATIO */}
+      {/* Rural Traditions Section */}
       <section className="py-16 bg-white">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="order-1">
               <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
-                  src="https://images.unsplash.com/photo-1472396961693-142e6e269027?q=80&w=1100&auto=format&fit=crop"
-                  alt="Rural landscape with traditional architecture" 
-                  fill={true}
+                  src="/lovable-uploads/8be44817-c794-41ca-a731-2e013805f703.png"
+                  alt="Rural landscape with traditional activities" 
+                  aspectRatio="wide"
                   className="w-full h-full"
                 />
               </div>
