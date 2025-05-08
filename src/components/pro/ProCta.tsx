@@ -3,18 +3,23 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { useNavigate } from 'react-router-dom';
 
 interface ProCtaProps {
   selectedTier: string;
 }
 
 const ProCta: React.FC<ProCtaProps> = ({ selectedTier }) => {
+  const navigate = useNavigate();
+  
   const handleUpgrade = () => {
     toast({
       title: "Upgrade initiated",
       description: `Starting your upgrade to Culturin Pro - ${selectedTier.charAt(0).toUpperCase() + selectedTier.slice(1)} plan.`,
       variant: "default",
     });
+    // Navigate to the dedicated Culturin Pro page
+    navigate('/culturin-pro');
   };
 
   return (

@@ -15,6 +15,7 @@ import DiscoverTrips from "./pages/DiscoverTrips";
 import Contact from "./pages/Contact";
 import FAQs from "./pages/FAQs";
 import Privacy from "./pages/Privacy";
+import CulturinProPage from "./pages/CulturinProPage";
 
 const queryClient = new QueryClient();
 
@@ -22,8 +23,8 @@ const queryClient = new QueryClient();
 const PageWithFooter = ({ Component }) => {
   const location = useLocation();
   
-  // ForOperators already includes its own Footer
-  const hideFooter = location.pathname === '/for-operators';
+  // ForOperators and CulturinProPage already include their own Footer or don't need one
+  const hideFooter = location.pathname === '/for-operators' || location.pathname === '/culturin-pro';
   
   return (
     <>
@@ -51,6 +52,7 @@ const App = () => (
               <Route path="/contact" element={<PageWithFooter Component={Contact} />} />
               <Route path="/faqs" element={<PageWithFooter Component={FAQs} />} />
               <Route path="/privacy" element={<PageWithFooter Component={Privacy} />} />
+              <Route path="/culturin-pro" element={<PageWithFooter Component={CulturinProPage} />} />
               <Route path="*" element={<PageWithFooter Component={NotFound} />} />
             </Routes>
           </div>
