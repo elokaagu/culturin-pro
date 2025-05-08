@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
@@ -24,7 +23,7 @@ const ForOperators = () => {
     
     // Preload hero image
     const img = document.createElement('img');
-    img.src = "/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png";
+    img.src = "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1920&auto=format&fit=crop";
     img.onload = () => setImageLoaded(true);
   }, [location.pathname]);
 
@@ -37,8 +36,8 @@ const ForOperators = () => {
         {/* Hero background image */}
         <div className="absolute inset-0 overflow-hidden z-0 bg-gray-900">
           <Image 
-            src="/lovable-uploads/1b4ba777-0a40-4904-98a9-11b727de21a6.png" 
-            alt="Cultural hosts sharing traditional experiences" 
+            src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1920&auto=format&fit=crop" 
+            alt="Landscape photography of mountain with sun rays" 
             fill={true}
             className={`w-full h-full transition-opacity duration-1000 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setImageLoaded(true)}
@@ -176,8 +175,8 @@ const ForOperators = () => {
             <div className="order-1 lg:order-2">
               <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
-                  src="/lovable-uploads/e30f800c-e41d-43ef-a759-96b3c4554c5e.png"
-                  alt="Traditional food experience" 
+                  src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=1920&auto=format&fit=crop"
+                  alt="Ocean waves at a beach" 
                   aspectRatio="wide"
                   className="w-full h-full"
                 />
@@ -200,8 +199,8 @@ const ForOperators = () => {
             <div className="order-1">
               <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
-                  src="/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png"
-                  alt="Traditional cafe storefront with bicycle and people sitting outside" 
+                  src="https://images.unsplash.com/photo-1458668383970-8ddd3927deed?q=80&w=1920&auto=format&fit=crop"
+                  alt="Landscape photo of mountain alps" 
                   aspectRatio="wide"
                   className="w-full h-full"
                 />
@@ -248,7 +247,7 @@ const ForOperators = () => {
             <div className="order-1 lg:order-2">
               <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
-                  src="/lovable-uploads/2e9a9e9e-af76-4913-8148-9fce248d55c9.png"
+                  src="https://images.unsplash.com/photo-1504893524553-b855bce32c67?q=80&w=1920&auto=format&fit=crop"
                   alt="Traditional tea ceremony" 
                   aspectRatio="wide"
                   className="w-full h-full"
@@ -266,8 +265,8 @@ const ForOperators = () => {
             <div className="order-1">
               <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
-                  src="/lovable-uploads/8be44817-c794-41ca-a731-2e013805f703.png"
-                  alt="Rural landscape with traditional activities" 
+                  src="https://images.unsplash.com/photo-1482881497185-d4a9ddbe4151?q=80&w=1920&auto=format&fit=crop"
+                  alt="Photo of desert sand" 
                   aspectRatio="wide"
                   className="w-full h-full"
                 />

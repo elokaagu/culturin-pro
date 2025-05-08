@@ -22,7 +22,7 @@ const TestimonialSection = () => {
     <section ref={ref} className="py-24 lg:py-30 relative overflow-hidden bg-gradient-to-r from-[#1A1F2C] to-[#2A2F3C]">
       {/* Updated background image with better contrast */}
       <div className="absolute inset-0">
-        <div className="bg-[url('/lovable-uploads/90db897a-9b44-4eb3-87cd-585b37891618.png')] bg-cover bg-center h-full w-full"></div>
+        <div className="bg-[url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center h-full w-full"></div>
         {/* Added darker overlay for better text contrast */}
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
       </div>

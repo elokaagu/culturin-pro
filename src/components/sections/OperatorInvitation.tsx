@@ -64,8 +64,8 @@ const OperatorInvitation = () => {
           >
             <div className="photo-card shadow-card h-[550px]">
               <Image 
-                src="https://images.unsplash.com/photo-1488972685288-c3fd157d7c7a?q=80&w=1600&auto=format&fit=crop" 
-                alt="Cultural host showing traditional architecture to travelers" 
+                src="https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?q=80&w=1600&auto=format&fit=crop" 
+                alt="Serene river between mountains under white clouds" 
                 className="w-full h-full object-cover rounded-xl transition-transform duration-700 ease-out hover:scale-[1.03]"
               />
             </div>

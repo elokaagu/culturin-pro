@@ -15,8 +15,8 @@ const Hero = () => {
     <section className="relative h-screen-90 min-h-[650px]">
       <div className="absolute inset-0 bg-black">
         <img 
-          src="https://images.unsplash.com/photo-1504150558240-0b4fd8946624?q=80&w=2070" 
-          alt="Solo traveler walking through a colorful open-air market" 
+          src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=2070&auto=format&fit=crop" 
+          alt="Vibrant orange flowers in natural landscape" 
           className="w-full h-full object-cover opacity-70 transition-transform duration-[20000ms] ease-out hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-black/20" />
