@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +9,7 @@ import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const travelPurposes = [
   "Learn something new",
@@ -24,6 +24,7 @@ const TravelWithMeForm = () => {
   const [travelPurpose, setTravelPurpose] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,13 +39,10 @@ const TravelWithMeForm = () => {
       setSubmitted(true);
       setIsSubmitting(false);
       
-      // Reset form after short delay to show the success state
+      // Navigate to discover-trips page after short delay
       setTimeout(() => {
-        setSubmitted(false);
-        setDestination("");
-        setTravelMonth(undefined);
-        setTravelPurpose("");
-      }, 2000);
+        navigate("/discover-trips");
+      }, 1500);
     }, 800);
   };
 

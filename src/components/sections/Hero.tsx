@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -57,14 +58,16 @@ const Hero = () => {
           >
             <Button 
               className="bg-[#2B2B2B] text-white hover:bg-[#1E1E1E] hover:scale-[1.02] text-lg py-7 px-8 rounded-xl border-none transition-all duration-500 ease-out active:scale-[0.98]"
+              asChild
             >
-              Explore Group Trips
+              <Link to="/discover-trips">Explore Group Trips</Link>
             </Button>
             <Button 
               variant="outline" 
               className="bg-[#EDEDED] text-[#2B2B2B] hover:bg-[#D4D4D4] hover:scale-[1.02] border-none text-lg py-7 px-8 rounded-xl transition-all duration-500 ease-out active:scale-[0.98]"
+              asChild
             >
-              Create an Experience
+              <Link to="/for-operators">Create an Experience</Link>
             </Button>
           </div>
         </div>

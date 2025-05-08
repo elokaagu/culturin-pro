@@ -10,6 +10,7 @@ import ForOperators from "./pages/ForOperators";
 import SignIn from "./pages/SignIn";
 import NotFound from "./pages/NotFound";
 import AboutUs from "./pages/AboutUs";
+import DiscoverTrips from "./pages/DiscoverTrips";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/for-operators" element={<ForOperators />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/discover-trips" element={<DiscoverTrips />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

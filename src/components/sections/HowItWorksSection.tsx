@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Check, Globe, Users } from "lucide-react";
 import { useInView } from "react-intersection-observer";
+import { Link } from "react-router-dom";
 
 const HowItWorksSection = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -82,8 +83,9 @@ const HowItWorksSection = () => {
         >
           <Button 
             className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] hover:scale-[1.02] text-base py-6 px-10 rounded-xl font-medium transition-all duration-500 ease-out active:scale-[0.98]"
+            asChild
           >
-            Join a trip
+            <Link to="/discover-trips">Join a trip</Link>
           </Button>
         </div>
       </div>
