@@ -26,7 +26,8 @@ const ProCta: React.FC<ProCtaProps> = ({ selectedTier }) => {
     <div className="text-center pt-4 pb-12">
       <Button 
         size="lg" 
-        className="bg-culturin-indigo hover:bg-culturin-indigo/90 text-white px-8 py-6 text-lg rounded-xl"
+        variant="culturin-pro"
+        className="px-8 py-6 text-lg rounded-xl shadow-md hover:shadow-lg transition-all"
         onClick={handleUpgrade}
       >
         Upgrade to Culturin Pro <ChevronRight className="ml-2 h-5 w-5" />
