@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/sections/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Globe, Upload, Users, CalendarCheck, ExternalLink, Search } from "lucide-react";
+import { Globe, Upload, Users, CalendarCheck, ExternalLink, Compass } from "lucide-react";
 import HostShowcaseCarousel from "@/components/sections/HostShowcaseCarousel";
 import Image from "@/components/ui/image";
 
@@ -92,11 +91,10 @@ const ForOperators = () => {
                   style={{transitionDelay: '400ms'}}
                 >
                   <Button 
-                    variant="outline" 
-                    className="border-[#B0B0B0] text-white hover:bg-white hover:text-[#1A1A1A] py-6 px-8 rounded-xl text-base font-medium transition-all duration-500 ease-out hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto"
+                    className="bg-white text-[#1A1A1A] hover:bg-[#F0F0F0] hover:text-black py-6 px-8 rounded-xl text-base font-medium transition-all duration-500 ease-out hover:scale-[1.02] active:scale-[0.98] hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] w-full sm:w-auto border border-[#E0E0E0]"
                   >
-                    <Search className="w-5 h-5 mr-2" />
-                    See Sample Listings
+                    <Compass className="w-5 h-5 mr-2 text-[#333333]" />
+                    Explore Experiences
                   </Button>
                 </div>
               </div>
