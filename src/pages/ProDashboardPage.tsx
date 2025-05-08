@@ -9,6 +9,9 @@ import ProDashboardLayout from '@/components/pro/ProDashboardLayout';
 import DashboardMetricCard from '@/components/pro/DashboardMetricCard';
 import BookingTrendsChart from '@/components/pro/BookingTrendsChart';
 import RecentActivityList from '@/components/pro/RecentActivityList';
+import CalendarIcon from '@/components/pro/Calendar';
+import FileTextIcon from '@/components/pro/FileText';
+import CircleDollarSignIcon from '@/components/pro/CircleDollarSign';
 
 // In a real app, this would come from your authentication/user system
 const useProAccess = () => {
@@ -70,7 +73,7 @@ const ProDashboardPage: React.FC = () => {
               value="128"
               change="12%"
               changePositive={true}
-              icon={<Calendar className="h-5 w-5" />}
+              icon={<CalendarIcon />}
             />
             <DashboardMetricCard
               title="Avg. Traveler Rating"
@@ -84,14 +87,14 @@ const ProDashboardPage: React.FC = () => {
               value="12"
               change="2"
               changePositive={true}
-              icon={<FileText className="h-5 w-5" />}
+              icon={<FileTextIcon />}
             />
             <DashboardMetricCard
               title="Pending Inquiries"
               value="6"
               change="3"
               changePositive={false}
-              icon={<CircleDollarSign className="h-5 w-5" />}
+              icon={<CircleDollarSignIcon />}
             />
           </div>
           
