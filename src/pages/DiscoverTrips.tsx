@@ -1,13 +1,16 @@
+
 import { useState } from "react";
 import Header from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Globe, Map, Users } from "lucide-react";
+import { Calendar, Globe, Map, Users, Check, CreditCard } from "lucide-react";
 import Image from "@/components/ui/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
 
 interface Trip {
   id: number;
@@ -28,6 +31,9 @@ const DiscoverTrips = () => {
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBookingSheetOpen, setIsBookingSheetOpen] = useState(false);
+  const [isPaymentPopoverOpen, setIsPaymentPopoverOpen] = useState(false);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [paymentComplete, setPaymentComplete] = useState(false);
   const [bookingForm, setBookingForm] = useState({
     name: "",
     email: "",
@@ -35,6 +41,13 @@ const DiscoverTrips = () => {
     participants: 1,
     date: "",
     specialRequests: ""
+  });
+  
+  const [paymentForm, setPaymentForm] = useState({
+    cardNumber: "",
+    cardHolder: "",
+    expiry: "",
+    cvc: ""
   });
 
   const trips: Trip[] = [
@@ -185,6 +198,8 @@ const DiscoverTrips = () => {
   const handleViewDetails = (trip: Trip) => {
     setSelectedTrip(trip);
     setIsModalOpen(true);
+    // Reset payment state when opening a new trip
+    setPaymentComplete(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -195,8 +210,56 @@ const DiscoverTrips = () => {
     }));
   };
 
+  const handlePaymentInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPaymentForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handleBookNow = () => {
     setIsBookingSheetOpen(true);
+  };
+
+  const handleProceedToPayment = () => {
+    setIsPaymentPopoverOpen(true);
+  };
+
+  const handleProcessPayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate payment form
+    if (!paymentForm.cardNumber || !paymentForm.cardHolder || !paymentForm.expiry || !paymentForm.cvc) {
+      toast({
+        title: "Missing Payment Information",
+        description: "Please fill in all payment fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Simulate payment processing
+    setPaymentProcessing(true);
+    
+    setTimeout(() => {
+      setPaymentProcessing(false);
+      setPaymentComplete(true);
+      setIsPaymentPopoverOpen(false);
+      
+      toast({
+        title: "Payment Successful!",
+        description: `Your booking for ${selectedTrip?.title} has been confirmed.`,
+      });
+      
+      // Reset forms
+      setPaymentForm({
+        cardNumber: "",
+        cardHolder: "",
+        expiry: "",
+        cvc: ""
+      });
+    }, 2000);
   };
 
   const handleSubmitBooking = (e: React.FormEvent) => {
@@ -215,21 +278,8 @@ const DiscoverTrips = () => {
     // Here you would normally send this data to your backend
     console.log("Booking submitted:", bookingForm);
     
-    toast({
-      title: "Booking Request Sent!",
-      description: "We'll contact you shortly to confirm your booking.",
-    });
-    
-    setIsBookingSheetOpen(false);
-    setIsModalOpen(false);
-    setBookingForm({
-      name: "",
-      email: "",
-      phone: "",
-      participants: 1,
-      date: "",
-      specialRequests: ""
-    });
+    // Instead of closing, now proceed to payment
+    handleProceedToPayment();
   };
 
   return (
@@ -390,12 +440,22 @@ const DiscoverTrips = () => {
                     <p className="text-2xl font-bold mb-4">{selectedTrip.price}</p>
                     <p className="text-sm text-[#4A4A4A] mb-6">per person</p>
                     
-                    <Button 
-                      className="w-full mb-3 bg-culturin-indigo hover:bg-culturin-indigo/90"
-                      onClick={handleBookNow}
-                    >
-                      Book This Trip
-                    </Button>
+                    {paymentComplete ? (
+                      <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-4 text-center">
+                        <Check className="w-6 h-6 text-green-500 mx-auto mb-2" />
+                        <h4 className="font-medium text-green-700">Booking Confirmed!</h4>
+                        <p className="text-sm text-green-600 mt-1">
+                          A confirmation email has been sent with your trip details.
+                        </p>
+                      </div>
+                    ) : (
+                      <Button 
+                        className="w-full mb-3 bg-culturin-indigo hover:bg-culturin-indigo/90"
+                        onClick={handleBookNow}
+                      >
+                        Book This Trip
+                      </Button>
+                    )}
                     
                     <Button 
                       variant="outline" 
@@ -518,9 +578,84 @@ const DiscoverTrips = () => {
             </div>
             
             <div className="pt-4">
-              <Button type="submit" className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90">
-                Submit Booking Request
-              </Button>
+              <Popover open={isPaymentPopoverOpen} onOpenChange={setIsPaymentPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button type="submit" className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90">
+                    Continue to Payment
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-5">
+                  <form onSubmit={handleProcessPayment} className="space-y-4">
+                    <h3 className="font-medium text-lg mb-2 flex items-center gap-2">
+                      <CreditCard className="w-5 h-5" />
+                      Payment Details
+                    </h3>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="cardNumber">Card Number</Label>
+                      <Input
+                        id="cardNumber"
+                        name="cardNumber"
+                        placeholder="1234 5678 9012 3456"
+                        value={paymentForm.cardNumber}
+                        onChange={handlePaymentInputChange}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="cardHolder">Card Holder Name</Label>
+                      <Input
+                        id="cardHolder"
+                        name="cardHolder"
+                        placeholder="John Smith"
+                        value={paymentForm.cardHolder}
+                        onChange={handlePaymentInputChange}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <Label htmlFor="expiry">Expiry Date</Label>
+                        <Input
+                          id="expiry"
+                          name="expiry"
+                          placeholder="MM/YY"
+                          value={paymentForm.expiry}
+                          onChange={handlePaymentInputChange}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="cvc">CVC</Label>
+                        <Input
+                          id="cvc"
+                          name="cvc"
+                          placeholder="123"
+                          value={paymentForm.cvc}
+                          onChange={handlePaymentInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="pt-2">
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90"
+                        disabled={paymentProcessing}
+                      >
+                        {paymentProcessing ? "Processing..." : `Pay ${selectedTrip?.price}`}
+                      </Button>
+                    </div>
+                    
+                    <p className="text-xs text-center text-gray-500 mt-2">
+                      Secure payment processing. Your card details are encrypted.
+                    </p>
+                  </form>
+                </PopoverContent>
+              </Popover>
             </div>
             
             <p className="text-sm text-[#4A4A4A] text-center">
