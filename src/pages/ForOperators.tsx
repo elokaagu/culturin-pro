@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
@@ -22,7 +23,7 @@ const ForOperators = () => {
     setAnimateItems(true);
     
     // Preload hero image
-    const img = new Image();
+    const img = document.createElement('img');
     img.src = "/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png";
     img.onload = () => setImageLoaded(true);
   }, [location.pathname]);
