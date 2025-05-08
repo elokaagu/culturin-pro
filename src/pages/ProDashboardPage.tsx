@@ -1,13 +1,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from "@/components/Header";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import CulturinPro from "@/components/CulturinPro";
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Crown, ArrowLeft, Settings, LayoutDashboard, CreditCard, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Crown, Users } from "lucide-react";
+import ProDashboardLayout from '@/components/pro/ProDashboardLayout';
+import DashboardMetricCard from '@/components/pro/DashboardMetricCard';
+import BookingTrendsChart from '@/components/pro/BookingTrendsChart';
+import RecentActivityList from '@/components/pro/RecentActivityList';
 
 // In a real app, this would come from your authentication/user system
 const useProAccess = () => {
@@ -29,7 +30,6 @@ const useProAccess = () => {
 
 const ProDashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string>("overview");
   const [showAccessDialog, setShowAccessDialog] = useState(false);
   const { hasAccess, grantAccess } = useProAccess();
   
@@ -49,110 +49,70 @@ const ProDashboardPage: React.FC = () => {
     setShowAccessDialog(false);
   };
   
+  // If user doesn't have access, show access dialog and the dashboard in background
+  // Once they get access or if they already have it, show the dashboard
+  
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Custom header for Pro dashboard */}
-      <div className="bg-[#1E1E1E] text-white">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              className="text-white hover:bg-white/10" 
-              onClick={() => navigate('/operator')}
-            >
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              Back to Operator
-            </Button>
-            <div className="flex items-center">
-              <h1 className="font-bold text-xl">Culturin Pro</h1>
-              <Badge className="ml-2 bg-culturin-mustard text-culturin-indigo">Beta</Badge>
-            </div>
+    <>
+      <ProDashboardLayout>
+        <div className="space-y-8">
+          <div>
+            <h1 className="text-3xl font-bold">Welcome to Culturin Pro</h1>
+            <p className="mt-1 text-gray-600">
+              Your professional toolkit for growing and managing your cultural experiences business.
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" className="text-white hover:bg-white/10">
-              <Settings className="h-5 w-5" />
-            </Button>
+          
+          {/* Metrics Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <DashboardMetricCard
+              title="Total Bookings"
+              value="128"
+              change="12%"
+              changePositive={true}
+              icon={<Calendar className="h-5 w-5" />}
+            />
+            <DashboardMetricCard
+              title="Avg. Traveler Rating"
+              value="4.8"
+              change="0.3"
+              changePositive={true}
+              icon={<Users className="h-5 w-5" />}
+            />
+            <DashboardMetricCard
+              title="Experiences Published"
+              value="12"
+              change="2"
+              changePositive={true}
+              icon={<FileText className="h-5 w-5" />}
+            />
+            <DashboardMetricCard
+              title="Pending Inquiries"
+              value="6"
+              change="3"
+              changePositive={false}
+              icon={<CircleDollarSign className="h-5 w-5" />}
+            />
+          </div>
+          
+          {/* Charts */}
+          <div className="grid grid-cols-1 gap-6">
+            <BookingTrendsChart />
+          </div>
+          
+          {/* Recent Activity */}
+          <div className="grid grid-cols-1 gap-6">
+            <RecentActivityList />
           </div>
         </div>
-      </div>
-      
-      {/* Main Dashboard Content */}
-      <div className="container mx-auto px-4 md:px-6 py-8">
-        <div className="flex flex-col gap-8">
-          {/* Pro Dashboard Nav */}
-          <div className="bg-white p-4 shadow rounded-lg">
-            <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="flex justify-start mb-0 bg-gray-100 p-1 rounded-lg">
-                <TabsTrigger value="overview" className="flex items-center gap-2">
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </TabsTrigger>
-                <TabsTrigger value="features" className="flex items-center gap-2">
-                  <Crown className="h-4 w-4" />
-                  Features
-                </TabsTrigger>
-                <TabsTrigger value="billing" className="flex items-center gap-2">
-                  <CreditCard className="h-4 w-4" />
-                  Billing
-                </TabsTrigger>
-                <TabsTrigger value="security" className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4" />
-                  Security
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          
-          {/* Tab Content */}
-          <TabsContent value="overview" className="bg-white p-6 rounded-lg shadow mt-0">
-            <h2 className="text-2xl font-bold mb-4">Welcome to Culturin Pro</h2>
-            <p className="text-gray-600 mb-6">Your professional toolkit for growing and managing your cultural experiences business.</p>
-            
-            <CulturinPro />
-          </TabsContent>
-          
-          <TabsContent value="features" className="bg-white p-6 rounded-lg shadow mt-0">
-            <h2 className="text-2xl font-bold mb-4">Pro Features</h2>
-            <p className="text-gray-600 mb-6">Explore all the features available with your Pro subscription.</p>
-            
-            {/* We reuse the existing CulturinPro component with the features tab pre-selected */}
-            <CulturinPro />
-          </TabsContent>
-          
-          <TabsContent value="billing" className="bg-white p-6 rounded-lg shadow mt-0">
-            <h2 className="text-2xl font-bold mb-4">Billing Management</h2>
-            <p className="text-gray-600 mb-6">Manage your subscription and payment methods.</p>
-            
-            <div className="border rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-2">Your Current Plan</h3>
-              <p className="text-xl font-bold flex items-center gap-2">
-                <Crown className="h-5 w-5 text-culturin-mustard" /> Growth Plan
-              </p>
-              <p className="text-gray-600 mt-1">$49/month • Renews on June 8, 2025</p>
-              
-              <Button className="mt-6">Manage Subscription</Button>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="security" className="bg-white p-6 rounded-lg shadow mt-0">
-            <h2 className="text-2xl font-bold mb-4">Security Settings</h2>
-            <p className="text-gray-600 mb-6">Manage security settings for your account.</p>
-            
-            <div className="border rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-2">Two-Factor Authentication</h3>
-              <p className="text-gray-600 mb-4">Add an extra layer of security to your account.</p>
-              <Button>Enable 2FA</Button>
-            </div>
-          </TabsContent>
-        </div>
-      </div>
+      </ProDashboardLayout>
       
       {/* Access Dialog */}
       <Dialog open={showAccessDialog} onOpenChange={setShowAccessDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
-              <Crown className="h-5 w-5 text-culturin-mustard" /> Unlock Culturin Pro
+              <Crown className="h-5 w-5 text-[#FFD700]" /> Unlock Culturin Pro
             </DialogTitle>
             <DialogDescription>
               Upgrade to access professional tools for managing your cultural experiences.
@@ -173,10 +133,10 @@ const ProDashboardPage: React.FC = () => {
                 </ul>
               </div>
               
-              <div className="border-2 border-culturin-indigo rounded-lg p-4 bg-culturin-indigo/5">
-                <h3 className="font-semibold flex items-center text-culturin-indigo">
+              <div className="border-2 border-[#222] rounded-lg p-4 bg-gray-50">
+                <h3 className="font-semibold flex items-center text-[#222]">
                   Pro Plan
-                  <Badge className="ml-2 bg-culturin-mustard text-culturin-indigo">Recommended</Badge>
+                  <Badge className="ml-2 bg-[#FFD700] text-[#222]">Recommended</Badge>
                 </h3>
                 <p className="text-lg font-bold mt-1">$49/month</p>
                 <ul className="mt-2 space-y-1">
@@ -200,7 +160,7 @@ const ProDashboardPage: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 

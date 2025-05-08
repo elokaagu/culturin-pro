@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -40,8 +41,8 @@ const EntryPoint = () => {
   const hasProAccess = localStorage.getItem('culturinProAccess') === 'true';
   
   // If last route was pro dashboard and user has access, redirect there
-  if (lastRoute === '/pro-dashboard' && hasProAccess) {
-    return <Navigate to="/pro-dashboard" replace />;
+  if (lastRoute?.startsWith('/pro-dashboard') && hasProAccess) {
+    return <Navigate to={lastRoute} replace />;
   }
   
   // Otherwise go to home page
@@ -55,7 +56,7 @@ const PageWithFooter = ({ Component }) => {
   // ForOperators, CulturinProPage, and ProDashboardPage already include their own Footer or don't need one
   const hideFooter = location.pathname === '/for-operators' || 
                     location.pathname === '/culturin-pro' || 
-                    location.pathname === '/pro-dashboard';
+                    location.pathname.startsWith('/pro-dashboard');
   
   return (
     <>
@@ -85,7 +86,7 @@ const App = () => (
               <Route path="/faqs" element={<PageWithFooter Component={FAQs} />} />
               <Route path="/privacy" element={<PageWithFooter Component={Privacy} />} />
               <Route path="/culturin-pro" element={<PageWithFooter Component={CulturinProPage} />} />
-              <Route path="/pro-dashboard" element={<ProDashboardPage />} />
+              <Route path="/pro-dashboard/*" element={<ProDashboardPage />} />
               <Route path="*" element={<PageWithFooter Component={NotFound} />} />
             </Routes>
           </div>
