@@ -5,7 +5,7 @@ import CulturinPro from "@/components/CulturinPro";
 
 const CulturinProPage = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Header type="operator" />
       <div className="pt-28 pb-12 container mx-auto px-4 md:px-6">
         <h1 className="text-3xl md:text-4xl font-bold mb-8">Culturin Pro Platform</h1>
