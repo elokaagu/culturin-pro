@@ -50,9 +50,9 @@ const Footer = () => {
             <h3 className="font-medium text-xl mb-6">Links</h3>
             <ul className="space-y-4">
               <li><Link to="/about-us" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">About</Link></li>
-              <li><Link to="/about-us#contact" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</Link></li>
-              <li><Link to="/about-us#faq" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">FAQs</Link></li>
-              <li><Link to="/about-us#privacy" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">Privacy</Link></li>
+              <li><Link to="/contact" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</Link></li>
+              <li><Link to="/faqs" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">FAQs</Link></li>
+              <li><Link to="/privacy" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">Privacy</Link></li>
               <li><Link to="/for-operators" className="italic relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">Become a Host</Link></li>
             </ul>
           </div>

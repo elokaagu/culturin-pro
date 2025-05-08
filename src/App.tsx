@@ -11,6 +11,9 @@ import SignIn from "./pages/SignIn";
 import NotFound from "./pages/NotFound";
 import AboutUs from "./pages/AboutUs";
 import DiscoverTrips from "./pages/DiscoverTrips";
+import Contact from "./pages/Contact";
+import FAQs from "./pages/FAQs";
+import Privacy from "./pages/Privacy";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +30,9 @@ const App = () => (
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/discover-trips" element={<DiscoverTrips />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faqs" element={<FAQs />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
