@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -60,9 +61,6 @@ export default {
 					charcoal: '#4A4A4A',  // Soft Charcoal (updated)
 					highlight: '#8E9196', // Neutral Gray
 					subtle: '#F1F1F1',    // Light Gray
-					indigo: '#4A56A6',    // Culturin brand indigo color
-					mustard: '#E9B949',   // Culturin mustard accent color
-					clay: '#D27D5C',      // Culturin clay/terracotta accent
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

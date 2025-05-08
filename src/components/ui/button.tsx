@@ -19,16 +19,12 @@ const buttonVariants = cva(
           "bg-secondary text-white hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        // Adding a new culturin-pro variant for branded buttons
-        "culturin-pro": "bg-culturin-indigo text-white hover:bg-culturin-indigo/90",
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
-        // Adding a new hero size for prominent buttons
-        hero: "h-14 px-8 py-4 text-base",
       },
     },
     defaultVariants: {
