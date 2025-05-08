@@ -6,10 +6,11 @@ import { useInView } from "react-intersection-observer"
 export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   aspectRatio?: "portrait" | "square" | "video" | "wide"
   cover?: boolean
+  fill?: boolean
 }
 
 const Image = React.forwardRef<HTMLImageElement, ImageProps>(
-  ({ className, aspectRatio, cover = true, alt = "", ...props }, ref) => {
+  ({ className, aspectRatio, cover = true, fill = false, alt = "", ...props }, ref) => {
     const [isLoaded, setIsLoaded] = React.useState(false)
     const { ref: inViewRef, inView } = useInView({
       triggerOnce: true,
@@ -52,7 +53,8 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
     return (
       <div className={cn(
         "relative w-full h-full overflow-hidden",
-        aspectRatio && aspectRatioClass[aspectRatio],
+        aspectRatio && !fill && aspectRatioClass[aspectRatio],
+        fill && "h-full"
       )}>
         {!isLoaded && inView && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
@@ -62,6 +64,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
           className={cn(
             "w-full h-full transition-opacity duration-700",
             cover && "object-cover",
+            fill && "object-fill",
             isLoaded ? "opacity-100" : "opacity-0",
             className
           )}

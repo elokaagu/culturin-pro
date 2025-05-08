@@ -53,7 +53,9 @@ const carouselItems = [
 
 const HostShowcaseCarousel = () => {
   const [animateItems, setAnimateItems] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
   const carouselRef = useRef(null);
+  const scrollInterval = useRef<number | null>(null);
   
   const { ref: sectionRef, inView } = useInView({
     threshold: 0.2,
@@ -66,8 +68,35 @@ const HostShowcaseCarousel = () => {
     }
   }, [inView]);
   
+  // Auto-scroll functionality with hover pause
+  useEffect(() => {
+    const scrollCarousel = () => {
+      if (carouselRef.current) {
+        const carousel = carouselRef.current as any;
+        if (carousel.api && !isHovering) {
+          carousel.api.scrollNext();
+        }
+      }
+    };
+
+    if (!isHovering) {
+      scrollInterval.current = window.setInterval(scrollCarousel, 4000) as unknown as number;
+    }
+
+    return () => {
+      if (scrollInterval.current !== null) {
+        clearInterval(scrollInterval.current);
+      }
+    };
+  }, [isHovering]);
+
   return (
-    <section ref={sectionRef} className="py-20 bg-white">
+    <section 
+      ref={sectionRef} 
+      className="py-20 bg-white"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
       <div className="container-custom">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className={`text-3xl md:text-4xl lg:text-5xl font-semibold text-[#111111] mb-6 transition-all duration-700 ${
@@ -91,7 +120,7 @@ const HostShowcaseCarousel = () => {
         >
           <Carousel
             opts={{
-              align: "center",
+              align: "start",
               loop: true,
               skipSnaps: false,
               containScroll: "trimSnaps"
@@ -116,6 +145,7 @@ const HostShowcaseCarousel = () => {
                         src={item.image} 
                         alt={item.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                        fill={true}
                       />
                       {/* Enhanced gradient overlay for better text contrast */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent group-hover:from-black/70 transition-all duration-500"></div>

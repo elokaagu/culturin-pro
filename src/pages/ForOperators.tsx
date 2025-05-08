@@ -38,6 +38,7 @@ const ForOperators = () => {
           <Image 
             src="/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png"
             alt="Travelers looking at a map or guide" 
+            fill={true}
             className={`w-full h-full object-cover transition-opacity duration-1000 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setImageLoaded(true)}
           />
@@ -151,7 +152,7 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Cultural Delights Section with uploaded image */}
+      {/* Cultural Delights Section with uploaded image - FIXED ASPECT RATIO */}
       <section className="py-16 bg-[#F8F5F2]">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -171,12 +172,12 @@ const ForOperators = () => {
               </Button>
             </div>
             <div className="order-1 lg:order-2">
-              <div className="rounded-2xl overflow-hidden shadow-card">
+              <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
                   src="/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png"
                   alt="Traditional mooncake and tea on an orange background" 
-                  className="w-full h-auto object-cover"
-                  aspectRatio="square"
+                  fill={true}
+                  className="w-full h-full"
                 />
               </div>
             </div>
@@ -184,26 +185,27 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Testimonial Section with Background Image */}
+      {/* Testimonial Section with Background Image - IMPROVED CONTRAST */}
       <section className="py-20 bg-culturin-indigo text-white relative overflow-hidden">
-        {/* Background image with overlay */}
+        {/* Background image with enhanced overlay */}
         <div className="absolute inset-0 z-0">
           <Image 
-            src="https://images.unsplash.com/photo-1659025435463-a039676b45a0?q=80&w=1920&auto=format&fit=crop"
+            src="/lovable-uploads/57645fce-47c3-43f5-82f6-080cd2577e06.png"
             alt="Cultural pattern background" 
-            className="w-full h-full object-cover opacity-20"
+            fill={true}
+            className="w-full h-full object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-culturin-indigo to-culturin-indigo/90 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 to-black/80 mix-blend-multiply"></div>
         </div>
         
         <div className="container-custom relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <Globe className="w-16 h-16 mx-auto mb-8 opacity-30" />
-            <blockquote className="text-2xl md:text-3xl font-medium leading-relaxed mb-8 animate-fade-in text-shadow">
+            <Globe className="w-16 h-16 mx-auto mb-8 opacity-50 text-white" />
+            <blockquote className="text-2xl md:text-3xl font-medium leading-relaxed mb-8 animate-fade-in text-shadow-lg">
               "This platform helped me connect with travelers who truly cared about learning our traditions, not just taking photos. It's changed how I share my culture with the world."
             </blockquote>
-            <div className="flex items-center justify-center animate-fade-in" style={{animationDelay: '0.2s'}}>
-              <div className="w-12 h-12 rounded-full overflow-hidden mr-4 shadow-md">
+            <div className="flex items-center justify-center animate-fade-in bg-black/30 inline-flex rounded-full px-4 py-2" style={{animationDelay: '0.2s'}}>
+              <div className="w-12 h-12 rounded-full overflow-hidden mr-4 shadow-md border-2 border-white/30">
                 <img 
                   src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop" 
                   alt="Host portrait" 
@@ -211,28 +213,28 @@ const ForOperators = () => {
                 />
               </div>
               <div className="text-left">
-                <p className="font-medium">Maria Gonzalez</p>
-                <p className="text-sm opacity-80">Culinary Guide, Mexico City</p>
+                <p className="font-medium text-white">Maria Gonzalez</p>
+                <p className="text-sm text-white/90">Culinary Guide, Mexico City</p>
               </div>
             </div>
           </div>
         </div>
       </section>
       
-      {/* HostShowcaseCarousel Component - Now with Horizontal Scrolling */}
+      {/* HostShowcaseCarousel Component */}
       <HostShowcaseCarousel />
       
-      {/* NEW Local Experiences Section with uploaded image */}
+      {/* NEW Local Experiences Section with uploaded image - FIXED ASPECT RATIO */}
       <section className="py-16 bg-white">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="order-1">
-              <div className="rounded-2xl overflow-hidden shadow-card">
+              <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
                   src="/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png"
                   alt="Traditional cafe storefront with bicycle and people sitting outside" 
-                  className="w-full h-auto object-cover"
-                  aspectRatio="wide"
+                  fill={true}
+                  className="w-full h-full"
                 />
               </div>
             </div>
@@ -255,7 +257,7 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* NEW Tea Ceremony Section - UPDATED IMAGE */}
+      {/* Tea Ceremony Section - FIXED ASPECT RATIO */}
       <section className="py-16 bg-[#F5F4F2]">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -275,12 +277,12 @@ const ForOperators = () => {
               </Button>
             </div>
             <div className="order-1 lg:order-2">
-              <div className="rounded-2xl overflow-hidden shadow-card">
+              <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
-                  src="/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png"
-                  alt="Traditional mooncake and tea on an orange background" 
-                  className="w-full h-auto object-cover"
-                  aspectRatio="square"
+                  src="/lovable-uploads/2e9a9e9e-af76-4913-8148-9fce248d55c9.png"
+                  alt="Traditional tea ceremony" 
+                  fill={true}
+                  className="w-full h-full"
                 />
               </div>
             </div>
@@ -288,17 +290,17 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* NEW Local Café Experience Section */}
+      {/* Rural Traditions Section - FIXED ASPECT RATIO */}
       <section className="py-16 bg-white">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="order-1">
-              <div className="rounded-2xl overflow-hidden shadow-card">
+              <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
                   src="https://images.unsplash.com/photo-1472396961693-142e6e269027?q=80&w=1100&auto=format&fit=crop"
                   alt="Rural landscape with traditional architecture" 
-                  className="w-full h-auto object-cover"
-                  aspectRatio="wide"
+                  fill={true}
+                  className="w-full h-full"
                 />
               </div>
             </div>
@@ -321,7 +323,7 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Pricing Teaser / CTA - Improved contrast and animations */}
+      {/* Pricing Teaser / CTA */}
       <section className="py-20 bg-culturin-white">
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
