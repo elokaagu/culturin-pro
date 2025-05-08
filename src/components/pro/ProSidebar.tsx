@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { Crown, LayoutDashboard, Calendar, Users, ChartBar, Settings, CircleDollarSign, FileText, Image, Link } from "lucide-react";
@@ -18,6 +18,21 @@ const menuItems = [
 const ProSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userName, setUserName] = useState<string>("Cultural Host");
+  
+  // In a real app, this would come from your authentication context
+  // For demo purposes, we'll use localStorage
+  useEffect(() => {
+    const storedUserName = localStorage.getItem('userName');
+    if (storedUserName) {
+      setUserName(storedUserName);
+    }
+    // For demo purposes, let's store a user name if none exists
+    else {
+      localStorage.setItem('userName', 'Jane Doe');
+      setUserName('Jane Doe');
+    }
+  }, []);
   
   return (
     <div className="w-64 bg-white h-screen border-r border-gray-200 flex flex-col fixed left-0 top-0">
@@ -63,7 +78,7 @@ const ProSidebar: React.FC = () => {
             <Users className="h-4 w-4 text-gray-700" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium">Cultural Host</p>
+            <p className="text-sm font-medium">{userName}</p>
             <p className="text-xs text-gray-500">Growth Plan</p>
           </div>
         </div>
