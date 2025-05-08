@@ -255,7 +255,7 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* NEW Tea Ceremony Section */}
+      {/* NEW Tea Ceremony Section - UPDATED IMAGE */}
       <section className="py-16 bg-[#F5F4F2]">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -277,8 +277,8 @@ const ForOperators = () => {
             <div className="order-1 lg:order-2">
               <div className="rounded-2xl overflow-hidden shadow-card">
                 <Image 
-                  src="https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?q=80&w=1100&auto=format&fit=crop"
-                  alt="Traditional tea ceremony with mooncakes" 
+                  src="/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png"
+                  alt="Traditional mooncake and tea on an orange background" 
                   className="w-full h-auto object-cover"
                   aspectRatio="square"
                 />

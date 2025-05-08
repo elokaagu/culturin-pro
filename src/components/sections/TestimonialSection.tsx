@@ -20,14 +20,17 @@ const TestimonialSection = () => {
 
   return (
     <section ref={ref} className="py-24 lg:py-30 relative overflow-hidden bg-gradient-to-r from-[#1A1F2C] to-[#2A2F3C]">
-      <div className="absolute inset-0 opacity-15">
-        <div className="bg-[url('https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?q=80&w=2070')] bg-cover bg-center h-full w-full opacity-10"></div>
+      {/* Updated background image with better contrast */}
+      <div className="absolute inset-0">
+        <div className="bg-[url('https://images.unsplash.com/photo-1659025435463-a039676b45a0?q=80&w=1920&auto=format&fit=crop')] bg-cover bg-center h-full w-full"></div>
+        {/* Added darker overlay for better text contrast */}
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
       </div>
       
       <div className="container-custom max-w-5xl relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
           <div className="md:col-span-2">
-            <Card className="border-0 shadow-none bg-white/10 backdrop-blur-sm">
+            <Card className="border-0 shadow-none bg-black/40 backdrop-blur-sm">
               <CardContent className="p-6 md:p-8">
                 <div className={`transition-all duration-700 ease-out ${
                   animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
