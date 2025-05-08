@@ -12,7 +12,8 @@ import {
   MapPin, 
   TrendingUp,
   Info,
-  ChevronDown
+  ChevronDown,
+  Crown
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import Image from "@/components/ui/image";
@@ -24,6 +25,7 @@ import DashboardOverview from "@/components/DashboardOverview";
 import ExperiencesTab from "@/components/ExperiencesTab";
 import BookingsTab from "@/components/BookingsTab";
 import OperatorExperienceCard from "@/components/OperatorExperienceCard";
+import CulturinPro from "@/components/CulturinPro";
 
 // Mock experiences data
 const mockExperiences = [
@@ -177,6 +179,13 @@ const OperatorDashboard = () => {
                 >
                   Booking Management
                 </TabsTrigger>
+                <TabsTrigger 
+                  value="pro"
+                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-white data-[state=active]:text-culturin-indigo data-[state=active]:shadow-md data-[state=active]:font-medium rounded-full px-6 py-3 transition-all flex items-center gap-1"
+                >
+                  <Crown className="h-4 w-4" /> Culturin Pro
+                  <Badge className="ml-1 h-5 bg-culturin-mustard text-culturin-indigo text-xs">New</Badge>
+                </TabsTrigger>
               </TabsList>
               
               {/* Filters for Experiences */}
@@ -229,95 +238,10 @@ const OperatorDashboard = () => {
                 {/* Experience Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredExperiences.map(experience => (
-                    <div 
-                      key={experience.id} 
-                      className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                    >
-                      {/* Card Image */}
-                      <div className="relative h-52">
-                        <Image
-                          src={experience.image}
-                          alt={experience.title}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute top-4 right-4">
-                          <Badge 
-                            className={experience.status === "live" 
-                              ? "bg-green-100 text-green-800 hover:bg-green-200" 
-                              : "bg-amber-100 text-amber-800 hover:bg-amber-200"
-                            }
-                          >
-                            {experience.status === "live" ? "Published" : "Draft"}
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      {/* Card Content */}
-                      <div className="p-6">
-                        <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-semibold text-lg text-gray-900">{experience.title}</h3>
-                          <p className="text-lg font-bold text-culturin-indigo">${experience.price}</p>
-                        </div>
-                        
-                        <div className="flex items-center text-gray-500 mb-3 text-sm">
-                          <MapPin className="w-4 h-4 mr-1" />
-                          <span>{experience.location}</span>
-                        </div>
-                        
-                        <div className="flex justify-between mb-4">
-                          <span className="text-sm text-gray-500">{experience.duration}</span>
-                          <span className="text-sm text-gray-500">{experience.dates}</span>
-                        </div>
-                        
-                        {/* Booking Performance */}
-                        <div className="border-t pt-4">
-                          <div className="flex items-center justify-between text-sm mb-2">
-                            <div className="flex items-center gap-1">
-                              <span>Booking Rate</span>
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Info className="w-4 h-4 text-gray-400 cursor-help" />
-                                  </TooltipTrigger>
-                                  <TooltipContent className="max-w-xs">
-                                    <p>Percentage of page views resulting in bookings</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                              {experience.trend === 'up' && <TrendingUp className="w-4 h-4 text-green-500" />}
-                            </div>
-                            <span className="font-semibold">{experience.bookingPercentage}%</span>
-                          </div>
-                          <div className="relative pt-1">
-                            <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
-                              <div 
-                                style={{ width: `${experience.bookingPercentage}%` }}
-                                className={`shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center transition-all duration-500 ${
-                                  experience.bookingPercentage >= 70 ? 'bg-green-500' : 
-                                  experience.bookingPercentage >= 40 ? 'bg-blue-500' : 
-                                  'bg-amber-500'
-                                }`}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Card Actions */}
-                        <div className="mt-6 flex justify-center">
-                          <Button 
-                            variant="outline" 
-                            className="w-full rounded-xl hover:bg-gray-100"
-                            onClick={() => toast({
-                              title: "Manage Experience",
-                              description: `You clicked to manage ${experience.title}.`
-                            })}
-                          >
-                            Manage Experience
-                            <ChevronDown className="w-4 h-4 ml-1" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+                    <OperatorExperienceCard
+                      key={experience.id}
+                      {...experience}
+                    />
                   ))}
                   
                   {/* Add New Experience Card */}
@@ -383,6 +307,11 @@ const OperatorDashboard = () => {
             {/* Bookings Tab */}
             <TabsContent value="bookings">
               <BookingsTab />
+            </TabsContent>
+
+            {/* Culturin Pro Tab */}
+            <TabsContent value="pro">
+              <CulturinPro />
             </TabsContent>
           </Tabs>
         </div>
