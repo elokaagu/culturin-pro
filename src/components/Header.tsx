@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -88,18 +87,6 @@ export const Header = ({ type }: HeaderProps) => {
                         For Operators
                       </Link>
                     </li>
-                    <li>
-                      <Link 
-                        to="/about-us" 
-                        className={`font-medium transition-colors ${
-                          isScrolled 
-                            ? 'text-culturin-charcoal hover:text-culturin-indigo' 
-                            : 'text-white hover:text-culturin-mustard'
-                        }`}
-                      >
-                        About Us
-                      </Link>
-                    </li>
                   </>
                 ) : (
                   <>
@@ -181,7 +168,6 @@ export const Header = ({ type }: HeaderProps) => {
                   <li><Link to="/discover-trips" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">Discover Trips</Link></li>
                   <li><Link to="/" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">How It Works</Link></li>
                   <li><Link to="/for-operators" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">For Operators</Link></li>
-                  <li><Link to="/about-us" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">About Us</Link></li>
                 </>
               ) : (
                 <>
