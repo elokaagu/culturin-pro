@@ -19,6 +19,7 @@ import CulturinProPage from "./pages/CulturinProPage";
 import ProDashboardPage from "./pages/ProDashboardPage";
 import ProBookingPage from "./pages/ProBookingPage";
 import ProCRMPage from "./pages/ProCRMPage";
+import ProAnalyticsPage from "./pages/ProAnalyticsPage";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -91,6 +92,7 @@ const App = () => (
               <Route path="/pro-dashboard" element={<ProDashboardPage />} />
               <Route path="/pro-dashboard/booking" element={<ProBookingPage />} />
               <Route path="/pro-dashboard/crm" element={<ProCRMPage />} />
+              <Route path="/pro-dashboard/analytics" element={<ProAnalyticsPage />} />
               <Route path="*" element={<PageWithFooter Component={NotFound} />} />
             </Routes>
           </div>
