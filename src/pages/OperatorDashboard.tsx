@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
@@ -26,7 +27,7 @@ import BookingsTab from "@/components/BookingsTab";
 import OperatorExperienceCard from "@/components/OperatorExperienceCard";
 import CulturinPro from "@/components/CulturinPro";
 
-// Mock experiences data with correct type for status
+// Mock experiences data with correct type for status and trend
 const mockExperiences = [
   {
     id: "1",
@@ -38,7 +39,7 @@ const mockExperiences = [
     dates: "Weekly, Tue & Thu",
     duration: "3 hours",
     image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
-    trend: "up"
+    trend: "up" as "up" // Type assertion for trend
   },
   {
     id: "2",
@@ -50,7 +51,7 @@ const mockExperiences = [
     dates: "Nightly, Weather Permitting",
     duration: "4 hours",
     image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
-    trend: "flat"
+    trend: "flat" as "flat" // Type assertion for trend
   },
   {
     id: "3",
@@ -63,7 +64,7 @@ const mockExperiences = [
     duration: "2.5 hours",
     image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
     daysInDraft: 12,
-    trend: "down"
+    trend: "down" as "down" // Type assertion for trend
   }
 ];
 
