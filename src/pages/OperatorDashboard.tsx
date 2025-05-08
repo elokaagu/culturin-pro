@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
@@ -12,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import Image from "@/components/ui/image";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Mock data for empty state detection
 const mockListings = [
@@ -52,6 +54,7 @@ const OperatorDashboard = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [experiences, setExperiences] = useState(mockListings);
   const location = useLocation();
+  const [sortLabel, setSortLabel] = useState<string>("Sort By");
   
   // Scroll to top on navigation
   useEffect(() => {
@@ -82,6 +85,17 @@ const OperatorDashboard = () => {
       setSortBy(column);
       setSortDirection("asc");
     }
+    
+    // Update sort label
+    if (column === "none") {
+      setSortLabel("Sort By");
+    } else if (column === "status") {
+      setSortLabel("Status");
+    } else if (column === "bookingPercentage") {
+      setSortLabel("Booking %");
+    } else if (column === "price") {
+      setSortLabel("Price");
+    }
   };
   
   const handleFilter = (status: string) => {
@@ -104,33 +118,35 @@ const OperatorDashboard = () => {
             alt="Cultural background" 
             className="w-full h-full object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-culturin-indigo/95 to-culturin-indigo/90 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-culturin-indigo/95 to-black/80 mix-blend-multiply"></div>
         </div>
         
         <div className="container-custom relative z-10">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold mb-4 text-white text-shadow">
-            Empower Your Culture
-          </h1>
-          <p className="text-xl text-white max-w-2xl mb-8 drop-shadow-md">
-            Share your story, publish your tours, grow your travel business.
-          </p>
-          
-          <div className="flex flex-wrap gap-4 mb-4">
-            <Button 
-              className="bg-culturin-mustard text-culturin-indigo hover:bg-culturin-mustard/90 hover:scale-105 flex items-center px-6 py-6 font-semibold shadow-lg transition-all duration-200"
-              onClick={handleCreateExperience}
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Create My Experience
-            </Button>
-            <Button 
-              variant="outline" 
-              className="border-white text-white hover:bg-white/30 hover:scale-105 flex items-center px-6 py-6 shadow-sm transition-all duration-200"
-              onClick={handleViewBookings}
-            >
-              <Calendar className="w-5 h-5 mr-2" />
-              View Bookings
-            </Button>
+          <div className="max-w-2xl backdrop-blur-sm bg-black/20 p-6 rounded-lg border border-white/10">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold mb-4 text-white text-shadow">
+              Empower Your Culture
+            </h1>
+            <p className="text-xl text-white max-w-2xl mb-8 drop-shadow-md">
+              Share your story, publish your tours, grow your travel business.
+            </p>
+            
+            <div className="flex flex-wrap gap-4 mb-4">
+              <Button 
+                className="bg-culturin-mustard text-culturin-indigo hover:bg-culturin-mustard/90 hover:scale-105 flex items-center px-6 py-6 font-semibold shadow-lg transition-all duration-200"
+                onClick={handleCreateExperience}
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Create My Experience
+              </Button>
+              <Button 
+                variant="outline" 
+                className="border-white text-white hover:bg-white/30 hover:scale-105 flex items-center px-6 py-6 shadow-sm transition-all duration-200"
+                onClick={handleViewBookings}
+              >
+                <Calendar className="w-5 h-5 mr-2" />
+                View Bookings
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -142,19 +158,19 @@ const OperatorDashboard = () => {
             <TabsList className="grid grid-cols-1 sm:grid-cols-3 p-1 bg-gray-100 rounded-lg">
               <TabsTrigger 
                 value="overview"
-                className="data-[state=active]:bg-white data-[state=active]:text-culturin-indigo data-[state=active]:shadow-sm data-[state=active]:font-medium rounded-md transition-all"
+                className="data-[state=active]:bg-culturin-indigo data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-medium rounded-md transition-all border-b-2 border-transparent data-[state=active]:border-culturin-mustard hover:bg-gray-200 hover:text-culturin-indigo"
               >
                 Dashboard Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="create"
-                className="data-[state=active]:bg-white data-[state=active]:text-culturin-indigo data-[state=active]:shadow-sm data-[state=active]:font-medium rounded-md transition-all"
+                className="data-[state=active]:bg-culturin-indigo data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-medium rounded-md transition-all border-b-2 border-transparent data-[state=active]:border-culturin-mustard hover:bg-gray-200 hover:text-culturin-indigo"
               >
                 Create Experience
               </TabsTrigger>
               <TabsTrigger 
                 value="bookings"
-                className="data-[state=active]:bg-white data-[state=active]:text-culturin-indigo data-[state=active]:shadow-sm data-[state=active]:font-medium rounded-md transition-all"
+                className="data-[state=active]:bg-culturin-indigo data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-medium rounded-md transition-all border-b-2 border-transparent data-[state=active]:border-culturin-mustard hover:bg-gray-200 hover:text-culturin-indigo"
               >
                 Booking Management
               </TabsTrigger>
@@ -166,36 +182,38 @@ const OperatorDashboard = () => {
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-playfair font-semibold">My Listed Experiences</h2>
                     
-                    <div className="flex items-center gap-2 text-sm">
+                    <div className="flex items-center gap-3 text-sm">
                       <div className="relative">
                         <select 
-                          className="bg-white py-2 px-3 border rounded-md pr-8 appearance-none cursor-pointer hover:bg-gray-50"
+                          className="bg-white py-2 px-3 border rounded-md pr-10 appearance-none cursor-pointer hover:bg-gray-50"
                           onChange={(e) => handleFilter(e.target.value)}
                           value={filterStatus}
                         >
-                          <option value="all">Show All</option>
+                          <option value="all">Filter by Status</option>
                           <option value="live">Published Only</option>
                           <option value="draft">Drafts Only</option>
                         </select>
-                        <Filter className="w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400" />
+                        <Filter className="w-4 h-4 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400" />
                       </div>
                       
                       <div className="relative">
                         <select 
-                          className="bg-white py-2 px-3 border rounded-md pr-8 appearance-none cursor-pointer hover:bg-gray-50"
+                          className="bg-white py-2 px-3 border rounded-md pr-10 appearance-none cursor-pointer hover:bg-gray-50"
                           onChange={(e) => handleSort(e.target.value)}
                           value={sortBy}
                         >
-                          <option value="none">Sort By</option>
+                          <option value="none">Sorted by: {sortLabel}</option>
                           <option value="status">Status</option>
                           <option value="bookingPercentage">Booking %</option>
                           <option value="price">Price</option>
                         </select>
-                        {sortDirection === "asc" ? (
-                          <ArrowUp className="w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400" />
-                        ) : (
-                          <ArrowDown className="w-4 h-4 absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400" />
-                        )}
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
+                          {sortDirection === "asc" ? (
+                            <ArrowUp className="w-4 h-4 transition-transform duration-200" />
+                          ) : (
+                            <ArrowDown className="w-4 h-4 transition-transform duration-200" />
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -242,14 +260,16 @@ const OperatorDashboard = () => {
                   <div className="bg-white p-6 rounded-lg shadow-sm">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-lg font-semibold">Performance Overview</h3>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="w-5 h-5 text-gray-400 cursor-pointer hover:text-culturin-indigo transition-colors" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          These metrics show how your experiences are performing
-                        </TooltipContent>
-                      </Tooltip>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="w-5 h-5 text-gray-400 cursor-pointer hover:text-culturin-indigo transition-colors" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            These metrics show how your experiences are performing
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                     
                     <div className="space-y-6">
@@ -257,14 +277,16 @@ const OperatorDashboard = () => {
                         <div className="flex justify-between text-sm mb-2">
                           <div className="flex items-center gap-1">
                             <span>Booking Rate</span>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                Percentage of available slots that get booked. Improve by optimizing your title and description.
-                              </TooltipContent>
-                            </Tooltip>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  Booking Rate is calculated based on the % of available slots that get booked. Improve by optimizing your title and description.
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                           <span className="font-semibold">65%</span>
                         </div>
@@ -276,14 +298,16 @@ const OperatorDashboard = () => {
                         <div className="flex justify-between text-sm mb-2">
                           <div className="flex items-center gap-1">
                             <span>Traveler Satisfaction</span>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                Based on guest ratings and feedback. Improve by delivering an authentic, well-organized experience.
-                              </TooltipContent>
-                            </Tooltip>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  Based on guest ratings and feedback. Improve by delivering an authentic, well-organized experience.
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                           <span className="font-semibold">92%</span>
                         </div>
@@ -295,14 +319,16 @@ const OperatorDashboard = () => {
                         <div className="flex justify-between text-sm mb-2">
                           <div className="flex items-center gap-1">
                             <span>Profile Completion</span>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                How complete your host profile is. Complete profiles attract 3x more bookings.
-                              </TooltipContent>
-                            </Tooltip>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <HelpCircle className="w-4 h-4 text-gray-400 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  How complete your host profile is. Complete profiles attract 3x more bookings.
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                           <span className="font-semibold">80%</span>
                         </div>
@@ -335,6 +361,13 @@ const OperatorDashboard = () => {
                       </ul>
                     </div>
                   </div>
+                  
+                  <Alert className="mt-6 bg-amber-50 border-amber-200">
+                    <AlertTitle className="text-amber-800 font-medium">Complete your profile</AlertTitle>
+                    <AlertDescription className="text-amber-700">
+                      Your profile is 80% complete. Add your background story and more photos to increase visibility.
+                    </AlertDescription>
+                  </Alert>
                 </div>
               </div>
               
