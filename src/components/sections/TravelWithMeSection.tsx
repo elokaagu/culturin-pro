@@ -48,8 +48,8 @@ const TravelWithMeSection = () => {
           >
             <div className="rounded-2xl overflow-hidden h-full">
               <div className="relative h-full">
-                <img 
-                  src="/placeholder.svg" 
+                <Image 
+                  src="https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d?q=80&w=1920&auto=format&fit=crop"
                   alt="Group of travelers enjoying a cultural experience together" 
                   className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.02]"
                 />

@@ -19,17 +19,7 @@ const TestimonialSection = () => {
   }, [inView]);
 
   return (
-    <section ref={ref} className="py-24 lg:py-30 relative overflow-hidden">
-      {/* Background image with overlay */}
-      <div className="absolute inset-0 z-0">
-        <Image 
-          src="https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d?q=80&w=1920&auto=format&fit=crop"
-          alt="Background texture"
-          className="w-full h-full object-cover opacity-20"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-culturin-indigo to-culturin-indigo/90 mix-blend-multiply"></div>
-      </div>
-
+    <section ref={ref} className="py-24 lg:py-30 relative overflow-hidden bg-culturin-indigo">
       <div className="container-custom max-w-5xl relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
           <div className="md:col-span-2">
