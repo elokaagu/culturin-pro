@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Header from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -41,7 +42,7 @@ const DiscoverTrips = () => {
     {
       id: 1,
       title: "Culinary Journey Through Marrakech",
-      image: "public/lovable-uploads/8ee97e98-fd03-4f2b-8d3e-dcb87af6a6ba.png",
+      image: "/lovable-uploads/8ee97e98-fd03-4f2b-8d3e-dcb87af6a6ba.png",
       destination: "Marrakech, Morocco",
       duration: "7 days",
       price: "$1,500",
@@ -64,7 +65,7 @@ const DiscoverTrips = () => {
     {
       id: 2,
       title: "Traditional Crafts in Kyoto",
-      image: "public/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
+      image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
       destination: "Kyoto, Japan",
       duration: "10 days",
       price: "$2,200",
@@ -87,7 +88,7 @@ const DiscoverTrips = () => {
     {
       id: 3,
       title: "Oaxacan Pottery and Textiles",
-      image: "public/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
+      image: "/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
       destination: "Oaxaca, Mexico",
       duration: "6 days",
       price: "$1,200",
@@ -110,7 +111,7 @@ const DiscoverTrips = () => {
     {
       id: 4,
       title: "Balinese Spiritual Retreat",
-      image: "public/lovable-uploads/61e2237f-86de-4ec9-8712-8902092d8c9b.png",
+      image: "/lovable-uploads/61e2237f-86de-4ec9-8712-8902092d8c9b.png",
       destination: "Ubud, Bali",
       duration: "12 days",
       price: "$1,800",
@@ -133,7 +134,7 @@ const DiscoverTrips = () => {
     {
       id: 5,
       title: "Portuguese Wine Experience",
-      image: "public/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
+      image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
       destination: "Douro Valley, Portugal",
       duration: "5 days",
       price: "$1,300",
@@ -156,7 +157,7 @@ const DiscoverTrips = () => {
     {
       id: 6,
       title: "Photography Safari in Kruger",
-      image: "public/lovable-uploads/88dfd739-180c-4ca4-8bfd-08396d3464c9.png",
+      image: "/lovable-uploads/88dfd739-180c-4ca4-8bfd-08396d3464c9.png",
       destination: "Kruger National Park, South Africa",
       duration: "8 days",
       price: "$2,500",
@@ -240,7 +241,7 @@ const DiscoverTrips = () => {
         <div className="relative w-full h-80 overflow-hidden mb-12">
           <div className="absolute inset-0 bg-black/40 z-10"></div>
           <img 
-            src="public/lovable-uploads/61e2237f-86de-4ec9-8712-8902092d8c9b.png" 
+            src="/lovable-uploads/61e2237f-86de-4ec9-8712-8902092d8c9b.png" 
             alt="Cultural Experiences" 
             className="w-full h-full object-cover"
           />
@@ -531,3 +532,4 @@ const DiscoverTrips = () => {
 };
 
 export default DiscoverTrips;
+
