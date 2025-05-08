@@ -30,7 +30,7 @@ const Footer = () => {
             style={{transitionDelay: '100ms'}}
           >
             <div className="flex items-center mb-6">
-              <span className="font-playfair font-medium text-3xl">Culturin</span>
+              <Link to="/" className="font-playfair font-medium text-3xl hover:text-white transition-colors">Culturin</Link>
             </div>
             <p className="text-[#F3F3F3]/80 mb-6 leading-relaxed">
               🌍 <em>A world of stories, shared one experience at a time.</em>
@@ -49,10 +49,10 @@ const Footer = () => {
           >
             <h3 className="font-medium text-xl mb-6">Links</h3>
             <ul className="space-y-4">
-              <li><Link to="/" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">About</Link></li>
-              <li><Link to="/" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</Link></li>
-              <li><Link to="/" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">FAQs</Link></li>
-              <li><Link to="/" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">Privacy</Link></li>
+              <li><Link to="/about-us" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">About</Link></li>
+              <li><Link to="/about-us#contact" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">Contact</Link></li>
+              <li><Link to="/about-us#faq" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">FAQs</Link></li>
+              <li><Link to="/about-us#privacy" className="relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">Privacy</Link></li>
               <li><Link to="/for-operators" className="italic relative hover:text-white transition-colors after:absolute after:left-0 after:bottom-0 after:h-[1px] after:bg-white after:w-0 hover:after:w-full after:transition-all after:duration-300">Become a Host</Link></li>
             </ul>
           </div>
@@ -66,10 +66,10 @@ const Footer = () => {
           >
             <h3 className="font-medium text-xl mb-6">Connect</h3>
             <div className="flex space-x-5 mb-6">
-              <a href="#" className="hover:text-white transition-colors transform hover:scale-105 transition-transform duration-300" aria-label="Instagram">
+              <a href="https://instagram.com/culturin" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors transform hover:scale-105 transition-transform duration-300" aria-label="Instagram">
                 <Instagram className="w-6 h-6" />
               </a>
-              <a href="#" className="hover:text-white transition-colors transform hover:scale-105 transition-transform duration-300" aria-label="LinkedIn">
+              <a href="https://linkedin.com/company/culturin" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors transform hover:scale-105 transition-transform duration-300" aria-label="LinkedIn">
                 <Linkedin className="w-6 h-6" />
               </a>
               <a href="mailto:hello@culturin.com" className="hover:text-white transition-colors transform hover:scale-105 transition-transform duration-300" aria-label="Email">
@@ -81,10 +81,10 @@ const Footer = () => {
                 hello@culturin.com
               </a>
             </p>
-            <a href="#" className="inline-flex items-center hover:text-white transition-colors group">
+            <Link to="/for-operators" className="inline-flex items-center hover:text-white transition-colors group">
               Let's build together 
               <span className="ml-1 group-hover:translate-x-1 transition-transform duration-300">→</span>
-            </a>
+            </Link>
           </div>
         </div>
         
