@@ -23,7 +23,7 @@ const ForOperators = () => {
     
     // Preload hero image
     const img = new window.Image();
-    img.src = "https://images.unsplash.com/photo-1605538058334-52290f6d4b3f?q=80&w=1920&auto=format&fit=crop";
+    img.src = "/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png";
     img.onload = () => setImageLoaded(true);
   }, [location.pathname]);
 
@@ -35,10 +35,10 @@ const ForOperators = () => {
       <section className="relative min-h-[80vh] flex items-center">
         {/* Background image with optimized loading */}
         <div className="absolute inset-0 overflow-hidden z-0 bg-gray-900">
-          {/* Hero background image */}
+          {/* Hero background image - UPDATED TO NEW IMAGE */}
           <Image 
-            src="https://images.unsplash.com/photo-1605538058334-52290f6d4b3f?q=80&w=1920&auto=format&fit=crop"
-            alt="Cultural cooking demonstration" 
+            src="/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png"
+            alt="Travelers looking at a map or guide" 
             className={`w-full h-full object-cover transition-opacity duration-1000 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setImageLoaded(true)}
           />
