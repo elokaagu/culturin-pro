@@ -1,32 +1,67 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Globe } from "lucide-react";
+import { Globe, Shield, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
+const formSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  rememberMe: z.boolean().optional(),
+  use2FA: z.boolean().optional()
+});
 
 const SignIn = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [show2FAInput, setShow2FAInput] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+      use2FA: false
+    }
+  });
+  
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // If 2FA is enabled and we haven't shown the 2FA input yet
+    if (values.use2FA && !show2FAInput) {
+      setShow2FAInput(true);
+      toast({
+        title: "Verification code sent",
+        description: "Please check your email for a verification code."
+      });
+      return;
+    }
+    
+    // Proceed with login
     setIsLoading(true);
     
-    // This is a placeholder for actual authentication logic
     try {
       // Simulating authentication delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Show success message
       toast({
         title: "Signed in successfully",
-        description: "Welcome back to Culturin!"
+        description: values.use2FA ? 
+          "You've been authenticated with two-factor authentication!" :
+          "Welcome back to Culturin!"
       });
       
       navigate("/");
@@ -39,6 +74,10 @@ const SignIn = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
   
   return (
@@ -59,58 +98,149 @@ const SignIn = () => {
         </div>
         
         <div className="bg-card rounded-xl border shadow-sm p-8">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email address</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                className="h-12"
+          <Form {...form}>
+            <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email address</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="email"
+                        placeholder="you@example.com"
+                        required
+                        className="h-12"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
               />
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link 
-                  to="/forgot-password" 
-                  className="text-sm text-culturin-accent hover:text-culturin-accent/80 hover:underline"
-                >
-                  Forgot password?
-                </Link>
+              
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex justify-between items-center">
+                      <FormLabel>Password</FormLabel>
+                      <Link 
+                        to="/forgot-password" 
+                        className="text-sm text-culturin-accent hover:text-culturin-accent/80 hover:underline"
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          type={showPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          required
+                          className="h-12 pr-10"
+                        />
+                        <button 
+                          type="button"
+                          onClick={togglePasswordVisibility} 
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          tabIndex={-1}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              
+              {show2FAInput && (
+                <div className="space-y-2 animate-in fade-in duration-300">
+                  <Label htmlFor="verification-code">Verification Code</Label>
+                  <Input
+                    id="verification-code"
+                    type="text"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    placeholder="Enter the 6-digit code"
+                    className="h-12"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Enter the verification code sent to your email
+                  </p>
+                </div>
+              )}
+              
+              <div className="flex items-center justify-between">
+                <FormField
+                  control={form.control}
+                  name="rememberMe"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal cursor-pointer">Remember me</FormLabel>
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="use2FA"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          disabled={show2FAInput}
+                        />
+                      </FormControl>
+                      <div className="flex items-center space-x-1">
+                        <FormLabel className="text-sm font-normal cursor-pointer">Use 2FA</FormLabel>
+                        <Shield className="h-4 w-4 text-culturin-accent" />
+                      </div>
+                    </FormItem>
+                  )}
+                />
               </div>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="h-12"
-              />
-            </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full h-12 bg-culturin-primary hover:bg-culturin-primary/90 text-white transition-colors border border-gray-600/40"
-              disabled={isLoading}
-            >
-              {isLoading ? "Signing in..." : "Sign In"}
-            </Button>
-            
-            <div className="flex justify-center text-sm">
-              <p className="text-muted-foreground">
-                Don't have an account?{" "}
-                <Link to="/sign-up" className="text-culturin-accent hover:text-culturin-accent/80 hover:underline font-medium">
-                  Create one
-                </Link>
-              </p>
-            </div>
-          </form>
+              
+              <Button 
+                type="submit" 
+                className="w-full h-12 bg-culturin-primary hover:bg-culturin-primary/90 text-white transition-colors border border-gray-600/40"
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : show2FAInput ? "Verify & Sign In" : "Sign In"}
+              </Button>
+              
+              {form.watch("use2FA") && !show2FAInput && (
+                <div className="bg-blue-50 border border-blue-100 rounded-md p-3 text-sm text-blue-800 flex items-start">
+                  <Shield className="h-4 w-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <p>Two-factor authentication adds an extra layer of security to your account by requiring a verification code in addition to your password.</p>
+                </div>
+              )}
+              
+              <div className="flex justify-center text-sm">
+                <p className="text-muted-foreground">
+                  Don't have an account?{" "}
+                  <Link to="/sign-up" className="text-culturin-accent hover:text-culturin-accent/80 hover:underline font-medium">
+                    Create one
+                  </Link>
+                </p>
+              </div>
+            </form>
+          </Form>
           
           <div className="mt-6">
             <div className="relative">
