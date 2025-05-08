@@ -17,6 +17,7 @@ import FAQs from "./pages/FAQs";
 import Privacy from "./pages/Privacy";
 import CulturinProPage from "./pages/CulturinProPage";
 import ProDashboardPage from "./pages/ProDashboardPage";
+import ProBookingPage from "./pages/ProBookingPage";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -86,7 +87,8 @@ const App = () => (
               <Route path="/faqs" element={<PageWithFooter Component={FAQs} />} />
               <Route path="/privacy" element={<PageWithFooter Component={Privacy} />} />
               <Route path="/culturin-pro" element={<PageWithFooter Component={CulturinProPage} />} />
-              <Route path="/pro-dashboard/*" element={<ProDashboardPage />} />
+              <Route path="/pro-dashboard" element={<ProDashboardPage />} />
+              <Route path="/pro-dashboard/booking" element={<ProBookingPage />} />
               <Route path="*" element={<PageWithFooter Component={NotFound} />} />
             </Routes>
           </div>
