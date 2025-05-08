@@ -118,7 +118,7 @@ const DiscoverTrips = () => {
     {
       id: 5,
       title: "Portuguese Wine Experience",
-      image: "https://images.unsplash.com/photo-1528918230037-b8e9a69da5b6?q=80&w=1170",
+      image: "public/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
       destination: "Douro Valley, Portugal",
       duration: "5 days",
       price: "$1,300",

@@ -32,7 +32,7 @@ export const Header = ({ type }: HeaderProps) => {
 
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-soft py-3' : 'bg-transparent py-6'
+      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-soft py-3' : 'bg-black/40 backdrop-blur-sm py-6'
     }`}>
       <div className="container-custom">
         <div className="flex items-center justify-between">
@@ -58,7 +58,7 @@ export const Header = ({ type }: HeaderProps) => {
                         className={`font-medium transition-colors ${
                           isScrolled 
                             ? 'text-culturin-charcoal hover:text-culturin-indigo' 
-                            : 'text-white hover:text-white/80'
+                            : 'text-white hover:text-culturin-mustard'
                         }`}
                       >
                         Discover Trips
@@ -70,7 +70,7 @@ export const Header = ({ type }: HeaderProps) => {
                         className={`font-medium transition-colors ${
                           isScrolled 
                             ? 'text-culturin-charcoal hover:text-culturin-indigo' 
-                            : 'text-white hover:text-white/80'
+                            : 'text-white hover:text-culturin-mustard'
                         }`}
                       >
                         How It Works
@@ -82,7 +82,7 @@ export const Header = ({ type }: HeaderProps) => {
                         className={`font-medium transition-colors ${
                           isScrolled 
                             ? 'text-culturin-charcoal hover:text-culturin-indigo' 
-                            : 'text-white hover:text-white/80'
+                            : 'text-white hover:text-culturin-mustard'
                         }`}
                       >
                         For Operators
@@ -94,7 +94,7 @@ export const Header = ({ type }: HeaderProps) => {
                         className={`font-medium transition-colors ${
                           isScrolled 
                             ? 'text-culturin-charcoal hover:text-culturin-indigo' 
-                            : 'text-white hover:text-white/80'
+                            : 'text-white hover:text-culturin-mustard'
                         }`}
                       >
                         About Us
@@ -150,7 +150,7 @@ export const Header = ({ type }: HeaderProps) => {
               className={`flex items-center ${
                 isScrolled 
                   ? 'border-culturin-indigo text-culturin-indigo hover:bg-culturin-indigo hover:text-white' 
-                  : 'bg-white/20 backdrop-blur-md border-white/20 text-white hover:bg-white/30'
+                  : 'bg-white/30 backdrop-blur-md border-white/20 text-white hover:bg-white/40'
               }`}
               onClick={() => navigate('/sign-in')}
             >
