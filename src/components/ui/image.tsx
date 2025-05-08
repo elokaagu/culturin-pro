@@ -64,7 +64,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
           className={cn(
             "w-full h-full transition-opacity duration-700",
             cover && "object-cover",
-            fill && "object-fill",
+            fill && "absolute inset-0",
             isLoaded ? "opacity-100" : "opacity-0",
             className
           )}

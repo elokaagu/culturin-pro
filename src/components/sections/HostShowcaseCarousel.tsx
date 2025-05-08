@@ -123,7 +123,8 @@ const HostShowcaseCarousel = () => {
               align: "start",
               loop: true,
               skipSnaps: false,
-              containScroll: "trimSnaps"
+              containScroll: "trimSnaps",
+              startIndex: 0
             }}
             className="w-full"
             ref={carouselRef}
