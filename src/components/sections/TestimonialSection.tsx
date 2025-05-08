@@ -20,9 +20,9 @@ const TestimonialSection = () => {
 
   return (
     <section ref={ref} className="py-24 lg:py-30 relative overflow-hidden bg-gradient-to-r from-[#1A1F2C] to-[#2A2F3C]">
-      {/* Updated background image with better contrast */}
+      {/* Updated background image with travel theme */}
       <div className="absolute inset-0">
-        <div className="bg-[url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center h-full w-full"></div>
+        <div className="bg-[url('https://images.unsplash.com/photo-1497802176320-541c8e8de98d?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center h-full w-full"></div>
         {/* Added darker overlay for better text contrast */}
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
       </div>
@@ -64,8 +64,8 @@ const TestimonialSection = () => {
           }`}>
             <div className="photo-card shadow-card h-80">
               <img 
-                src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?q=80&w=830&auto=format&fit=crop" 
-                alt="Traveler exploring Barcelona streets" 
+                src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=830&auto=format&fit=crop" 
+                alt="Person walking through historic Italian street with buildings" 
                 className="w-full h-full object-cover rounded-xl"
               />
             </div>

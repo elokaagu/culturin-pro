@@ -49,8 +49,8 @@ const TravelWithMeSection = () => {
             <div className="rounded-2xl overflow-hidden h-full">
               <div className="relative h-full">
                 <Image 
-                  src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=1920&auto=format&fit=crop"
-                  alt="Tall pine trees in a forest" 
+                  src="https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=1920&auto=format&fit=crop"
+                  alt="Person in colorful clothing walking on street in Marrakech" 
                   className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.02]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>

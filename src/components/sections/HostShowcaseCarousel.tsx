@@ -5,49 +5,49 @@ import { useInView } from "react-intersection-observer";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "@/components/ui/image";
 
-// Sample data for the carousel items
+// Updated carousel items with travel and culture themed images
 const carouselItems = [
   {
     id: 1,
     title: "Artisan Workshops",
     description: "Pass on creative traditions",
-    image: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2000&auto=format&fit=crop"
+    image: "https://images.unsplash.com/photo-1488921618671-463b781ac428?q=80&w=2000&auto=format&fit=crop"
   },
   {
     id: 2,
     title: "Community Ceremonies",
     description: "Celebrate rituals that connect people",
-    image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2000&auto=format&fit=crop"
+    image: "https://images.unsplash.com/photo-1566159199022-cb2a0fb958e5?q=80&w=2000&auto=format&fit=crop"
   },
   {
     id: 3,
     title: "Local Traditions",
     description: "Turn everyday knowledge into powerful journeys",
-    image: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=2000&auto=format&fit=crop"
+    image: "https://images.unsplash.com/photo-1528702748617-c64d49f918af?q=80&w=2000&auto=format&fit=crop"
   },
   {
     id: 4,
     title: "Food Experiences",
     description: "Share culinary practices and stories",
-    image: "https://images.unsplash.com/photo-1605538058334-52290f6d4b3f?q=80&w=2000&auto=format&fit=crop"
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2000&auto=format&fit=crop"
   },
   {
     id: 5,
     title: "Craft Sessions",
     description: "Teach traditional skills with modern relevance",
-    image: "https://images.unsplash.com/photo-1488972685288-c3fd157d7c7a?q=80&w=2000&auto=format&fit=crop"
+    image: "https://images.unsplash.com/photo-1543874869-82e11eb66a7c?q=80&w=2000&auto=format&fit=crop"
   },
   {
     id: 6,
     title: "Rural Journeys",
     description: "Connect travelers to countryside ways of life",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=2000&auto=format&fit=crop"
+    image: "https://images.unsplash.com/photo-1581878070537-c36ddf7e7a53?q=80&w=2000&auto=format&fit=crop"
   },
   {
     id: 7,
     title: "Cultural Stories",
     description: "Share oral traditions with new audiences",
-    image: "https://images.unsplash.com/photo-1469041797191-50ace28483c3?q=80&w=2000&auto=format&fit=crop"
+    image: "https://images.unsplash.com/photo-1528495612343-9ca9f4a4de28?q=80&w=2000&auto=format&fit=crop"
   }
 ];
 

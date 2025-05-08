@@ -23,7 +23,7 @@ const ForOperators = () => {
     
     // Preload hero image
     const img = document.createElement('img');
-    img.src = "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1920&auto=format&fit=crop";
+    img.src = "https://images.unsplash.com/photo-1530521954074-e64f6810b32d?q=80&w=1920&auto=format&fit=crop";
     img.onload = () => setImageLoaded(true);
   }, [location.pathname]);
 
@@ -36,8 +36,8 @@ const ForOperators = () => {
         {/* Hero background image */}
         <div className="absolute inset-0 overflow-hidden z-0 bg-gray-900">
           <Image 
-            src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1920&auto=format&fit=crop" 
-            alt="Landscape photography of mountain with sun rays" 
+            src="https://images.unsplash.com/photo-1530521954074-e64f6810b32d?q=80&w=1920&auto=format&fit=crop" 
+            alt="Traditional boats on canal in Venice with historic buildings" 
             fill={true}
             className={`w-full h-full transition-opacity duration-1000 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={() => setImageLoaded(true)}
@@ -175,8 +175,8 @@ const ForOperators = () => {
             <div className="order-1 lg:order-2">
               <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
-                  src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=1920&auto=format&fit=crop"
-                  alt="Ocean waves at a beach" 
+                  src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1920&auto=format&fit=crop"
+                  alt="Traditional food market with various dishes and ingredients" 
                   aspectRatio="wide"
                   className="w-full h-full"
                 />
@@ -199,8 +199,8 @@ const ForOperators = () => {
             <div className="order-1">
               <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
-                  src="https://images.unsplash.com/photo-1458668383970-8ddd3927deed?q=80&w=1920&auto=format&fit=crop"
-                  alt="Landscape photo of mountain alps" 
+                  src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=1920&auto=format&fit=crop"
+                  alt="Person walking on narrow street between traditional buildings" 
                   aspectRatio="wide"
                   className="w-full h-full"
                 />
@@ -247,8 +247,8 @@ const ForOperators = () => {
             <div className="order-1 lg:order-2">
               <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
-                  src="https://images.unsplash.com/photo-1504893524553-b855bce32c67?q=80&w=1920&auto=format&fit=crop"
-                  alt="Traditional tea ceremony" 
+                  src="https://images.unsplash.com/photo-1576086135878-bd1e4cdf5a3e?q=80&w=1920&auto=format&fit=crop"
+                  alt="Traditional tea ceremony with tea cups and pot" 
                   aspectRatio="wide"
                   className="w-full h-full"
                 />
@@ -265,8 +265,8 @@ const ForOperators = () => {
             <div className="order-1">
               <div className="rounded-2xl overflow-hidden shadow-card h-[400px]">
                 <Image 
-                  src="https://images.unsplash.com/photo-1482881497185-d4a9ddbe4151?q=80&w=1920&auto=format&fit=crop"
-                  alt="Photo of desert sand" 
+                  src="https://images.unsplash.com/photo-1518638150340-f706e86654de?q=80&w=1920&auto=format&fit=crop"
+                  alt="Rice terraces in Bali with traditional farming methods" 
                   aspectRatio="wide"
                   className="w-full h-full"
                 />
