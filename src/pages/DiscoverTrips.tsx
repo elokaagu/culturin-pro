@@ -30,7 +30,7 @@ const DiscoverTrips = () => {
     {
       id: 1,
       title: "Culinary Journey Through Marrakech",
-      image: "https://images.unsplash.com/photo-1553522911-d0ba84227d69?q=80&w=1170",
+      image: "public/lovable-uploads/8ee97e98-fd03-4f2b-8d3e-dcb87af6a6ba.png",
       destination: "Marrakech, Morocco",
       duration: "7 days",
       price: "$1,500",
@@ -52,7 +52,7 @@ const DiscoverTrips = () => {
     {
       id: 2,
       title: "Traditional Crafts in Kyoto",
-      image: "https://images.unsplash.com/photo-1624299831638-33a35a3a431a?q=80&w=1170",
+      image: "public/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
       destination: "Kyoto, Japan",
       duration: "10 days",
       price: "$2,200",
@@ -74,7 +74,7 @@ const DiscoverTrips = () => {
     {
       id: 3,
       title: "Oaxacan Pottery and Textiles",
-      image: "https://images.unsplash.com/photo-1608454367599-c133fdb4bdfd?q=80&w=1170",
+      image: "public/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
       destination: "Oaxaca, Mexico",
       duration: "6 days",
       price: "$1,200",
@@ -96,7 +96,7 @@ const DiscoverTrips = () => {
     {
       id: 4,
       title: "Balinese Spiritual Retreat",
-      image: "https://images.unsplash.com/photo-1604568120269-5958b60308be?q=80&w=1170",
+      image: "public/lovable-uploads/61e2237f-86de-4ec9-8712-8902092d8c9b.png",
       destination: "Ubud, Bali",
       duration: "12 days",
       price: "$1,800",
@@ -140,7 +140,7 @@ const DiscoverTrips = () => {
     {
       id: 6,
       title: "Photography Safari in Kruger",
-      image: "https://images.unsplash.com/photo-1576485290814-1c72aa4bbb8e?q=80&w=1170",
+      image: "public/lovable-uploads/88dfd739-180c-4ca4-8bfd-08396d3464c9.png",
       destination: "Kruger National Park, South Africa",
       duration: "8 days",
       price: "$2,500",
@@ -174,12 +174,23 @@ const DiscoverTrips = () => {
     <div className="min-h-screen flex flex-col">
       <Header type="traveler" />
       <main className="flex-grow pt-28">
+        {/* Header with Image */}
+        <div className="relative w-full h-80 overflow-hidden mb-12">
+          <div className="absolute inset-0 bg-black/40 z-10"></div>
+          <img 
+            src="public/lovable-uploads/61e2237f-86de-4ec9-8712-8902092d8c9b.png" 
+            alt="Cultural Experiences" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 flex flex-col justify-center z-20 container mx-auto px-6">
+            <h1 className="font-playfair text-4xl md:text-5xl text-white mb-4">Discover Group Trips</h1>
+            <p className="text-lg text-white/90 max-w-3xl">
+              Join curated cultural experiences with like-minded travelers. Each trip is designed to connect you deeply with local traditions and communities.
+            </p>
+          </div>
+        </div>
+        
         <section className="container mx-auto px-6 mb-16">
-          <h1 className="font-playfair text-4xl md:text-5xl text-culturin-charcoal mb-8">Discover Group Trips</h1>
-          <p className="text-lg text-[#4A4A4A] max-w-3xl mb-12">
-            Join curated cultural experiences with like-minded travelers. Each trip is designed to connect you deeply with local traditions and communities.
-          </p>
-          
           {/* Filters */}
           <div className="flex flex-wrap gap-3 mb-10">
             <Button 
