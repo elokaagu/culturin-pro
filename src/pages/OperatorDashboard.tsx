@@ -3,20 +3,72 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
 import ExperienceBuilder from "@/components/ExperienceBuilder";
-import ListingsTable from "@/components/ListingsTable";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Plus, Calendar } from "lucide-react";
+import { 
+  Plus, 
+  Calendar, 
+  Filter, 
+  MapPin, 
+  TrendingUp,
+  Info,
+  ChevronDown
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import Image from "@/components/ui/image";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-// Import new tab components
+// Import tab components
 import DashboardOverview from "@/components/DashboardOverview";
 import ExperiencesTab from "@/components/ExperiencesTab";
 import BookingsTab from "@/components/BookingsTab";
+import OperatorExperienceCard from "@/components/OperatorExperienceCard";
+
+// Mock experiences data
+const mockExperiences = [
+  {
+    id: "1",
+    title: "Traditional Pottery Workshop",
+    status: "live",
+    bookingPercentage: 75,
+    price: 45,
+    location: "Oaxaca, Mexico",
+    dates: "Weekly, Tue & Thu",
+    duration: "3 hours",
+    image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
+    trend: "up"
+  },
+  {
+    id: "2",
+    title: "Desert Stargazing Experience",
+    status: "live",
+    bookingPercentage: 60,
+    price: 85,
+    location: "Marrakech, Morocco",
+    dates: "Nightly, Weather Permitting",
+    duration: "4 hours",
+    image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
+    trend: "flat"
+  },
+  {
+    id: "3",
+    title: "Farm to Table Cooking Class",
+    status: "draft",
+    bookingPercentage: 0,
+    price: 65,
+    location: "Bali, Indonesia",
+    dates: "Mon, Wed, Fri",
+    duration: "2.5 hours",
+    image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
+    daysInDraft: 12,
+    trend: "down"
+  }
+];
 
 const OperatorDashboard = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
   const { toast } = useToast();
   const location = useLocation();
   
@@ -40,35 +92,48 @@ const OperatorDashboard = () => {
       description: "You've switched to booking management.",
     });
   };
+  
+  const handleFilterChange = (status: string) => {
+    setFilterStatus(status);
+    toast({
+      title: `Filter: ${status.charAt(0).toUpperCase() + status.slice(1)}`,
+      description: `Showing ${status} experiences.`,
+    });
+  };
+
+  // Filtered experiences based on selected status
+  const filteredExperiences = filterStatus === "all" 
+    ? mockExperiences 
+    : mockExperiences.filter(exp => exp.status === filterStatus);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header type="operator" />
       
-      {/* Hero Section with enhanced contrast */}
-      <section className="bg-culturin-indigo py-12 text-white relative overflow-hidden">
-        {/* Background image with overlay */}
+      {/* Enhanced Hero Section with more impactful design */}
+      <section className="bg-culturin-indigo py-16 md:py-20 text-white relative overflow-hidden">
+        {/* Background image with enhanced overlay */}
         <div className="absolute inset-0 z-0">
           <Image 
-            src="/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png"
-            alt="Cultural background" 
-            className="w-full h-full object-cover opacity-30"
+            src="/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png"
+            alt="Cultural festival celebration" 
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-culturin-indigo/95 to-black/80 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-culturin-indigo/70 to-black/60"></div>
         </div>
         
         <div className="container-custom relative z-10">
-          <div className="max-w-2xl backdrop-blur-sm bg-black/20 p-6 rounded-lg border border-white/10">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold mb-4 text-white text-shadow">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold mb-6 text-white text-shadow-lg animate-fade-in">
               Empower Your Culture
             </h1>
-            <p className="text-xl text-white max-w-2xl mb-8 drop-shadow-md">
-              Share your story, publish your tours, grow your travel business.
+            <p className="text-xl md:text-2xl text-white max-w-2xl mb-8 drop-shadow-md animate-fade-in" style={{animationDelay: '0.2s'}}>
+              Grow your cultural business. Reach global travelers. Share your story.
             </p>
             
-            <div className="flex flex-wrap gap-4 mb-4">
+            <div className="flex flex-wrap gap-4 mb-4 animate-fade-in" style={{animationDelay: '0.3s'}}>
               <Button 
-                className="bg-culturin-mustard text-culturin-indigo hover:bg-culturin-mustard/90 hover:scale-105 flex items-center px-6 py-6 font-semibold shadow-lg transition-all duration-200"
+                className="bg-white text-culturin-indigo hover:bg-culturin-mustard hover:text-white hover:scale-105 flex items-center px-8 py-6 font-semibold shadow-lg transition-all duration-300 rounded-xl"
                 onClick={handleCreateExperience}
               >
                 <Plus className="w-5 h-5 mr-2" />
@@ -76,7 +141,7 @@ const OperatorDashboard = () => {
               </Button>
               <Button 
                 variant="outline" 
-                className="border-white text-white hover:bg-white/30 hover:scale-105 flex items-center px-6 py-6 shadow-sm transition-all duration-200"
+                className="border-white text-white hover:bg-white/30 hover:scale-105 flex items-center px-8 py-6 shadow-sm transition-all duration-300 rounded-xl"
                 onClick={handleViewBookings}
               >
                 <Calendar className="w-5 h-5 mr-2" />
@@ -87,39 +152,227 @@ const OperatorDashboard = () => {
         </div>
       </section>
       
-      {/* Dashboard Content with improved tabs */}
-      <section className="flex-1 py-8">
+      {/* Dashboard Content with improved tabs and filters */}
+      <section className="flex-1 py-12">
         <div className="container-custom">
           <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            <TabsList className="grid grid-cols-1 sm:grid-cols-3 p-1 bg-gray-100 rounded-lg">
-              <TabsTrigger 
-                value="overview"
-                className="data-[state=active]:bg-culturin-indigo data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-medium rounded-md transition-all border-b-2 border-transparent data-[state=active]:border-culturin-mustard hover:bg-gray-200 hover:text-culturin-indigo"
-              >
-                Dashboard Overview
-              </TabsTrigger>
-              <TabsTrigger 
-                value="experiences"
-                className="data-[state=active]:bg-culturin-indigo data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-medium rounded-md transition-all border-b-2 border-transparent data-[state=active]:border-culturin-mustard hover:bg-gray-200 hover:text-culturin-indigo"
-              >
-                My Experiences
-              </TabsTrigger>
-              <TabsTrigger 
-                value="bookings"
-                className="data-[state=active]:bg-culturin-indigo data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:font-medium rounded-md transition-all border-b-2 border-transparent data-[state=active]:border-culturin-mustard hover:bg-gray-200 hover:text-culturin-indigo"
-              >
-                Booking Management
-              </TabsTrigger>
-            </TabsList>
+            {/* Enhanced Tab Navigation */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+              <TabsList className="bg-transparent p-0 flex flex-wrap gap-2">
+                <TabsTrigger 
+                  value="overview"
+                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-white data-[state=active]:text-culturin-indigo data-[state=active]:shadow-md data-[state=active]:font-medium rounded-full px-6 py-3 transition-all"
+                >
+                  Dashboard Overview
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="experiences"
+                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-white data-[state=active]:text-culturin-indigo data-[state=active]:shadow-md data-[state=active]:font-medium rounded-full px-6 py-3 transition-all"
+                >
+                  My Experiences
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="bookings"
+                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-white data-[state=active]:text-culturin-indigo data-[state=active]:shadow-md data-[state=active]:font-medium rounded-full px-6 py-3 transition-all"
+                >
+                  Booking Management
+                </TabsTrigger>
+              </TabsList>
+              
+              {/* Filters for Experiences */}
+              {activeTab === "experiences" && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm text-gray-500 flex items-center">
+                    <Filter className="w-4 h-4 mr-1" />
+                    Filter:
+                  </span>
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm" 
+                      variant={filterStatus === "all" ? "default" : "outline"} 
+                      onClick={() => handleFilterChange("all")}
+                      className="rounded-full text-sm h-9"
+                    >
+                      All
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant={filterStatus === "live" ? "default" : "outline"}
+                      onClick={() => handleFilterChange("live")}
+                      className="rounded-full text-sm h-9"
+                    >
+                      Published
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant={filterStatus === "draft" ? "default" : "outline"}
+                      onClick={() => handleFilterChange("draft")}
+                      className="rounded-full text-sm h-9"
+                    >
+                      Draft
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
             
             {/* Dashboard Overview Tab */}
-            <TabsContent value="overview" className="space-y-10">
+            <TabsContent value="overview" className="space-y-10 animate-fade-in">
               <DashboardOverview />
             </TabsContent>
             
-            {/* My Experiences Tab */}
-            <TabsContent value="experiences">
-              <ExperiencesTab />
+            {/* My Experiences Tab with redesigned cards */}
+            <TabsContent value="experiences" className="animate-fade-in">
+              <div className="mb-8">
+                <h2 className="text-2xl font-semibold mb-6 text-gray-800">Your Experiences</h2>
+                
+                {/* Experience Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredExperiences.map(experience => (
+                    <div 
+                      key={experience.id} 
+                      className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                    >
+                      {/* Card Image */}
+                      <div className="relative h-52">
+                        <Image
+                          src={experience.image}
+                          alt={experience.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-4 right-4">
+                          <Badge 
+                            className={experience.status === "live" 
+                              ? "bg-green-100 text-green-800 hover:bg-green-200" 
+                              : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                            }
+                          >
+                            {experience.status === "live" ? "Published" : "Draft"}
+                          </Badge>
+                        </div>
+                      </div>
+                      
+                      {/* Card Content */}
+                      <div className="p-6">
+                        <div className="flex items-start justify-between mb-2">
+                          <h3 className="font-semibold text-lg text-gray-900">{experience.title}</h3>
+                          <p className="text-lg font-bold text-culturin-indigo">${experience.price}</p>
+                        </div>
+                        
+                        <div className="flex items-center text-gray-500 mb-3 text-sm">
+                          <MapPin className="w-4 h-4 mr-1" />
+                          <span>{experience.location}</span>
+                        </div>
+                        
+                        <div className="flex justify-between mb-4">
+                          <span className="text-sm text-gray-500">{experience.duration}</span>
+                          <span className="text-sm text-gray-500">{experience.dates}</span>
+                        </div>
+                        
+                        {/* Booking Performance */}
+                        <div className="border-t pt-4">
+                          <div className="flex items-center justify-between text-sm mb-2">
+                            <div className="flex items-center gap-1">
+                              <span>Booking Rate</span>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Info className="w-4 h-4 text-gray-400 cursor-help" />
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-xs">
+                                    <p>Percentage of page views resulting in bookings</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              {experience.trend === 'up' && <TrendingUp className="w-4 h-4 text-green-500" />}
+                            </div>
+                            <span className="font-semibold">{experience.bookingPercentage}%</span>
+                          </div>
+                          <div className="relative pt-1">
+                            <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
+                              <div 
+                                style={{ width: `${experience.bookingPercentage}%` }}
+                                className={`shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center transition-all duration-500 ${
+                                  experience.bookingPercentage >= 70 ? 'bg-green-500' : 
+                                  experience.bookingPercentage >= 40 ? 'bg-blue-500' : 
+                                  'bg-amber-500'
+                                }`}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Card Actions */}
+                        <div className="mt-6 flex justify-center">
+                          <Button 
+                            variant="outline" 
+                            className="w-full rounded-xl hover:bg-gray-100"
+                            onClick={() => toast({
+                              title: "Manage Experience",
+                              description: `You clicked to manage ${experience.title}.`
+                            })}
+                          >
+                            Manage Experience
+                            <ChevronDown className="w-4 h-4 ml-1" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Add New Experience Card */}
+                  <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-2xl overflow-hidden flex flex-col items-center justify-center p-10 hover:bg-gray-100 transition-colors duration-200 cursor-pointer min-h-[400px]"
+                    onClick={handleCreateExperience}
+                  >
+                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center mb-4">
+                      <Plus className="w-8 h-8 text-gray-500" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-800 mb-2">Add New Experience</h3>
+                    <p className="text-sm text-gray-500 text-center max-w-xs">Create a new cultural experience to share with travelers.</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Performance Insights section - replaces sidebar */}
+              <div className="bg-white rounded-2xl p-8 shadow-sm mt-12">
+                <h3 className="text-xl font-semibold mb-6">Performance Insights</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-gray-50 rounded-xl p-6">
+                    <div className="text-sm text-gray-500 mb-2">Total Bookings (30 days)</div>
+                    <div className="text-3xl font-bold text-gray-900">37</div>
+                    <div className="flex items-center mt-2 text-green-600 text-sm">
+                      <TrendingUp className="w-4 h-4 mr-1" />
+                      +12% from last month
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-6">
+                    <div className="text-sm text-gray-500 mb-2">Revenue (30 days)</div>
+                    <div className="text-3xl font-bold text-gray-900">$2,480</div>
+                    <div className="flex items-center mt-2 text-green-600 text-sm">
+                      <TrendingUp className="w-4 h-4 mr-1" />
+                      +8% from last month
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-6">
+                    <div className="text-sm text-gray-500 mb-2">Avg. Experience Rating</div>
+                    <div className="text-3xl font-bold text-gray-900">4.8/5</div>
+                    <div className="flex items-center mt-2 text-gray-500 text-sm">
+                      Based on 28 reviews
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Fixed CTA for creating new experiences */}
+              <div className="fixed bottom-8 right-8 z-40">
+                <Button 
+                  onClick={handleCreateExperience} 
+                  className="bg-culturin-indigo hover:bg-culturin-indigo/90 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 px-6 py-6"
+                >
+                  <Plus className="w-5 h-5" />
+                  New Experience
+                </Button>
+              </div>
             </TabsContent>
             
             {/* Create Experience Tab */}
