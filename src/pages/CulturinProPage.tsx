@@ -10,24 +10,23 @@ const CulturinProPage = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white font-sans">
       <Header type="operator" />
-      <div className="pt-28 pb-12 container mx-auto px-4 md:px-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+      <div className="pt-24 pb-12 container mx-auto px-4 md:px-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">Culturin Pro Platform</h1>
-            <p className="text-lg text-gray-700 max-w-3xl">
-              Welcome to Culturin Pro - your professional toolkit for growing and managing your cultural experience business.
+            <h1 className="text-2xl font-medium mb-2">Culturin Pro Platform</h1>
+            <p className="text-base text-gray-700 max-w-2xl">
+              Professional toolkit for cultural experience businesses
             </p>
           </div>
           
           <Button 
             onClick={() => navigate('/pro-dashboard')} 
-            className="bg-[#1E1E1E] hover:bg-[#000000] text-white flex items-center"
-            size="lg"
+            className="bg-black hover:bg-gray-800 text-white flex items-center py-2 px-4"
           >
-            <Crown className="mr-2 h-5 w-5" /> 
-            Go to Pro Dashboard
+            <Crown className="mr-2 h-4 w-4" /> 
+            Go to Dashboard
           </Button>
         </div>
         

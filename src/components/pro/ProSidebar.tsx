@@ -10,17 +10,16 @@ import {
   ChartBar,
   Settings,
   Crown,
-  Globe,
   Megaphone
 } from "lucide-react";
 
 const menuItems = [
   { name: "Dashboard", path: "/pro-dashboard", icon: LayoutDashboard },
   { name: "Itinerary Builder", path: "/pro-dashboard/itinerary", icon: PencilRuler },
-  { name: "Booking & Checkout", path: "/pro-dashboard/booking", icon: ShoppingCart },
-  { name: "CRM & Automation", path: "/pro-dashboard/crm", icon: Users },
-  { name: "Marketing Toolkit", path: "/pro-dashboard/marketing", icon: Megaphone },
-  { name: "Business Intelligence", path: "/pro-dashboard/analytics", icon: ChartBar },
+  { name: "Booking System", path: "/pro-dashboard/booking", icon: ShoppingCart },
+  { name: "Client CRM", path: "/pro-dashboard/crm", icon: Users },
+  { name: "Marketing", path: "/pro-dashboard/marketing", icon: Megaphone },
+  { name: "Analytics", path: "/pro-dashboard/analytics", icon: ChartBar },
   { name: "Settings", path: "/pro-dashboard/settings", icon: Settings }
 ];
 
@@ -30,14 +29,11 @@ const ProSidebar: React.FC = () => {
   const [userName, setUserName] = useState<string>("Cultural Host");
   const [planType, setplanType] = useState<string>("Growth Plan");
   
-  // In a real app, this would come from your authentication context
-  // For demo purposes, we'll use localStorage
   useEffect(() => {
     const storedUserName = localStorage.getItem('userName');
     if (storedUserName) {
       setUserName(storedUserName);
     }
-    // For demo purposes, let's store a user name if none exists
     else {
       localStorage.setItem('userName', 'Jane Doe');
       setUserName('Jane Doe');
@@ -54,33 +50,32 @@ const ProSidebar: React.FC = () => {
   }, []);
   
   return (
-    <div className="w-64 bg-white h-screen border-r border-gray-200 flex flex-col fixed left-0 top-0">
+    <div className="w-64 bg-white h-screen border-r border-gray-200 flex flex-col fixed left-0 top-0 font-sans">
       {/* Logo & Header */}
       <div className="p-4 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <Crown className="h-5 w-5 text-[#FFD700]" />
-          <h1 className="font-medium text-xl">Culturin OS</h1>
+          <h1 className="font-medium text-lg">Culturin OS</h1>
         </div>
-        <p className="text-xs text-gray-500 mt-1">Cultural Operating System</p>
+        <p className="text-xs text-gray-500 mt-1">Cultural Experience Platform</p>
       </div>
       
       {/* Navigation Items */}
-      <div className="flex-1 overflow-auto py-4">
+      <div className="flex-1 overflow-auto py-2">
         <nav className="px-2 space-y-1">
           {menuItems.map((item) => (
             <button
               key={item.name}
               onClick={() => navigate(item.path)}
               className={cn(
-                "flex w-full items-center gap-3 px-3 py-2 rounded-md text-left transition-colors",
+                "flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-colors text-sm",
                 location.pathname === item.path 
                   ? "bg-gray-100 text-gray-900"
                   : "text-gray-700 hover:bg-gray-50",
-                "group"
               )}
             >
-              <item.icon className="h-5 w-5" />
-              <span className="truncate">{item.name}</span>
+              <item.icon className="h-4 w-4" />
+              <span>{item.name}</span>
             </button>
           ))}
         </nav>

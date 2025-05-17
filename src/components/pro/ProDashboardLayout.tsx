@@ -8,9 +8,9 @@ interface ProDashboardLayoutProps {
 
 const ProDashboardLayout: React.FC<ProDashboardLayoutProps> = ({ children }) => {
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen font-sans">
       <ProSidebar />
-      <div className="ml-64 p-8">
+      <div className="ml-64 p-6 lg:p-8">
         {children}
       </div>
     </div>

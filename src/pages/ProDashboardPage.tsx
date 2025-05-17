@@ -15,7 +15,6 @@ import CircleDollarSignIcon from '@/components/pro/CircleDollarSign';
 
 // In a real app, this would come from your authentication/user system
 const useProAccess = () => {
-  // For demo purposes, we'll use localStorage to simulate a user's subscription status
   const [hasAccess, setHasAccess] = useState<boolean>(false);
   
   useEffect(() => {
@@ -37,37 +36,30 @@ const ProDashboardPage: React.FC = () => {
   const { hasAccess, grantAccess } = useProAccess();
   
   useEffect(() => {
-    // Check access when component mounts
     if (!hasAccess) {
       setShowAccessDialog(true);
     }
-    
-    // Remember this route for next login
     localStorage.setItem('lastRoute', '/pro-dashboard');
   }, [hasAccess]);
   
   const handlePurchase = () => {
-    // In a real app, this would redirect to Stripe or your payment processor
     grantAccess();
     setShowAccessDialog(false);
   };
   
-  // If user doesn't have access, show access dialog and the dashboard in background
-  // Once they get access or if they already have it, show the dashboard
-  
   return (
     <>
       <ProDashboardLayout>
-        <div className="space-y-8">
+        <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold">Welcome to Culturin Pro</h1>
-            <p className="mt-1 text-gray-600">
-              Your professional toolkit for growing and managing your cultural experiences business.
+            <h1 className="text-2xl font-medium">Culturin Pro Dashboard</h1>
+            <p className="mt-1 text-gray-600 text-sm">
+              Manage your cultural experiences business
             </p>
           </div>
           
           {/* Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <DashboardMetricCard
               title="Total Bookings"
               value="128"
@@ -76,21 +68,21 @@ const ProDashboardPage: React.FC = () => {
               icon={<CalendarIcon />}
             />
             <DashboardMetricCard
-              title="Avg. Traveler Rating"
+              title="Average Rating"
               value="4.8"
               change="0.3"
               changePositive={true}
               icon={<Users className="h-5 w-5" />}
             />
             <DashboardMetricCard
-              title="Experiences Published"
+              title="Experiences"
               value="12"
               change="2"
               changePositive={true}
               icon={<FileTextIcon />}
             />
             <DashboardMetricCard
-              title="Pending Inquiries"
+              title="Inquiries"
               value="6"
               change="3"
               changePositive={false}
@@ -99,12 +91,12 @@ const ProDashboardPage: React.FC = () => {
           </div>
           
           {/* Charts */}
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-4">
             <BookingTrendsChart />
           </div>
           
           {/* Recent Activity */}
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-4">
             <RecentActivityList />
           </div>
         </div>
@@ -114,18 +106,18 @@ const ProDashboardPage: React.FC = () => {
       <Dialog open={showAccessDialog} onOpenChange={setShowAccessDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Crown className="h-5 w-5 text-[#FFD700]" /> Unlock Culturin Pro
+            <DialogTitle className="flex items-center gap-2">
+              <Crown className="h-5 w-5 text-[#FFD700]" /> Upgrade to Pro
             </DialogTitle>
             <DialogDescription>
-              Upgrade to access professional tools for managing your cultural experiences.
+              Access professional tools for managing cultural experiences.
             </DialogDescription>
           </DialogHeader>
           
           <div className="py-4">
             <div className="flex flex-col gap-4">
               <div className="border rounded-lg p-4">
-                <h3 className="font-semibold flex items-center">
+                <h3 className="font-medium flex items-center">
                   Free Plan
                   <Badge variant="outline" className="ml-2">Current</Badge>
                 </h3>
@@ -137,17 +129,16 @@ const ProDashboardPage: React.FC = () => {
               </div>
               
               <div className="border-2 border-[#222] rounded-lg p-4 bg-gray-50">
-                <h3 className="font-semibold flex items-center text-[#222]">
+                <h3 className="font-medium flex items-center text-[#222]">
                   Pro Plan
                   <Badge className="ml-2 bg-[#FFD700] text-[#222]">Recommended</Badge>
                 </h3>
-                <p className="text-lg font-bold mt-1">$49/month</p>
+                <p className="text-lg font-medium mt-1">$49/month</p>
                 <ul className="mt-2 space-y-1">
                   <li className="text-sm text-gray-600">• Advanced booking tools</li>
                   <li className="text-sm text-gray-600">• Full analytics suite</li>
                   <li className="text-sm text-gray-600">• Priority support</li>
                   <li className="text-sm text-gray-600">• Team collaboration</li>
-                  <li className="text-sm text-gray-600">• Website builder</li>
                 </ul>
               </div>
             </div>
