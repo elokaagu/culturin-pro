@@ -32,18 +32,16 @@ export const Header = ({ type }: HeaderProps) => {
 
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-soft py-3' : 'bg-black/40 backdrop-blur-sm py-6'
+      isScrolled ? 'bg-black py-3 shadow-md' : 'bg-black/80 backdrop-blur-md py-4'
     }`}>
       <div className="container-custom">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center group">
-              <Crown className={`w-8 h-8 mr-2 transition-colors ${
-                isScrolled ? 'text-culturin-indigo' : 'text-white group-hover:text-culturin-mustard'
-              }`} />
-              <span className={`font-sans font-bold text-2xl transition-colors ${
-                isScrolled ? 'text-culturin-indigo' : 'text-white group-hover:text-culturin-mustard'
-              }`}>Culturin OS</span>
+              <Crown className="w-8 h-8 mr-2 text-white group-hover:text-gray-300 transition-colors" />
+              <span className="font-sans font-bold text-2xl text-white group-hover:text-gray-300 transition-colors">
+                Culturin OS
+              </span>
             </Link>
           </div>
           
@@ -53,11 +51,7 @@ export const Header = ({ type }: HeaderProps) => {
                 <li>
                   <Link 
                     to="/culturin-pro" 
-                    className={`font-medium transition-colors ${
-                      isScrolled 
-                        ? 'text-culturin-charcoal hover:text-culturin-indigo' 
-                        : 'text-white hover:text-culturin-mustard'
-                    }`}
+                    className="font-medium text-white hover:text-gray-300 transition-colors"
                   >
                     Features
                   </Link>
@@ -65,11 +59,7 @@ export const Header = ({ type }: HeaderProps) => {
                 <li>
                   <Link 
                     to="/for-operators" 
-                    className={`font-medium transition-colors ${
-                      isScrolled 
-                        ? 'text-culturin-charcoal hover:text-culturin-indigo' 
-                        : 'text-white hover:text-culturin-mustard'
-                    }`}
+                    className="font-medium text-white hover:text-gray-300 transition-colors"
                   >
                     Pricing
                   </Link>
@@ -77,11 +67,7 @@ export const Header = ({ type }: HeaderProps) => {
                 <li>
                   <Link 
                     to="/operator" 
-                    className={`font-medium transition-colors ${
-                      isScrolled 
-                        ? 'text-culturin-charcoal hover:text-culturin-clay' 
-                        : 'text-white hover:text-culturin-mustard'
-                    }`}
+                    className="font-medium text-white hover:text-gray-300 transition-colors"
                   >
                     Dashboard
                   </Link>
@@ -90,13 +76,9 @@ export const Header = ({ type }: HeaderProps) => {
             </nav>
             
             <Button 
-              variant={isScrolled ? "outline" : "default"} 
+              variant="outline" 
               size="sm" 
-              className={`flex items-center ${
-                isScrolled 
-                  ? 'border-culturin-indigo text-culturin-indigo hover:bg-culturin-indigo hover:text-white' 
-                  : 'bg-white/30 backdrop-blur-md border-white/20 text-white hover:bg-white/40'
-              }`}
+              className="flex items-center bg-transparent border-white/20 text-white hover:bg-white/10"
               onClick={() => navigate('/sign-in')}
             >
               <User className="w-4 h-4 mr-2" />
@@ -105,9 +87,7 @@ export const Header = ({ type }: HeaderProps) => {
           </div>
           
           <button 
-            className={`md:hidden p-2 ${
-              isScrolled ? 'text-culturin-indigo' : 'text-white'
-            }`} 
+            className="md:hidden p-2 text-white" 
             onClick={toggleMenu}
             aria-label="Toggle menu"
           >
@@ -116,19 +96,19 @@ export const Header = ({ type }: HeaderProps) => {
         </div>
       </div>
       
-      {/* Mobile menu with improved contrast */}
+      {/* Mobile menu with improved design */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-card z-50 p-6 animate-fade-in">
-          <nav className="py-4">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-lg z-50 animate-fade-in">
+          <nav className="py-6 px-6">
             <ul className="space-y-4">
-              <li><Link to="/culturin-pro" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">Features</Link></li>
-              <li><Link to="/for-operators" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">Pricing</Link></li>
-              <li><Link to="/operator" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">Dashboard</Link></li>
+              <li><Link to="/culturin-pro" className="block py-3 px-4 hover:bg-white/10 rounded-md font-medium text-white">Features</Link></li>
+              <li><Link to="/for-operators" className="block py-3 px-4 hover:bg-white/10 rounded-md font-medium text-white">Pricing</Link></li>
+              <li><Link to="/operator" className="block py-3 px-4 hover:bg-white/10 rounded-md font-medium text-white">Dashboard</Link></li>
               <li>
                 <Button 
-                  variant="default" 
+                  variant="outline" 
                   size="sm" 
-                  className="w-full bg-culturin-indigo hover:bg-culturin-indigo/80 transition-all duration-300"
+                  className="w-full bg-transparent border-white/20 text-white hover:bg-white/10 mt-2"
                   onClick={() => {
                     navigate('/sign-in');
                     setIsMenuOpen(false);
