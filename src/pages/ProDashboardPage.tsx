@@ -52,23 +52,23 @@ const ProDashboardPage: React.FC = () => {
       <ProDashboardLayout>
         <div className="space-y-6">
           <div>
-            <h1 className="text-2xl font-medium">Culturin Pro Dashboard</h1>
+            <h1 className="text-2xl font-medium">Dashboard</h1>
             <p className="mt-1 text-gray-600 text-sm">
-              Manage your cultural experiences business
+              Overview of your cultural experiences
             </p>
           </div>
           
           {/* Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <DashboardMetricCard
-              title="Total Bookings"
+              title="Bookings"
               value="128"
               change="12%"
               changePositive={true}
               icon={<CalendarIcon />}
             />
             <DashboardMetricCard
-              title="Average Rating"
+              title="Rating"
               value="4.8"
               change="0.3"
               changePositive={true}
