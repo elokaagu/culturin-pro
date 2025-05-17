@@ -104,13 +104,16 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Product Pillars Section */}
+      {/* Core Modules Section */}
       <section className="py-20 bg-white">
         <div className="container-custom">
-          <h2 className="heading-lg text-center mb-16 animate-fade-in">The Culturin OS Platform</h2>
+          <h2 className="heading-lg text-center mb-6 animate-fade-in">The Culturin OS Platform</h2>
+          <p className="text-center text-gray-600 mb-16 max-w-3xl mx-auto animate-fade-in">
+            Empowering operators to turn itineraries into narratives, bookings into brand moments, and clients into communities.
+          </p>
           
           <div className="grid grid-cols-1 md:grid-cols-5 gap-10 animate-fade-in" style={{animationDelay: '0.2s'}}>
-            {/* Pillar 1 */}
+            {/* Module 1: Itinerary Builder */}
             <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
               <CardContent className="p-8 flex flex-col items-center text-center">
                 <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
@@ -118,59 +121,59 @@ const ForOperators = () => {
                 </div>
                 <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Itinerary Builder</h3>
                 <p className="text-[#4A4A4A]">
-                  Dynamic, modular tool for creating interactive travel itineraries that double as marketing material.
+                  Craft narrative-rich, modular travel itineraries that double as marketing material.
                 </p>
               </CardContent>
             </Card>
             
-            {/* Pillar 2 */}
+            {/* Module 2: Booking Layer */}
             <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
               <CardContent className="p-8 flex flex-col items-center text-center">
                 <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
                   <ShoppingCart className="w-8 h-8 text-culturin-indigo" />
                 </div>
-                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Booking & Checkout</h3>
+                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Booking Layer</h3>
                 <p className="text-[#4A4A4A]">
-                  Conversion-optimized booking that reflects the emotional frame of your unique trips.
+                  Transform bookings into seamless, brand-aligned experiences with flexible payment options.
                 </p>
               </CardContent>
             </Card>
             
-            {/* Pillar 3 */}
-            <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
-              <CardContent className="p-8 flex flex-col items-center text-center">
-                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
-                  <Users className="w-8 h-8 text-culturin-indigo" />
-                </div>
-                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">CRM & Automation</h3>
-                <p className="text-[#4A4A4A]">
-                  Turn one-time guests into returning fans with automated journeys and personalized experiences.
-                </p>
-              </CardContent>
-            </Card>
-            
-            {/* Pillar 4 */}
+            {/* Module 3: Storytelling Studio */}
             <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
               <CardContent className="p-8 flex flex-col items-center text-center">
                 <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
                   <Megaphone className="w-8 h-8 text-culturin-indigo" />
                 </div>
-                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Marketing Toolkit</h3>
+                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Storytelling Studio</h3>
                 <p className="text-[#4A4A4A]">
-                  AI-powered content generation and marketing tools designed for cultural storytelling.
+                  Market trips with AI-assisted content, caption builders, and visual asset management.
                 </p>
               </CardContent>
             </Card>
             
-            {/* Pillar 5 */}
+            {/* Module 4: Client Dashboard */}
+            <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
+              <CardContent className="p-8 flex flex-col items-center text-center">
+                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
+                  <Users className="w-8 h-8 text-culturin-indigo" />
+                </div>
+                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Client Dashboard</h3>
+                <p className="text-[#4A4A4A]">
+                  Build long-term relationships with lightweight CRM, retention tools, and loyalty programs.
+                </p>
+              </CardContent>
+            </Card>
+            
+            {/* Module 5: Backoffice */}
             <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
               <CardContent className="p-8 flex flex-col items-center text-center">
                 <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
                   <ChartBar className="w-8 h-8 text-culturin-indigo" />
                 </div>
-                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Business Intelligence</h3>
+                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Backoffice</h3>
                 <p className="text-[#4A4A4A]">
-                  Your command center for growth with analytics, trends, and actionable insights.
+                  Track bookings, payments, and margins with clear dashboards and smart suggestions.
                 </p>
               </CardContent>
             </Card>
@@ -211,8 +214,52 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Pricing Section */}
+      {/* Benefits Section (New) */}
       <section className="py-16 bg-white">
+        <div className="container-custom">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-medium mb-6">For Modern Tour Operators</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Culturin serves independent operators offering cultural, community-based, and identity-driven travel experiences.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-6 border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all">
+              <div className="bg-culturin-mustard/10 w-12 h-12 flex items-center justify-center rounded-full mb-4">
+                <Compass className="w-6 h-6 text-culturin-indigo" />
+              </div>
+              <h3 className="text-xl font-medium mb-3">Niche Cultural Markets</h3>
+              <p className="text-gray-600">
+                Perfect for operators specializing in diaspora, wellness, solo female travel, heritage, and cultural immersion.
+              </p>
+            </div>
+            
+            <div className="p-6 border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all">
+              <div className="bg-culturin-mustard/10 w-12 h-12 flex items-center justify-center rounded-full mb-4">
+                <CalendarCheck className="w-6 h-6 text-culturin-indigo" />
+              </div>
+              <h3 className="text-xl font-medium mb-3">Transition From Manual</h3>
+              <p className="text-gray-600">
+                Upgrade from spreadsheets, PDFs, WhatsApp and multiple disconnected tools to one integrated system.
+              </p>
+            </div>
+            
+            <div className="p-6 border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all">
+              <div className="bg-culturin-mustard/10 w-12 h-12 flex items-center justify-center rounded-full mb-4">
+                <Globe className="w-6 h-6 text-culturin-indigo" />
+              </div>
+              <h3 className="text-xl font-medium mb-3">Creator Economy</h3>
+              <p className="text-gray-600">
+                Designed for chefs, artists, yoga instructors, and creators moving into experience design and travel offerings.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Pricing Section */}
+      <section className="py-16 bg-[#FCFBF9]">
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-medium mb-6">Simple, Transparent Pricing</h2>
