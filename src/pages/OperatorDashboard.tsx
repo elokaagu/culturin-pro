@@ -9,16 +9,12 @@ import {
   Plus, 
   Calendar, 
   Filter, 
-  MapPin, 
   TrendingUp,
-  Info,
-  ChevronDown,
   Crown
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import Image from "@/components/ui/image";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Import tab components
 import DashboardOverview from "@/components/DashboardOverview";
@@ -27,19 +23,19 @@ import BookingsTab from "@/components/BookingsTab";
 import OperatorExperienceCard from "@/components/OperatorExperienceCard";
 import CulturinPro from "@/components/CulturinPro";
 
-// Mock experiences data with correct type for status and trend
+// Mock experiences data
 const mockExperiences = [
   {
     id: "1",
     title: "Traditional Pottery Workshop",
-    status: "live" as "live", // Type assertion to ensure it's the correct literal type
+    status: "live" as "live",
     bookingPercentage: 75,
     price: 45,
     location: "Oaxaca, Mexico",
     dates: "Weekly, Tue & Thu",
     duration: "3 hours",
     image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
-    trend: "up" as "up" // Type assertion for trend
+    trend: "up" as "up"
   },
   {
     id: "2",
@@ -51,7 +47,7 @@ const mockExperiences = [
     dates: "Nightly, Weather Permitting",
     duration: "4 hours",
     image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
-    trend: "flat" as "flat" // Type assertion for trend
+    trend: "flat" as "flat"
   },
   {
     id: "3",
@@ -64,7 +60,7 @@ const mockExperiences = [
     duration: "2.5 hours",
     image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
     daysInDraft: 12,
-    trend: "down" as "down" // Type assertion for trend
+    trend: "down" as "down"
   }
 ];
 
@@ -112,30 +108,30 @@ const OperatorDashboard = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header type="operator" />
       
-      {/* Enhanced Hero Section with more impactful design */}
-      <section className="bg-culturin-indigo py-16 md:py-20 text-white relative overflow-hidden">
-        {/* Background image with enhanced overlay */}
+      {/* Hero Section */}
+      <section className="bg-black py-16 md:py-20 text-white relative overflow-hidden">
+        {/* Background image */}
         <div className="absolute inset-0 z-0">
           <Image 
             src="/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png"
             alt="Cultural festival celebration" 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover opacity-70"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-culturin-indigo/70 to-black/60"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 to-black/60"></div>
         </div>
         
         <div className="container-custom relative z-10">
           <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold mb-6 text-white text-shadow-lg animate-fade-in">
+            <h1 className="text-4xl md:text-5xl font-medium mb-6 text-white text-shadow animate-fade-in">
               Empower Your Culture
             </h1>
-            <p className="text-xl md:text-2xl text-white max-w-2xl mb-8 drop-shadow-md animate-fade-in" style={{animationDelay: '0.2s'}}>
+            <p className="text-xl md:text-2xl text-white max-w-2xl mb-8 animate-fade-in" style={{animationDelay: '0.2s'}}>
               Grow your cultural business. Reach global travelers. Share your story.
             </p>
             
             <div className="flex flex-wrap gap-4 mb-4 animate-fade-in" style={{animationDelay: '0.3s'}}>
               <Button 
-                className="bg-white text-culturin-indigo hover:bg-culturin-mustard hover:text-white hover:scale-105 flex items-center px-8 py-6 font-semibold shadow-lg transition-all duration-300 rounded-xl"
+                className="bg-white text-black hover:bg-gray-200 hover:text-black flex items-center px-8 py-6"
                 onClick={handleCreateExperience}
               >
                 <Plus className="w-5 h-5 mr-2" />
@@ -143,7 +139,7 @@ const OperatorDashboard = () => {
               </Button>
               <Button 
                 variant="outline" 
-                className="bg-[#1A1F2C] border-white text-white hover:bg-white/30 hover:scale-105 flex items-center px-8 py-6 shadow-sm transition-all duration-300 rounded-xl"
+                className="bg-transparent border-white text-white hover:bg-white/20 flex items-center px-8 py-6"
                 onClick={handleViewBookings}
               >
                 <Calendar className="w-5 h-5 mr-2" />
@@ -154,37 +150,37 @@ const OperatorDashboard = () => {
         </div>
       </section>
       
-      {/* Dashboard Content with improved tabs and filters */}
+      {/* Dashboard Content */}
       <section className="flex-1 py-12">
         <div className="container-custom">
           <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            {/* Enhanced Tab Navigation */}
+            {/* Tab Navigation */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
               <TabsList className="bg-transparent p-0 flex flex-wrap gap-2">
                 <TabsTrigger 
                   value="overview"
-                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-white data-[state=active]:text-culturin-indigo data-[state=active]:shadow-md data-[state=active]:font-medium rounded-full px-6 py-3 transition-all"
+                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-md rounded-full px-6 py-3"
                 >
                   Dashboard Overview
                 </TabsTrigger>
                 <TabsTrigger 
                   value="experiences"
-                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-white data-[state=active]:text-culturin-indigo data-[state=active]:shadow-md data-[state=active]:font-medium rounded-full px-6 py-3 transition-all"
+                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-md rounded-full px-6 py-3"
                 >
                   My Experiences
                 </TabsTrigger>
                 <TabsTrigger 
                   value="bookings"
-                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-white data-[state=active]:text-culturin-indigo data-[state=active]:shadow-md data-[state=active]:font-medium rounded-full px-6 py-3 transition-all"
+                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-md rounded-full px-6 py-3"
                 >
                   Booking Management
                 </TabsTrigger>
                 <TabsTrigger 
                   value="pro"
-                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-white data-[state=active]:text-culturin-indigo data-[state=active]:shadow-md data-[state=active]:font-medium rounded-full px-6 py-3 transition-all flex items-center gap-1"
+                  className="bg-gray-100 hover:bg-white data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-md rounded-full px-6 py-3 flex items-center gap-1"
                 >
                   <Crown className="h-4 w-4" /> Culturin Pro
-                  <Badge className="ml-1 h-5 bg-culturin-mustard text-culturin-indigo text-xs">New</Badge>
+                  <Badge className="ml-1 h-5 bg-amber-400 text-black text-xs">New</Badge>
                 </TabsTrigger>
               </TabsList>
               
@@ -230,10 +226,10 @@ const OperatorDashboard = () => {
               <DashboardOverview />
             </TabsContent>
             
-            {/* My Experiences Tab with redesigned cards */}
+            {/* My Experiences Tab */}
             <TabsContent value="experiences" className="animate-fade-in">
               <div className="mb-8">
-                <h2 className="text-2xl font-semibold mb-6 text-gray-800">Your Experiences</h2>
+                <h2 className="text-2xl font-medium mb-6 text-gray-800">Your Experiences</h2>
                 
                 {/* Experience Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -245,7 +241,7 @@ const OperatorDashboard = () => {
                   ))}
                   
                   {/* Add New Experience Card */}
-                  <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-2xl overflow-hidden flex flex-col items-center justify-center p-10 hover:bg-gray-100 transition-colors duration-200 cursor-pointer min-h-[400px]"
+                  <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl overflow-hidden flex flex-col items-center justify-center p-10 hover:bg-gray-100 transition-colors cursor-pointer min-h-[400px]"
                     onClick={handleCreateExperience}
                   >
                     <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center mb-4">
@@ -257,9 +253,9 @@ const OperatorDashboard = () => {
                 </div>
               </div>
               
-              {/* Performance Insights section - replaces sidebar */}
-              <div className="bg-white rounded-2xl p-8 shadow-sm mt-12">
-                <h3 className="text-xl font-semibold mb-6">Performance Insights</h3>
+              {/* Performance Insights section */}
+              <div className="bg-white rounded-xl p-8 shadow-sm mt-12">
+                <h3 className="text-xl font-medium mb-6">Performance Insights</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-gray-50 rounded-xl p-6">
                     <div className="text-sm text-gray-500 mb-2">Total Bookings (30 days)</div>
@@ -287,11 +283,11 @@ const OperatorDashboard = () => {
                 </div>
               </div>
               
-              {/* Fixed CTA for creating new experiences */}
+              {/* Fixed CTA */}
               <div className="fixed bottom-8 right-8 z-40">
                 <Button 
                   onClick={handleCreateExperience} 
-                  className="bg-culturin-indigo hover:bg-culturin-indigo/90 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 px-6 py-6"
+                  className="bg-black hover:bg-gray-800 text-white rounded-full shadow-lg hover:shadow-xl flex items-center gap-2 px-6 py-6"
                 >
                   <Plus className="w-5 h-5" />
                   New Experience
@@ -318,7 +314,7 @@ const OperatorDashboard = () => {
       </section>
       
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8">
+      <footer className="bg-black text-white py-8">
         <div className="container-custom text-center">
           <p className="text-gray-400 text-sm">© 2025 Culturin. All rights reserved.</p>
           <div className="flex justify-center space-x-6 mt-4">

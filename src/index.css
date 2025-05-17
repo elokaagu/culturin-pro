@@ -42,30 +42,7 @@
     --background: 220 14% 10%;   /* Dark mode background */
     --foreground: 220 14% 96%;   /* Dark mode text color */
 
-    --card: 220 14% 12%;
-    --card-foreground: 220 14% 96%;
-
-    --popover: 220 14% 12%;
-    --popover-foreground: 220 14% 96%;
-
-    --primary: 220 14% 96%;      /* Light gray as primary in dark mode */
-    --primary-foreground: 220 14% 10%;
-
-    --secondary: 220 5% 50%;     /* Medium gray for dark mode */
-    --secondary-foreground: 220 14% 96%;
-
-    --muted: 220 14% 15%;
-    --muted-foreground: 220 5% 70%;
-
-    --accent: 230 20% 25%;       /* Slightly lighter accent for dark mode */
-    --accent-foreground: 220 14% 96%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 220 14% 96%;
-
-    --border: 220 14% 20%;
-    --input: 220 14% 20%;
-    --ring: 220 14% 96%;
+    /* ... keep existing code (dark mode color variables) */
   }
   
   * {
@@ -77,12 +54,12 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-sans font-medium;
+    @apply font-medium;
     font-family: 'Inter', sans-serif;
   }
 }
@@ -96,7 +73,7 @@
     @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl;
   }
   
-  /* Enhanced card styles */
+  /* Card styles */
   .card-hover {
     @apply transition-all duration-300 hover:shadow-card hover:translate-y-[-4px];
   }
@@ -127,7 +104,7 @@
     @apply border border-gray-200 text-gray-800 hover:bg-gray-50 transition-colors rounded-lg;
   }
   
-  /* Enhanced component styles */
+  /* Component styles */
   .trip-card {
     @apply rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 bg-white hover:translate-y-[-4px] dark:bg-card;
   }
@@ -158,7 +135,7 @@
     @apply shadow-[0_8px_20px_rgba(0,0,0,0.08)];
   }
   
-  /* Text shadow utility */
+  /* Text shadow utility - fixing the circular dependency */
   .text-shadow {
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   }

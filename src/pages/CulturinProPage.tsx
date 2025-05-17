@@ -10,7 +10,7 @@ const CulturinProPage = () => {
   const navigate = useNavigate();
   
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white">
       <Header type="operator" />
       <div className="pt-24 pb-12 container mx-auto px-4 md:px-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
