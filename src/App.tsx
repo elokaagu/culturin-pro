@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,9 +20,8 @@ import ProBookingPage from "./pages/ProBookingPage";
 import ProCRMPage from "./pages/ProCRMPage";
 import ProAnalyticsPage from "./pages/ProAnalyticsPage";
 import ProMarketingPage from "./pages/ProMarketingPage";
-import ProWebsitePage from "./pages/ProWebsitePage";
-import ProTeamPage from "./pages/ProTeamPage";
 import ProSettingsPage from "./pages/ProSettingsPage";
+import ProItineraryPage from "./pages/ProItineraryPage";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -94,12 +92,11 @@ const App = () => (
               <Route path="/privacy" element={<PageWithFooter Component={Privacy} />} />
               <Route path="/culturin-pro" element={<PageWithFooter Component={CulturinProPage} />} />
               <Route path="/pro-dashboard" element={<ProDashboardPage />} />
+              <Route path="/pro-dashboard/itinerary" element={<ProItineraryPage />} />
               <Route path="/pro-dashboard/booking" element={<ProBookingPage />} />
               <Route path="/pro-dashboard/crm" element={<ProCRMPage />} />
               <Route path="/pro-dashboard/analytics" element={<ProAnalyticsPage />} />
               <Route path="/pro-dashboard/marketing" element={<ProMarketingPage />} />
-              <Route path="/pro-dashboard/website" element={<ProWebsitePage />} />
-              <Route path="/pro-dashboard/team" element={<ProTeamPage />} />
               <Route path="/pro-dashboard/settings" element={<ProSettingsPage />} />
               <Route path="*" element={<PageWithFooter Component={NotFound} />} />
             </Routes>

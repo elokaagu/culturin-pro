@@ -2,16 +2,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
-import { Crown, LayoutDashboard, Calendar, Users, ChartBar, Settings, CircleDollarSign, FileText, Image, Link } from "lucide-react";
+import { 
+  Crown, 
+  LayoutDashboard, 
+  Calendar, 
+  Users, 
+  ChartBar, 
+  Settings, 
+  FileText, 
+  Image, 
+  MessageSquare,
+  PencilRuler, 
+  ShoppingCart, 
+  Star,
+  Megaphone
+} from "lucide-react";
 
 const menuItems = [
-  { name: "Dashboard Overview", path: "/pro-dashboard", icon: LayoutDashboard },
-  { name: "Smart Booking Tools", path: "/pro-dashboard/booking", icon: Calendar },
-  { name: "CRM for Hosts", path: "/pro-dashboard/crm", icon: Users },
-  { name: "Business Analytics", path: "/pro-dashboard/analytics", icon: ChartBar },
-  { name: "Marketing Tools", path: "/pro-dashboard/marketing", icon: FileText },
-  { name: "Website Builder", path: "/pro-dashboard/website", icon: Image, isAddon: true },
-  { name: "Team & Staff", path: "/pro-dashboard/team", icon: Users },
+  { name: "Dashboard", path: "/pro-dashboard", icon: LayoutDashboard },
+  { name: "Itinerary Builder", path: "/pro-dashboard/itinerary", icon: PencilRuler },
+  { name: "Booking & Checkout", path: "/pro-dashboard/booking", icon: ShoppingCart },
+  { name: "CRM & Automation", path: "/pro-dashboard/crm", icon: Users },
+  { name: "Marketing Toolkit", path: "/pro-dashboard/marketing", icon: Megaphone },
+  { name: "Business Intelligence", path: "/pro-dashboard/analytics", icon: ChartBar },
   { name: "Settings", path: "/pro-dashboard/settings", icon: Settings }
 ];
 
@@ -40,8 +53,9 @@ const ProSidebar: React.FC = () => {
       <div className="p-4 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <Crown className="h-5 w-5 text-[#FFD700]" />
-          <h1 className="font-medium text-xl">Culturin Pro</h1>
+          <h1 className="font-medium text-xl">Culturin OS</h1>
         </div>
+        <p className="text-xs text-gray-500 mt-1">Cultural Operating System</p>
       </div>
       
       {/* Navigation Items */}
@@ -61,17 +75,12 @@ const ProSidebar: React.FC = () => {
             >
               <item.icon className="h-5 w-5" />
               <span className="truncate">{item.name}</span>
-              {item.isAddon && (
-                <span className="ml-auto inline-flex items-center rounded-full bg-[#FFEDD1] px-2 py-0.5 text-xs font-medium text-[#996B00]">
-                  Add-on
-                </span>
-              )}
             </button>
           ))}
         </nav>
       </div>
       
-      {/* User/Account Section */}
+      {/* Plan & Account Section */}
       <div className="p-4 border-t border-gray-100">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">

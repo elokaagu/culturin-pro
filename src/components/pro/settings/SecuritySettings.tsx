@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { Shield, History, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Shield, History, ExternalLink, AlertTriangle, Lock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
@@ -44,6 +44,7 @@ const SecuritySettings: React.FC = () => {
 
   const handleEnableTwoFactor = () => {
     toast.success("2FA setup instructions sent to your email");
+    setTwoFactorEnabled(true);
     // In a real app, this would trigger the 2FA setup flow
   };
 
@@ -57,13 +58,13 @@ const SecuritySettings: React.FC = () => {
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-semibold">Security Settings</h2>
-        <p className="text-gray-500">Manage your account security and authentication.</p>
+        <p className="text-gray-500">Protect your Culturin account and tour operator business.</p>
       </div>
       
       {/* Change Password */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium flex items-center">
-          <Shield className="h-5 w-5 mr-2 text-blue-600" />
+          <Lock className="h-5 w-5 mr-2 text-blue-600" />
           Change Password
         </h3>
         
@@ -123,7 +124,10 @@ const SecuritySettings: React.FC = () => {
       
       {/* Two-Factor Authentication */}
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Two-Factor Authentication</h3>
+        <h3 className="text-lg font-medium flex items-center">
+          <Shield className="h-5 w-5 mr-2 text-blue-600" />
+          Two-Factor Authentication
+        </h3>
         
         <div className="bg-gray-50 p-4 rounded-lg border">
           <div className="flex items-start gap-4">
@@ -132,9 +136,9 @@ const SecuritySettings: React.FC = () => {
             </div>
             
             <div className="flex-1">
-              <h4 className="font-medium">Enhance Your Account Security</h4>
+              <h4 className="font-medium">Protect Your Cultural Business</h4>
               <p className="text-gray-600 mt-1">
-                Two-factor authentication adds an extra layer of security to your account by requiring more than just a password to sign in.
+                Two-factor authentication adds an extra layer of security to your account, ensuring that only you can access your cultural tour operations.
               </p>
               
               <div className="mt-4">
@@ -189,6 +193,13 @@ const SecuritySettings: React.FC = () => {
           </Button>
         </div>
       </div>
+      
+      <Alert className="bg-blue-50 border-blue-100">
+        <Shield className="h-4 w-4 text-blue-600" />
+        <AlertDescription className="text-blue-800">
+          We recommend regularly updating your password and enabling two-factor authentication to keep your cultural tour operator account secure.
+        </AlertDescription>
+      </Alert>
     </div>
   );
 };
