@@ -1,7 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, Globe } from 'lucide-react';
+import { Menu, X, User, Crown } from 'lucide-react';
 
 interface HeaderProps {
   type: 'traveler' | 'operator';
@@ -37,97 +38,54 @@ export const Header = ({ type }: HeaderProps) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center group">
-              <Globe className={`w-8 h-8 mr-2 transition-colors ${
+              <Crown className={`w-8 h-8 mr-2 transition-colors ${
                 isScrolled ? 'text-culturin-indigo' : 'text-white group-hover:text-culturin-mustard'
               }`} />
               <span className={`font-sans font-bold text-2xl transition-colors ${
                 isScrolled ? 'text-culturin-indigo' : 'text-white group-hover:text-culturin-mustard'
-              }`}>Culturin</span>
+              }`}>Culturin OS</span>
             </Link>
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
             <nav>
               <ul className="flex space-x-8">
-                {type === 'traveler' ? (
-                  <>
-                    <li>
-                      <Link 
-                        to="/discover-trips" 
-                        className={`font-medium transition-colors ${
-                          isScrolled 
-                            ? 'text-culturin-charcoal hover:text-culturin-indigo' 
-                            : 'text-white hover:text-culturin-mustard'
-                        }`}
-                      >
-                        Discover Trips
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/" 
-                        className={`font-medium transition-colors ${
-                          isScrolled 
-                            ? 'text-culturin-charcoal hover:text-culturin-indigo' 
-                            : 'text-white hover:text-culturin-mustard'
-                        }`}
-                      >
-                        How It Works
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/for-operators" 
-                        className={`font-medium transition-colors ${
-                          isScrolled 
-                            ? 'text-culturin-charcoal hover:text-culturin-indigo' 
-                            : 'text-white hover:text-culturin-mustard'
-                        }`}
-                      >
-                        For Operators
-                      </Link>
-                    </li>
-                  </>
-                ) : (
-                  <>
-                    <li>
-                      <Link 
-                        to="/operator" 
-                        className={`font-medium transition-colors ${
-                          isScrolled 
-                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
-                            : 'text-white hover:text-culturin-mustard'
-                        }`}
-                      >
-                        Dashboard
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/operator" 
-                        className={`font-medium transition-colors ${
-                          isScrolled 
-                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
-                            : 'text-white hover:text-culturin-mustard'
-                        }`}
-                      >
-                        My Experiences
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/operator" 
-                        className={`font-medium transition-colors ${
-                          isScrolled 
-                            ? 'text-culturin-charcoal hover:text-culturin-clay' 
-                            : 'text-white hover:text-culturin-mustard'
-                        }`}
-                      >
-                        Bookings
-                      </Link>
-                    </li>
-                  </>
-                )}
+                <li>
+                  <Link 
+                    to="/culturin-pro" 
+                    className={`font-medium transition-colors ${
+                      isScrolled 
+                        ? 'text-culturin-charcoal hover:text-culturin-indigo' 
+                        : 'text-white hover:text-culturin-mustard'
+                    }`}
+                  >
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/for-operators" 
+                    className={`font-medium transition-colors ${
+                      isScrolled 
+                        ? 'text-culturin-charcoal hover:text-culturin-indigo' 
+                        : 'text-white hover:text-culturin-mustard'
+                    }`}
+                  >
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/operator" 
+                    className={`font-medium transition-colors ${
+                      isScrolled 
+                        ? 'text-culturin-charcoal hover:text-culturin-clay' 
+                        : 'text-white hover:text-culturin-mustard'
+                    }`}
+                  >
+                    Dashboard
+                  </Link>
+                </li>
               </ul>
             </nav>
             
@@ -163,19 +121,9 @@ export const Header = ({ type }: HeaderProps) => {
         <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-card z-50 p-6 animate-fade-in">
           <nav className="py-4">
             <ul className="space-y-4">
-              {type === 'traveler' ? (
-                <>
-                  <li><Link to="/discover-trips" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">Discover Trips</Link></li>
-                  <li><Link to="/" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">How It Works</Link></li>
-                  <li><Link to="/for-operators" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">For Operators</Link></li>
-                </>
-              ) : (
-                <>
-                  <li><Link to="/operator" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">Dashboard</Link></li>
-                  <li><Link to="/operator" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">My Experiences</Link></li>
-                  <li><Link to="/operator" className="block py-3 px-4 hover:bg-culturin-white rounded-md font-medium">Bookings</Link></li>
-                </>
-              )}
+              <li><Link to="/culturin-pro" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">Features</Link></li>
+              <li><Link to="/for-operators" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">Pricing</Link></li>
+              <li><Link to="/operator" className="block py-3 px-4 hover:bg-gray-100 rounded-md font-medium text-[#2B2B2B]">Dashboard</Link></li>
               <li>
                 <Button 
                   variant="default" 
@@ -187,7 +135,7 @@ export const Header = ({ type }: HeaderProps) => {
                   }}
                 >
                   <User className="w-4 h-4 mr-2" />
-                  <span>{type === 'traveler' ? 'Sign In' : 'My Account'}</span>
+                  <span>Sign In</span>
                 </Button>
               </li>
             </ul>

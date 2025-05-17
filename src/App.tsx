@@ -4,16 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Footer from "./components/sections/Footer";
-import Index from "./pages/Index";
 import OperatorDashboard from "./pages/OperatorDashboard";
 import ForOperators from "./pages/ForOperators";
 import SignIn from "./pages/SignIn";
 import NotFound from "./pages/NotFound";
-import AboutUs from "./pages/AboutUs";
-import DiscoverTrips from "./pages/DiscoverTrips";
-import Contact from "./pages/Contact";
-import FAQs from "./pages/FAQs";
-import Privacy from "./pages/Privacy";
 import CulturinProPage from "./pages/CulturinProPage";
 import ProDashboardPage from "./pages/ProDashboardPage";
 import ProBookingPage from "./pages/ProBookingPage";
@@ -50,8 +44,8 @@ const EntryPoint = () => {
     return <Navigate to={lastRoute} replace />;
   }
   
-  // Otherwise go to home page
-  return <Index />;
+  // Otherwise go to operators page
+  return <Navigate to="/for-operators" replace />;
 };
 
 // Page wrapper component to control footer display
@@ -85,11 +79,6 @@ const App = () => (
               <Route path="/operator" element={<PageWithFooter Component={OperatorDashboard} />} />
               <Route path="/for-operators" element={<ForOperators />} />
               <Route path="/sign-in" element={<PageWithFooter Component={SignIn} />} />
-              <Route path="/about-us" element={<PageWithFooter Component={AboutUs} />} />
-              <Route path="/discover-trips" element={<PageWithFooter Component={DiscoverTrips} />} />
-              <Route path="/contact" element={<PageWithFooter Component={Contact} />} />
-              <Route path="/faqs" element={<PageWithFooter Component={FAQs} />} />
-              <Route path="/privacy" element={<PageWithFooter Component={Privacy} />} />
               <Route path="/culturin-pro" element={<PageWithFooter Component={CulturinProPage} />} />
               <Route path="/pro-dashboard" element={<ProDashboardPage />} />
               <Route path="/pro-dashboard/itinerary" element={<ProItineraryPage />} />

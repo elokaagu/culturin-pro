@@ -3,18 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { 
-  Crown, 
-  LayoutDashboard, 
-  Calendar, 
-  Users, 
-  ChartBar, 
-  Settings, 
-  FileText, 
-  Image, 
-  MessageSquare,
-  PencilRuler, 
-  ShoppingCart, 
-  Star,
+  LayoutDashboard,
+  PencilRuler,
+  ShoppingCart,
+  Users,
+  ChartBar,
+  Settings,
+  Crown,
+  Globe,
   Megaphone
 } from "lucide-react";
 
@@ -32,6 +28,7 @@ const ProSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [userName, setUserName] = useState<string>("Cultural Host");
+  const [planType, setplanType] = useState<string>("Growth Plan");
   
   // In a real app, this would come from your authentication context
   // For demo purposes, we'll use localStorage
@@ -44,6 +41,15 @@ const ProSidebar: React.FC = () => {
     else {
       localStorage.setItem('userName', 'Jane Doe');
       setUserName('Jane Doe');
+    }
+
+    const storedPlanType = localStorage.getItem('planType');
+    if (storedPlanType) {
+      setplanType(storedPlanType);
+    }
+    else {
+      localStorage.setItem('planType', 'Growth Plan');
+      setplanType('Growth Plan');
     }
   }, []);
   
@@ -88,7 +94,7 @@ const ProSidebar: React.FC = () => {
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium">{userName}</p>
-            <p className="text-xs text-gray-500">Growth Plan</p>
+            <p className="text-xs text-gray-500">{planType}</p>
           </div>
         </div>
       </div>
