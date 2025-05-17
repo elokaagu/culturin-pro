@@ -27,7 +27,7 @@ const ForOperators = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col font-sans">
       <Header type="operator" />
       
       {/* Hero Section */}
@@ -52,11 +52,11 @@ const ForOperators = () => {
         <div className="container-custom relative z-30 pt-32 pb-20">
           <div className="max-w-3xl">
             <div className="space-y-6">
-              <h1 className={`font-bold text-3xl md:text-4xl lg:text-5xl text-white tracking-tight leading-tight text-shadow-lg transition-all duration-700 ease-out ${
+              <h1 className={`font-medium text-3xl md:text-4xl lg:text-5xl text-white tracking-tight leading-tight text-shadow-lg transition-all duration-700 ease-out ${
                 animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}>
-                Cultural Operating System<br />
-                For Modern Tour Operators
+                Tour Operator Platform<br />
+                For Cultural Experiences
               </h1>
               
               <p className={`text-base md:text-xl text-white text-shadow transition-all duration-700 ease-out ${
@@ -64,8 +64,8 @@ const ForOperators = () => {
               }`}
                 style={{transitionDelay: '200ms'}}
               >
-                Design, narrate, personalize, and grow rich cultural travel experiences<br className="hidden md:block" />
-                without code, middlemen, or generic tools.
+                Design, narrate, and grow cultural travel experiences<br className="hidden md:block" />
+                without code or generic tools.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -107,73 +107,73 @@ const ForOperators = () => {
       {/* Core Modules Section */}
       <section className="py-20 bg-white">
         <div className="container-custom">
-          <h2 className="heading-lg text-center mb-6 animate-fade-in">The Culturin OS Platform</h2>
-          <p className="text-center text-gray-600 mb-16 max-w-3xl mx-auto animate-fade-in">
-            Empowering operators to turn itineraries into narratives, bookings into brand moments, and clients into communities.
+          <h2 className="heading-lg text-center mb-6 animate-fade-in">Platform Modules</h2>
+          <p className="text-center text-gray-600 mb-16 max-w-2xl mx-auto animate-fade-in">
+            Tools to transform itineraries into narratives, bookings into brand moments, and clients into communities.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-10 animate-fade-in" style={{animationDelay: '0.2s'}}>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 animate-fade-in" style={{animationDelay: '0.2s'}}>
             {/* Module 1: Itinerary Builder */}
             <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
-              <CardContent className="p-8 flex flex-col items-center text-center">
-                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
-                  <PencilRuler className="w-8 h-8 text-culturin-indigo" />
+              <CardContent className="p-6 flex flex-col items-center text-center">
+                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-4">
+                  <PencilRuler className="w-7 h-7 text-culturin-indigo" />
                 </div>
-                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Itinerary Builder</h3>
-                <p className="text-[#4A4A4A]">
-                  Craft narrative-rich, modular travel itineraries that double as marketing material.
+                <h3 className="text-lg font-medium mb-3 text-[#1A1A1A]">Itinerary Builder</h3>
+                <p className="text-[#4A4A4A] text-sm">
+                  Create modular, narrative-rich travel experiences with templates.
                 </p>
               </CardContent>
             </Card>
             
             {/* Module 2: Booking Layer */}
             <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
-              <CardContent className="p-8 flex flex-col items-center text-center">
-                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
-                  <ShoppingCart className="w-8 h-8 text-culturin-indigo" />
+              <CardContent className="p-6 flex flex-col items-center text-center">
+                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-4">
+                  <ShoppingCart className="w-7 h-7 text-culturin-indigo" />
                 </div>
-                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Booking Layer</h3>
-                <p className="text-[#4A4A4A]">
-                  Transform bookings into seamless, brand-aligned experiences with flexible payment options.
+                <h3 className="text-lg font-medium mb-3 text-[#1A1A1A]">Booking Layer</h3>
+                <p className="text-[#4A4A4A] text-sm">
+                  Branded checkout with flexible payment options and smart upsells.
                 </p>
               </CardContent>
             </Card>
             
             {/* Module 3: Storytelling Studio */}
             <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
-              <CardContent className="p-8 flex flex-col items-center text-center">
-                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
-                  <Megaphone className="w-8 h-8 text-culturin-indigo" />
+              <CardContent className="p-6 flex flex-col items-center text-center">
+                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-4">
+                  <Megaphone className="w-7 h-7 text-culturin-indigo" />
                 </div>
-                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Storytelling Studio</h3>
-                <p className="text-[#4A4A4A]">
-                  Market trips with AI-assisted content, caption builders, and visual asset management.
+                <h3 className="text-lg font-medium mb-3 text-[#1A1A1A]">Storytelling</h3>
+                <p className="text-[#4A4A4A] text-sm">
+                  AI-assisted content, captions, and visual asset management.
                 </p>
               </CardContent>
             </Card>
             
             {/* Module 4: Client Dashboard */}
             <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
-              <CardContent className="p-8 flex flex-col items-center text-center">
-                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
-                  <Users className="w-8 h-8 text-culturin-indigo" />
+              <CardContent className="p-6 flex flex-col items-center text-center">
+                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-4">
+                  <Users className="w-7 h-7 text-culturin-indigo" />
                 </div>
-                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Client Dashboard</h3>
-                <p className="text-[#4A4A4A]">
-                  Build long-term relationships with lightweight CRM, retention tools, and loyalty programs.
+                <h3 className="text-lg font-medium mb-3 text-[#1A1A1A]">Client CRM</h3>
+                <p className="text-[#4A4A4A] text-sm">
+                  Lightweight CRM with retention tools and loyalty programs.
                 </p>
               </CardContent>
             </Card>
             
             {/* Module 5: Backoffice */}
             <Card className="border-0 shadow-soft hover:shadow-card transition-all duration-300 hover:translate-y-[-4px]">
-              <CardContent className="p-8 flex flex-col items-center text-center">
-                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-6">
-                  <ChartBar className="w-8 h-8 text-culturin-indigo" />
+              <CardContent className="p-6 flex flex-col items-center text-center">
+                <div className="bg-culturin-mustard/10 p-4 rounded-full mb-4">
+                  <ChartBar className="w-7 h-7 text-culturin-indigo" />
                 </div>
-                <h3 className="text-xl font-medium mb-4 text-[#1A1A1A]">Backoffice</h3>
-                <p className="text-[#4A4A4A]">
-                  Track bookings, payments, and margins with clear dashboards and smart suggestions.
+                <h3 className="text-lg font-medium mb-3 text-[#1A1A1A]">Backoffice</h3>
+                <p className="text-[#4A4A4A] text-sm">
+                  Track bookings and margins with clear, actionable insights.
                 </p>
               </CardContent>
             </Card>
@@ -186,18 +186,18 @@ const ForOperators = () => {
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1">
-              <h2 className="text-3xl md:text-4xl font-medium mb-6 text-[#2B2B2B]">Build Your Brand, Not Just Manage Trips</h2>
-              <p className="text-lg mb-6 text-[#4A4A4A] leading-relaxed">
+              <h2 className="text-2xl md:text-3xl font-medium mb-5 text-[#2B2B2B]">Build Your Brand</h2>
+              <p className="text-base mb-5 text-[#4A4A4A] leading-relaxed">
                 Legacy platforms help you manage trips. Culturin helps you build a brand, connect with culture, and grow a following.
               </p>
-              <p className="text-lg mb-8 text-[#4A4A4A] leading-relaxed">
-                With Culturin OS, you can focus on what matters — creating unforgettable cultural experiences while our platform handles the rest.
+              <p className="text-base mb-6 text-[#4A4A4A] leading-relaxed">
+                Create unforgettable cultural experiences while our platform handles the operations.
               </p>
               <Button 
-                className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] text-base py-6 px-8 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02]"
+                className="bg-[#2B2B2B] text-white hover:bg-[#1C1C1C] text-base py-5 px-6 rounded-xl font-medium transition-all duration-300 hover:scale-[1.02]"
                 onClick={() => navigate('/operator')}
               >
-                Start Your Free Trial
+                Start Free Trial
               </Button>
             </div>
             <div className="order-1 lg:order-2">
@@ -214,13 +214,13 @@ const ForOperators = () => {
         </div>
       </section>
       
-      {/* Benefits Section (New) */}
+      {/* Benefits Section */}
       <section className="py-16 bg-white">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-medium mb-6">For Modern Tour Operators</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Culturin serves independent operators offering cultural, community-based, and identity-driven travel experiences.
+            <h2 className="text-2xl md:text-3xl font-medium mb-5">For Modern Tour Operators</h2>
+            <p className="text-base text-gray-600 max-w-2xl mx-auto">
+              Made for independent operators offering cultural, community-based, and identity-driven experiences.
             </p>
           </div>
           
@@ -229,9 +229,9 @@ const ForOperators = () => {
               <div className="bg-culturin-mustard/10 w-12 h-12 flex items-center justify-center rounded-full mb-4">
                 <Compass className="w-6 h-6 text-culturin-indigo" />
               </div>
-              <h3 className="text-xl font-medium mb-3">Niche Cultural Markets</h3>
-              <p className="text-gray-600">
-                Perfect for operators specializing in diaspora, wellness, solo female travel, heritage, and cultural immersion.
+              <h3 className="text-lg font-medium mb-3">Niche Markets</h3>
+              <p className="text-gray-600 text-sm">
+                Perfect for diaspora, wellness, solo travel, heritage, and cultural immersion experiences.
               </p>
             </div>
             
@@ -239,9 +239,9 @@ const ForOperators = () => {
               <div className="bg-culturin-mustard/10 w-12 h-12 flex items-center justify-center rounded-full mb-4">
                 <CalendarCheck className="w-6 h-6 text-culturin-indigo" />
               </div>
-              <h3 className="text-xl font-medium mb-3">Transition From Manual</h3>
-              <p className="text-gray-600">
-                Upgrade from spreadsheets, PDFs, WhatsApp and multiple disconnected tools to one integrated system.
+              <h3 className="text-lg font-medium mb-3">Digital Upgrade</h3>
+              <p className="text-gray-600 text-sm">
+                Replace spreadsheets, PDFs and WhatsApp with one integrated system.
               </p>
             </div>
             
@@ -249,9 +249,9 @@ const ForOperators = () => {
               <div className="bg-culturin-mustard/10 w-12 h-12 flex items-center justify-center rounded-full mb-4">
                 <Globe className="w-6 h-6 text-culturin-indigo" />
               </div>
-              <h3 className="text-xl font-medium mb-3">Creator Economy</h3>
-              <p className="text-gray-600">
-                Designed for chefs, artists, yoga instructors, and creators moving into experience design and travel offerings.
+              <h3 className="text-lg font-medium mb-3">Creator Economy</h3>
+              <p className="text-gray-600 text-sm">
+                For chefs, artists, and creators expanding into travel experiences.
               </p>
             </div>
           </div>
@@ -261,35 +261,35 @@ const ForOperators = () => {
       {/* Pricing Section */}
       <section className="py-16 bg-[#FCFBF9]">
         <div className="container-custom">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-medium mb-6">Simple, Transparent Pricing</h2>
-            <p className="text-lg text-[#4A4A4A]">No booking commissions. No hidden fees. Just one flat monthly subscription.</p>
+          <div className="max-w-2xl mx-auto text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-medium mb-4">Simple Pricing</h2>
+            <p className="text-base text-[#4A4A4A]">No booking commissions. No hidden fees. One flat monthly subscription.</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Starter Plan */}
             <Card className="border border-gray-200 hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-8">
+              <CardContent className="p-6">
                 <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Starter</h3>
                 <p className="text-3xl font-bold mb-1">£49</p>
-                <p className="text-sm text-[#6B6B6B] mb-6">per month</p>
+                <p className="text-sm text-[#6B6B6B] mb-5">per month</p>
                 
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-3 mb-6">
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Basic itinerary builder</span>
+                    <span className="text-sm">Basic itinerary builder</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Direct booking widget</span>
+                    <span className="text-sm">Direct booking widget</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Simple guest profiles</span>
+                    <span className="text-sm">Simple guest profiles</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Basic analytics</span>
+                    <span className="text-sm">Basic analytics</span>
                   </li>
                 </ul>
                 
@@ -301,32 +301,28 @@ const ForOperators = () => {
             
             {/* Growth Plan */}
             <Card className="border-2 border-culturin-indigo shadow-lg relative">
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-culturin-indigo text-white px-4 py-1 rounded-full text-sm font-medium">Most Popular</div>
-              <CardContent className="p-8">
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-culturin-indigo text-white px-4 py-1 rounded-full text-sm font-medium">Popular</div>
+              <CardContent className="p-6">
                 <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Growth</h3>
                 <p className="text-3xl font-bold mb-1">£99</p>
-                <p className="text-sm text-[#6B6B6B] mb-6">per month</p>
+                <p className="text-sm text-[#6B6B6B] mb-5">per month</p>
                 
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-3 mb-6">
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Advanced itinerary builder</span>
+                    <span className="text-sm">Advanced itinerary builder</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Full booking & payment system</span>
+                    <span className="text-sm">Full booking & payment system</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>CRM & automation workflows</span>
+                    <span className="text-sm">CRM & automation workflows</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Marketing toolkit with AI assistance</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Complete business analytics</span>
+                    <span className="text-sm">Marketing toolkit with AI</span>
                   </li>
                 </ul>
                 
@@ -338,31 +334,27 @@ const ForOperators = () => {
             
             {/* Pro Plan */}
             <Card className="border border-gray-200 hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-8">
+              <CardContent className="p-6">
                 <h3 className="text-lg font-medium text-[#4A4A4A] mb-2">Pro</h3>
                 <p className="text-3xl font-bold mb-1">£199</p>
-                <p className="text-sm text-[#6B6B6B] mb-6">per month</p>
+                <p className="text-sm text-[#6B6B6B] mb-5">per month</p>
                 
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-3 mb-6">
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Everything in Growth</span>
+                    <span className="text-sm">Everything in Growth</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Team collaboration tools</span>
+                    <span className="text-sm">Team collaboration tools</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Advanced API integrations</span>
+                    <span className="text-sm">Advanced API integrations</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Custom branding options</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-green-500 mt-0.5" />
-                    <span>Priority support & consulting</span>
+                    <span className="text-sm">Custom branding options</span>
                   </li>
                 </ul>
                 
@@ -376,22 +368,22 @@ const ForOperators = () => {
       </section>
       
       {/* CTA Section */}
-      <section className="py-20 bg-culturin-white">
+      <section className="py-16 bg-culturin-white">
         <div className="container-custom">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="heading-lg mb-6 animate-fade-in">Ready to transform your tour business?</h2>
-            <p className="text-xl text-[#4A4A4A] mb-10 animate-fade-in" style={{animationDelay: '0.1s'}}>
-              Join hundreds of cultural tour operators already growing with Culturin OS.
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl md:text-3xl font-medium mb-5 animate-fade-in">Ready to transform your business?</h2>
+            <p className="text-lg text-[#4A4A4A] mb-8 animate-fade-in" style={{animationDelay: '0.1s'}}>
+              Join cultural tour operators already growing with Culturin.
             </p>
             <Button 
-              className="bg-culturin-indigo hover:bg-culturin-indigo/90 hover:scale-[1.02] text-white py-6 px-10 rounded-xl text-lg animate-fade-in transition-all duration-300"
+              className="bg-culturin-indigo hover:bg-culturin-indigo/90 hover:scale-[1.02] text-white py-5 px-8 rounded-xl text-base animate-fade-in transition-all duration-300"
               style={{animationDelay: '0.2s'}}
               onClick={() => navigate('/operator')}
             >
               <Upload className="w-5 h-5 mr-2" />
-              Start Your Free Trial
+              Start Free Trial
             </Button>
-            <p className="mt-4 text-sm text-[#6B6B6B] animate-fade-in" style={{animationDelay: '0.3s'}}>
+            <p className="mt-3 text-sm text-[#6B6B6B] animate-fade-in" style={{animationDelay: '0.3s'}}>
               No credit card required. 14-day free trial.
             </p>
           </div>
