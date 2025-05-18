@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,6 +25,11 @@ import BlogPage from "./pages/BlogPage";
 import OurStoryPage from "./pages/OurStoryPage";
 import CareersPage from "./pages/CareersPage";
 import PressPage from "./pages/PressPage";
+import DemoPage from "./pages/DemoPage";
+import ProductAnalyticsPage from "./pages/product/ProductAnalyticsPage";
+import ProductBookingPage from "./pages/product/ProductBookingPage";
+import ProductCRMPage from "./pages/product/ProductCRMPage";
+import ProductMarketingPage from "./pages/product/ProductMarketingPage";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -91,10 +97,19 @@ const App = () => (
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/sign-in" element={<PageWithFooter Component={SignIn} />} />
               <Route path="/culturin-pro" element={<PageWithFooter Component={CulturinProPage} />} />
+              <Route path="/demo" element={<DemoPage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/about-us" element={<OurStoryPage />} />
               <Route path="/careers" element={<CareersPage />} />
               <Route path="/press" element={<PressPage />} />
+              
+              {/* Product Pages */}
+              <Route path="/product/analytics" element={<ProductAnalyticsPage />} />
+              <Route path="/product/booking" element={<ProductBookingPage />} />
+              <Route path="/product/crm" element={<ProductCRMPage />} />
+              <Route path="/product/marketing" element={<ProductMarketingPage />} />
+              
+              {/* Pro Dashboard Routes */}
               <Route path="/pro-dashboard" element={<ProDashboardPage />} />
               <Route path="/pro-dashboard/itinerary" element={<ProItineraryPage />} />
               <Route path="/pro-dashboard/booking" element={<ProBookingPage />} />

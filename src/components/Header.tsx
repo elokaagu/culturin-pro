@@ -35,6 +35,29 @@ export const Header = ({ type }: HeaderProps) => {
     };
   }, [location.pathname]);
 
+  const productLinks = [
+    {
+      title: "Analytics Dashboard",
+      description: "Track performance with real-time data",
+      path: "/product/analytics"
+    },
+    {
+      title: "Booking Management",
+      description: "Streamline guest reservations",
+      path: "/product/booking"
+    },
+    {
+      title: "Guest CRM",
+      description: "Manage customer relationships",
+      path: "/product/crm"
+    },
+    {
+      title: "Marketing Tools",
+      description: "Promote your experiences",
+      path: "/product/marketing"
+    }
+  ];
+
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${
       location.pathname === '/' ? (isScrolled ? 'bg-white shadow-sm' : 'bg-transparent') : 'bg-white'
@@ -61,38 +84,16 @@ export const Header = ({ type }: HeaderProps) => {
                       Product <ChevronDown className="ml-1 h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-64 bg-white shadow-lg rounded-md p-2">
-                      <DropdownMenuItem asChild>
-                        <Link to="/culturin-pro" className="flex items-start p-3 rounded-md hover:bg-gray-100">
-                          <div className="flex flex-col">
-                            <span className="font-medium">Analytics Dashboard</span>
-                            <span className="text-xs text-gray-500">Track performance with real-time data</span>
-                          </div>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/culturin-pro" className="flex items-start p-3 rounded-md hover:bg-gray-100">
-                          <div className="flex flex-col">
-                            <span className="font-medium">Booking Management</span>
-                            <span className="text-xs text-gray-500">Streamline guest reservations</span>
-                          </div>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/culturin-pro" className="flex items-start p-3 rounded-md hover:bg-gray-100">
-                          <div className="flex flex-col">
-                            <span className="font-medium">Guest CRM</span>
-                            <span className="text-xs text-gray-500">Manage customer relationships</span>
-                          </div>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/culturin-pro" className="flex items-start p-3 rounded-md hover:bg-gray-100">
-                          <div className="flex flex-col">
-                            <span className="font-medium">Marketing Tools</span>
-                            <span className="text-xs text-gray-500">Promote your experiences</span>
-                          </div>
-                        </Link>
-                      </DropdownMenuItem>
+                      {productLinks.map((item, index) => (
+                        <DropdownMenuItem key={index} asChild>
+                          <Link to={item.path} className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                            <div className="flex flex-col">
+                              <span className="font-medium">{item.title}</span>
+                              <span className="text-xs text-gray-500">{item.description}</span>
+                            </div>
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
                       <DropdownMenuItem asChild>
                         <Link to="/culturin-pro" className="flex py-2 px-3 bg-gray-50 rounded-md mt-1 text-blue-600 font-medium">
                           View all features →
@@ -178,7 +179,7 @@ export const Header = ({ type }: HeaderProps) => {
               
               <Button 
                 className="bg-blue-600 hover:bg-blue-700 font-medium"
-                onClick={() => navigate('/culturin-pro')}
+                onClick={() => navigate('/demo')}
               >
                 Get a free demo
               </Button>
@@ -201,20 +202,20 @@ export const Header = ({ type }: HeaderProps) => {
           <nav className="py-4 px-6">
             <ul className="space-y-2">
               <li className="py-2">
-                <button className="flex items-center justify-between w-full font-medium text-gray-800" 
-                  onClick={() => navigate('/culturin-pro')}>
+                <button className="flex items-center justify-between w-full font-medium text-gray-800">
                   <span>Product</span>
                   <ChevronDown className="h-4 w-4" />
                 </button>
                 <div className="pl-4 mt-2 space-y-2 border-l-2 border-gray-100">
-                  <Link to="/culturin-pro" className="block py-1 text-sm">Analytics Dashboard</Link>
-                  <Link to="/culturin-pro" className="block py-1 text-sm">Booking Management</Link>
-                  <Link to="/culturin-pro" className="block py-1 text-sm">Guest CRM</Link>
-                  <Link to="/culturin-pro" className="block py-1 text-sm">Marketing Tools</Link>
+                  {productLinks.map((item, index) => (
+                    <Link key={index} to={item.path} className="block py-1 text-sm" onClick={() => setIsMenuOpen(false)}>
+                      {item.title}
+                    </Link>
+                  ))}
                 </div>
               </li>
-              <li><Link to="/pricing" className="block py-2 font-medium text-gray-800">Pricing</Link></li>
-              <li><Link to="/how-it-works" className="block py-2 font-medium text-gray-800">How it works</Link></li>
+              <li><Link to="/pricing" className="block py-2 font-medium text-gray-800" onClick={() => setIsMenuOpen(false)}>Pricing</Link></li>
+              <li><Link to="/how-it-works" className="block py-2 font-medium text-gray-800" onClick={() => setIsMenuOpen(false)}>How it works</Link></li>
               
               <li className="py-2">
                 <button className="flex items-center justify-between w-full font-medium text-gray-800">
@@ -222,9 +223,9 @@ export const Header = ({ type }: HeaderProps) => {
                   <ChevronDown className="h-4 w-4" />
                 </button>
                 <div className="pl-4 mt-2 space-y-2 border-l-2 border-gray-100">
-                  <Link to="/about-us" className="block py-1 text-sm">Our Story</Link>
-                  <Link to="/careers" className="block py-1 text-sm">Careers</Link>
-                  <Link to="/press" className="block py-1 text-sm">Press</Link>
+                  <Link to="/about-us" className="block py-1 text-sm" onClick={() => setIsMenuOpen(false)}>Our Story</Link>
+                  <Link to="/careers" className="block py-1 text-sm" onClick={() => setIsMenuOpen(false)}>Careers</Link>
+                  <Link to="/press" className="block py-1 text-sm" onClick={() => setIsMenuOpen(false)}>Press</Link>
                 </div>
               </li>
               
@@ -234,9 +235,9 @@ export const Header = ({ type }: HeaderProps) => {
                   <ChevronDown className="h-4 w-4" />
                 </button>
                 <div className="pl-4 mt-2 space-y-2 border-l-2 border-gray-100">
-                  <Link to="/blog" className="block py-1 text-sm">Blog</Link>
-                  <Link to="/help-center" className="block py-1 text-sm">Help Center</Link>
-                  <Link to="/case-studies" className="block py-1 text-sm">Case Studies</Link>
+                  <Link to="/blog" className="block py-1 text-sm" onClick={() => setIsMenuOpen(false)}>Blog</Link>
+                  <Link to="/help-center" className="block py-1 text-sm" onClick={() => setIsMenuOpen(false)}>Help Center</Link>
+                  <Link to="/case-studies" className="block py-1 text-sm" onClick={() => setIsMenuOpen(false)}>Case Studies</Link>
                 </div>
               </li>
               
@@ -244,6 +245,7 @@ export const Header = ({ type }: HeaderProps) => {
                 <Link 
                   to="/sign-in"
                   className="block py-2 font-medium text-gray-800"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   Login
                 </Link>
@@ -252,7 +254,7 @@ export const Header = ({ type }: HeaderProps) => {
                 <Button 
                   className="w-full bg-blue-600 hover:bg-blue-700 text-sm mt-2"
                   onClick={() => {
-                    navigate('/culturin-pro');
+                    navigate('/demo');
                     setIsMenuOpen(false);
                   }}
                 >
