@@ -11,6 +11,7 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel";
+import Image from "@/components/ui/image";
 
 const Hero = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -23,35 +24,44 @@ const Hero = () => {
   const operatorImages = [
     {
       url: "https://images.unsplash.com/photo-1517423568366-8b83523034fd?q=80&w=1000&auto=format&fit=crop",
-      alt: "Tour guide leading a cultural food tour"
+      alt: "Tour guide leading a cultural food tour",
+      name: "Maya",
+      location: "Bangkok Food Tours",
+      quote: "Culturin helped me grow direct bookings by 34% in just 2 months."
     },
     {
       url: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=80&w=1000&auto=format&fit=crop",
-      alt: "Happy museum guide with visitors"
+      alt: "Happy museum guide with visitors",
+      name: "Carlos",
+      location: "Mexico City Heritage Walks",
+      quote: "I finally cut out the middlemen and increased profit margins by 28%."
     },
     {
       url: "https://images.unsplash.com/photo-1516939884455-1445c8652f83?q=80&w=1000&auto=format&fit=crop",
-      alt: "Tour operator showing historical site"
+      alt: "Tour operator showing historical site",
+      name: "Ayo",
+      location: "Nigeria Roots Tours",
+      quote: "My direct bookings are up 3x since I started using Culturin!"
     }
   ];
 
   return (
     <div className="flex flex-col min-h-screen relative bg-white">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50 to-purple-50 opacity-70 z-0"></div>
+      {/* Enhanced background with cultural texture and warm gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 opacity-80 z-0"></div>
       
-      {/* Cultural pattern overlay */}
-      <div className="absolute inset-0 opacity-5 bg-[url('https://images.unsplash.com/photo-1558244661-d248897f7bc4?q=80&w=2000&auto=format&fit=crop')] bg-repeat z-0"></div>
+      {/* Cultural pattern overlay - using a more distinct cultural textile pattern */}
+      <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1482881497185-d4a9ddbe4151?q=80&w=2000&auto=format&fit=crop')] bg-repeat z-0"></div>
       
       <section className="flex-1 flex flex-col justify-center items-center text-center px-4 pt-24 pb-28 max-w-7xl mx-auto relative z-10">
         {/* Rating badge */}
         <div className="mb-6">
-          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm bg-gray-100 text-gray-800 font-medium">
-            #1 Top-Rated Cultural Experience Platform <span className="font-semibold text-amber-500 ml-1">4.8 ★</span> across 279 reviews
+          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm bg-amber-100 text-amber-800 font-medium">
+            #1 Top-Rated Cultural Experience Platform <span className="font-semibold text-amber-600 ml-1">4.8 ★</span> across 279 reviews
           </span>
         </div>
         
-        {/* New headline */}
+        {/* Headline */}
         <h1 
           className={`font-inter text-4xl md:text-5xl lg:text-6xl text-black mb-6 font-bold tracking-tight leading-tight transition-all duration-700 ease-out ${
             animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -61,7 +71,7 @@ const Hero = () => {
           Own your bookings. Tell richer stories. Grow your cultural tour brand.
         </h1>
         
-        {/* New subheadline */}
+        {/* Subheadline */}
         <p 
           className={`text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-10 transition-all duration-700 ease-out ${
             animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -71,34 +81,54 @@ const Hero = () => {
           Get more direct bookings, build guest loyalty, and craft unforgettable cultural journeys — without using five different tools.
         </p>
         
-        {/* Search box area */}
+        {/* Improved search box area with card styling */}
         <div 
-          className={`w-full max-w-3xl mt-4 rounded-xl p-8 bg-white/80 backdrop-blur-sm border border-gray-100 shadow-soft transition-all duration-700 ease-out ${
+          className={`w-full max-w-3xl mt-4 rounded-xl p-8 bg-white/90 backdrop-blur-sm border border-amber-100 shadow-lg transition-all duration-700 ease-out ${
             animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
-          style={{transitionDelay: '400ms'}}
+          style={{transitionDelay: '400ms', boxShadow: '0 10px 40px rgba(254, 215, 170, 0.3)'}}
         >
           <div className="text-left mb-5 flex items-center">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black mr-3">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-500 mr-3">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
               </svg>
             </div>
             <h3 className="text-lg font-medium">
-              Run a free audit on your tour to discover what's costing you bookings
+              Discover where you're losing bookings (and how to fix it)
             </h3>
           </div>
           
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-col md:flex-row">
             <Input 
               placeholder="Enter your tour or experience name" 
               className="h-14 border-gray-200 text-base"
             />
-            <Button className="bg-black text-white h-14 px-6 flex items-center gap-2 text-base whitespace-nowrap">
+            <Button className="bg-black hover:bg-gray-800 text-white h-14 px-6 flex items-center gap-2 text-base whitespace-nowrap">
               Scan my tour for growth leaks
               <ArrowRight className="h-5 w-5" />
             </Button>
+          </div>
+          
+          {/* Trust builder below CTA */}
+          <div className="mt-5 pt-5 border-t border-gray-100">
+            <p className="text-sm text-gray-500 mb-3">Used by over 400 cultural tour leaders — from Accra to Oaxaca</p>
+            <div className="flex items-center justify-center gap-3">
+              {operatorImages.map((op, i) => (
+                <div key={i} className="flex -space-x-2">
+                  <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white">
+                    <Image 
+                      src={op.url} 
+                      alt={`${op.name} from ${op.location}`}
+                      className="w-full h-full object-cover"
+                      aspectRatio="square"
+                    />
+                  </div>
+                </div>
+              ))}
+              <span className="text-sm text-gray-600 font-medium">+ 397 more</span>
+            </div>
           </div>
         </div>
 
@@ -122,9 +152,10 @@ const Hero = () => {
                           alt={image.alt}
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                          <div className="p-6">
-                            <p className="text-white text-sm">"{index === 0 ? 'My direct bookings are up 43% since I started using Culturin!' : index === 1 ? 'The analytics have transformed how I run my business' : 'I finally own my guest relationships instead of OTAs'}"</p>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                          <div className="p-6 text-left">
+                            <p className="text-white text-base font-medium mb-1">"{image.quote}"</p>
+                            <p className="text-amber-200 text-sm">— {image.name}, {image.location}</p>
                           </div>
                         </div>
                       </div>
