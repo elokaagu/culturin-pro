@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
@@ -21,6 +22,8 @@ import ProductMarketingPage from './pages/product/ProductMarketingPage';
 import CulturinPro from './pages/CulturinPro';
 import Contact from './pages/Contact';
 import ProductBookingManagementPage from './pages/product/ProductBookingManagementPage';
+import WhatsNewPage from './pages/WhatsNewPage';
+import AnnouncementDetailPage from './pages/AnnouncementDetailPage';
 import { Toaster } from "@/components/ui/toaster"
 
 function App() {
@@ -44,11 +47,13 @@ function App() {
         <Route path="/product/analytics" element={<ProductAnalyticsPage />} />
         <Route path="/product/booking" element={<ProductBookingPage />} />
         <Route path="/product/booking/:id" element={<ProductBookingPage />} />
-        <Route path="/product/booking-management" element={<ProductBookingManagementPage />} /> {/* New route added */}
+        <Route path="/product/booking-management" element={<ProductBookingManagementPage />} />
         <Route path="/product/crm" element={<ProductCRMPage />} />
         <Route path="/product/marketing" element={<ProductMarketingPage />} />
         <Route path="/culturin-pro" element={<CulturinPro />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/whats-new" element={<WhatsNewPage />} />
+        <Route path="/whats-new/:id" element={<AnnouncementDetailPage />} />
       </Routes>
       <Toaster />
     </BrowserRouter>
