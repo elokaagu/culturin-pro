@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +17,8 @@ import ProAnalytics from "./pages/ProAnalytics";
 import ProMarketingPage from "./pages/ProMarketingPage";
 import ProSettingsPage from "./pages/ProSettingsPage";
 import ProItineraryPage from "./pages/ProItineraryPage";
+import Index from "./pages/Index";
+import PricingPage from "./pages/PricingPage";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -46,8 +47,8 @@ const EntryPoint = () => {
     return <Navigate to={lastRoute} replace />;
   }
   
-  // Otherwise go to operators page
-  return <Navigate to="/for-operators" replace />;
+  // Otherwise go to homepage
+  return <Navigate to="/" replace />;
 };
 
 // Page wrapper component to control footer display
@@ -57,7 +58,8 @@ const PageWithFooter = ({ Component }) => {
   // ForOperators, CulturinProPage, and ProDashboardPage already include their own Footer or don't need one
   const hideFooter = location.pathname === '/for-operators' || 
                     location.pathname === '/culturin-pro' || 
-                    location.pathname.startsWith('/pro-dashboard');
+                    location.pathname.startsWith('/pro-dashboard') ||
+                    location.pathname === '/pricing';
   
   return (
     <>
@@ -77,9 +79,10 @@ const App = () => (
         <div className="flex flex-col min-h-screen">
           <div className="flex-grow">
             <Routes>
-              <Route path="/" element={<PageWithFooter Component={OperatorDashboard} />} />
+              <Route path="/" element={<Index />} />
               <Route path="/operator" element={<PageWithFooter Component={OperatorDashboard} />} />
               <Route path="/for-operators" element={<ForOperators />} />
+              <Route path="/pricing" element={<PricingPage />} />
               <Route path="/sign-in" element={<PageWithFooter Component={SignIn} />} />
               <Route path="/culturin-pro" element={<PageWithFooter Component={CulturinProPage} />} />
               <Route path="/pro-dashboard" element={<ProDashboardPage />} />

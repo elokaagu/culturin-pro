@@ -103,7 +103,7 @@ export const Header = ({ type }: HeaderProps) => {
                 </li>
                 <li>
                   <Link 
-                    to="/for-operators" 
+                    to="/pricing" 
                     className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
                   >
                     Pricing
@@ -138,11 +138,6 @@ export const Header = ({ type }: HeaderProps) => {
                           <span className="font-medium">Press</span>
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/reviews" className="flex items-start p-3 rounded-md hover:bg-gray-100">
-                          <span className="font-medium">Reviews</span>
-                        </Link>
-                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </li>
@@ -165,11 +160,6 @@ export const Header = ({ type }: HeaderProps) => {
                       <DropdownMenuItem asChild>
                         <Link to="/case-studies" className="flex items-start p-3 rounded-md hover:bg-gray-100">
                           <span className="font-medium">Case Studies</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/support-center" className="flex items-start p-3 rounded-md hover:bg-gray-100">
-                          <span className="font-medium">Support Center</span>
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -223,7 +213,7 @@ export const Header = ({ type }: HeaderProps) => {
                   <Link to="/culturin-pro" className="block py-1 text-sm">Marketing Tools</Link>
                 </div>
               </li>
-              <li><Link to="/for-operators" className="block py-2 font-medium text-gray-800">Pricing</Link></li>
+              <li><Link to="/pricing" className="block py-2 font-medium text-gray-800">Pricing</Link></li>
               <li><Link to="/operator" className="block py-2 font-medium text-gray-800">How it works</Link></li>
               
               <li className="py-2">
@@ -235,7 +225,6 @@ export const Header = ({ type }: HeaderProps) => {
                   <Link to="/about-us" className="block py-1 text-sm">Our Story</Link>
                   <Link to="/about-us#careers" className="block py-1 text-sm">Careers</Link>
                   <Link to="/about-us#press" className="block py-1 text-sm">Press</Link>
-                  <Link to="/reviews" className="block py-1 text-sm">Reviews</Link>
                 </div>
               </li>
               
@@ -248,7 +237,6 @@ export const Header = ({ type }: HeaderProps) => {
                   <Link to="/blog" className="block py-1 text-sm">Blog</Link>
                   <Link to="/help-center" className="block py-1 text-sm">Help Center</Link>
                   <Link to="/case-studies" className="block py-1 text-sm">Case Studies</Link>
-                  <Link to="/support-center" className="block py-1 text-sm">Support Center</Link>
                 </div>
               </li>
               
