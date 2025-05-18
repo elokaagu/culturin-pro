@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -88,7 +89,7 @@ const TourOperatorWebsite: React.FC = () => {
         description: 'We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots. Our expert local guides bring history and culture to life with immersive experiences.',
         logo: 'https://placehold.co/200x80',
         coverImage: 'https://placehold.co/1200x400',
-        theme: 'classic',
+        theme: publishedTheme,
         primaryColor: '#9b87f5',
         contact: {
           email: 'info@barcelonaculturaltours.com',

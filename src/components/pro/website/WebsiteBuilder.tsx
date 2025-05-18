@@ -41,8 +41,10 @@ const WebsiteBuilder: React.FC = () => {
       setPublishLoading(false);
       setPublishedUrl(`tour/demo?v=${Date.now()}`);
       
-      // Save to localStorage to share theme and content data with the tour operator website
+      // Get current theme from localStorage
       const currentTheme = localStorage.getItem('selectedWebsiteTheme') || 'classic';
+      
+      // Save website content and theme to localStorage for the tour operator website
       const websiteContent = {
         companyName: localStorage.getItem('websiteCompanyName') || 'Barcelona Cultural Tours',
         tagline: localStorage.getItem('websiteTagline') || 'Authentic cultural experiences in the heart of Catalonia',
