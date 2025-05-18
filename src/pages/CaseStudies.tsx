@@ -5,9 +5,10 @@ import Header from '@/components/Header';
 import NewFooter from '@/components/sections/NewFooter';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BadgeCheck, ChevronRight, Images } from 'lucide-react';
+import { BadgeCheck, ChevronRight, Images, Search } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from "@/components/ui/image";
+import { Input } from '@/components/ui/input';
 
 interface CaseStudy {
   id: string;
@@ -100,18 +101,31 @@ const caseStudies: CaseStudy[] = [
   }
 ];
 
+const categories = [
+  {id: 'all', name: 'All Categories'},
+  {id: 'food-tours', name: 'Food Tours'},
+  {id: 'walking-tours', name: 'Walking Tours'}, 
+  {id: 'culinary-experiences', name: 'Culinary'}
+];
+
 const CaseStudies = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<CaseStudy | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true
   });
   
-  const filteredCaseStudies = selectedCategory === 'all' 
-    ? caseStudies 
-    : caseStudies.filter(study => study.category === selectedCategory);
+  const filteredCaseStudies = searchQuery 
+    ? caseStudies.filter(study => 
+        study.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        study.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        study.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())))
+    : selectedCategory === 'all' 
+      ? caseStudies 
+      : caseStudies.filter(study => study.category === selectedCategory);
   
   const handleCaseStudyClick = (study: CaseStudy) => {
     setSelectedCaseStudy(study);
@@ -124,26 +138,36 @@ const CaseStudies = () => {
       
       <main className="flex-grow pt-24">
         {/* Hero Section */}
-        <section className="relative bg-[#1EAEDB] text-white py-16 lg:py-24 overflow-hidden">
+        <section className="relative bg-blue-600 text-white py-16 lg:py-24 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
               src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop"
               alt="Case Studies"
               className="w-full h-full object-cover opacity-40"
             />
+            <div className="absolute inset-0 bg-blue-600/70"></div>
           </div>
           <div className="container mx-auto px-6 max-w-7xl relative z-10">
-            <div className="max-w-3xl">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Case Studies</h1>
-              <p className="text-lg md:text-xl opacity-90 mb-6">
+            <div className="max-w-3xl mx-auto text-center">
+              <h1 className="text-3xl md:text-5xl font-bold mb-6">Case Studies</h1>
+              <p className="text-lg md:text-xl opacity-90 mb-8">
                 Discover how tour operators and cultural experience hosts around the world are growing their businesses with Culturin.
               </p>
-              <Button 
-                className="bg-white text-[#1EAEDB] hover:bg-white/90"
-                onClick={() => window.location.href = "/demo"}
-              >
-                Get Started Free
-              </Button>
+              
+              <div className="mt-8 relative max-w-xl mx-auto">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Search for case studies..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-4 py-6 bg-white/95 text-gray-900 rounded-lg focus:ring-2 focus:ring-white/50 text-lg"
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center">
+                    <Search className="h-5 w-5 text-gray-500" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -156,7 +180,7 @@ const CaseStudies = () => {
               <div className="animate-fade-in">
                 <Button 
                   variant="ghost" 
-                  className="mb-6 text-[#1EAEDB]"
+                  className="mb-6 text-blue-600"
                   onClick={() => setSelectedCaseStudy(null)}
                 >
                   ← Back to all case studies
@@ -216,7 +240,7 @@ const CaseStudies = () => {
                             {selectedCaseStudy.tags.map(tag => (
                               <span 
                                 key={tag} 
-                                className="bg-[#E5F6FB] text-[#1EAEDB] px-3 py-1 rounded-full text-sm"
+                                className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm"
                               >
                                 {tag}
                               </span>
@@ -226,7 +250,7 @@ const CaseStudies = () => {
                         
                         <div className="mt-8">
                           <Button 
-                            className="w-full bg-[#1EAEDB] hover:bg-[#1EAEDB]/90 text-white"
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                             onClick={() => window.location.href = "/demo"}
                           >
                             Get similar results
@@ -270,33 +294,53 @@ const CaseStudies = () => {
             ) : (
               // Case Studies List View
               <div>
-                <div className="max-w-xl mx-auto text-center mb-12">
-                  <h2 className="text-2xl md:text-3xl font-bold mb-4">Success Stories from Real Customers</h2>
-                  <p className="text-gray-600">
-                    See how businesses like yours achieved remarkable results with Culturin's platform
-                  </p>
-                </div>
+                {/* Search Results Label */}
+                {searchQuery && (
+                  <div className="mb-8 text-center">
+                    <h2 className="text-xl font-semibold">
+                      Search results for "{searchQuery}"
+                    </h2>
+                    <p className="text-gray-600 mt-2">
+                      {filteredCaseStudies.length} results found
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      className="mt-4"
+                      onClick={() => setSearchQuery('')}
+                    >
+                      Clear search
+                    </Button>
+                  </div>
+                )}
                 
-                <Tabs defaultValue="all" className="mb-12">
-                  <TabsList className="justify-center mb-8 border-b border-gray-200 w-full gap-6">
-                    <TabsTrigger value="all" onClick={() => setSelectedCategory('all')}
-                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#1EAEDB] data-[state=active]:text-[#1EAEDB] transition-all duration-200">
-                      All Categories
-                    </TabsTrigger>
-                    <TabsTrigger value="food-tours" onClick={() => setSelectedCategory('food-tours')}
-                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#1EAEDB] data-[state=active]:text-[#1EAEDB] transition-all duration-200">
-                      Food Tours
-                    </TabsTrigger>
-                    <TabsTrigger value="walking-tours" onClick={() => setSelectedCategory('walking-tours')}
-                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#1EAEDB] data-[state=active]:text-[#1EAEDB] transition-all duration-200">
-                      Walking Tours
-                    </TabsTrigger>
-                    <TabsTrigger value="culinary-experiences" onClick={() => setSelectedCategory('culinary-experiences')}
-                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#1EAEDB] data-[state=active]:text-[#1EAEDB] transition-all duration-200">
-                      Culinary
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                {!searchQuery && (
+                  <div className="max-w-xl mx-auto text-center mb-12">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-4">Success Stories from Real Customers</h2>
+                    <p className="text-gray-600">
+                      See how businesses like yours achieved remarkable results with Culturin's platform
+                    </p>
+                  </div>
+                )}
+                
+                {!searchQuery && (
+                  <div className="mb-12 overflow-x-auto whitespace-nowrap">
+                    <div className="flex space-x-2 md:space-x-6 justify-center">
+                      {categories.map((category) => (
+                        <button
+                          key={category.id}
+                          onClick={() => setSelectedCategory(category.id)}
+                          className={`px-5 py-3 rounded-lg transition-all text-sm md:text-base font-medium ${
+                            selectedCategory === category.id
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                          }`}
+                        >
+                          {category.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredCaseStudies.map((study) => (
@@ -325,13 +369,13 @@ const CaseStudies = () => {
                             {study.tags.slice(0, 2).map((tag) => (
                               <span 
                                 key={tag}
-                                className="bg-[#E5F6FB] text-[#1EAEDB] px-3 py-1 rounded-full text-xs"
+                                className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs"
                               >
                                 {tag}
                               </span>
                             ))}
                           </div>
-                          <span className="text-[#1EAEDB] flex items-center text-sm font-medium">
+                          <span className="text-blue-600 flex items-center text-sm font-medium">
                             Read more <ChevronRight className="h-4 w-4 ml-1" />
                           </span>
                         </div>
@@ -368,14 +412,14 @@ const CaseStudies = () => {
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button 
-                  className="bg-[#1EAEDB] hover:bg-[#1EAEDB]/90 text-white"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                   onClick={() => window.location.href = "/demo"}
                 >
                   Get a Free Demo
                 </Button>
                 <Button 
                   variant="outline"
-                  className="border-[#1EAEDB] text-[#1EAEDB]"
+                  className="border-blue-600 text-blue-600"
                   onClick={() => window.location.href = "/contact"}
                 >
                   Talk to Sales

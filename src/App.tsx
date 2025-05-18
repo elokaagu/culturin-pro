@@ -77,7 +77,9 @@ const routesWithOwnFooters = [
   '/pricing',
   '/contact',
   '/case-studies',
-  '/faqs'
+  '/faqs',
+  '/how-it-works',
+  '/help-center'
 ];
 
 // This list contains routes that don't need a footer
@@ -87,7 +89,8 @@ const routesWithNoFooter = [
 
 // Routes that start with these prefixes don't need a footer
 const prefixesWithNoFooter = [
-  '/pro-dashboard'
+  '/pro-dashboard',
+  '/careers/apply'
 ];
 
 // Page wrapper component to control footer display
