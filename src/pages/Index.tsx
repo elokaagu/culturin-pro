@@ -8,6 +8,7 @@ import TestimonialSection from "@/components/sections/TestimonialSection";
 import OperatorInvitation from "@/components/sections/OperatorInvitation";
 import TravelWithMeSection from "@/components/sections/TravelWithMeSection";
 import JoinCommunity from "@/components/sections/JoinCommunity";
+import TrustedOperators from "@/components/sections/TrustedOperators";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChartBar } from "lucide-react";
@@ -43,6 +44,7 @@ const Index = () => {
           </div>
         </section>
         <HowItWorksSection />
+        <TrustedOperators />
         <FeaturesSection />
         <TestimonialSection />
         <OperatorInvitation />
