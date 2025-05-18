@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -124,7 +125,7 @@ export const Header = ({ type }: HeaderProps) => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2">
                       <DropdownMenuItem asChild>
-                        <Link to="/about-us" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                        <Link to="/our-story" className="flex items-start p-3 rounded-md hover:bg-gray-100">
                           <span className="font-medium">Our Story</span>
                         </Link>
                       </DropdownMenuItem>
@@ -222,7 +223,7 @@ export const Header = ({ type }: HeaderProps) => {
                   <ChevronDown className="h-4 w-4" />
                 </button>
                 <div className="pl-4 mt-2 space-y-2 border-l-2 border-gray-100">
-                  <Link to="/about-us" className="block py-1 text-sm" onClick={() => setIsMenuOpen(false)}>Our Story</Link>
+                  <Link to="/our-story" className="block py-1 text-sm" onClick={() => setIsMenuOpen(false)}>Our Story</Link>
                   <Link to="/careers" className="block py-1 text-sm" onClick={() => setIsMenuOpen(false)}>Careers</Link>
                   <Link to="/press" className="block py-1 text-sm" onClick={() => setIsMenuOpen(false)}>Press</Link>
                 </div>

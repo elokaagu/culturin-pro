@@ -41,6 +41,7 @@ import ApplicationPage from './pages/careers/ApplicationPage';
 import PressArticlePage from './pages/PressArticlePage';
 import OurStoryPage from './pages/OurStoryPage';
 import PressPage from './pages/PressPage';
+import FAQs from './pages/FAQs';
 
 function App() {
   return (
@@ -84,6 +85,7 @@ function App() {
         <Route path="/pro-dashboard/itinerary" element={<ProItineraryPage />} />
         <Route path="/pro-dashboard/website" element={<ProWebsitePage />} />
         <Route path="/pro-dashboard/settings" element={<ProSettingsPage />} />
+        <Route path="/faqs" element={<FAQs />} />
         
         {/* Dynamic routes for tour operator websites */}
         <Route path="/tour/:slug" element={<TourOperatorWebsitePage />} />

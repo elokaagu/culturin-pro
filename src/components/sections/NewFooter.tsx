@@ -61,7 +61,7 @@ const NewFooter = () => {
             >
               <h3 className="text-sm font-semibold uppercase mb-5">Products</h3>
               <ul className="space-y-3">
-                <li><Link to="/product/booking" className="hover:opacity-70 transition-opacity">Direct Booking Engine</Link></li>
+                <li><Link to="/product/booking-management" className="hover:opacity-70 transition-opacity">Direct Booking Engine</Link></li>
                 <li><Link to="/product/crm" className="hover:opacity-70 transition-opacity">Guest CRM</Link></li>
                 <li><Link to="/product/marketing" className="hover:opacity-70 transition-opacity">Marketing Tools</Link></li>
                 <li><Link to="/product/analytics" className="hover:opacity-70 transition-opacity">Analytics Dashboard</Link></li>
