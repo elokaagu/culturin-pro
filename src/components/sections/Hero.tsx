@@ -12,9 +12,11 @@ import {
   CarouselPrevious
 } from "@/components/ui/carousel";
 import Image from "@/components/ui/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Hero = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
+  const [isHovering, setIsHovering] = useState<boolean>(false);
   
   useEffect(() => {
     // Trigger animations on component mount (page load)
@@ -50,17 +52,17 @@ const Hero = () => {
       {/* Simple clear background */}
       <div className="absolute inset-0 bg-gradient-to-b from-white to-gray-50 z-0"></div>
       
-      <section className="flex-1 flex flex-col justify-center items-center text-center px-4 pt-32 pb-36 max-w-7xl mx-auto relative z-10">
+      <section className="flex-1 flex flex-col justify-center items-center text-center px-4 pt-36 pb-40 max-w-7xl mx-auto relative z-10">
         {/* Rating badge */}
-        <div className="mb-8">
+        <div className="mb-10">
           <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm bg-blue-50 text-blue-800 font-medium">
             #1 Top-Rated Cultural Experience Platform <span className="font-semibold text-blue-600 ml-1">4.8 ★</span> across 279 reviews
           </span>
         </div>
         
-        {/* Headline */}
+        {/* Headline - Added more spacing */}
         <h1 
-          className={`font-inter text-4xl md:text-5xl lg:text-6xl text-black mb-8 font-bold tracking-tight leading-tight transition-all duration-700 ease-out ${
+          className={`font-inter text-4xl md:text-5xl lg:text-6xl text-black mb-10 font-bold tracking-tight leading-tight transition-all duration-700 ease-out ${
             animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
           style={{transitionDelay: '200ms'}}
@@ -68,9 +70,9 @@ const Hero = () => {
           Own your bookings. Tell richer stories. Grow your cultural tour brand.
         </h1>
         
-        {/* Subheadline */}
+        {/* Subheadline - Added more spacing */}
         <p 
-          className={`text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-12 transition-all duration-700 ease-out ${
+          className={`text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-16 transition-all duration-700 ease-out ${
             animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
           style={{transitionDelay: '300ms'}}
@@ -114,19 +116,22 @@ const Hero = () => {
                   {/* App content - cultural experience example */}
                   <div className="p-3 h-full overflow-y-auto">
                     {/* Featured Experience */}
-                    <div className="rounded-lg overflow-hidden mb-3">
+                    <div className="rounded-lg overflow-hidden mb-3 relative">
                       <img 
                         src="https://images.unsplash.com/photo-1466442929976-97f336a657be" 
-                        alt="Cultural tour experience"
+                        alt="Oaxaca Food Tour experience"
                         className="w-full h-40 object-cover"
                       />
-                      <div className="absolute top-10 left-5 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                      <div className="absolute top-4 left-3 bg-blue-600 text-white text-xs px-2 py-1 rounded-md">
                         Featured Tour
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                        <span className="text-white text-xs font-medium">3-day experience</span>
                       </div>
                     </div>
                     
                     <div className="mb-4">
-                      <h3 className="text-left text-lg font-bold">Ancient Temple Walking Tour</h3>
+                      <h3 className="text-left text-lg font-bold">Oaxaca Food Tour Adventure</h3>
                       <div className="flex items-center mt-1">
                         <div className="flex">
                           {[1, 2, 3, 4, 5].map((star) => (
@@ -141,16 +146,24 @@ const Hero = () => {
                     
                     <div className="flex items-center justify-between mb-4">
                       <div className="text-blue-600 font-bold">$59 per person</div>
-                      <button className="h-8 px-3 bg-blue-600 text-white text-xs rounded">Book Now</button>
+                      <button 
+                        className={`h-8 px-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs rounded ${
+                          isHovering ? 'animate-pulse' : ''
+                        }`}
+                        onMouseEnter={() => setIsHovering(true)}
+                        onMouseLeave={() => setIsHovering(false)}
+                      >
+                        Book Now
+                      </button>
                     </div>
                     
                     <div className="text-left mb-4">
                       <h4 className="font-medium text-sm">Tour Highlights:</h4>
                       <ul className="text-xs text-gray-700 mt-1 space-y-1">
-                        <li>• Expert local guide</li>
-                        <li>• Skip the line entry</li>
-                        <li>• Cultural immersion</li>
-                        <li>• Traditional lunch included</li>
+                        <li>• Local market exploration with chef</li>
+                        <li>• Authentic cooking class experience</li>
+                        <li>• Cultural immersion & traditions</li>
+                        <li>• Mezcal tasting included</li>
                       </ul>
                     </div>
                     
@@ -176,9 +189,9 @@ const Hero = () => {
             </div>
           </div>
           
-          {/* Right side: Improved search box area with card styling */}
+          {/* Right side: Improved search box area with card styling - reduced shadow */}
           <div className="w-full lg:w-1/2">
-            <div className="rounded-xl p-10 bg-white shadow-lg border border-gray-100">
+            <div className="rounded-xl p-10 bg-white shadow-md border border-gray-100">
               <div className="text-left mb-6 flex items-center">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 mr-3">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -187,7 +200,7 @@ const Hero = () => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-medium">
-                  Not sure what's blocking your growth? Let's find out.
+                  Find out why bookings drop off — and what to fix.
                 </h3>
               </div>
               
@@ -196,28 +209,37 @@ const Hero = () => {
                   placeholder="Enter your tour or experience name" 
                   className="h-14 border-gray-200 text-base"
                 />
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white h-14 px-6 flex items-center gap-2 text-base whitespace-nowrap transition-colors">
-                  Scan my tour for growth leaks
-                  <ArrowRight className="h-5 w-5" />
+                <Button 
+                  className="h-14 px-6 flex items-center gap-2 text-base whitespace-nowrap transition-all duration-200 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white group"
+                >
+                  <span className="font-bold">Scan My Tour</span>
+                  <span className="font-normal">for Growth Leaks</span>
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
               
-              {/* Trust builder below CTA */}
+              {/* Trust builder below CTA - enhanced with text description */}
               <div className="mt-8 pt-5 border-t border-gray-100">
-                <p className="text-sm text-gray-500 mb-3">Used by over 400 cultural tour leaders — from Accra to Oaxaca</p>
-                <div className="flex items-center justify-center gap-3">
-                  {operatorImages.map((op, i) => (
-                    <div key={i} className="flex -space-x-2">
-                      <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white">
-                        <Image 
-                          src={op.url} 
-                          alt={`${op.name} from ${op.location}`}
-                          className="w-full h-full object-cover"
-                          aspectRatio="square"
-                        />
+                <p className="text-sm text-gray-500 mb-3">Used by over 400 cultural tour operators — from Accra to Oaxaca</p>
+                <div className="flex items-center gap-4">
+                  <div className="flex -space-x-3">
+                    {operatorImages.map((op, i) => (
+                      <div key={i} className="relative group">
+                        <Avatar className="w-9 h-9 border-2 border-white">
+                          <AvatarImage 
+                            src={op.url} 
+                            alt={`${op.name} from ${op.location}`}
+                          />
+                          <AvatarFallback>{op.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                          <strong>{op.name}</strong>, {op.location}
+                          <div className="text-xs mt-1 italic opacity-90">"{op.quote}"</div>
+                          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-800"></div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                   <span className="text-sm text-gray-600 font-medium">+ 397 more</span>
                 </div>
               </div>
