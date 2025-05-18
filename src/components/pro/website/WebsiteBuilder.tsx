@@ -7,7 +7,7 @@ import WebsiteContent from './WebsiteContent';
 import WebsiteSettings from './WebsiteSettings';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Globe, ExternalLink, Check } from 'lucide-react';
+import { Globe, ExternalLink, Check, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { sampleItineraries, ItineraryType } from '@/data/itineraryData';
 
@@ -33,6 +33,7 @@ const WebsiteBuilder: React.FC = () => {
       }
     } else {
       setItineraries(sampleItineraries);
+      localStorage.setItem('culturinItineraries', JSON.stringify(sampleItineraries));
     }
   }, []);
 
@@ -76,6 +77,19 @@ const WebsiteBuilder: React.FC = () => {
   const handlePreviewSite = () => {
     window.open(`/${publishedUrl}`, '_blank');
   };
+
+  const handleReloadPreview = () => {
+    // Trigger a refresh for the preview
+    const storedItineraries = localStorage.getItem('culturinItineraries');
+    if (storedItineraries) {
+      try {
+        setItineraries(JSON.parse(storedItineraries));
+      } catch (e) {
+        console.error('Error parsing itineraries:', e);
+      }
+    }
+    toast.success("Preview refreshed");
+  };
   
   return (
     <div className="space-y-6">
@@ -87,6 +101,14 @@ const WebsiteBuilder: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleReloadPreview}
+            className="flex items-center"
+          >
+            <Loader2 className="mr-2 h-4 w-4" />
+            Refresh Preview
+          </Button>
           <Button
             variant="outline"
             onClick={handlePreviewSite}

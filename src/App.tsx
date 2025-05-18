@@ -10,6 +10,7 @@ import AboutUs from './pages/AboutUs';
 import Careers from './pages/Careers';
 import Press from './pages/Press';
 import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
 import HelpCenter from './pages/HelpCenter';
 import CaseStudies from './pages/CaseStudies';
 import Owner from './pages/Owner';
@@ -49,6 +50,7 @@ function App() {
         <Route path="/careers" element={<Careers />} />
         <Route path="/press" element={<Press />} />
         <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/help-center" element={<HelpCenter />} />
         <Route path="/case-studies" element={<CaseStudies />} />
         <Route path="/owner" element={<Owner />} />

@@ -1,10 +1,16 @@
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { ItineraryType } from '@/data/itineraryData';
+import BookingWidget from '@/components/pro/website/BookingWidget';
+import AboutSection from '@/components/pro/website/AboutSection';
+import ContactSection from '@/components/pro/website/ContactSection';
+import ToursGrid from '@/components/pro/website/ToursGrid';
 
 const TourOperatorWebsitePage: React.FC = () => {
-  const { slug } = useParams();
+  const { slug, '*': subpath } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [websiteData, setWebsiteData] = useState<{
     companyName: string;
     tagline: string;
@@ -23,6 +29,32 @@ const TourOperatorWebsitePage: React.FC = () => {
   
   const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentView, setCurrentView] = useState('home');
+  const [selectedTour, setSelectedTour] = useState<ItineraryType | null>(null);
+
+  // Extract view from path
+  useEffect(() => {
+    if (location.pathname.includes('/booking')) {
+      setCurrentView('booking');
+      
+      // Extract tour id if present
+      const tourId = location.pathname.split('/').pop();
+      if (tourId && tourId !== 'booking') {
+        const tour = itineraries.find(it => it.id === tourId);
+        if (tour) {
+          setSelectedTour(tour);
+        }
+      }
+    } else if (location.pathname.includes('/about')) {
+      setCurrentView('about');
+    } else if (location.pathname.includes('/contact')) {
+      setCurrentView('contact');
+    } else if (location.pathname.includes('/tours')) {
+      setCurrentView('tours');
+    } else {
+      setCurrentView('home');
+    }
+  }, [location.pathname, itineraries]);
 
   useEffect(() => {
     // Fetch website data from localStorage
@@ -52,6 +84,15 @@ const TourOperatorWebsitePage: React.FC = () => {
     
     fetchWebsiteData();
   }, [slug]);
+
+  const handleNavigation = (path: string) => {
+    navigate(`/tour/${slug}/${path}`);
+  };
+
+  const handleTourSelect = (tour: ItineraryType) => {
+    setSelectedTour(tour);
+    navigate(`/tour/${slug}/booking/${tour.id}`);
+  };
 
   if (loading) {
     return (
@@ -90,79 +131,114 @@ const TourOperatorWebsitePage: React.FC = () => {
       </header>
 
       {/* Navigation */}
-      <nav className="bg-white shadow-md">
+      <nav className="bg-white shadow-md sticky top-0 z-10">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-4">
-            <div className="font-bold text-lg">{websiteData.companyName}</div>
+            <div className="font-bold text-lg cursor-pointer" onClick={() => handleNavigation('')}>
+              {websiteData.companyName}
+            </div>
             <div className="flex space-x-6">
-              <a href="#" className="hover:text-primary">Home</a>
-              <a href="#tours" className="hover:text-primary">Tours</a>
-              <a href="#about" className="hover:text-primary">About</a>
-              <a href="#contact" className="hover:text-primary">Contact</a>
+              <button 
+                onClick={() => handleNavigation('')}
+                className={`hover:text-primary ${currentView === 'home' ? 'font-medium text-primary' : ''}`}
+              >
+                Home
+              </button>
+              <button 
+                onClick={() => handleNavigation('tours')}
+                className={`hover:text-primary ${currentView === 'tours' ? 'font-medium text-primary' : ''}`}
+              >
+                Tours
+              </button>
+              <button 
+                onClick={() => handleNavigation('about')}
+                className={`hover:text-primary ${currentView === 'about' ? 'font-medium text-primary' : ''}`}
+              >
+                About
+              </button>
+              <button 
+                onClick={() => handleNavigation('contact')}
+                className={`hover:text-primary ${currentView === 'contact' ? 'font-medium text-primary' : ''}`}
+              >
+                Contact
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Itinerary Section */}
-      <section id="tours" className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-10">Our Experiences</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {itineraries.map((itinerary) => (
-              <div key={itinerary.id} className="bg-white rounded-lg overflow-hidden shadow-lg">
-                {itinerary.image ? (
-                  <img src={itinerary.image} alt={itinerary.title} className="w-full h-48 object-cover" />
-                ) : (
-                  <div className="w-full h-48 bg-gray-200"></div>
-                )}
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{itinerary.title}</h3>
-                  <p className="text-gray-600 mb-4">{itinerary.days} {itinerary.days === 1 ? 'day' : 'days'}</p>
-                  <div 
-                    className="px-4 py-2 rounded text-white text-center font-medium cursor-pointer"
-                    style={{ backgroundColor: websiteData.primaryColor }}
-                  >
-                    Learn More
+      {/* Main Content Area - Conditional Rendering based on Route */}
+      <main className="py-12">
+        {currentView === 'booking' ? (
+          <div className="container mx-auto px-4">
+            <BookingWidget 
+              tour={selectedTour || itineraries[0]} 
+              primaryColor={websiteData.primaryColor}
+              companyName={websiteData.companyName}
+            />
+          </div>
+        ) : currentView === 'about' ? (
+          <AboutSection description={websiteData.description} />
+        ) : currentView === 'contact' ? (
+          <ContactSection primaryColor={websiteData.primaryColor} companyName={websiteData.companyName} />
+        ) : currentView === 'tours' ? (
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-10">All Our Experiences</h2>
+            <ToursGrid 
+              itineraries={itineraries} 
+              onTourSelect={handleTourSelect} 
+              primaryColor={websiteData.primaryColor} 
+            />
+          </div>
+        ) : (
+          /* Home View */
+          <>
+            {/* Featured Tours Section */}
+            <section className="py-16 bg-gray-50">
+              <div className="container mx-auto px-4">
+                <h2 className="text-3xl font-bold text-center mb-10">Our Experiences</h2>
+                <ToursGrid 
+                  itineraries={itineraries.slice(0, 3)} 
+                  onTourSelect={handleTourSelect} 
+                  primaryColor={websiteData.primaryColor} 
+                />
+                
+                {itineraries.length > 3 && (
+                  <div className="text-center mt-8">
+                    <button 
+                      className="px-6 py-2 rounded-md text-white font-medium"
+                      style={{ backgroundColor: websiteData.primaryColor }}
+                      onClick={() => handleNavigation('tours')}
+                    >
+                      View All Tours
+                    </button>
                   </div>
-                </div>
+                )}
               </div>
-            ))}
-            
-            {itineraries.length === 0 && (
-              <div className="col-span-full text-center py-10">
-                <p className="text-gray-500">No tours available at the moment.</p>
+            </section>
+
+            {/* About Section */}
+            <AboutSection description={websiteData.description} showReadMore onReadMore={() => handleNavigation('about')} />
+
+            {/* CTA Section */}
+            <section className="py-16 bg-gray-100">
+              <div className="container mx-auto px-4 text-center">
+                <h2 className="text-3xl font-bold mb-6">Ready to Explore?</h2>
+                <p className="text-lg mb-8 max-w-2xl mx-auto">
+                  Book your next adventure with us and create memories that will last a lifetime.
+                </p>
+                <button 
+                  className="px-8 py-3 rounded-md text-white font-medium"
+                  style={{ backgroundColor: websiteData.primaryColor }}
+                  onClick={() => handleNavigation('booking')}
+                >
+                  Book Now
+                </button>
               </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section id="about" className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-6">About Us</h2>
-            <p className="text-lg text-gray-600 text-center">{websiteData.description}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Explore?</h2>
-          <p className="text-lg mb-8 max-w-2xl mx-auto">
-            Book your next adventure with us and create memories that will last a lifetime.
-          </p>
-          <button 
-            className="px-8 py-3 rounded-md text-white font-medium"
-            style={{ backgroundColor: websiteData.primaryColor }}
-          >
-            Book Now
-          </button>
-        </div>
-      </section>
+            </section>
+          </>
+        )}
+      </main>
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-10">
@@ -175,10 +251,10 @@ const TourOperatorWebsitePage: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-white">Home</a></li>
-                <li><a href="#tours" className="hover:text-white">Tours</a></li>
-                <li><a href="#about" className="hover:text-white">About</a></li>
-                <li><a href="#contact" className="hover:text-white">Contact</a></li>
+                <li><button className="hover:text-white" onClick={() => handleNavigation('')}>Home</button></li>
+                <li><button className="hover:text-white" onClick={() => handleNavigation('tours')}>Tours</button></li>
+                <li><button className="hover:text-white" onClick={() => handleNavigation('about')}>About</button></li>
+                <li><button className="hover:text-white" onClick={() => handleNavigation('contact')}>Contact</button></li>
               </ul>
             </div>
             <div>
