@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ProDashboardLayout from '@/components/pro/ProDashboardLayout';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PencilRuler, FileText } from 'lucide-react';
@@ -25,6 +25,18 @@ const ProItineraryPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("itineraries");
   const { toast } = useToast();
   
+  // Load itineraries from localStorage on component mount
+  useEffect(() => {
+    const storedItineraries = localStorage.getItem('culturinItineraries');
+    if (storedItineraries) {
+      try {
+        setItineraries(JSON.parse(storedItineraries));
+      } catch (e) {
+        console.error('Error parsing itineraries:', e);
+      }
+    }
+  }, []);
+  
   const handleCreateNewItinerary = () => {
     const newItinerary: ItineraryType = {
       id: `new-${Date.now()}`,
@@ -36,9 +48,13 @@ const ProItineraryPage: React.FC = () => {
       description: "Start building your new cultural experience."
     };
     
-    setItineraries(prev => [newItinerary, ...prev]);
+    const updatedItineraries = [newItinerary, ...itineraries];
+    setItineraries(updatedItineraries);
     setSelectedItinerary(newItinerary);
     setShowEditor(true);
+    
+    // Save to localStorage
+    localStorage.setItem('culturinItineraries', JSON.stringify(updatedItineraries));
     
     toast({
       title: "New Itinerary Created",
@@ -66,9 +82,13 @@ const ProItineraryPage: React.FC = () => {
       title: `My ${template.title}`
     };
     
-    setItineraries(prev => [newItinerary, ...prev]);
+    const updatedItineraries = [newItinerary, ...itineraries];
+    setItineraries(updatedItineraries);
     setSelectedItinerary(newItinerary);
     setShowEditor(true);
+    
+    // Save to localStorage
+    localStorage.setItem('culturinItineraries', JSON.stringify(updatedItineraries));
     
     toast({
       title: `Template Applied: ${template.title}`,
@@ -88,9 +108,13 @@ const ProItineraryPage: React.FC = () => {
       description: "Create a narrative-driven experience."
     };
     
-    setItineraries(prev => [newStoryItinerary, ...prev]);
+    const updatedItineraries = [newStoryItinerary, ...itineraries];
+    setItineraries(updatedItineraries);
     setSelectedItinerary(newStoryItinerary);
     setShowEditor(true);
+    
+    // Save to localStorage
+    localStorage.setItem('culturinItineraries', JSON.stringify(updatedItineraries));
     
     toast({
       title: "Story Mode Activated",
@@ -114,11 +138,14 @@ const ProItineraryPage: React.FC = () => {
   };
   
   const handleSaveItinerary = (updatedItinerary: ItineraryType) => {
-    setItineraries(prev => 
-      prev.map(item => 
-        item.id === updatedItinerary.id ? updatedItinerary : item
-      )
+    const updatedItineraries = itineraries.map(item => 
+      item.id === updatedItinerary.id ? updatedItinerary : item
     );
+    
+    setItineraries(updatedItineraries);
+    
+    // Save to localStorage
+    localStorage.setItem('culturinItineraries', JSON.stringify(updatedItineraries));
     
     toast({
       title: "Itinerary Saved",

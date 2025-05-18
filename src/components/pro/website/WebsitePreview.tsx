@@ -5,9 +5,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Laptop, Smartphone, Tablet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { ItineraryType } from '@/data/itineraryData';
 
-const WebsitePreview: React.FC = () => {
+interface WebsitePreviewProps {
+  itineraries?: ItineraryType[];
+}
+
+const WebsitePreview: React.FC<WebsitePreviewProps> = ({ itineraries = [] }) => {
   const [viewMode, setViewMode] = React.useState('desktop');
+  const primaryColor = localStorage.getItem('websitePrimaryColor') || '#9b87f5';
   
   return (
     <div className="space-y-4">
@@ -54,7 +60,7 @@ const WebsitePreview: React.FC = () => {
             )}
           >
             <AspectRatio ratio={16/9}>
-              <div className="p-4 bg-white h-full">
+              <div className="p-4 bg-white h-full overflow-auto">
                 <div className="bg-gray-100 w-full p-4 mb-4 rounded">
                   <div className="h-8 w-40 rounded bg-gray-200"></div>
                 </div>
@@ -66,11 +72,21 @@ const WebsitePreview: React.FC = () => {
                 </div>
                 <div className="h-64 w-full rounded bg-gray-200 mb-4"></div>
                 <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div className="h-32 rounded bg-gray-200"></div>
-                  <div className="h-32 rounded bg-gray-200"></div>
-                  <div className="h-32 rounded bg-gray-200"></div>
+                  {itineraries.slice(0, 3).map((item, index) => (
+                    <div key={item.id || index} className="h-32 rounded bg-gray-200 relative overflow-hidden">
+                      {item.image && <img src={item.image} alt={item.title} className="w-full h-full object-cover"/>}
+                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1">
+                        {item.title}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="h-24 w-full rounded bg-gray-200"></div>
+                <div 
+                  className="h-12 w-full rounded text-center flex items-center justify-center font-medium text-white"
+                  style={{backgroundColor: primaryColor}}
+                >
+                  Book Now
+                </div>
               </div>
             </AspectRatio>
           </div>

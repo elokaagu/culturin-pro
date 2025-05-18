@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WebsitePreview from './WebsitePreview';
 import WebsiteThemes from './WebsiteThemes';
@@ -9,13 +9,30 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Globe, ExternalLink, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { sampleItineraries, ItineraryType } from '@/data/itineraryData';
 
 const WebsiteBuilder: React.FC = () => {
   const [publishLoading, setPublishLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
   const [publishedUrl, setPublishedUrl] = useState("tour/demo");
+  const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
   const navigate = useNavigate();
   
+  useEffect(() => {
+    // Get itineraries from localStorage or use sample data
+    const storedItineraries = localStorage.getItem('culturinItineraries');
+    if (storedItineraries) {
+      try {
+        setItineraries(JSON.parse(storedItineraries));
+      } catch (e) {
+        console.error('Error parsing itineraries:', e);
+        setItineraries(sampleItineraries);
+      }
+    } else {
+      setItineraries(sampleItineraries);
+    }
+  }, []);
+
   const handlePublish = () => {
     setPublishLoading(true);
     
@@ -35,6 +52,7 @@ const WebsiteBuilder: React.FC = () => {
       
       localStorage.setItem('publishedWebsiteTheme', currentTheme);
       localStorage.setItem('publishedWebsiteContent', JSON.stringify(websiteContent));
+      localStorage.setItem('publishedItineraries', JSON.stringify(itineraries));
       
       toast.success("Website published successfully!", {
         description: "Your changes are now live."
@@ -114,7 +132,7 @@ const WebsiteBuilder: React.FC = () => {
         </TabsList>
         
         <TabsContent value="preview">
-          <WebsitePreview />
+          <WebsitePreview itineraries={itineraries} />
         </TabsContent>
         
         <TabsContent value="themes">
@@ -126,7 +144,7 @@ const WebsiteBuilder: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="settings">
-          <WebsiteSettings />
+          <WebsiteSettings itineraries={itineraries} setItineraries={setItineraries} />
         </TabsContent>
       </Tabs>
     </div>

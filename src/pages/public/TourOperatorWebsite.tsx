@@ -4,8 +4,12 @@ import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Clock, Users, UtensilsCrossed, Camera, Star, ChevronRight, Check } from 'lucide-react';
+import { 
+  Calendar, MapPin, Clock, Users, UtensilsCrossed, 
+  Camera, Star, ChevronRight, Check 
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ItineraryType } from '@/data/itineraryData';
 
 type Tour = {
   id: string;
@@ -46,18 +50,31 @@ const TourOperatorWebsite: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [operatorData, setOperatorData] = useState<OperatorData | null>(null);
   const [theme, setTheme] = useState('classic');
+  const [publishedItineraries, setPublishedItineraries] = useState<ItineraryType[]>([]);
   
   useEffect(() => {
     // Get theme and content from localStorage (set by the website builder)
     const publishedTheme = localStorage.getItem('publishedWebsiteTheme') || 'classic';
     const publishedContentStr = localStorage.getItem('publishedWebsiteContent');
+    const publishedItinerariesStr = localStorage.getItem('publishedItineraries');
+    
     let publishedContent = null;
+    let itineraries: ItineraryType[] = [];
     
     if (publishedContentStr) {
       try {
         publishedContent = JSON.parse(publishedContentStr);
       } catch (e) {
         console.error('Error parsing published content:', e);
+      }
+    }
+    
+    if (publishedItinerariesStr) {
+      try {
+        itineraries = JSON.parse(publishedItinerariesStr);
+        setPublishedItineraries(itineraries);
+      } catch (e) {
+        console.error('Error parsing published itineraries:', e);
       }
     }
     
@@ -84,7 +101,39 @@ const TourOperatorWebsite: React.FC = () => {
           instagram: 'https://instagram.com',
           twitter: 'https://twitter.com'
         },
-        tours: [
+        tours: []
+      };
+      
+      // Apply published content if available
+      if (publishedContent) {
+        defaultData.name = publishedContent.companyName || defaultData.name;
+        defaultData.tagline = publishedContent.tagline || defaultData.tagline;
+        defaultData.description = publishedContent.description || defaultData.description;
+        defaultData.primaryColor = publishedContent.primaryColor || defaultData.primaryColor;
+      }
+      
+      // Convert itineraries to tours
+      const toursFromItineraries: Tour[] = itineraries.map(itinerary => ({
+        id: itinerary.id,
+        name: itinerary.title,
+        duration: `${itinerary.days} ${itinerary.days === 1 ? 'day' : 'days'}`,
+        price: Math.floor(Math.random() * 50) + 40, // Generate random price between 40-90
+        image: itinerary.image || 'https://placehold.co/600x400',
+        description: itinerary.description || `Experience the best of ${itinerary.title}.`,
+        highlights: [
+          'Expert local guides',
+          'Small groups of max 10 people',
+          'Authentic cultural experiences'
+        ],
+        rating: +(Math.random() * (5 - 4) + 4).toFixed(1), // Random rating between 4.0-5.0
+        reviews: Math.floor(Math.random() * 100) + 50 // Random number of reviews between 50-150
+      }));
+      
+      // If we have itineraries, use those; otherwise fallback to sample tours
+      if (toursFromItineraries.length > 0) {
+        defaultData.tours = toursFromItineraries;
+      } else {
+        defaultData.tours = [
           {
             id: 'gaudi-tour',
             name: 'Gaudí Masterpieces Tour',
@@ -118,15 +167,7 @@ const TourOperatorWebsite: React.FC = () => {
             rating: 4.7,
             reviews: 124
           }
-        ]
-      };
-      
-      // Apply published content if available
-      if (publishedContent) {
-        defaultData.name = publishedContent.companyName || defaultData.name;
-        defaultData.tagline = publishedContent.tagline || defaultData.tagline;
-        defaultData.description = publishedContent.description || defaultData.description;
-        defaultData.primaryColor = publishedContent.primaryColor || defaultData.primaryColor;
+        ];
       }
       
       setOperatorData(defaultData);
