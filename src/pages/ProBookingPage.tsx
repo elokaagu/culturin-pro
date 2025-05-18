@@ -32,24 +32,24 @@ const ProBookingPage = () => {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
           </TabsList>
+          
+          <TabsContent value="overview" className="space-y-4 mt-0">
+            <BookingOverview />
+          </TabsContent>
+          
+          <TabsContent value="bookings" className="mt-0">
+            <Card>
+              <CardContent className="pt-6">
+                <BookingsTab />
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
         
         <Button onClick={handleCreateNewExperience} className="bg-blue-600 hover:bg-blue-700">
           Create New Experience
         </Button>
       </div>
-      
-      <TabsContent value="overview" className="space-y-4 mt-0">
-        <BookingOverview />
-      </TabsContent>
-      
-      <TabsContent value="bookings" className="mt-0">
-        <Card>
-          <CardContent className="pt-6">
-            <BookingsTab />
-          </CardContent>
-        </Card>
-      </TabsContent>
     </ProDashboardLayout>
   );
 };
