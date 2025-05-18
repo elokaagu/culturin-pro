@@ -30,6 +30,7 @@ const Index = () => {
       <Header type="traveler" />
       <main className="flex-1">
         <Hero />
+        
         <section className="py-12 bg-gray-50">
           <div className="container mx-auto text-center">
             <h2 className="text-2xl font-medium mb-6">Explore Culturin Pro Tools</h2>
