@@ -25,35 +25,42 @@ const BigBrandsTechSection = () => {
           <div className={`transition-all duration-700 ease-out ${
             animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}>
+            {/* Added micro-tag above headline */}
+            <div className="inline-block px-3 py-1 mb-4 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+              NEW IN CULTURIN PRO
+            </div>
+            
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Give your operation the same tech as big brands
+              Enterprise-grade tools, built for cultural tour operators
             </h2>
+            
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Your cultural experiences deserve professional-grade tools. Culturin Pro gives you everything you need to compete with larger operators.
+              Culturin Pro gives you everything you need to grow bookings, delight guests, and run your business like a pro.
             </p>
             
             <div className="space-y-4 mb-8">
-              {/* Feature list */}
+              {/* Enhanced feature list with stronger framing */}
               <div className="flex items-start gap-2">
                 <CheckCircle className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
-                <p className="text-gray-700">Custom-branded mobile app for your guests</p>
+                <p className="text-gray-700">Your own branded guest app – Give travelers a premium booking experience on mobile</p>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
-                <p className="text-gray-700">Advanced booking system that grows your revenue</p>
+                <p className="text-gray-700">Revenue-boosting booking engine – Optimized to convert and upsell on autopilot</p>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
-                <p className="text-gray-700">AI-driven analytics to understand your audience</p>
+                <p className="text-gray-700">AI insights that unlock your audience – Know what works before your competitors do</p>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
-                <p className="text-gray-700">Digital marketing tools that work while you sleep</p>
+                <p className="text-gray-700">Automated marketing tools – Emails, follow-ups, and retargeting that run while you sleep</p>
               </div>
             </div>
             
+            {/* Improved CTA button */}
             <Button className="bg-black hover:bg-gray-800 text-white px-6 py-6 rounded-lg text-lg flex items-center gap-2">
-              Get enterprise-grade tools
+              Power up your business
               <ArrowRight className="h-5 w-5" />
             </Button>
           </div>
@@ -84,11 +91,11 @@ const BigBrandsTechSection = () => {
                         <p className="text-sm text-gray-300">Pickup at 11:35am</p>
                       </div>
                       
-                      {/* App content */}
+                      {/* App content - using a cultural tour image instead of food */}
                       <div className="relative h-[65%]">
                         <img 
-                          src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?q=80&w=1000&auto=format&fit=crop" 
-                          alt="Delicious food from tour" 
+                          src="https://images.unsplash.com/photo-1516939884455-1445c8652f83?q=80&w=1000&auto=format&fit=crop" 
+                          alt="Cultural tour guide showing experience" 
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
@@ -100,7 +107,8 @@ const BigBrandsTechSection = () => {
                                 <span className="text-gray-300 text-sm ml-1">(152)</span>
                               </div>
                             </div>
-                            <button className="bg-amber-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                            {/* Updated button to be on-brand with blue */}
+                            <button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
                               Book Now
                             </button>
                           </div>
