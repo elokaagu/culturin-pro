@@ -22,7 +22,7 @@ const sampleItineraries = [
     title: "Sacred Japan Journey", 
     days: 7,
     lastUpdated: "3 days ago",
-    status: "published",
+    status: "published" as const,
     image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
     themeType: "spiritual",
     description: "A spiritual journey through Japan's sacred sites and temples.",
@@ -33,7 +33,7 @@ const sampleItineraries = [
     title: "Morocco Culinary Expedition", 
     days: 10,
     lastUpdated: "1 week ago",
-    status: "draft",
+    status: "draft" as const,
     image: "/lovable-uploads/8ee97e98-fd03-4f2b-8d3e-dcb87af6a6ba.png",
     themeType: "culinary",
     description: "Explore Morocco's rich food traditions and cooking techniques.",
@@ -44,7 +44,7 @@ const sampleItineraries = [
     title: "Oaxacan Art & Soul", 
     days: 6,
     lastUpdated: "2 weeks ago",
-    status: "published",
+    status: "published" as const,
     image: "/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
     themeType: "arts",
     description: "Immerse in the vibrant arts and crafts traditions of Oaxaca.",
@@ -102,11 +102,25 @@ const resourcesData = [
   }
 ];
 
+// Define the ItineraryType to ensure consistent typing
+type ItineraryType = {
+  id: string;
+  title: string;
+  days: number;
+  lastUpdated: string;
+  status: 'published' | 'draft';
+  image: string;
+  themeType?: string;
+  description?: string;
+  regions?: string[];
+  storyMode?: boolean;
+};
+
 const ProItineraryPage: React.FC = () => {
   const [viewType, setViewType] = useState<'daily' | 'thematic'>('daily');
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
-  const [selectedItinerary, setSelectedItinerary] = useState<any>(null);
+  const [selectedItinerary, setSelectedItinerary] = useState<ItineraryType | null>(null);
   const [activeTab, setActiveTab] = useState("itineraries");
   const { toast } = useToast();
   
@@ -127,7 +141,7 @@ const ProItineraryPage: React.FC = () => {
     });
   };
 
-  const handleEditItinerary = (itinerary: any) => {
+  const handleEditItinerary = (itinerary: ItineraryType) => {
     setSelectedItinerary(itinerary);
     setShowEditor(true);
     toast({
@@ -140,7 +154,7 @@ const ProItineraryPage: React.FC = () => {
     setSelectedItinerary({
       ...template,
       id: `new-${Date.now()}`,
-      status: "draft",
+      status: "draft" as const,
       lastUpdated: "just now",
       days: 3, // Default days for templates
       title: `My ${template.title}`
