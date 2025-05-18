@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -73,7 +74,10 @@ const EntryPoint = () => {
 const routesWithOwnFooters = [
   '/for-operators',
   '/culturin-pro', 
-  '/pricing'
+  '/pricing',
+  '/contact',
+  '/case-studies',
+  '/faqs'
 ];
 
 // This list contains routes that don't need a footer
@@ -128,7 +132,7 @@ const App = () => (
               <Route path="/careers/apply/:jobId" element={<PageWithFooter Component={ApplicationPage} />} />
               <Route path="/press" element={<PageWithFooter Component={PressPage} />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/faqs" element={<PageWithFooter Component={FAQs} />} />
+              <Route path="/faqs" element={<FAQs />} />
               <Route path="/help-center" element={<PageWithFooter Component={HelpCenter} />} />
               <Route path="/case-studies" element={<CaseStudies />} />
               <Route path="/whats-new" element={<PageWithFooter Component={WhatsNewPage} />} />

@@ -124,7 +124,7 @@ const CaseStudies = () => {
       
       <main className="flex-grow pt-24">
         {/* Hero Section */}
-        <section className="relative bg-[#9b87f5] text-white py-16 lg:py-24 overflow-hidden">
+        <section className="relative bg-[#1EAEDB] text-white py-16 lg:py-24 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
               src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop"
@@ -139,7 +139,7 @@ const CaseStudies = () => {
                 Discover how tour operators and cultural experience hosts around the world are growing their businesses with Culturin.
               </p>
               <Button 
-                className="bg-white text-[#9b87f5] hover:bg-white/90"
+                className="bg-white text-[#1EAEDB] hover:bg-white/90"
                 onClick={() => window.location.href = "/demo"}
               >
                 Get Started Free
@@ -156,7 +156,7 @@ const CaseStudies = () => {
               <div className="animate-fade-in">
                 <Button 
                   variant="ghost" 
-                  className="mb-6 text-[#9b87f5]"
+                  className="mb-6 text-[#1EAEDB]"
                   onClick={() => setSelectedCaseStudy(null)}
                 >
                   ← Back to all case studies
@@ -216,7 +216,7 @@ const CaseStudies = () => {
                             {selectedCaseStudy.tags.map(tag => (
                               <span 
                                 key={tag} 
-                                className="bg-[#E5DEFF] text-[#9b87f5] px-3 py-1 rounded-full text-sm"
+                                className="bg-[#E5F6FB] text-[#1EAEDB] px-3 py-1 rounded-full text-sm"
                               >
                                 {tag}
                               </span>
@@ -226,7 +226,7 @@ const CaseStudies = () => {
                         
                         <div className="mt-8">
                           <Button 
-                            className="w-full bg-[#9b87f5] hover:bg-[#9b87f5]/90 text-white"
+                            className="w-full bg-[#1EAEDB] hover:bg-[#1EAEDB]/90 text-white"
                             onClick={() => window.location.href = "/demo"}
                           >
                             Get similar results
@@ -280,19 +280,19 @@ const CaseStudies = () => {
                 <Tabs defaultValue="all" className="mb-12">
                   <TabsList className="justify-center mb-8 border-b border-gray-200 w-full gap-6">
                     <TabsTrigger value="all" onClick={() => setSelectedCategory('all')}
-                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#9b87f5] data-[state=active]:text-[#9b87f5] transition-all duration-200">
+                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#1EAEDB] data-[state=active]:text-[#1EAEDB] transition-all duration-200">
                       All Categories
                     </TabsTrigger>
                     <TabsTrigger value="food-tours" onClick={() => setSelectedCategory('food-tours')}
-                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#9b87f5] data-[state=active]:text-[#9b87f5] transition-all duration-200">
+                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#1EAEDB] data-[state=active]:text-[#1EAEDB] transition-all duration-200">
                       Food Tours
                     </TabsTrigger>
                     <TabsTrigger value="walking-tours" onClick={() => setSelectedCategory('walking-tours')}
-                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#9b87f5] data-[state=active]:text-[#9b87f5] transition-all duration-200">
+                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#1EAEDB] data-[state=active]:text-[#1EAEDB] transition-all duration-200">
                       Walking Tours
                     </TabsTrigger>
                     <TabsTrigger value="culinary-experiences" onClick={() => setSelectedCategory('culinary-experiences')}
-                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#9b87f5] data-[state=active]:text-[#9b87f5] transition-all duration-200">
+                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#1EAEDB] data-[state=active]:text-[#1EAEDB] transition-all duration-200">
                       Culinary
                     </TabsTrigger>
                   </TabsList>
@@ -325,13 +325,13 @@ const CaseStudies = () => {
                             {study.tags.slice(0, 2).map((tag) => (
                               <span 
                                 key={tag}
-                                className="bg-[#E5DEFF] text-[#9b87f5] px-3 py-1 rounded-full text-xs"
+                                className="bg-[#E5F6FB] text-[#1EAEDB] px-3 py-1 rounded-full text-xs"
                               >
                                 {tag}
                               </span>
                             ))}
                           </div>
-                          <span className="text-[#9b87f5] flex items-center text-sm font-medium">
+                          <span className="text-[#1EAEDB] flex items-center text-sm font-medium">
                             Read more <ChevronRight className="h-4 w-4 ml-1" />
                           </span>
                         </div>
@@ -368,14 +368,14 @@ const CaseStudies = () => {
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button 
-                  className="bg-[#9b87f5] hover:bg-[#9b87f5]/90 text-white"
+                  className="bg-[#1EAEDB] hover:bg-[#1EAEDB]/90 text-white"
                   onClick={() => window.location.href = "/demo"}
                 >
                   Get a Free Demo
                 </Button>
                 <Button 
                   variant="outline"
-                  className="border-[#9b87f5] text-[#9b87f5]"
+                  className="border-[#1EAEDB] text-[#1EAEDB]"
                   onClick={() => window.location.href = "/contact"}
                 >
                   Talk to Sales

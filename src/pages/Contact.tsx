@@ -54,7 +54,7 @@ const Contact = () => {
       
       <main className="flex-grow pt-24 md:pt-32">
         {/* Hero Section */}
-        <section className="relative bg-[#9b87f5] text-white py-12 md:py-16 lg:py-20 overflow-hidden">
+        <section className="relative bg-[#1EAEDB] text-white py-12 md:py-16 lg:py-20 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
               src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop"
@@ -86,8 +86,8 @@ const Contact = () => {
                 
                 <div className="space-y-6">
                   <div className="flex items-start">
-                    <div className="bg-[#E5DEFF] p-3 rounded-lg mr-4">
-                      <Mail className="w-6 h-6 text-[#9b87f5]" />
+                    <div className="bg-[#E5F6FB] p-3 rounded-lg mr-4">
+                      <Mail className="w-6 h-6 text-[#1EAEDB]" />
                     </div>
                     <div>
                       <h3 className="font-medium text-lg">Email</h3>
@@ -96,8 +96,8 @@ const Contact = () => {
                   </div>
                   
                   <div className="flex items-start">
-                    <div className="bg-[#E5DEFF] p-3 rounded-lg mr-4">
-                      <MessageSquare className="w-6 h-6 text-[#9b87f5]" />
+                    <div className="bg-[#E5F6FB] p-3 rounded-lg mr-4">
+                      <MessageSquare className="w-6 h-6 text-[#1EAEDB]" />
                     </div>
                     <div>
                       <h3 className="font-medium text-lg">Social Media</h3>
@@ -109,12 +109,12 @@ const Contact = () => {
                   </div>
                   
                   <div className="flex items-start">
-                    <div className="bg-[#E5DEFF] p-3 rounded-lg mr-4">
-                      <Info className="w-6 h-6 text-[#9b87f5]" />
+                    <div className="bg-[#E5F6FB] p-3 rounded-lg mr-4">
+                      <Info className="w-6 h-6 text-[#1EAEDB]" />
                     </div>
                     <div>
                       <h3 className="font-medium text-lg">Support</h3>
-                      <p className="text-gray-600">See our <a href="/faqs" className="text-[#9b87f5] hover:underline">FAQs</a> for quick answers to common questions.</p>
+                      <p className="text-gray-600">See our <a href="/faqs" className="text-[#1EAEDB] hover:underline">FAQs</a> for quick answers to common questions.</p>
                     </div>
                   </div>
                 </div>
