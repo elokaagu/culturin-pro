@@ -12,20 +12,21 @@ import { PlusCircle } from 'lucide-react';
 const ProItineraryPage = () => {
   const [activeTab, setActiveTab] = useState('itineraries');
   const [viewType, setViewType] = useState<'daily' | 'thematic'>('daily');
-  const [itineraries, setItineraries] = useState(sampleItineraries);
+  const [itineraries, setItineraries] = useState<ItineraryType[]>(sampleItineraries);
   const [selectedItinerary, setSelectedItinerary] = useState<ItineraryType | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const { toast } = useToast();
 
   const handleCreateNewItinerary = () => {
-    const newItinerary = {
+    const newItinerary: ItineraryType = {
       id: `new-${Date.now()}`,
       title: "New Itinerary",
       days: 3,
       lastUpdated: "just now",
-      status: 'draft' as const,
+      status: 'draft',
       image: "/lovable-uploads/2e9a9e9e-af76-4913-8148-9fce248d55c9.png",
+      themeType: "general", // Added required themeType property
       description: "Start building your cultural experience itinerary",
       regions: []
     };
@@ -41,12 +42,12 @@ const ProItineraryPage = () => {
   };
 
   const handleUseTemplate = (template: any) => {
-    const newItinerary = {
+    const newItinerary: ItineraryType = {
       id: `template-${Date.now()}`,
       title: template.title,
       days: 5,
       lastUpdated: "just now",
-      status: 'draft' as const,
+      status: 'draft',
       image: template.image,
       themeType: template.theme.toLowerCase(),
       description: template.description,
@@ -65,12 +66,12 @@ const ProItineraryPage = () => {
   };
 
   const handleStartStoryMode = () => {
-    const newStoryItinerary = {
+    const newStoryItinerary: ItineraryType = {
       id: `story-${Date.now()}`,
       title: "New Story Experience",
       days: 1,
       lastUpdated: "just now",
-      status: 'draft' as const,
+      status: 'draft',
       image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
       themeType: "narrative",
       description: "Create an immersive narrative experience",
@@ -113,6 +114,7 @@ const ProItineraryPage = () => {
   };
 
   const handleItinerarySave = (updatedItinerary: ItineraryType) => {
+    // Fixed the type issue by ensuring we're only using ItineraryType
     setItineraries(prevItineraries => 
       prevItineraries.map(item => 
         item.id === updatedItinerary.id ? updatedItinerary : item
