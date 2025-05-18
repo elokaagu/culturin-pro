@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
+import { ArrowRight } from 'lucide-react';
 
 // Import our modular components
 import FeatureHighlights from './pro/FeatureHighlights';
@@ -42,11 +43,15 @@ const CulturinPro = () => {
         </p>
         <Button 
           onClick={handleGetStarted}
-          className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 px-8 rounded-lg h-auto"
+          className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 px-8 rounded-lg h-auto group transition-all duration-300"
           disabled={isLoading}
         >
           {isLoading ? "Setting up your access..." : "Launch Dashboard"}
+          <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
         </Button>
+        <p className="text-sm text-gray-500 mt-3">
+          Trusted by 1,000+ cultural experience creators worldwide
+        </p>
       </div>
       
       {/* Main sections - simplified */}

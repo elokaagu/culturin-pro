@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { ArrowRight, Crown } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from 'react-router-dom';
 
@@ -26,12 +26,14 @@ const ProCta: React.FC<ProCtaProps> = ({ selectedTier }) => {
     <div className="text-center pt-4 pb-12">
       <Button 
         size="lg" 
-        className="bg-[#1E1E1E] hover:bg-[#000000] text-white px-8 py-6 text-lg rounded-xl"
+        className="bg-[#1E1E1E] hover:bg-[#000000] text-white px-8 py-6 text-lg rounded-xl group transition-all duration-300"
         onClick={handleUpgrade}
       >
-        Upgrade to Culturin Pro <ChevronRight className="ml-2 h-5 w-5" />
+        <Crown className="h-5 w-5 mr-2 text-[#FFD700]" />
+        Upgrade to Culturin Pro 
+        <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
       </Button>
-      <p className="text-sm text-gray-500 mt-3">Start with a 14-day free trial. Cancel anytime.</p>
+      <p className="text-sm text-gray-500 mt-3">Start with a 14-day free trial. Cancel anytime. No hidden fees.</p>
     </div>
   );
 };
