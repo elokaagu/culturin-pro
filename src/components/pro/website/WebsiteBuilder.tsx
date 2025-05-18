@@ -19,10 +19,23 @@ const WebsiteBuilder: React.FC = () => {
   const handlePublish = () => {
     setPublishLoading(true);
     
-    // Simulate publishing process
+    // Simulate publishing process - in a real app, this would save to a backend
     setTimeout(() => {
       setPublishLoading(false);
       setPublishedUrl(`tour/demo?v=${Date.now()}`);
+      
+      // Save to localStorage to share theme and content data with the tour operator website
+      const currentTheme = localStorage.getItem('selectedWebsiteTheme') || 'classic';
+      const websiteContent = {
+        companyName: localStorage.getItem('websiteCompanyName') || 'Barcelona Cultural Tours',
+        tagline: localStorage.getItem('websiteTagline') || 'Authentic cultural experiences in the heart of Catalonia',
+        description: localStorage.getItem('websiteDescription') || 'We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots.',
+        primaryColor: localStorage.getItem('websitePrimaryColor') || '#9b87f5'
+      };
+      
+      localStorage.setItem('publishedWebsiteTheme', currentTheme);
+      localStorage.setItem('publishedWebsiteContent', JSON.stringify(websiteContent));
+      
       toast.success("Website published successfully!", {
         description: "Your changes are now live."
       });

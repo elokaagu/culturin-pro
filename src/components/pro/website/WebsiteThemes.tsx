@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,48 +11,49 @@ const themes = [
     id: 1,
     name: "Classic",
     image: "bg-gradient-to-r from-gray-100 to-gray-200",
-    selected: true,
     premium: false
   },
   {
     id: 2,
     name: "Modern",
     image: "bg-gradient-to-r from-blue-100 to-blue-200",
-    selected: false,
     premium: false
   },
   {
     id: 3,
     name: "Elegant",
     image: "bg-gradient-to-r from-amber-100 to-amber-200",
-    selected: false,
     premium: true
   },
   {
     id: 4,
     name: "Minimalist",
     image: "bg-gradient-to-r from-stone-100 to-stone-200",
-    selected: false,
     premium: false
   },
   {
     id: 5,
     name: "Bold",
     image: "bg-gradient-to-r from-purple-100 to-purple-200",
-    selected: false,
     premium: true
   },
   {
     id: 6,
     name: "Artisan",
     image: "bg-gradient-to-r from-emerald-100 to-emerald-200",
-    selected: false,
     premium: true
   }
 ];
 
 const WebsiteThemes: React.FC = () => {
-  const [selectedTheme, setSelectedTheme] = React.useState(1);
+  const [selectedTheme, setSelectedTheme] = useState<number>(() => {
+    const saved = localStorage.getItem('selectedWebsiteTheme');
+    if (saved) {
+      const themeObj = themes.find(t => t.name.toLowerCase() === saved.toLowerCase());
+      return themeObj ? themeObj.id : 1;
+    }
+    return 1;
+  });
 
   const handleSelectTheme = (id: number, isPremium: boolean) => {
     if (isPremium) {
@@ -63,7 +64,19 @@ const WebsiteThemes: React.FC = () => {
     }
     
     setSelectedTheme(id);
+    const themeName = themes.find(t => t.id === id)?.name.toLowerCase() || 'classic';
+    localStorage.setItem('selectedWebsiteTheme', themeName);
     toast.success(`"${themes.find(t => t.id === id)?.name}" theme selected`);
+  };
+
+  const handleApplyTheme = () => {
+    const theme = themes.find(t => t.id === selectedTheme);
+    if (theme) {
+      localStorage.setItem('selectedWebsiteTheme', theme.name.toLowerCase());
+      toast.success(`Theme applied successfully`, {
+        description: "Your theme will be applied when you publish your website"
+      });
+    }
   };
 
   return (
@@ -104,7 +117,7 @@ const WebsiteThemes: React.FC = () => {
       </div>
       
       <div className="pt-4">
-        <Button>Apply Theme</Button>
+        <Button onClick={handleApplyTheme}>Apply Theme</Button>
       </div>
     </div>
   );
