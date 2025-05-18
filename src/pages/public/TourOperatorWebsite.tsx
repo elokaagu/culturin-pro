@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Clock, Users, UtensilsCrossed, Camera, Star, ChevronRight } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, UtensilsCrossed, Camera, Star, ChevronRight, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type Tour = {
@@ -363,16 +363,16 @@ const TourOperatorWebsite: React.FC = () => {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                        <input type="text" id="name" className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:outline-none" style={{borderColor: `${primaryColor}30`, focusRing: primaryColor}} />
+                        <input type="text" id="name" className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none" style={{borderColor: `${primaryColor}30`}} />
                       </div>
                       <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="email" className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:outline-none" style={{borderColor: `${primaryColor}30`, focusRing: primaryColor}} />
+                        <input type="email" id="email" className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none" style={{borderColor: `${primaryColor}30`}} />
                       </div>
                     </div>
                     <div>
                       <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                      <textarea id="message" rows={4} className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:outline-none" style={{borderColor: `${primaryColor}30`, focusRing: primaryColor}}></textarea>
+                      <textarea id="message" rows={4} className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none" style={{borderColor: `${primaryColor}30`}}></textarea>
                     </div>
                     <Button 
                       className="w-full py-6 font-medium shadow-md"

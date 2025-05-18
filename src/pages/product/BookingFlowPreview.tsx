@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -21,6 +20,9 @@ const BookingFlowPreview: React.FC = () => {
     description: "",
     days: 0,
     storyMode: false,
+    lastUpdated: "", // Added missing property
+    status: "published", // Added missing property
+    image: "", // Added missing property
     price: 149,
     rating: 4.8,
     ratingCount: 126,
@@ -57,6 +59,9 @@ const BookingFlowPreview: React.FC = () => {
         description: "Experience the best of Barcelona's rich culture, architecture, and cuisine in this immersive tour.",
         days: 3,
         storyMode: false,
+        lastUpdated: "2 days ago", // Added missing property
+        status: "published", // Added missing property
+        image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png", // Added missing property
         price: 149,
         rating: 4.8,
         ratingCount: 126,
