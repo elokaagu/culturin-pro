@@ -40,6 +40,7 @@ import OpenPositionsPage from './pages/careers/OpenPositionsPage';
 import ApplicationPage from './pages/careers/ApplicationPage';
 import PressArticlePage from './pages/PressArticlePage';
 import OurStoryPage from './pages/OurStoryPage';
+import PressPage from './pages/PressPage';
 
 function App() {
   return (
@@ -55,7 +56,7 @@ function App() {
         <Route path="/careers" element={<Careers />} />
         <Route path="/careers/open-positions" element={<OpenPositionsPage />} />
         <Route path="/careers/apply/:jobId" element={<ApplicationPage />} />
-        <Route path="/press" element={<Press />} />
+        <Route path="/press" element={<PressPage />} />
         <Route path="/press/:articleId" element={<PressArticlePage />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />

@@ -98,7 +98,7 @@ const NewFooter = () => {
             >
               <h3 className="text-sm font-semibold uppercase mb-5">Company</h3>
               <ul className="space-y-3">
-                <li><Link to="/about-us" className="hover:opacity-70 transition-opacity">About</Link></li>
+                <li><Link to="/our-story" className="hover:opacity-70 transition-opacity">About</Link></li>
                 <li><Link to="/careers" className="hover:opacity-70 transition-opacity">Careers</Link></li>
                 <li><Link to="/press" className="hover:opacity-70 transition-opacity">Press</Link></li>
               </ul>
