@@ -24,13 +24,15 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header type="traveler" />
-      <Hero />
-      <HowItWorksSection />
-      <FeaturesSection />
-      <TestimonialSection />
-      <OperatorInvitation />
-      <TravelWithMeSection />
-      <JoinCommunity />
+      <main className="flex-1">
+        <Hero />
+        <HowItWorksSection />
+        <FeaturesSection />
+        <TestimonialSection />
+        <OperatorInvitation />
+        <TravelWithMeSection />
+        <JoinCommunity />
+      </main>
     </div>
   );
 };

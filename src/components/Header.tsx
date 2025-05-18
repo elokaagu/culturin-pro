@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 interface HeaderProps {
   type: 'traveler' | 'operator';
@@ -31,13 +31,13 @@ export const Header = ({ type }: HeaderProps) => {
 
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${
-      location.pathname === '/' ? 'bg-transparent' : (isScrolled ? 'bg-white shadow-sm' : 'bg-white')
+      location.pathname === '/' ? (isScrolled ? 'bg-white shadow-sm' : 'bg-transparent') : 'bg-white'
     }`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 lg:h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center mr-2">
+              <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center mr-2">
                 <span className="text-white font-bold">C</span>
               </div>
               <span className="font-inter font-bold text-xl">
@@ -48,11 +48,11 @@ export const Header = ({ type }: HeaderProps) => {
           
           <div className="hidden md:flex items-center space-x-8">
             <nav>
-              <ul className="flex space-x-8">
+              <ul className="flex space-x-10">
                 <li>
                   <Link 
                     to="/culturin-pro" 
-                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors text-sm"
+                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
                   >
                     Product
                   </Link>
@@ -60,7 +60,7 @@ export const Header = ({ type }: HeaderProps) => {
                 <li>
                   <Link 
                     to="/for-operators" 
-                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors text-sm"
+                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
                   >
                     Pricing
                   </Link>
@@ -68,7 +68,7 @@ export const Header = ({ type }: HeaderProps) => {
                 <li>
                   <Link 
                     to="/operator" 
-                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors text-sm"
+                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
                   >
                     How it works
                   </Link>
@@ -76,7 +76,7 @@ export const Header = ({ type }: HeaderProps) => {
                 <li>
                   <Link 
                     to="/discover-trips" 
-                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors text-sm"
+                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
                   >
                     Company
                   </Link>
@@ -87,14 +87,14 @@ export const Header = ({ type }: HeaderProps) => {
             <div className="flex items-center gap-4">
               <Button 
                 variant="ghost"
-                className="font-medium text-gray-800 hover:text-gray-600 text-sm"
+                className="font-medium text-gray-800 hover:text-gray-600"
                 onClick={() => navigate('/sign-in')}
               >
                 Login
               </Button>
               
               <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-sm font-medium"
+                className="bg-blue-600 hover:bg-blue-700 font-medium"
                 onClick={() => navigate('/sign-in')}
               >
                 Get a free demo
