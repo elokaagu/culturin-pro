@@ -18,15 +18,15 @@ const RepeatOrdersTab = () => {
           <ul className="space-y-3 text-gray-700 mb-8">
             <li className="flex items-start">
               <span className="bg-amber-100 text-amber-800 p-1 rounded-full mr-2">✓</span>
-              <span><strong>Culturally attuned follow-ups</strong></span>
+              <span><strong>Guest profiles with preferences & history</strong></span>
             </li>
             <li className="flex items-start">
               <span className="bg-amber-100 text-amber-800 p-1 rounded-full mr-2">✓</span>
-              <span><strong>Personalised local offers</strong></span>
+              <span><strong>Loyalty & referral programs</strong></span>
             </li>
             <li className="flex items-start">
               <span className="bg-amber-100 text-amber-800 p-1 rounded-full mr-2">✓</span>
-              <span><strong>Story-driven review requests</strong></span>
+              <span><strong>Journey-triggered automations</strong></span>
             </li>
           </ul>
           
@@ -35,7 +35,7 @@ const RepeatOrdersTab = () => {
             onClick={() => navigate('/pro-dashboard/crm')}
           >
             <Mail className="h-4 w-4" />
-            Explore retention tools
+            Explore Guest CRM tools
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>

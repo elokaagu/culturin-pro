@@ -19,7 +19,7 @@ const menuItems = [
   { name: "Dashboard", path: "/pro-dashboard", icon: LayoutDashboard },
   { name: "Itinerary Builder", path: "/pro-dashboard/itinerary", icon: PencilRuler },
   { name: "Booking System", path: "/pro-dashboard/booking", icon: ShoppingCart },
-  { name: "Client CRM", path: "/pro-dashboard/crm", icon: Users },
+  { name: "Guest CRM", path: "/pro-dashboard/crm", icon: Users },
   { name: "Marketing", path: "/pro-dashboard/marketing", icon: Megaphone },
   { name: "Website", path: "/pro-dashboard/website", icon: Globe },
   { name: "Analytics", path: "/pro-dashboard/analytics", icon: ChartBar },
