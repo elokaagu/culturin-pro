@@ -111,7 +111,7 @@ export const Header = ({ type }: HeaderProps) => {
                 </li>
                 <li>
                   <Link 
-                    to="/operator" 
+                    to="/how-it-works" 
                     className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
                   >
                     How it works
@@ -129,12 +129,12 @@ export const Header = ({ type }: HeaderProps) => {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/about-us#careers" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                        <Link to="/careers" className="flex items-start p-3 rounded-md hover:bg-gray-100">
                           <span className="font-medium">Careers</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/about-us#press" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                        <Link to="/press" className="flex items-start p-3 rounded-md hover:bg-gray-100">
                           <span className="font-medium">Press</span>
                         </Link>
                       </DropdownMenuItem>
@@ -178,7 +178,7 @@ export const Header = ({ type }: HeaderProps) => {
               
               <Button 
                 className="bg-blue-600 hover:bg-blue-700 font-medium"
-                onClick={() => navigate('/sign-in')}
+                onClick={() => navigate('/culturin-pro')}
               >
                 Get a free demo
               </Button>
@@ -214,7 +214,7 @@ export const Header = ({ type }: HeaderProps) => {
                 </div>
               </li>
               <li><Link to="/pricing" className="block py-2 font-medium text-gray-800">Pricing</Link></li>
-              <li><Link to="/operator" className="block py-2 font-medium text-gray-800">How it works</Link></li>
+              <li><Link to="/how-it-works" className="block py-2 font-medium text-gray-800">How it works</Link></li>
               
               <li className="py-2">
                 <button className="flex items-center justify-between w-full font-medium text-gray-800">
@@ -223,8 +223,8 @@ export const Header = ({ type }: HeaderProps) => {
                 </button>
                 <div className="pl-4 mt-2 space-y-2 border-l-2 border-gray-100">
                   <Link to="/about-us" className="block py-1 text-sm">Our Story</Link>
-                  <Link to="/about-us#careers" className="block py-1 text-sm">Careers</Link>
-                  <Link to="/about-us#press" className="block py-1 text-sm">Press</Link>
+                  <Link to="/careers" className="block py-1 text-sm">Careers</Link>
+                  <Link to="/press" className="block py-1 text-sm">Press</Link>
                 </div>
               </li>
               
@@ -252,7 +252,7 @@ export const Header = ({ type }: HeaderProps) => {
                 <Button 
                   className="w-full bg-blue-600 hover:bg-blue-700 text-sm mt-2"
                   onClick={() => {
-                    navigate('/sign-in');
+                    navigate('/culturin-pro');
                     setIsMenuOpen(false);
                   }}
                 >

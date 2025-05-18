@@ -20,6 +20,10 @@ import ProItineraryPage from "./pages/ProItineraryPage";
 import Index from "./pages/Index";
 import PricingPage from "./pages/PricingPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
+import BlogPage from "./pages/BlogPage";
+import OurStoryPage from "./pages/OurStoryPage";
+import CareersPage from "./pages/CareersPage";
+import PressPage from "./pages/PressPage";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -87,6 +91,10 @@ const App = () => (
               <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/sign-in" element={<PageWithFooter Component={SignIn} />} />
               <Route path="/culturin-pro" element={<PageWithFooter Component={CulturinProPage} />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/about-us" element={<OurStoryPage />} />
+              <Route path="/careers" element={<CareersPage />} />
+              <Route path="/press" element={<PressPage />} />
               <Route path="/pro-dashboard" element={<ProDashboardPage />} />
               <Route path="/pro-dashboard/itinerary" element={<ProItineraryPage />} />
               <Route path="/pro-dashboard/booking" element={<ProBookingPage />} />
