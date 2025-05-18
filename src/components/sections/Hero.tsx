@@ -50,17 +50,17 @@ const Hero = () => {
       {/* Simple clear background */}
       <div className="absolute inset-0 bg-gradient-to-b from-white to-gray-50 z-0"></div>
       
-      <section className="flex-1 flex flex-col justify-center items-center text-center px-4 pt-24 pb-28 max-w-7xl mx-auto relative z-10">
+      <section className="flex-1 flex flex-col justify-center items-center text-center px-4 pt-32 pb-36 max-w-7xl mx-auto relative z-10">
         {/* Rating badge */}
-        <div className="mb-6">
-          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm bg-amber-100 text-amber-800 font-medium">
-            #1 Top-Rated Cultural Experience Platform <span className="font-semibold text-amber-600 ml-1">4.8 ★</span> across 279 reviews
+        <div className="mb-8">
+          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm bg-blue-50 text-blue-800 font-medium">
+            #1 Top-Rated Cultural Experience Platform <span className="font-semibold text-blue-600 ml-1">4.8 ★</span> across 279 reviews
           </span>
         </div>
         
         {/* Headline */}
         <h1 
-          className={`font-inter text-4xl md:text-5xl lg:text-6xl text-black mb-6 font-bold tracking-tight leading-tight transition-all duration-700 ease-out ${
+          className={`font-inter text-4xl md:text-5xl lg:text-6xl text-black mb-8 font-bold tracking-tight leading-tight transition-all duration-700 ease-out ${
             animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
           style={{transitionDelay: '200ms'}}
@@ -70,7 +70,7 @@ const Hero = () => {
         
         {/* Subheadline */}
         <p 
-          className={`text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-10 transition-all duration-700 ease-out ${
+          className={`text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto mb-12 transition-all duration-700 ease-out ${
             animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
           style={{transitionDelay: '300ms'}}
@@ -80,7 +80,7 @@ const Hero = () => {
         
         {/* Main content with iPhone mockup and searchbox side by side */}
         <div 
-          className={`w-full max-w-6xl mt-4 flex flex-col lg:flex-row items-center gap-8 lg:gap-16 transition-all duration-700 ease-out ${
+          className={`w-full max-w-6xl mt-8 flex flex-col lg:flex-row items-center gap-8 lg:gap-16 transition-all duration-700 ease-out ${
             animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
           style={{transitionDelay: '400ms'}}
@@ -98,7 +98,7 @@ const Hero = () => {
                   {/* App header */}
                   <div className="bg-white p-3 border-b">
                     <div className="h-6 flex items-center">
-                      <div className="w-24 h-4 bg-amber-500 rounded"></div>
+                      <div className="w-24 h-4 bg-blue-500 rounded"></div>
                     </div>
                   </div>
                   
@@ -118,7 +118,7 @@ const Hero = () => {
                     </div>
                     
                     <div className="flex items-center justify-between mb-4">
-                      <div className="h-8 w-20 bg-amber-500 rounded"></div>
+                      <div className="h-8 w-20 bg-blue-500 rounded"></div>
                       <div className="h-8 w-16 bg-gray-200 rounded"></div>
                     </div>
                     
@@ -147,16 +147,16 @@ const Hero = () => {
           
           {/* Right side: Improved search box area with card styling */}
           <div className="w-full lg:w-1/2">
-            <div className="rounded-xl p-8 bg-white shadow-lg border border-gray-100">
-              <div className="text-left mb-5 flex items-center">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-500 mr-3">
+            <div className="rounded-xl p-10 bg-white shadow-lg border border-gray-100">
+              <div className="text-left mb-6 flex items-center">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 mr-3">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                   </svg>
                 </div>
                 <h3 className="text-lg font-medium">
-                  Discover where you're losing bookings (and how to fix it)
+                  Not sure what's blocking your growth? Let's find out.
                 </h3>
               </div>
               
@@ -165,14 +165,14 @@ const Hero = () => {
                   placeholder="Enter your tour or experience name" 
                   className="h-14 border-gray-200 text-base"
                 />
-                <Button className="bg-black hover:bg-gray-800 text-white h-14 px-6 flex items-center gap-2 text-base whitespace-nowrap">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white h-14 px-6 flex items-center gap-2 text-base whitespace-nowrap transition-colors">
                   Scan my tour for growth leaks
                   <ArrowRight className="h-5 w-5" />
                 </Button>
               </div>
               
               {/* Trust builder below CTA */}
-              <div className="mt-5 pt-5 border-t border-gray-100">
+              <div className="mt-8 pt-5 border-t border-gray-100">
                 <p className="text-sm text-gray-500 mb-3">Used by over 400 cultural tour leaders — from Accra to Oaxaca</p>
                 <div className="flex items-center justify-center gap-3">
                   {operatorImages.map((op, i) => (
@@ -196,7 +196,7 @@ const Hero = () => {
             <div className="mt-12 space-y-6 text-left">
               <h3 className="text-2xl font-bold text-gray-900">Stop losing customers to competitors</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div className="flex items-start gap-3">
                   <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 shrink-0 mt-1">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -211,7 +211,7 @@ const Hero = () => {
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 shrink-0 mt-1">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 shrink-0 mt-1">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
@@ -223,7 +223,7 @@ const Hero = () => {
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-600 shrink-0 mt-1">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 shrink-0 mt-1">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
                     </svg>

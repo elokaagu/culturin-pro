@@ -25,7 +25,9 @@ const Index = () => {
       <Header type="traveler" />
       <main className="flex-1">
         <Hero />
-        <MoreTrafficSection />
+        <div className="pt-16">
+          <MoreTrafficSection />
+        </div>
         <BigBrandsTechSection />
         <TrustedOperators />
         <FreeGuidesSection />
