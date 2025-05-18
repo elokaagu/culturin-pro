@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from '@/components/ui/image';
 
 interface HeaderProps {
   type: 'traveler' | 'operator';
@@ -44,7 +44,7 @@ export const Header = ({ type }: HeaderProps) => {
     {
       title: "Booking Management",
       description: "Streamline guest reservations",
-      path: "/product/booking-management"  // Updated path to the new page
+      path: "/product/booking-management"
     },
     {
       title: "Guest CRM",
@@ -66,12 +66,15 @@ export const Header = ({ type }: HeaderProps) => {
         <div className="flex items-center justify-between h-16 lg:h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center mr-2">
-                <span className="text-white font-bold">C</span>
+              <div className="h-10 mr-2">
+                <Image 
+                  src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png" 
+                  alt="Culturin" 
+                  className="h-full" 
+                  width={120} 
+                  height={40} 
+                />
               </div>
-              <span className="font-inter font-bold text-xl">
-                Culturin
-              </span>
             </Link>
           </div>
           

@@ -14,6 +14,7 @@ import {
   Globe,
   Home
 } from "lucide-react";
+import Image from '@/components/ui/image';
 
 const menuItems = [
   { name: "Dashboard", path: "/pro-dashboard", icon: LayoutDashboard },
@@ -57,8 +58,15 @@ const ProSidebar: React.FC = () => {
       {/* Logo & Header */}
       <div className="p-4 border-b border-gray-100">
         <div className="flex items-center gap-2">
-          <Crown className="h-5 w-5 text-[#FFD700]" />
-          <h1 className="font-medium text-lg">Culturin OS</h1>
+          <div className="h-8">
+            <Image 
+              src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png" 
+              alt="Culturin" 
+              className="h-full" 
+              width={100} 
+              height={32} 
+            />
+          </div>
         </div>
         <p className="text-xs text-gray-500 mt-1">Cultural Experience Platform</p>
       </div>
