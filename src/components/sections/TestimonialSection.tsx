@@ -62,11 +62,12 @@ const TestimonialSection = () => {
           <div className={`hidden md:block transition-all duration-700 ease-out ${
             animateItems ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
           }`}>
-            <div className="photo-card shadow-card h-80">
+            {/* Updated to make image fill the entire card */}
+            <div className="h-full w-full overflow-hidden rounded-xl shadow-lg">
               <img 
                 src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=830&auto=format&fit=crop" 
                 alt="Person walking through historic Italian street with buildings" 
-                className="w-full h-full object-cover rounded-xl"
+                className="w-full h-full object-cover"
               />
             </div>
           </div>

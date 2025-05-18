@@ -25,15 +25,14 @@ const Hero = () => {
           </span>
         </div>
         
-        {/* Main headline */}
+        {/* Main headline - reduced size and updated text */}
         <h1 
-          className={`font-inter text-5xl md:text-6xl lg:text-7xl text-black mb-6 font-bold tracking-tight leading-tight transition-all duration-700 ease-out ${
+          className={`font-inter text-4xl md:text-5xl lg:text-6xl text-black mb-6 font-bold tracking-tight leading-tight transition-all duration-700 ease-out ${
             animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
           style={{transitionDelay: '200ms'}}
         >
-          See why cultural tour operators <br className="hidden md:block" />
-          are losing bookings — and how to fix it
+          Unlock the full potential of your cultural tours
         </h1>
         
         {/* Subheadline */}

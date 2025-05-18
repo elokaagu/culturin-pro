@@ -5,11 +5,10 @@ import Hero from "@/components/sections/Hero";
 import HowItWorksSection from "@/components/sections/HowItWorksSection";
 import FeaturesSection from "@/components/sections/FeaturesSection";
 import TestimonialSection from "@/components/sections/TestimonialSection";
-import OperatorInvitation from "@/components/sections/OperatorInvitation";
-import TravelWithMeSection from "@/components/sections/TravelWithMeSection";
-import JoinCommunity from "@/components/sections/JoinCommunity";
 import TrustedOperators from "@/components/sections/TrustedOperators";
 import NewFooter from "@/components/sections/NewFooter";
+import BigBrandsTechSection from "@/components/sections/BigBrandsTechSection";
+import FreeGuidesSection from "@/components/sections/FreeGuidesSection";
 
 const Index = () => {
   // Add a smooth scroll effect when the page loads
@@ -55,12 +54,11 @@ const Index = () => {
         </section>
         
         <HowItWorksSection />
+        <BigBrandsTechSection />
         <TrustedOperators />
         <FeaturesSection />
         <TestimonialSection />
-        <OperatorInvitation />
-        <TravelWithMeSection />
-        <JoinCommunity />
+        <FreeGuidesSection />
       </main>
       <NewFooter />
     </div>
