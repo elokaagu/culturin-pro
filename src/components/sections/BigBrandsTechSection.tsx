@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const BigBrandsTechSection = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -58,11 +59,13 @@ const BigBrandsTechSection = () => {
               </div>
             </div>
             
-            {/* Improved CTA button */}
-            <Button className="bg-black hover:bg-gray-800 text-white px-6 py-6 rounded-lg text-lg flex items-center gap-2">
-              Power up your business
-              <ArrowRight className="h-5 w-5" />
-            </Button>
+            {/* Updated CTA button with Link to demo page */}
+            <Link to="/demo">
+              <Button className="bg-black hover:bg-gray-800 text-white px-6 py-6 rounded-lg text-lg flex items-center gap-2">
+                Power up your business
+                <ArrowRight className="h-5 w-5" />
+              </Button>
+            </Link>
           </div>
           
           {/* Phone mockup */}
