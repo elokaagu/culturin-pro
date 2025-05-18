@@ -49,7 +49,8 @@ const WebsiteBuilder: React.FC = () => {
         companyName: localStorage.getItem('websiteCompanyName') || 'Barcelona Cultural Tours',
         tagline: localStorage.getItem('websiteTagline') || 'Authentic cultural experiences in the heart of Catalonia',
         description: localStorage.getItem('websiteDescription') || 'We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots.',
-        primaryColor: localStorage.getItem('websitePrimaryColor') || '#9b87f5'
+        primaryColor: localStorage.getItem('websitePrimaryColor') || '#9b87f5',
+        headerImage: localStorage.getItem('websiteHeaderImage') || null
       };
       
       localStorage.setItem('publishedWebsiteTheme', currentTheme);

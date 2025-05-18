@@ -6,6 +6,7 @@ import { Laptop, Smartphone, Tablet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { ItineraryType } from '@/data/itineraryData';
+import Image from '@/components/ui/image';
 
 interface WebsitePreviewProps {
   itineraries?: ItineraryType[];
@@ -14,6 +15,7 @@ interface WebsitePreviewProps {
 const WebsitePreview: React.FC<WebsitePreviewProps> = ({ itineraries = [] }) => {
   const [viewMode, setViewMode] = React.useState('desktop');
   const primaryColor = localStorage.getItem('websitePrimaryColor') || '#9b87f5';
+  const headerImage = localStorage.getItem('websiteHeaderImage') || null;
   
   return (
     <div className="space-y-4">
@@ -60,32 +62,61 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({ itineraries = [] }) => 
             )}
           >
             <AspectRatio ratio={16/9}>
-              <div className="p-4 bg-white h-full overflow-auto">
-                <div className="bg-gray-100 w-full p-4 mb-4 rounded">
-                  <div className="h-8 w-40 rounded bg-gray-200"></div>
-                </div>
-                <div className="flex gap-4 mb-4">
-                  <div className="h-6 w-16 rounded bg-gray-200"></div>
-                  <div className="h-6 w-16 rounded bg-gray-200"></div>
-                  <div className="h-6 w-16 rounded bg-gray-200"></div>
-                  <div className="h-6 w-16 rounded bg-gray-200"></div>
-                </div>
-                <div className="h-64 w-full rounded bg-gray-200 mb-4"></div>
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  {itineraries.slice(0, 3).map((item, index) => (
-                    <div key={item.id || index} className="h-32 rounded bg-gray-200 relative overflow-hidden">
-                      {item.image && <img src={item.image} alt={item.title} className="w-full h-full object-cover"/>}
-                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1">
-                        {item.title}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div className="p-0 bg-white h-full overflow-auto">
+                {/* Header/Hero section preview */}
                 <div 
-                  className="h-12 w-full rounded text-center flex items-center justify-center font-medium text-white"
-                  style={{backgroundColor: primaryColor}}
+                  className="w-full h-32 relative"
+                  style={{
+                    backgroundColor: headerImage ? undefined : primaryColor,
+                  }}
                 >
-                  Book Now
+                  {headerImage && (
+                    <div className="absolute inset-0">
+                      <img src={headerImage} alt="Header" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                    <div className="h-6 w-64 rounded bg-white bg-opacity-90"></div>
+                    <div className="h-4 w-48 rounded bg-white bg-opacity-80 mt-2"></div>
+                  </div>
+                </div>
+
+                {/* Navigation */}
+                <div className="p-4">
+                  <div className="flex gap-4 mb-4">
+                    <div className="h-6 w-16 rounded bg-gray-200"></div>
+                    <div className="h-6 w-16 rounded bg-gray-200"></div>
+                    <div className="h-6 w-16 rounded bg-gray-200"></div>
+                    <div className="h-6 w-16 rounded bg-gray-200"></div>
+                  </div>
+                  
+                  {/* Tours grid */}
+                  <div className="grid grid-cols-3 gap-4 mb-4">
+                    {itineraries.slice(0, 3).map((item, index) => (
+                      <div key={item.id || index} className="h-32 rounded bg-gray-200 relative overflow-hidden">
+                        {item.image && <img src={item.image} alt={item.title} className="w-full h-full object-cover"/>}
+                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1">
+                          {item.title}
+                        </div>
+                      </div>
+                    ))}
+                    {itineraries.length === 0 && (
+                      <>
+                        <div className="h-32 rounded bg-gray-200"></div>
+                        <div className="h-32 rounded bg-gray-200"></div>
+                        <div className="h-32 rounded bg-gray-200"></div>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Call to action */}
+                  <div 
+                    className="h-12 w-full rounded text-center flex items-center justify-center font-medium text-white"
+                    style={{backgroundColor: primaryColor}}
+                  >
+                    Book Now
+                  </div>
                 </div>
               </div>
             </AspectRatio>

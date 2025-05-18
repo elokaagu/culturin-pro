@@ -5,6 +5,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { Upload } from 'lucide-react';
+import Image from '@/components/ui/image';
 
 const WebsiteContent: React.FC = () => {
   const [companyName, setCompanyName] = useState(() => 
@@ -19,12 +21,49 @@ const WebsiteContent: React.FC = () => {
   const [primaryColor, setPrimaryColor] = useState(() => 
     localStorage.getItem('websitePrimaryColor') || '#9b87f5'
   );
+  const [headerImage, setHeaderImage] = useState<string | null>(
+    localStorage.getItem('websiteHeaderImage')
+  );
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    // Check if file is an image
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+    
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imageDataUrl = e.target?.result as string;
+      setHeaderImage(imageDataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    setHeaderImage(null);
+  };
 
   const handleSave = () => {
     localStorage.setItem('websiteCompanyName', companyName);
     localStorage.setItem('websiteTagline', tagline);
     localStorage.setItem('websiteDescription', description);
     localStorage.setItem('websitePrimaryColor', primaryColor);
+    
+    if (headerImage) {
+      localStorage.setItem('websiteHeaderImage', headerImage);
+    } else {
+      localStorage.removeItem('websiteHeaderImage');
+    }
     
     toast.success("Content changes saved", {
       description: "Your changes will be applied when you publish your website"
@@ -85,6 +124,42 @@ const WebsiteContent: React.FC = () => {
               value={primaryColor} 
               onChange={(e) => setPrimaryColor(e.target.value)}
               className="w-32"
+            />
+          </div>
+        </div>
+        
+        <div className="grid w-full items-center gap-1.5">
+          <Label htmlFor="headerImage">Header Background Image</Label>
+          <div className="flex flex-col gap-4">
+            {headerImage ? (
+              <div className="relative rounded-lg overflow-hidden w-full h-40">
+                <Image
+                  src={headerImage}
+                  alt="Website header preview"
+                  className="w-full h-full object-cover"
+                />
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="absolute top-2 right-2"
+                  onClick={handleRemoveImage}
+                >
+                  Remove
+                </Button>
+              </div>
+            ) : (
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500">
+                <Upload className="h-8 w-8 mb-2" />
+                <p className="text-sm mb-2">Drag and drop an image, or click to browse</p>
+                <p className="text-xs text-gray-400">Recommended size: 1200x400px, Max 5MB</p>
+              </div>
+            )}
+            <Input
+              id="headerImage"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className={headerImage ? "hidden" : ""}
             />
           </div>
         </div>

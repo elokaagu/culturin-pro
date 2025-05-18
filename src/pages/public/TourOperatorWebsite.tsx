@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import Image from '@/components/ui/image';
 import { 
   Calendar, MapPin, Clock, Users, UtensilsCrossed, 
   Camera, Star, ChevronRight, Check 
@@ -29,7 +30,7 @@ type OperatorData = {
   tagline: string;
   description: string;
   logo: string;
-  coverImage: string;
+  coverImage: string | null;
   theme: string;
   primaryColor?: string;
   contact: {
@@ -51,6 +52,7 @@ const TourOperatorWebsite: React.FC = () => {
   const [operatorData, setOperatorData] = useState<OperatorData | null>(null);
   const [theme, setTheme] = useState('classic');
   const [publishedItineraries, setPublishedItineraries] = useState<ItineraryType[]>([]);
+  const navigate = useNavigate();
   
   useEffect(() => {
     // Get theme and content from localStorage (set by the website builder)
@@ -59,11 +61,13 @@ const TourOperatorWebsite: React.FC = () => {
     const publishedItinerariesStr = localStorage.getItem('publishedItineraries');
     
     let publishedContent = null;
+    let headerImage = null;
     let itineraries: ItineraryType[] = [];
     
     if (publishedContentStr) {
       try {
         publishedContent = JSON.parse(publishedContentStr);
+        headerImage = publishedContent.headerImage;
       } catch (e) {
         console.error('Error parsing published content:', e);
       }
@@ -88,7 +92,7 @@ const TourOperatorWebsite: React.FC = () => {
         tagline: 'Authentic cultural experiences in the heart of Catalonia',
         description: 'We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots. Our expert local guides bring history and culture to life with immersive experiences.',
         logo: 'https://placehold.co/200x80',
-        coverImage: 'https://placehold.co/1200x400',
+        coverImage: headerImage || 'https://placehold.co/1200x400',
         theme: publishedTheme,
         primaryColor: '#9b87f5',
         contact: {
@@ -110,6 +114,7 @@ const TourOperatorWebsite: React.FC = () => {
         defaultData.tagline = publishedContent.tagline || defaultData.tagline;
         defaultData.description = publishedContent.description || defaultData.description;
         defaultData.primaryColor = publishedContent.primaryColor || defaultData.primaryColor;
+        defaultData.coverImage = publishedContent.headerImage || null;
       }
       
       // Convert itineraries to tours
@@ -219,32 +224,38 @@ const TourOperatorWebsite: React.FC = () => {
 
   const themeStyles = getThemeStyles();
   const primaryColor = operatorData?.primaryColor || '#9b87f5';
+  const handleBookNow = (tourId: string) => {
+    navigate(`/product/booking-preview/${tourId}`);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div 
-        className={cn("h-96 bg-cover bg-center relative", themeStyles.heroClass)} 
-        style={{ 
-          backgroundImage: theme.toLowerCase() === 'minimalist' ? 'none' : `url(${operatorData?.coverImage})`,
-          backgroundColor: theme.toLowerCase() === 'minimalist' ? 'white' : undefined
-        }}
-      >
-        <div className={theme.toLowerCase() !== 'minimalist' ? "absolute inset-0 bg-black bg-opacity-40" : ""}></div>
-        <div className="container mx-auto px-4 h-full flex flex-col justify-center relative z-10">
-          <div className="max-w-5xl mx-auto text-center">
-            <h1 className={cn("text-5xl font-bold mb-4", themeStyles.headerTextClass)}>{operatorData?.name}</h1>
-            <p className={cn("text-xl max-w-3xl mx-auto", themeStyles.headerTextClass)}>{operatorData?.tagline}</p>
-            <Button 
-              size="lg" 
-              className="mt-8 px-8 py-6 text-lg font-medium rounded-full shadow-lg transition-transform hover:scale-105"
-              style={{backgroundColor: primaryColor}}
-            >
-              Discover Our Tours <ChevronRight className="ml-2 h-5 w-5" />
-            </Button>
+      {(operatorData?.coverImage || theme.toLowerCase() !== 'minimalist') && (
+        <div 
+          className={cn("h-96 bg-cover bg-center relative", themeStyles.heroClass)} 
+          style={{ 
+            backgroundImage: theme.toLowerCase() === 'minimalist' ? 'none' : 
+              operatorData?.coverImage ? `url(${operatorData.coverImage})` : 'none',
+            backgroundColor: theme.toLowerCase() === 'minimalist' ? 'white' : operatorData?.coverImage ? undefined : primaryColor
+          }}
+        >
+          <div className={theme.toLowerCase() !== 'minimalist' ? "absolute inset-0 bg-black bg-opacity-40" : ""}></div>
+          <div className="container mx-auto px-4 h-full flex flex-col justify-center relative z-10">
+            <div className="max-w-5xl mx-auto text-center">
+              <h1 className={cn("text-5xl font-bold mb-4", themeStyles.headerTextClass)}>{operatorData?.name}</h1>
+              <p className={cn("text-xl max-w-3xl mx-auto", themeStyles.headerTextClass)}>{operatorData?.tagline}</p>
+              <Button 
+                size="lg" 
+                className="mt-8 px-8 py-6 text-lg font-medium rounded-full shadow-lg transition-transform hover:scale-105"
+                style={{backgroundColor: primaryColor}}
+              >
+                Discover Our Tours <ChevronRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-16">
@@ -336,7 +347,7 @@ const TourOperatorWebsite: React.FC = () => {
                         <Button 
                           className="px-8 font-medium shadow-md transition-transform hover:scale-105"
                           style={{backgroundColor: primaryColor}}
-                          onClick={() => window.location.href = `/product/booking-preview/${tour.id}`}
+                          onClick={() => handleBookNow(tour.id)}
                         >
                           Book Now
                         </Button>
