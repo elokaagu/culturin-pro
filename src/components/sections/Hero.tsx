@@ -97,42 +97,73 @@ const Hero = () => {
                   
                   {/* App header */}
                   <div className="bg-white p-3 border-b">
-                    <div className="h-6 flex items-center">
-                      <div className="w-24 h-4 bg-blue-500 rounded"></div>
+                    <div className="h-6 flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
+                          <span className="text-xs text-white font-bold">C</span>
+                        </div>
+                        <span className="ml-2 text-sm font-semibold text-gray-800">Culturin</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-blue-100"></div>
+                        <div className="w-5 h-5 rounded-full bg-blue-100"></div>
+                      </div>
                     </div>
                   </div>
                   
                   {/* App content - cultural experience example */}
                   <div className="p-3 h-full overflow-y-auto">
+                    {/* Featured Experience */}
                     <div className="rounded-lg overflow-hidden mb-3">
                       <img 
                         src="https://images.unsplash.com/photo-1466442929976-97f336a657be" 
                         alt="Cultural tour experience"
                         className="w-full h-40 object-cover"
                       />
+                      <div className="absolute top-10 left-5 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                        Featured Tour
+                      </div>
                     </div>
                     
                     <div className="mb-4">
-                      <div className="h-4 w-3/4 bg-gray-200 rounded mb-2"></div>
-                      <div className="h-3 w-1/2 bg-gray-200 rounded"></div>
+                      <h3 className="text-left text-lg font-bold">Ancient Temple Walking Tour</h3>
+                      <div className="flex items-center mt-1">
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <svg key={star} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                          ))}
+                        </div>
+                        <span className="ml-2 text-xs text-gray-600">4.9 (126 reviews)</span>
+                      </div>
                     </div>
                     
                     <div className="flex items-center justify-between mb-4">
-                      <div className="h-8 w-20 bg-blue-500 rounded"></div>
-                      <div className="h-8 w-16 bg-gray-200 rounded"></div>
+                      <div className="text-blue-600 font-bold">$59 per person</div>
+                      <button className="h-8 px-3 bg-blue-600 text-white text-xs rounded">Book Now</button>
                     </div>
                     
-                    <div className="rounded-lg overflow-hidden mb-3">
+                    <div className="text-left mb-4">
+                      <h4 className="font-medium text-sm">Tour Highlights:</h4>
+                      <ul className="text-xs text-gray-700 mt-1 space-y-1">
+                        <li>• Expert local guide</li>
+                        <li>• Skip the line entry</li>
+                        <li>• Cultural immersion</li>
+                        <li>• Traditional lunch included</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="rounded-lg overflow-hidden mb-3 relative">
                       <img 
                         src="https://images.unsplash.com/photo-1469041797191-50ace28483c3" 
                         alt="Cultural tour experience"
                         className="w-full h-32 object-cover"
                       />
+                      <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
+                        <span className="text-white font-medium">More Tours</span>
+                      </div>
                     </div>
-                    
-                    <div className="h-4 w-full bg-gray-200 rounded mb-2"></div>
-                    <div className="h-4 w-2/3 bg-gray-200 rounded mb-3"></div>
-                    <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
                   </div>
                 </div>
                 
