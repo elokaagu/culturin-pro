@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
-import { ExternalLink } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 const NewFooter = () => {
@@ -24,18 +24,24 @@ const NewFooter = () => {
       {/* Bonus CTAs above footer */}
       <section className="bg-[#FAF8F6] py-12">
         <div className="container mx-auto px-6 max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Link to="/demo" className="bg-black text-white p-6 rounded-xl flex items-center justify-between group">
-              <span className="text-lg font-medium">Get a free demo</span>
-              <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                <ExternalLink className="h-4 w-4 text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Link to="/demo" className="relative overflow-hidden bg-black text-white p-8 rounded-xl flex items-center justify-between group transition-all duration-300 hover:shadow-card hover:translate-y-[-2px]">
+              <div className="flex flex-col items-start">
+                <span className="text-xl font-medium mb-1">Get a free demo</span>
+                <span className="text-sm text-white/70">See how Culturin can transform your business</span>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                <ArrowRight className="h-5 w-5 text-white" />
               </div>
             </Link>
             
-            <Link to="/how-it-works" className="bg-[#E5DDCF] text-black p-6 rounded-xl flex items-center justify-between group">
-              <span className="text-lg font-medium">See how it works</span>
-              <div className="w-7 h-7 rounded-full bg-black/10 flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                <ExternalLink className="h-4 w-4 text-black" />
+            <Link to="/how-it-works" className="relative overflow-hidden bg-white border border-gray-200 text-black p-8 rounded-xl flex items-center justify-between group transition-all duration-300 hover:shadow-card hover:translate-y-[-2px]">
+              <div className="flex flex-col items-start">
+                <span className="text-xl font-medium mb-1">See how it works</span>
+                <span className="text-sm text-black/60">Explore our platform features and benefits</span>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                <ArrowRight className="h-5 w-5 text-black" />
               </div>
             </Link>
           </div>
