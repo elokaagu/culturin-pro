@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Link } from "react-router-dom";
 
 const PricingPage = () => {
   return (
@@ -32,9 +33,9 @@ const PricingPage = () => {
                 <div className="mt-6 md:mt-0">
                   <Button 
                     className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-6 h-auto text-lg"
-                    onClick={() => window.location.href = '/sign-in'}
+                    asChild
                   >
-                    Get a free demo →
+                    <Link to="/culturin-pro">Get a free demo →</Link>
                   </Button>
                 </div>
               </div>
@@ -170,9 +171,9 @@ const PricingPage = () => {
             <div className="text-center mt-16">
               <Button 
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 h-auto text-lg"
-                onClick={() => window.location.href = '/sign-in'}
+                asChild
               >
-                Get started with a free demo
+                <Link to="/culturin-pro">Get started with a free demo</Link>
               </Button>
               <p className="mt-4 text-gray-500">No credit card required</p>
             </div>

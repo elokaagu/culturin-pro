@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
@@ -74,7 +73,7 @@ const ForOperators = () => {
                 >
                   <Button 
                     className="bg-white text-black hover:bg-gray-100 text-base py-5 px-6 rounded-xl font-medium transition-all duration-300 w-full sm:w-auto"
-                    onClick={() => navigate('/operator')}
+                    onClick={() => navigate('/culturin-pro')}
                   >
                     <Upload className="w-5 h-5 mr-2" />
                     Start Free Trial
@@ -174,7 +173,7 @@ const ForOperators = () => {
               </p>
               <Button 
                 className="bg-black text-white hover:bg-gray-800 text-base py-5 px-6 rounded-xl font-medium transition-all duration-300"
-                onClick={() => navigate('/operator')}
+                onClick={() => navigate('/culturin-pro')}
               >
                 Start Free Trial
               </Button>
@@ -357,7 +356,7 @@ const ForOperators = () => {
             <Button 
               className="bg-black hover:bg-gray-800 text-white py-5 px-6 rounded-xl text-base animate-fade-in transition-all duration-300"
               style={{animationDelay: '0.2s'}}
-              onClick={() => navigate('/operator')}
+              onClick={() => navigate('/culturin-pro')}
             >
               <Upload className="w-5 h-5 mr-2" />
               Start Free Trial

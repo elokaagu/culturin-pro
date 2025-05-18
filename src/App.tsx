@@ -19,6 +19,7 @@ import ProSettingsPage from "./pages/ProSettingsPage";
 import ProItineraryPage from "./pages/ProItineraryPage";
 import Index from "./pages/Index";
 import PricingPage from "./pages/PricingPage";
+import HowItWorksPage from "./pages/HowItWorksPage";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -83,6 +84,7 @@ const App = () => (
               <Route path="/operator" element={<PageWithFooter Component={OperatorDashboard} />} />
               <Route path="/for-operators" element={<ForOperators />} />
               <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/how-it-works" element={<HowItWorksPage />} />
               <Route path="/sign-in" element={<PageWithFooter Component={SignIn} />} />
               <Route path="/culturin-pro" element={<PageWithFooter Component={CulturinProPage} />} />
               <Route path="/pro-dashboard" element={<ProDashboardPage />} />
