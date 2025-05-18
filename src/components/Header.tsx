@@ -2,7 +2,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChartBar } from 'lucide-react';
+import { Menu, X, ChartBar, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface HeaderProps {
   type: 'traveler' | 'operator';
@@ -50,12 +56,50 @@ export const Header = ({ type }: HeaderProps) => {
             <nav>
               <ul className="flex space-x-10">
                 <li>
-                  <Link 
-                    to="/culturin-pro" 
-                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
-                  >
-                    Product
-                  </Link>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="flex items-center font-medium text-gray-800 hover:text-gray-600 transition-colors focus:outline-none">
+                      Product <ChevronDown className="ml-1 h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-64 bg-white shadow-lg rounded-md p-2">
+                      <DropdownMenuItem asChild>
+                        <Link to="/culturin-pro" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <div className="flex flex-col">
+                            <span className="font-medium">Analytics Dashboard</span>
+                            <span className="text-xs text-gray-500">Track performance with real-time data</span>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/culturin-pro" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <div className="flex flex-col">
+                            <span className="font-medium">Booking Management</span>
+                            <span className="text-xs text-gray-500">Streamline guest reservations</span>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/culturin-pro" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <div className="flex flex-col">
+                            <span className="font-medium">Guest CRM</span>
+                            <span className="text-xs text-gray-500">Manage customer relationships</span>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/culturin-pro" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <div className="flex flex-col">
+                            <span className="font-medium">Marketing Tools</span>
+                            <span className="text-xs text-gray-500">Promote your experiences</span>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/culturin-pro" className="flex py-2 px-3 bg-gray-50 rounded-md mt-1 text-blue-600 font-medium">
+                          View all features →
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </li>
                 <li>
                   <Link 
@@ -118,7 +162,19 @@ export const Header = ({ type }: HeaderProps) => {
         <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg z-50 animate-fade-in">
           <nav className="py-4 px-6">
             <ul className="space-y-2">
-              <li><Link to="/culturin-pro" className="block py-2 font-medium text-gray-800">Product</Link></li>
+              <li className="py-2">
+                <button className="flex items-center justify-between w-full font-medium text-gray-800" 
+                  onClick={() => navigate('/culturin-pro')}>
+                  <span>Product</span>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="pl-4 mt-2 space-y-2 border-l-2 border-gray-100">
+                  <Link to="/culturin-pro" className="block py-1 text-sm">Analytics Dashboard</Link>
+                  <Link to="/culturin-pro" className="block py-1 text-sm">Booking Management</Link>
+                  <Link to="/culturin-pro" className="block py-1 text-sm">Guest CRM</Link>
+                  <Link to="/culturin-pro" className="block py-1 text-sm">Marketing Tools</Link>
+                </div>
+              </li>
               <li><Link to="/for-operators" className="block py-2 font-medium text-gray-800">Pricing</Link></li>
               <li><Link to="/operator" className="block py-2 font-medium text-gray-800">How it works</Link></li>
               <li>
