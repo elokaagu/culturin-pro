@@ -38,9 +38,9 @@ const PricingTiers: React.FC<PricingProps> = ({ onTierSelect, selectedTier }) =>
           <div className="absolute top-0 left-0 right-0 h-1 bg-gray-400"></div>
           <CardHeader>
             <CardTitle>Starter</CardTitle>
-            <CardDescription>For solo cultural hosts just getting started</CardDescription>
+            <CardDescription>For new or part-time operators</CardDescription>
             <div className="mt-4">
-              <span className="text-3xl font-bold">$19</span>
+              <span className="text-3xl font-bold">£49</span>
               <span className="text-gray-500 ml-1">/month</span>
             </div>
           </CardHeader>
@@ -49,9 +49,9 @@ const PricingTiers: React.FC<PricingProps> = ({ onTierSelect, selectedTier }) =>
               <PricingFeature included>Basic booking management</PricingFeature>
               <PricingFeature included>Guest profiles</PricingFeature>
               <PricingFeature included>Simple analytics</PricingFeature>
+              <PricingFeature included>Onboarding concierge</PricingFeature>
               <PricingFeature>Website builder</PricingFeature>
               <PricingFeature>Team management</PricingFeature>
-              <PricingFeature>Priority support</PricingFeature>
             </ul>
           </CardContent>
           <CardFooter>
@@ -73,9 +73,9 @@ const PricingTiers: React.FC<PricingProps> = ({ onTierSelect, selectedTier }) =>
           </div>
           <CardHeader>
             <CardTitle>Growth</CardTitle>
-            <CardDescription>For growing teams with multiple experiences</CardDescription>
+            <CardDescription>For full-time boutique businesses</CardDescription>
             <div className="mt-4">
-              <span className="text-3xl font-bold">$49</span>
+              <span className="text-3xl font-bold">£99</span>
               <span className="text-gray-500 ml-1">/month</span>
             </div>
           </CardHeader>
@@ -86,7 +86,7 @@ const PricingTiers: React.FC<PricingProps> = ({ onTierSelect, selectedTier }) =>
               <PricingFeature included>Comprehensive analytics</PricingFeature>
               <PricingFeature included>Website builder</PricingFeature>
               <PricingFeature included>Up to 3 team members</PricingFeature>
-              <PricingFeature>Priority support</PricingFeature>
+              <PricingFeature included>Onboarding concierge</PricingFeature>
             </ul>
           </CardContent>
           <CardFooter>
@@ -100,15 +100,15 @@ const PricingTiers: React.FC<PricingProps> = ({ onTierSelect, selectedTier }) =>
           </CardFooter>
         </Card>
 
-        {/* Agency Tier */}
-        <Card className={`relative overflow-hidden transition-all duration-300 hover:shadow-md ${selectedTier === 'agency' ? 'border-culturin-indigo ring-2 ring-culturin-indigo/20' : 'border-gray-200'}`}>
+        {/* Pro Tier */}
+        <Card className={`relative overflow-hidden transition-all duration-300 hover:shadow-md ${selectedTier === 'pro' ? 'border-culturin-indigo ring-2 ring-culturin-indigo/20' : 'border-gray-200'}`}>
           <div className="absolute top-0 left-0 right-0 h-1 bg-culturin-indigo"></div>
           <CardHeader>
-            <CardTitle>Agency</CardTitle>
-            <CardDescription>For multi-city operators and large teams</CardDescription>
+            <CardTitle>Pro</CardTitle>
+            <CardDescription>For teams, agencies, or multi-region</CardDescription>
             <div className="mt-4">
-              <span className="text-3xl font-bold">Custom</span>
-              <span className="text-gray-500 ml-1">pricing</span>
+              <span className="text-3xl font-bold">£199</span>
+              <span className="text-gray-500 ml-1">/month</span>
             </div>
           </CardHeader>
           <CardContent>
@@ -118,19 +118,37 @@ const PricingTiers: React.FC<PricingProps> = ({ onTierSelect, selectedTier }) =>
               <PricingFeature included>API access</PricingFeature>
               <PricingFeature included>Data exports</PricingFeature>
               <PricingFeature included>Multi-language support</PricingFeature>
-              <PricingFeature included>Priority support</PricingFeature>
+              <PricingFeature included>Onboarding concierge</PricingFeature>
             </ul>
           </CardContent>
           <CardFooter>
             <Button 
-              variant={selectedTier === 'agency' ? 'default' : 'outline'}
+              variant={selectedTier === 'pro' ? 'default' : 'outline'}
               className="w-full"
-              onClick={() => onTierSelect('agency')}
+              onClick={() => onTierSelect('pro')}
             >
-              {selectedTier === 'agency' ? 'Selected' : 'Contact Sales'}
+              {selectedTier === 'pro' ? 'Selected' : 'Contact Sales'}
             </Button>
           </CardFooter>
         </Card>
+      </div>
+      
+      <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+        <h4 className="text-lg font-medium mb-2">Key Policies</h4>
+        <ul className="space-y-1">
+          <li className="flex items-center gap-2">
+            <Check className="h-4 w-4 text-green-500" />
+            <span>No commission on bookings</span>
+          </li>
+          <li className="flex items-center gap-2">
+            <Check className="h-4 w-4 text-green-500" />
+            <span>Onboarding concierge included in all tiers</span>
+          </li>
+          <li className="flex items-center gap-2">
+            <Check className="h-4 w-4 text-green-500" />
+            <span>Cancel anytime, no hidden fees</span>
+          </li>
+        </ul>
       </div>
     </div>
   );

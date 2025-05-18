@@ -10,15 +10,16 @@ import { toast } from 'sonner';
 const BillingSettings: React.FC = () => {
   const currentPlan = {
     name: "Growth Plan",
-    price: "$49",
+    price: "£99",
     period: "monthly",
     nextBilling: "June 15, 2025",
     features: [
-      "Smart Booking Tools",
-      "CRM for Hosts",
-      "Basic Analytics",
-      "Email Marketing",
-      "Team Management (up to 3 members)"
+      "Advanced Booking Tools",
+      "Full CRM functionality",
+      "Comprehensive Analytics",
+      "Website Builder",
+      "Team Management (up to 3 members)",
+      "Onboarding Concierge"
     ]
   };
   
@@ -36,19 +37,19 @@ const BillingSettings: React.FC = () => {
     {
       id: "inv-001",
       date: "May 15, 2025",
-      amount: "$49.00",
+      amount: "£99.00",
       status: "Paid"
     },
     {
       id: "inv-002",
       date: "April 15, 2025",
-      amount: "$49.00",
+      amount: "£99.00",
       status: "Paid"
     },
     {
       id: "inv-003",
       date: "March 15, 2025",
-      amount: "$49.00",
+      amount: "£99.00",
       status: "Paid"
     }
   ];
@@ -107,6 +108,20 @@ const BillingSettings: React.FC = () => {
                     {feature}
                   </li>
                 ))}
+              </ul>
+            </div>
+            
+            <div className="bg-blue-50 p-3 rounded-lg mt-2">
+              <h4 className="font-medium mb-1">Key Policies</h4>
+              <ul className="grid gap-1">
+                <li className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  No commission on bookings
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  Cancel anytime, no hidden fees
+                </li>
               </ul>
             </div>
           </div>

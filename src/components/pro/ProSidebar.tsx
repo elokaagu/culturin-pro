@@ -22,7 +22,7 @@ const menuItems = [
   { name: "Guest CRM", path: "/pro-dashboard/crm", icon: Users },
   { name: "Marketing", path: "/pro-dashboard/marketing", icon: Megaphone },
   { name: "Website", path: "/pro-dashboard/website", icon: Globe },
-  { name: "Culturin Central", path: "/pro-dashboard/analytics", icon: ChartBar },
+  { name: "Central Intelligence", path: "/pro-dashboard/analytics", icon: ChartBar },
   { name: "Settings", path: "/pro-dashboard/settings", icon: Settings }
 ];
 

@@ -12,7 +12,7 @@ const ProBookingPage = () => {
   return (
     <ProDashboardLayout
       title="Booking System"
-      subtitle="Manage your bookings and reservations"
+      subtitle="A conversion-optimised booking experience that reflects the emotional frame of the trip"
     >
       <Tabs
         value={activeTab}
