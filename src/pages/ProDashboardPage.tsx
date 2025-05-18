@@ -129,96 +129,120 @@ const ProDashboardPage: React.FC = () => {
         </div>
       </ProDashboardLayout>
       
-      {/* Redesigned Access Dialog */}
+      {/* Redesigned Premium Access Dialog */}
       <Dialog open={showAccessDialog} onOpenChange={setShowAccessDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Crown className="h-5 w-5 text-[#FFD700]" /> Grow Your Cultural Brand with Pro
-            </DialogTitle>
-            <DialogDescription className="text-base">
-              Unlock tools to increase bookings, delight guests, and streamline your operations — all in one place.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4">
-            <div className="flex flex-col gap-4">
-              <div className="border rounded-lg p-4">
-                <h3 className="font-medium flex items-center">
-                  Free Plan
-                  <Badge variant="outline" className="ml-2">Current</Badge>
-                </h3>
-                <ul className="mt-2 space-y-1">
-                  <li className="text-sm text-gray-600">• Basic booking management</li>
-                  <li className="text-sm text-gray-600">• Limited analytics</li>
-                  <li className="text-sm text-gray-600">• Standard support</li>
-                </ul>
+        <DialogContent className="sm:max-w-4xl rounded-xl shadow-lg p-0 overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-5 min-h-[420px]">
+            {/* Left side - Pricing comparison (3 columns wide) */}
+            <div className="md:col-span-3 p-8 bg-white">
+              <DialogHeader className="mb-6">
+                <DialogTitle className="text-2xl font-semibold">
+                  Unlock the full potential of Culturin Pro
+                </DialogTitle>
+                <DialogDescription className="text-base mt-2">
+                  Take your cultural experiences to the next level with our professional toolkit.
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Free Plan */}
+                <div className="border rounded-xl p-4">
+                  <h3 className="font-medium flex items-center">
+                    Free Plan
+                    <Badge variant="outline" className="ml-2">Current</Badge>
+                  </h3>
+                  <ul className="mt-3 space-y-2">
+                    <li className="text-sm text-gray-600 flex items-start gap-2">
+                      <Check className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+                      <span>Basic booking management</span>
+                    </li>
+                    <li className="text-sm text-gray-600 flex items-start gap-2">
+                      <Check className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+                      <span>Limited analytics</span>
+                    </li>
+                    <li className="text-sm text-gray-600 flex items-start gap-2">
+                      <Check className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+                      <span>Standard support</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                {/* Pro Plan */}
+                <div className="border-2 border-blue-500 rounded-xl p-4 bg-blue-50 relative">
+                  <div className="absolute top-3 right-3">
+                    <Badge className="bg-amber-100 text-amber-800 text-xs px-2 py-0.5">
+                      <span className="mr-1">🏆</span> Recommended
+                    </Badge>
+                  </div>
+                  <h3 className="font-medium text-blue-900">Pro Plan</h3>
+                  <p className="text-xl font-bold mt-1 text-blue-900">$49<span className="text-sm font-normal">/month</span></p>
+                  <ul className="mt-3 space-y-2">
+                    <li className="text-sm text-gray-700 flex items-start gap-2">
+                      <Check className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                      <span>Boost bookings with conversion analytics</span>
+                    </li>
+                    <li className="text-sm text-gray-700 flex items-start gap-2">
+                      <Check className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                      <span>Automate follow-ups and reviews</span>
+                    </li>
+                    <li className="text-sm text-gray-700 flex items-start gap-2">
+                      <Check className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                      <span>Add custom upsells to increase revenue</span>
+                    </li>
+                    <li className="text-sm text-gray-700 flex items-start gap-2">
+                      <Check className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                      <span>Collaborate with team members in real time</span>
+                    </li>
+                    <li className="text-sm text-gray-700 flex items-start gap-2">
+                      <Check className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                      <span>Priority support when it matters most</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right side - Testimonial and CTA (2 columns wide) */}
+            <div className="md:col-span-2 bg-gradient-to-br from-blue-600 to-blue-800 text-white p-8 flex flex-col justify-between">
+              <div>
+                <div className="mb-6">
+                  <p className="text-lg font-semibold">Join 1,000+ cultural experience creators</p>
+                </div>
+                
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6">
+                  <p className="italic text-white/90 text-sm">
+                    "Since upgrading to Pro, we've seen a 32% increase in repeat bookings and save over 10 hours a week on admin tasks."
+                  </p>
+                  <p className="mt-2 text-white/80 text-xs">
+                    — Maria Lopez, Oaxaca Food Tours
+                  </p>
+                </div>
+                
+                <div className="p-3 bg-white/10 backdrop-blur-sm rounded-xl">
+                  <p className="text-sm text-white/90">
+                    Cancel anytime. 14-day free trial. No hidden fees.
+                  </p>
+                </div>
               </div>
               
-              <div className="border-2 border-[#222] rounded-lg p-4 bg-[#fff7e0] relative">
-                <div className="absolute top-3 right-3">
-                  <Crown className="h-5 w-5 text-[#FFD700]" />
-                </div>
-                <h3 className="font-medium flex items-center text-[#222]">
-                  Pro Plan
-                  <Badge className="ml-2 bg-[#FFD700] text-[#222]">Recommended</Badge>
-                </h3>
-                <p className="text-lg font-medium mt-1">$49/month</p>
-                <ul className="mt-3 space-y-2">
-                  <li className="text-sm text-gray-700 flex items-start gap-2">
-                    <Check className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-                    <span>Boost bookings with conversion analytics</span>
-                  </li>
-                  <li className="text-sm text-gray-700 flex items-start gap-2">
-                    <Check className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-                    <span>Automate follow-ups, reviews & loyalty rewards</span>
-                  </li>
-                  <li className="text-sm text-gray-700 flex items-start gap-2">
-                    <Check className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-                    <span>Add custom upsells like meals or guides</span>
-                  </li>
-                  <li className="text-sm text-gray-700 flex items-start gap-2">
-                    <Check className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-                    <span>Collaborate with your team in real time</span>
-                  </li>
-                  <li className="text-sm text-gray-700 flex items-start gap-2">
-                    <Check className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-                    <span>Priority support when it matters most</span>
-                  </li>
-                </ul>
-                <p className="text-xs text-gray-600 mt-3">Cancel anytime. No hidden fees.</p>
-              </div>
-            </div>
-            
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600">Trusted by 1,000+ cultural experience creators around the world.</p>
-            </div>
-            
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-sm">Why Go Pro?</h4>
-              <p className="text-xs text-gray-600 mt-1">
-                Operators who upgrade see a 32% increase in repeat bookings and save 10+ hours/month in admin.
-              </p>
+              <DialogFooter className="flex flex-col gap-3 mt-6">
+                <Button 
+                  onClick={handlePurchase} 
+                  className="bg-white text-blue-700 hover:bg-blue-50 w-full justify-center py-6 text-base"
+                >
+                  Upgrade to Pro
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => navigate('/operator')}
+                  className="text-white hover:bg-white/20 w-full justify-center border border-white/30"
+                >
+                  Maybe Later
+                </Button>
+              </DialogFooter>
             </div>
           </div>
-          
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/operator')}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              Maybe Later
-            </Button>
-            <Button 
-              onClick={handlePurchase} 
-              className="bg-[#1E1E1E] text-white hover:bg-[#000000] group transition-all duration-200 px-6"
-            >
-              <Crown className="h-4 w-4 mr-2 text-[#FFD700]" />
-              Upgrade to Pro
-              <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
