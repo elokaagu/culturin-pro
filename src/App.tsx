@@ -13,6 +13,7 @@ import ProDashboardPage from "./pages/ProDashboardPage";
 import ProBookingPage from "./pages/ProBookingPage";
 import ProCRMPage from "./pages/ProCRMPage";
 import ProAnalyticsPage from "./pages/ProAnalyticsPage";
+import ProAnalytics from "./pages/ProAnalytics";
 import ProMarketingPage from "./pages/ProMarketingPage";
 import ProSettingsPage from "./pages/ProSettingsPage";
 import ProItineraryPage from "./pages/ProItineraryPage";
@@ -85,6 +86,7 @@ const App = () => (
               <Route path="/pro-dashboard/booking" element={<ProBookingPage />} />
               <Route path="/pro-dashboard/crm" element={<ProCRMPage />} />
               <Route path="/pro-dashboard/analytics" element={<ProAnalyticsPage />} />
+              <Route path="/pro-analytics" element={<ProAnalytics />} />
               <Route path="/pro-dashboard/marketing" element={<ProMarketingPage />} />
               <Route path="/pro-dashboard/settings" element={<ProSettingsPage />} />
               <Route path="*" element={<PageWithFooter Component={NotFound} />} />

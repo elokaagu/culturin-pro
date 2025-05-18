@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChartBar } from 'lucide-react';
 
 interface HeaderProps {
   type: 'traveler' | 'operator';
@@ -75,10 +75,11 @@ export const Header = ({ type }: HeaderProps) => {
                 </li>
                 <li>
                   <Link 
-                    to="/discover-trips" 
-                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
+                    to="/pro-analytics" 
+                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors flex items-center"
                   >
-                    Company
+                    <ChartBar size={16} className="mr-1" />
+                    Analytics
                   </Link>
                 </li>
               </ul>
@@ -120,7 +121,15 @@ export const Header = ({ type }: HeaderProps) => {
               <li><Link to="/culturin-pro" className="block py-2 font-medium text-gray-800">Product</Link></li>
               <li><Link to="/for-operators" className="block py-2 font-medium text-gray-800">Pricing</Link></li>
               <li><Link to="/operator" className="block py-2 font-medium text-gray-800">How it works</Link></li>
-              <li><Link to="/discover-trips" className="block py-2 font-medium text-gray-800">Company</Link></li>
+              <li>
+                <Link 
+                  to="/pro-analytics" 
+                  className="block py-2 font-medium text-gray-800 flex items-center"
+                >
+                  <ChartBar size={16} className="mr-1" />
+                  Analytics
+                </Link>
+              </li>
               <li className="pt-2 border-t border-gray-100 mt-2">
                 <Button 
                   className="w-full text-sm mt-2"
