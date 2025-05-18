@@ -24,7 +24,15 @@ import Contact from './pages/Contact';
 import ProductBookingManagementPage from './pages/product/ProductBookingManagementPage';
 import WhatsNewPage from './pages/WhatsNewPage';
 import AnnouncementDetailPage from './pages/AnnouncementDetailPage';
-import { Toaster } from "@/components/ui/toaster"
+import ProDashboardPage from './pages/ProDashboardPage';
+import ProAnalytics from './pages/ProAnalytics';
+import ProBookingPage from './pages/ProBookingPage';
+import ProCRMPage from './pages/ProCRMPage';
+import ProMarketingPage from './pages/ProMarketingPage';
+import ProItineraryPage from './pages/ProItineraryPage';
+import ProWebsitePage from './pages/ProWebsitePage';
+import ProSettingsPage from './pages/ProSettingsPage';
+import { Toaster } from "@/components/ui/toaster";
 
 function App() {
   return (
@@ -54,6 +62,14 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/whats-new" element={<WhatsNewPage />} />
         <Route path="/whats-new/:id" element={<AnnouncementDetailPage />} />
+        <Route path="/pro-dashboard" element={<ProDashboardPage />} />
+        <Route path="/pro-dashboard/analytics" element={<ProAnalytics />} />
+        <Route path="/pro-dashboard/booking" element={<ProBookingPage />} />
+        <Route path="/pro-dashboard/crm" element={<ProCRMPage />} />
+        <Route path="/pro-dashboard/marketing" element={<ProMarketingPage />} />
+        <Route path="/pro-dashboard/itinerary" element={<ProItineraryPage />} />
+        <Route path="/pro-dashboard/website" element={<ProWebsitePage />} />
+        <Route path="/pro-dashboard/settings" element={<ProSettingsPage />} />
       </Routes>
       <Toaster />
     </BrowserRouter>
