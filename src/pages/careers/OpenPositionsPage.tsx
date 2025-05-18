@@ -15,6 +15,7 @@ const OpenPositionsPage = () => {
   
   useEffect(() => {
     setAnimateItems(true);
+    document.title = "Open Positions | Culturin Careers";
   }, []);
   
   const openings = [

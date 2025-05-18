@@ -1,30 +1,36 @@
 
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, ExternalLink } from "lucide-react";
+import NewFooter from "@/components/sections/NewFooter";
 
 const PressPage = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
   
   useEffect(() => {
     setAnimateItems(true);
+    document.title = "Press & Media | Culturin";
   }, []);
   
   const pressReleases = [
     {
+      id: "culturin-series-a",
       title: "Culturin Raises $15M Series A to Transform Cultural Tourism",
       date: "May 10, 2025",
       excerpt: "Funding will accelerate product development and international expansion to support more cultural experience creators."
     },
     {
+      id: "culturin-pro-launch",
       title: "Culturin Launches Pro Platform for Tour Operators",
       date: "January 15, 2025",
       excerpt: "New suite of tools helps cultural tour operators create, manage and grow their businesses with commission-free bookings."
     },
     {
+      id: "culturin-unesco-partnership",
       title: "Culturin Partners with UNESCO on Cultural Heritage Preservation Initiative",
       date: "November 20, 2024",
       excerpt: "Partnership aims to promote sustainable tourism practices that protect cultural heritage sites while supporting local economies."
@@ -116,7 +122,7 @@ const PressPage = () => {
               <div className="space-y-8">
                 {pressReleases.map((release, index) => (
                   <div 
-                    key={index}
+                    key={release.id}
                     className={`transition-all duration-500 ${
                       animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                     }`}
@@ -131,8 +137,11 @@ const PressPage = () => {
                     <Button 
                       variant="link" 
                       className="p-0 h-auto font-medium text-blue-600"
+                      asChild
                     >
-                      Read full release
+                      <Link to={`/press/${release.id}`}>
+                        Read full release
+                      </Link>
                     </Button>
                     {index < pressReleases.length - 1 && (
                       <Separator className="mt-8" />
@@ -195,6 +204,8 @@ const PressPage = () => {
           </div>
         </section>
       </main>
+      
+      <NewFooter />
     </div>
   );
 };

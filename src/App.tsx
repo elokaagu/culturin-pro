@@ -8,7 +8,7 @@ import Pricing from './pages/Pricing';
 import HowItWorks from './pages/HowItWorks';
 import AboutUs from './pages/AboutUs';
 import Careers from './pages/Careers';
-import Press from './pages/Press';
+import Press from './pages/PressPage';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import HelpCenter from './pages/HelpCenter';
@@ -36,6 +36,9 @@ import ProSettingsPage from './pages/ProSettingsPage';
 import TourOperatorWebsitePage from './pages/TourOperatorWebsitePage';
 import ForOperators from './pages/ForOperators';
 import { Toaster } from "@/components/ui/toaster";
+import OpenPositionsPage from './pages/careers/OpenPositionsPage';
+import ApplicationPage from './pages/careers/ApplicationPage';
+import PressArticlePage from './pages/PressArticlePage';
 
 function App() {
   return (
@@ -48,7 +51,10 @@ function App() {
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/careers" element={<Careers />} />
+        <Route path="/careers/open-positions" element={<OpenPositionsPage />} />
+        <Route path="/careers/apply/:jobId" element={<ApplicationPage />} />
         <Route path="/press" element={<Press />} />
+        <Route path="/press/:articleId" element={<PressArticlePage />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/help-center" element={<HelpCenter />} />
