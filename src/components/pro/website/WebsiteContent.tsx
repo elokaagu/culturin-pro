@@ -45,12 +45,16 @@ const WebsiteContent: React.FC = () => {
     reader.onload = (e) => {
       const imageDataUrl = e.target?.result as string;
       setHeaderImage(imageDataUrl);
+      // Store in localStorage immediately for instant preview
+      localStorage.setItem('websiteHeaderImage', imageDataUrl);
     };
     reader.readAsDataURL(file);
   };
 
   const handleRemoveImage = () => {
     setHeaderImage(null);
+    localStorage.removeItem('websiteHeaderImage');
+    toast.success("Header image removed");
   };
 
   const handleSave = () => {
@@ -133,7 +137,7 @@ const WebsiteContent: React.FC = () => {
           <div className="flex flex-col gap-4">
             {headerImage ? (
               <div className="relative rounded-lg overflow-hidden w-full h-40">
-                <Image
+                <img
                   src={headerImage}
                   alt="Website header preview"
                   className="w-full h-full object-cover"
@@ -148,11 +152,13 @@ const WebsiteContent: React.FC = () => {
                 </Button>
               </div>
             ) : (
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500">
-                <Upload className="h-8 w-8 mb-2" />
-                <p className="text-sm mb-2">Drag and drop an image, or click to browse</p>
-                <p className="text-xs text-gray-400">Recommended size: 1200x400px, Max 5MB</p>
-              </div>
+              <label htmlFor="headerImage" className="cursor-pointer">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500">
+                  <Upload className="h-8 w-8 mb-2" />
+                  <p className="text-sm mb-2">Drag and drop an image, or click to browse</p>
+                  <p className="text-xs text-gray-400">Recommended size: 1200x400px, Max 5MB</p>
+                </div>
+              </label>
             )}
             <Input
               id="headerImage"

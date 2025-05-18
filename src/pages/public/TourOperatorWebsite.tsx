@@ -92,7 +92,7 @@ const TourOperatorWebsite: React.FC = () => {
         tagline: 'Authentic cultural experiences in the heart of Catalonia',
         description: 'We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots. Our expert local guides bring history and culture to life with immersive experiences.',
         logo: 'https://placehold.co/200x80',
-        coverImage: headerImage || 'https://placehold.co/1200x400',
+        coverImage: headerImage || null,
         theme: publishedTheme,
         primaryColor: '#9b87f5',
         contact: {
@@ -119,7 +119,7 @@ const TourOperatorWebsite: React.FC = () => {
       
       // Convert itineraries to tours
       const toursFromItineraries: Tour[] = itineraries.map(itinerary => ({
-        id: itinerary.id,
+        id: itinerary.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
         name: itinerary.title,
         duration: `${itinerary.days} ${itinerary.days === 1 ? 'day' : 'days'}`,
         price: Math.floor(Math.random() * 50) + 40, // Generate random price between 40-90
@@ -224,14 +224,15 @@ const TourOperatorWebsite: React.FC = () => {
 
   const themeStyles = getThemeStyles();
   const primaryColor = operatorData?.primaryColor || '#9b87f5';
+  
   const handleBookNow = (tourId: string) => {
     navigate(`/product/booking-preview/${tourId}`);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      {(operatorData?.coverImage || theme.toLowerCase() !== 'minimalist') && (
+      {/* Hero Section - Only render if there's a cover image or not minimalist theme */}
+      {operatorData?.coverImage || theme.toLowerCase() !== 'minimalist' ? (
         <div 
           className={cn("h-96 bg-cover bg-center relative", themeStyles.heroClass)} 
           style={{ 
@@ -255,7 +256,7 @@ const TourOperatorWebsite: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-16">
