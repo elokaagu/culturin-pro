@@ -29,10 +29,12 @@ const ProAnalytics = () => {
           <AnalyticsOverviewCards />
         </div>
         
-        {/* Revenue & Bookings Chart */}
-        <div>
+        {/* Revenue & Bookings Chart - Full Width */}
+        <div className="w-full">
           <h2 className="text-lg font-medium mb-4">Revenue & Bookings</h2>
-          <RevenueChart />
+          <div className="w-full">
+            <RevenueChart />
+          </div>
         </div>
         
         {/* Booking Sources & Demographics Charts */}
@@ -44,8 +46,8 @@ const ProAnalytics = () => {
           </div>
         </div>
         
-        {/* Guest Ratings and Reviews */}
-        <div>
+        {/* Guest Ratings and Reviews - Full Width */}
+        <div className="w-full">
           <RatingsTrendsChart />
         </div>
         
