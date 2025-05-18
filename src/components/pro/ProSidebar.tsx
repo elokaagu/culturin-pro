@@ -58,13 +58,13 @@ const ProSidebar: React.FC = () => {
       {/* Logo & Header */}
       <div className="p-4 border-b border-gray-100">
         <div className="flex items-center gap-2">
-          <div className="h-8">
+          <div className="h-12"> {/* Increased from h-8 to h-12 */}
             <Image 
               src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png" 
               alt="Culturin" 
               className="h-full" 
-              width={100} 
-              height={32} 
+              width={140} /* Increased from 100 */
+              height={48} /* Increased from 32 */
             />
           </div>
         </div>

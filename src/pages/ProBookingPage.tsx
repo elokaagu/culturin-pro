@@ -1,41 +1,55 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProDashboardLayout from '@/components/pro/ProDashboardLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import BookingsTab from '@/components/BookingsTab';
 import BookingOverview from '@/components/BookingOverview';
 
 const ProBookingPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const navigate = useNavigate();
+
+  const handleCreateNewExperience = () => {
+    // Route to the experience creation flow
+    navigate('/pro-dashboard/itinerary?new=true');
+  };
 
   return (
     <ProDashboardLayout
       title="Booking System"
       subtitle="A conversion-optimised booking experience that reflects the emotional frame of the trip"
     >
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="space-y-4"
-      >
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="bookings">Bookings</TabsTrigger>
-        </TabsList>
+      <div className="flex justify-between items-center mb-4">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-4"
+        >
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="bookings">Bookings</TabsTrigger>
+          </TabsList>
+        </Tabs>
         
-        <TabsContent value="overview" className="space-y-4">
-          <BookingOverview />
-        </TabsContent>
-        
-        <TabsContent value="bookings">
-          <Card>
-            <CardContent className="pt-6">
-              <BookingsTab />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        <Button onClick={handleCreateNewExperience} className="bg-blue-600 hover:bg-blue-700">
+          Create New Experience
+        </Button>
+      </div>
+      
+      <TabsContent value="overview" className="space-y-4 mt-0">
+        <BookingOverview />
+      </TabsContent>
+      
+      <TabsContent value="bookings" className="mt-0">
+        <Card>
+          <CardContent className="pt-6">
+            <BookingsTab />
+          </CardContent>
+        </Card>
+      </TabsContent>
     </ProDashboardLayout>
   );
 };

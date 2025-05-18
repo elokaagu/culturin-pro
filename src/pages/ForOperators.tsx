@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -29,8 +28,8 @@ const ForOperators = () => {
     <div className="min-h-screen flex flex-col font-sans">
       <Header type="operator" />
       
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-[#f1f0fb] to-white">
+      {/* Hero Section - Increased spacing with pt-40 instead of pt-32 */}
+      <section className="pt-40 pb-20 bg-gradient-to-br from-[#f1f0fb] to-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className={`space-y-6 ${animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} transition-all duration-700`}>
