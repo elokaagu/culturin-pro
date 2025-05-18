@@ -32,7 +32,7 @@ const RepeatOrdersTab = () => {
           
           <Button 
             className="flex items-center gap-2 bg-amber-100 text-amber-800 hover:bg-amber-200"
-            onClick={() => navigate('/pro-dashboard/crm')}
+            onClick={() => navigate('/demo')}
           >
             <Mail className="h-4 w-4" />
             Explore Guest CRM tools

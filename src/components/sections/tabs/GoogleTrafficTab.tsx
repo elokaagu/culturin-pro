@@ -32,7 +32,7 @@ const GoogleTrafficTab = () => {
           
           <Button 
             className="flex items-center gap-2 bg-blue-100 text-blue-800 hover:bg-blue-200"
-            onClick={() => navigate('/pro-dashboard/analytics')}
+            onClick={() => navigate('/demo')}
           >
             <Search className="h-4 w-4" />
             Preview SEO listing

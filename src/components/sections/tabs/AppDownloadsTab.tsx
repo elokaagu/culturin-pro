@@ -32,7 +32,7 @@ const AppDownloadsTab = () => {
           
           <Button 
             className="flex items-center gap-2 bg-purple-100 text-purple-800 hover:bg-purple-200"
-            onClick={() => navigate('/pro-dashboard/marketing')}
+            onClick={() => navigate('/demo')}
           >
             <Smartphone className="h-4 w-4" />
             See sample app
@@ -41,7 +41,7 @@ const AppDownloadsTab = () => {
         </div>
         <div className="relative">
           <Image 
-            src="https://images.unsplash.com/photo-1621274282562-fe5d57b0e525" 
+            src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" 
             alt="Tourists using a cultural tour mobile app" 
             className="rounded-lg shadow-lg object-cover h-full"
             aspectRatio="video"

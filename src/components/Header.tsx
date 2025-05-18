@@ -67,13 +67,13 @@ export const Header = ({ type }: HeaderProps) => {
         <div className="flex items-center justify-between h-16 lg:h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <div className="h-14 mr-2"> {/* Increased height from h-10 to h-14 */}
+              <div className="h-16 mr-2"> {/* Increased height from h-14 to h-16 */}
                 <Image 
                   src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png" 
                   alt="Culturin" 
                   className="h-full" 
-                  width={150} /* Increased from 120 */
-                  height={56} /* Increased from 40 */
+                  width={180} /* Increased from 150 to 180 */
+                  height={64} /* Increased from 56 to 64 */
                 />
               </div>
             </Link>

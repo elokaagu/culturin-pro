@@ -32,7 +32,7 @@ const OnlineSalesTab = () => {
           
           <Button 
             className="flex items-center gap-2 bg-green-100 text-green-800 hover:bg-green-200"
-            onClick={() => navigate('/product/booking-management')}
+            onClick={() => navigate('/demo')}
           >
             <Calendar className="h-4 w-4" />
             See booking flows
