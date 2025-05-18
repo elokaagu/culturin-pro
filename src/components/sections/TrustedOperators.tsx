@@ -9,38 +9,35 @@ interface TestimonialCardProps {
   quote: string;
   image: string;
   achievement: string;
-  revenue?: string;
+  revenue: string;
 }
 
 const TestimonialCard = ({ name, company, quote, image, achievement, revenue }: TestimonialCardProps) => {
   return (
-    <Card className="h-full overflow-hidden border-0 shadow-soft hover:shadow-card transition-all duration-300">
-      <div className="relative h-64">
-        <Image 
+    <Card className="h-full overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300">
+      <div className="relative h-80">
+        <img 
           src={image} 
-          alt={`${name}, ${company}`} 
-          fill={true}
-          className="object-cover"
+          alt={`${name}, ${company}`}
+          className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 flex flex-col justify-end p-4">
-          <h3 className="text-white font-medium text-lg">{name}</h3>
-          <p className="text-white/80 text-sm">Owner of {company}</p>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 flex flex-col justify-end p-5">
+          <h3 className="text-white font-medium text-xl">{name}</h3>
+          <p className="text-white/80">Owner of {company}</p>
         </div>
       </div>
-      <CardContent className="p-4">
-        <div className="min-h-24">
-          <p className="text-sm text-gray-700 mb-3">{quote}</p>
-        </div>
-        <div className="mt-4 flex items-center justify-between">
-          <div className="text-sm text-gray-600">
+      <CardContent className="p-6">
+        <p className="text-gray-700 mb-6">{quote}</p>
+        <div className="flex justify-between items-end">
+          <div className="text-gray-600">
             {achievement}
           </div>
-          {revenue && (
-            <div className="text-lg font-bold">
+          <div>
+            <div className="text-3xl font-bold text-black">
               {revenue}
-              <span className="text-xs text-gray-500 font-normal">/year</span>
             </div>
-          )}
+            <div className="text-xs text-gray-500">/year</div>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -61,7 +58,7 @@ const TrustedOperators = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <TestimonialCard 
             name="Maria Sanchez"
             company="Barcelona Tapas Tours"
@@ -87,15 +84,6 @@ const TrustedOperators = () => {
             image="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?q=80&w=1000&auto=format&fit=crop"
             achievement="Enhanced cultural storytelling"
             revenue="+$145,000"
-          />
-          
-          <TestimonialCard 
-            name="Carlos Rivera"
-            company="Peruvian Heritage Tours"
-            quote="Culturin's CRM tools helped us turn one-time guests into loyal customers who keep coming back year after year."
-            image="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop"
-            achievement="Increased customer retention"
-            revenue="+$210,000"
           />
         </div>
       </div>
