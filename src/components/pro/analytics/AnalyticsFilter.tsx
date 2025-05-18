@@ -3,10 +3,15 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const AnalyticsFilter: React.FC = () => {
+interface AnalyticsFilterProps {
+  timeFrame: string;
+  onTimeFrameChange: (value: string) => void;
+}
+
+const AnalyticsFilter: React.FC<AnalyticsFilterProps> = ({ timeFrame, onTimeFrameChange }) => {
   return (
     <div className="flex gap-3 items-center">
-      <Select defaultValue="30days">
+      <Select value={timeFrame} onValueChange={onTimeFrameChange}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Time period" />
         </SelectTrigger>
@@ -15,6 +20,7 @@ const AnalyticsFilter: React.FC = () => {
           <SelectItem value="30days">Last 30 days</SelectItem>
           <SelectItem value="90days">Last 90 days</SelectItem>
           <SelectItem value="year">This year</SelectItem>
+          <SelectItem value="month">This month</SelectItem>
         </SelectContent>
       </Select>
       
