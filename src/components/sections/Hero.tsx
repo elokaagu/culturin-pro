@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const Hero = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
   const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [showTooltip, setShowTooltip] = useState<number | null>(null);
   
   useEffect(() => {
     // Trigger animations on component mount (page load)
@@ -189,9 +190,9 @@ const Hero = () => {
             </div>
           </div>
           
-          {/* Right side: Improved search box area with card styling - reduced shadow */}
+          {/* Right side: Improved search box area with card styling */}
           <div className="w-full lg:w-1/2">
-            <div className="rounded-xl p-10 bg-white shadow-md border border-gray-100">
+            <div className="rounded-xl p-10 bg-white shadow-sm border border-gray-100">
               <div className="text-left mb-6 flex items-center">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 mr-3">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -204,35 +205,46 @@ const Hero = () => {
                 </h3>
               </div>
               
-              <div className="flex gap-3 flex-col md:flex-row">
-                <Input 
-                  placeholder="Enter your tour or experience name" 
-                  className="h-14 border-gray-200 text-base"
-                />
-                <Button 
-                  className="h-14 px-6 flex items-center gap-2 text-base whitespace-nowrap transition-all duration-200 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white group"
-                >
-                  <span className="font-bold">Scan My Tour</span>
-                  <span className="font-normal">for Growth Leaks</span>
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
+              <div className="space-y-2 mb-4">
+                <label htmlFor="tourName" className="text-sm text-gray-600 text-left block">Experience Name</label>
+                <div className="flex gap-3 flex-col md:flex-row">
+                  <Input 
+                    id="tourName"
+                    placeholder="e.g. Marrakech Walking Tour" 
+                    className="h-14 border-gray-200 text-base"
+                  />
+                  <Button 
+                    className="h-14 px-6 flex items-center gap-2 text-base whitespace-nowrap transition-all duration-200 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white group"
+                  >
+                    <span className="font-bold">Scan My Tour</span>
+                    <span className="font-normal">for Growth Leaks</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
               </div>
               
               {/* Trust builder below CTA - enhanced with text description */}
               <div className="mt-8 pt-5 border-t border-gray-100">
-                <p className="text-sm text-gray-500 mb-3">Used by over 400 cultural tour operators — from Accra to Oaxaca</p>
+                <p className="text-sm text-gray-500 mb-3">Used by over 400 cultural tour operators — like Roots & Rhythm (Accra) and Oaxaca Food Trails</p>
                 <div className="flex items-center gap-4">
                   <div className="flex -space-x-3">
                     {operatorImages.map((op, i) => (
-                      <div key={i} className="relative group">
-                        <Avatar className="w-9 h-9 border-2 border-white">
+                      <div 
+                        key={i} 
+                        className="relative group"
+                        onMouseEnter={() => setShowTooltip(i)}
+                        onMouseLeave={() => setShowTooltip(null)}
+                      >
+                        <Avatar className="w-10 h-10 border-2 border-white hover:scale-105 transition-transform">
                           <AvatarImage 
                             src={op.url} 
                             alt={`${op.name} from ${op.location}`}
                           />
                           <AvatarFallback>{op.name.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                        <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 bg-gray-800 text-white text-xs rounded py-2 px-3 opacity-0 transition-opacity duration-200 pointer-events-none ${
+                          showTooltip === i ? 'opacity-100' : ''
+                        }`}>
                           <strong>{op.name}</strong>, {op.location}
                           <div className="text-xs mt-1 italic opacity-90">"{op.quote}"</div>
                           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-800"></div>
@@ -240,7 +252,18 @@ const Hero = () => {
                       </div>
                     ))}
                   </div>
-                  <span className="text-sm text-gray-600 font-medium">+ 397 more</span>
+                  <div className="group relative">
+                    <span className="text-sm text-blue-600 font-medium cursor-pointer hover:underline">+ 397 more</span>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-60 bg-white border border-gray-200 shadow-lg rounded-lg py-3 px-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                      <div className="text-xs font-medium mb-1">More success stories:</div>
+                      <div className="text-xs text-gray-600 max-h-32 overflow-y-auto">
+                        <p className="mb-2">• Bali Heritage Tours (+78% direct bookings)</p>
+                        <p className="mb-2">• Cape Town Cultural Walks (+54% revenue)</p>
+                        <p>• Kyoto Tea Ceremony Masters (+95% visitors)</p>
+                      </div>
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-3 h-3 bg-white border-r border-b border-gray-200"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
