@@ -24,7 +24,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
   title, days, lastUpdated, status, image, onEdit, themeType, regions
 }) => {
   return (
-    <Card className="overflow-hidden transition-all duration-200 hover:shadow-md">
+    <Card className="overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer" onClick={onEdit}>
       <div className="h-40 overflow-hidden relative">
         <Image src={image} alt={title} aspectRatio="wide" />
         {themeType && (
@@ -51,7 +51,10 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
       </CardHeader>
       <CardFooter className="pt-2 flex justify-between">
         <span className="text-xs text-gray-500">Last updated {lastUpdated}</span>
-        <Button variant="outline" size="sm" className="h-8" onClick={onEdit}>
+        <Button variant="outline" size="sm" className="h-8" onClick={(e) => {
+          e.stopPropagation(); // Prevent card click from triggering
+          onEdit();
+        }}>
           <Edit className="h-3 w-3 mr-1" /> Edit
         </Button>
       </CardFooter>

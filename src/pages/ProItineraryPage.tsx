@@ -49,6 +49,7 @@ const ProItineraryPage: React.FC = () => {
   const handleEditItinerary = (itinerary: ItineraryType) => {
     setSelectedItinerary(itinerary);
     setShowEditor(true);
+    
     toast({
       title: `Editing: ${itinerary.title}`,
       description: "Make changes to your itinerary.",
@@ -118,6 +119,12 @@ const ProItineraryPage: React.FC = () => {
         item.id === updatedItinerary.id ? updatedItinerary : item
       )
     );
+    
+    toast({
+      title: "Itinerary Saved",
+      description: "Your changes have been saved successfully.",
+      variant: "default",
+    });
   };
 
   return (

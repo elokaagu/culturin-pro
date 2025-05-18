@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Edit, Save } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -32,6 +32,11 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   const { toast } = useToast();
   const [itinerary, setItinerary] = useState<ItineraryType | null>(selectedItinerary);
   const [isPublishing, setIsPublishing] = useState(false);
+  
+  // Update local state when selectedItinerary changes
+  useEffect(() => {
+    setItinerary(selectedItinerary);
+  }, [selectedItinerary]);
 
   if (!showEditor || !itinerary) {
     return null;
@@ -68,9 +73,17 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   };
 
   const handlePreviewSaveChanges = () => {
+    if (itinerary && onItinerarySave) {
+      const updatedItinerary = {
+        ...itinerary,
+        lastUpdated: 'just now',
+      };
+      onItinerarySave(updatedItinerary);
+    }
+    
     toast({
-      title: "Preview Changes Saved",
-      description: "Your changes have been applied to the preview.",
+      title: "Changes Saved",
+      description: "Your changes have been saved to the preview.",
     });
   };
 
@@ -96,7 +109,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       <CollapsibleContent>
         <ResizablePanelGroup direction="horizontal" className="min-h-[600px]">
           <ResizablePanel defaultSize={25}>
-            <ModuleLibrary isStoryMode={itinerary.storyMode} />
+            <ModuleLibrary isStoryMode={itinerary.storyMode || false} />
           </ResizablePanel>
           
           <ResizableHandle withHandle />

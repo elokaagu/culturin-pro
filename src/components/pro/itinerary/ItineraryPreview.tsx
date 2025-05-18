@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Save, Eye } from 'lucide-react';
@@ -29,6 +29,14 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ itinerary, onSaveCh
   const [modules, setModules] = useState<ItineraryModule[]>([]);
   const [editingModule, setEditingModule] = useState<string | null>(null);
   const { toast } = useToast();
+  
+  // Reset modules when itinerary changes
+  useEffect(() => {
+    if (itinerary.id) {
+      setModules([]);
+      setActiveDay(1);
+    }
+  }, [itinerary.id]);
 
   // Create tabs for each day in the itinerary
   const dayTabs = Array.from({ length: itinerary.days || 3 }, (_, i) => i + 1);
@@ -60,6 +68,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ itinerary, onSaveCh
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
   };
 
   const handleDelete = (moduleId: string) => {
@@ -126,7 +135,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ itinerary, onSaveCh
             </Button>
           </div>
           <Button size="sm" onClick={handleSaveChanges}>
-            <Save className="h-4 w-4 mr-1" /> Publish
+            <Save className="h-4 w-4 mr-1" /> Save Changes
           </Button>
         </div>
       </div>
@@ -303,9 +312,14 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ itinerary, onSaveCh
                         </div>
                       )}
                       
-                      {!editingModule && module.properties?.description && (
+                      {!editingModule && (module.properties?.title || module.properties?.description) && (
                         <div className="p-3 border-t">
-                          <p className="text-sm text-gray-700">{module.properties.description}</p>
+                          {module.properties?.title && (
+                            <h4 className="font-medium mb-1">{module.properties.title}</h4>
+                          )}
+                          {module.properties?.description && (
+                            <p className="text-sm text-gray-700">{module.properties.description}</p>
+                          )}
                           {module.properties?.imageUrl && (
                             <img 
                               src={module.properties.imageUrl} 
