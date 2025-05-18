@@ -8,11 +8,9 @@ interface TestimonialCardProps {
   company: string;
   quote: string;
   image: string;
-  achievement: string;
-  revenue: string;
 }
 
-const TestimonialCard = ({ name, company, quote, image, achievement, revenue }: TestimonialCardProps) => {
+const TestimonialCard = ({ name, company, quote, image }: TestimonialCardProps) => {
   return (
     <Card className="h-full overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300">
       <div className="relative h-80">
@@ -27,18 +25,7 @@ const TestimonialCard = ({ name, company, quote, image, achievement, revenue }: 
         </div>
       </div>
       <CardContent className="p-6">
-        <p className="text-gray-700 mb-6">{quote}</p>
-        <div className="flex justify-between items-end">
-          <div className="text-gray-600">
-            {achievement}
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-black">
-              {revenue}
-            </div>
-            <div className="text-xs text-gray-500">/year</div>
-          </div>
-        </div>
+        <p className="text-gray-700">{quote}</p>
       </CardContent>
     </Card>
   );
@@ -64,8 +51,6 @@ const TrustedOperators = () => {
             company="Barcelona Tapas Tours"
             quote="Since using Culturin, our bookings have increased by 65% and the itinerary builder saved me countless hours of work."
             image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1000&auto=format&fit=crop"
-            achievement="Increased direct bookings"
-            revenue="+$180,000"
           />
           
           <TestimonialCard 
@@ -73,8 +58,6 @@ const TrustedOperators = () => {
             company="Tokyo Cultural Walks"
             quote="The analytics dashboard helped us identify our most profitable experiences and optimize our pricing strategy."
             image="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1000&auto=format&fit=crop"
-            achievement="Optimized pricing strategy"
-            revenue="+$230,000"
           />
           
           <TestimonialCard 
@@ -82,8 +65,6 @@ const TrustedOperators = () => {
             company="Lagos Food Journeys"
             quote="The storytelling tools helped us communicate our cultural heritage in ways that truly resonated with travelers."
             image="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?q=80&w=1000&auto=format&fit=crop"
-            achievement="Enhanced cultural storytelling"
-            revenue="+$145,000"
           />
         </div>
       </div>
