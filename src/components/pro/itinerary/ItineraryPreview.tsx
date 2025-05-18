@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -174,7 +173,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ itinerary, onSaveCh
             <Save className="h-4 w-4 mr-1" /> Save Changes
           </Button>
           <Button size="sm" variant="outline" asChild>
-            <Link to="/product/booking" target="_blank">
+            <Link to={`/product/booking-preview/${itinerary.id}`} target="_blank">
               <ExternalLink className="h-4 w-4 mr-1" /> Preview Booking
             </Link>
           </Button>

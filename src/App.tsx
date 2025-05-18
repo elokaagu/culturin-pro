@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,6 +30,7 @@ import ProductAnalyticsPage from "./pages/product/ProductAnalyticsPage";
 import ProductBookingPage from "./pages/product/ProductBookingPage";
 import ProductCRMPage from "./pages/product/ProductCRMPage";
 import ProductMarketingPage from "./pages/product/ProductMarketingPage";
+import BookingFlowPreview from "./pages/product/BookingFlowPreview";
 import Contact from "./pages/Contact";
 import FAQs from "./pages/FAQs";
 import HelpCenter from "./pages/HelpCenter";
@@ -145,6 +145,7 @@ const App = () => (
               <Route path="/product/booking" element={<PageWithFooter Component={ProductBookingPage} />} />
               <Route path="/product/crm" element={<PageWithFooter Component={ProductCRMPage} />} />
               <Route path="/product/marketing" element={<PageWithFooter Component={ProductMarketingPage} />} />
+              <Route path="/product/booking-preview/:itineraryId" element={<PageWithFooter Component={BookingFlowPreview} />} />
               
               {/* Pro Dashboard Routes */}
               <Route path="/pro-dashboard" element={<ProDashboardPage />} />
