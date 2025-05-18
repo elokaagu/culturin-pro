@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { ItineraryType } from '@/data/itineraryData';
@@ -6,6 +5,7 @@ import BookingWidget from '@/components/pro/website/BookingWidget';
 import AboutSection from '@/components/pro/website/AboutSection';
 import ContactSection from '@/components/pro/website/ContactSection';
 import ToursGrid from '@/components/pro/website/ToursGrid';
+import { cn } from '@/lib/utils';
 
 const TourOperatorWebsitePage: React.FC = () => {
   const { slug, '*': subpath } = useParams();
@@ -101,6 +101,49 @@ const TourOperatorWebsitePage: React.FC = () => {
       </div>
     );
   }
+
+  // Generate footer colors based on primary color
+  const getFooterColors = () => {
+    const primaryColor = websiteData.primaryColor || '#9b87f5';
+    
+    // Create darker shade for footer background
+    const darkenColor = (color: string, amount: number) => {
+      color = color.replace('#', '');
+      let r = parseInt(color.substring(0, 2), 16);
+      let g = parseInt(color.substring(2, 4), 16);
+      let b = parseInt(color.substring(4, 6), 16);
+      
+      r = Math.max(0, Math.floor(r * amount));
+      g = Math.max(0, Math.floor(g * amount));
+      b = Math.max(0, Math.floor(b * amount));
+      
+      return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    };
+    
+    // Create a lighter shade for hover effects
+    const lightenColor = (color: string, amount: number) => {
+      color = color.replace('#', '');
+      let r = parseInt(color.substring(0, 2), 16);
+      let g = parseInt(color.substring(2, 4), 16);
+      let b = parseInt(color.substring(4, 6), 16);
+      
+      r = Math.min(255, Math.floor(r + (255 - r) * amount));
+      g = Math.min(255, Math.floor(g + (255 - g) * amount));
+      b = Math.min(255, Math.floor(b + (255 - b) * amount));
+      
+      return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    };
+    
+    return {
+      background: darkenColor(primaryColor, 0.3),
+      text: '#ffffff',
+      linkHover: lightenColor(primaryColor, 0.7),
+      border: darkenColor(primaryColor, 0.2),
+      accent: lightenColor(primaryColor, 0.2)
+    };
+  };
+  
+  const footerColors = getFooterColors();
 
   return (
     <div className="min-h-screen">
@@ -240,32 +283,110 @@ const TourOperatorWebsitePage: React.FC = () => {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-10">
+      {/* Improved Dynamic Footer */}
+      <footer style={{ backgroundColor: footerColors.background, color: footerColors.text }}>
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {/* Upper Footer */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 py-12">
+            {/* Company Info */}
             <div>
               <h3 className="text-xl font-bold mb-4">{websiteData.companyName}</h3>
-              <p className="text-gray-300">{websiteData.tagline}</p>
+              <p className="text-opacity-80 mb-4" style={{ color: footerColors.text }}>
+                {websiteData.tagline}
+              </p>
+              <p className="text-sm text-opacity-70" style={{ color: footerColors.text }}>
+                {websiteData.description.length > 100 
+                  ? `${websiteData.description.substring(0, 100)}...` 
+                  : websiteData.description}
+              </p>
             </div>
+            
+            {/* Quick Links */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-              <ul className="space-y-2 text-gray-300">
-                <li><button className="hover:text-white" onClick={() => handleNavigation('')}>Home</button></li>
-                <li><button className="hover:text-white" onClick={() => handleNavigation('tours')}>Tours</button></li>
-                <li><button className="hover:text-white" onClick={() => handleNavigation('about')}>About</button></li>
-                <li><button className="hover:text-white" onClick={() => handleNavigation('contact')}>Contact</button></li>
+              <ul className="space-y-2">
+                <li>
+                  <button 
+                    onClick={() => handleNavigation('')} 
+                    className="transition-colors duration-200"
+                    style={{ color: footerColors.text }}
+                    onMouseOver={(e) => e.currentTarget.style.color = footerColors.linkHover}
+                    onMouseOut={(e) => e.currentTarget.style.color = footerColors.text}
+                  >
+                    Home
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => handleNavigation('tours')} 
+                    className="transition-colors duration-200"
+                    style={{ color: footerColors.text }}
+                    onMouseOver={(e) => e.currentTarget.style.color = footerColors.linkHover}
+                    onMouseOut={(e) => e.currentTarget.style.color = footerColors.text}
+                  >
+                    Tours
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => handleNavigation('about')} 
+                    className="transition-colors duration-200"
+                    style={{ color: footerColors.text }}
+                    onMouseOver={(e) => e.currentTarget.style.color = footerColors.linkHover}
+                    onMouseOut={(e) => e.currentTarget.style.color = footerColors.text}
+                  >
+                    About
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => handleNavigation('contact')} 
+                    className="transition-colors duration-200"
+                    style={{ color: footerColors.text }}
+                    onMouseOver={(e) => e.currentTarget.style.color = footerColors.linkHover}
+                    onMouseOut={(e) => e.currentTarget.style.color = footerColors.text}
+                  >
+                    Contact
+                  </button>
+                </li>
               </ul>
             </div>
+            
+            {/* Contact Info */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Contact</h3>
-              <p className="text-gray-300">email@example.com</p>
-              <p className="text-gray-300">+1 123 456 7890</p>
+              <p className="text-opacity-80 mb-2" style={{ color: footerColors.text }}>
+                email@example.com
+              </p>
+              <p className="text-opacity-80 mb-2" style={{ color: footerColors.text }}>
+                +1 123 456 7890
+              </p>
+              <button 
+                onClick={() => handleNavigation('booking')}
+                className="mt-4 px-4 py-2 rounded-md transition-colors duration-200"
+                style={{ 
+                  backgroundColor: footerColors.accent, 
+                  color: footerColors.background
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = footerColors.linkHover}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = footerColors.accent}
+              >
+                Book Now
+              </button>
             </div>
           </div>
-          <div className="border-t border-gray-700 mt-10 pt-6 text-center text-gray-300">
-            <p>© {new Date().getFullYear()} {websiteData.companyName}. All rights reserved.</p>
-            <p className="text-sm mt-2">Created with Culturin Pro</p>
+          
+          {/* Footer Divider */}
+          <div style={{ borderColor: footerColors.border }} className="border-t opacity-20 my-4"></div>
+          
+          {/* Footer Bottom */}
+          <div className="flex flex-col md:flex-row justify-between items-center py-6">
+            <p className="text-sm opacity-80">
+              © {new Date().getFullYear()} {websiteData.companyName}. All rights reserved.
+            </p>
+            <p className="text-xs opacity-70 mt-2 md:mt-0">
+              Created with Culturin Pro
+            </p>
           </div>
         </div>
       </footer>
