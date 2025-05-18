@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Bed, UtensilsCrossed, Camera, Landmark, MapPin, Bus, Navigation, Sun, Moon, Coffee, Music, Ticket, Bot } from 'lucide-react';
@@ -115,8 +116,18 @@ const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ isStoryMode = false }) =>
   const modules = isStoryMode ? [...standardModules, ...storyModules] : standardModules;
   
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, module: ModuleItem) => {
-    e.dataTransfer.setData('moduleData', JSON.stringify(module));
-    e.dataTransfer.effectAllowed = 'copy';
+    // Make a clean copy of the module data without React elements
+    const transferData = {
+      ...module,
+      icon: null // Remove the icon as JSX elements can't be serialized
+    };
+    
+    try {
+      e.dataTransfer.setData('moduleData', JSON.stringify(transferData));
+      e.dataTransfer.effectAllowed = 'copy';
+    } catch (error) {
+      console.error('Error in drag start:', error);
+    }
   };
 
   return (

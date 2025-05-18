@@ -6,6 +6,10 @@ import { Save, Eye } from 'lucide-react';
 import { ItineraryType } from '@/data/itineraryData';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/components/ui/use-toast';
+import { 
+  Bed, UtensilsCrossed, Camera, Landmark, MapPin, Bus, 
+  Navigation, Sun, Moon, Coffee, Music, Ticket, Bot
+} from 'lucide-react';
 
 interface ItineraryPreviewProps {
   itinerary: ItineraryType;
@@ -41,19 +45,45 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ itinerary, onSaveCh
   // Create tabs for each day in the itinerary
   const dayTabs = Array.from({ length: itinerary.days || 3 }, (_, i) => i + 1);
   
+  // Get the appropriate icon based on module type
+  const getModuleIcon = (type: string) => {
+    switch(type) {
+      case 'Accommodation': return <Bed className="h-4 w-4 text-blue-500" />;
+      case 'Meal': return <UtensilsCrossed className="h-4 w-4 text-orange-500" />;
+      case 'Photo Opportunity': return <Camera className="h-4 w-4 text-pink-500" />;
+      case 'Attraction': return <Landmark className="h-4 w-4 text-purple-500" />;
+      case 'Location': return <MapPin className="h-4 w-4 text-red-500" />;
+      case 'Transportation': return <Bus className="h-4 w-4 text-green-500" />;
+      case 'Activity': return <Navigation className="h-4 w-4 text-cyan-500" />;
+      case 'Time Section': return <Sun className="h-4 w-4 text-yellow-500" />;
+      case 'Break': return <Coffee className="h-4 w-4 text-brown-500" />;
+      case 'Narrative': return <Music className="h-4 w-4 text-teal-500" />;
+      case 'Experience': return <Ticket className="h-4 w-4 text-amber-500" />;
+      case 'Journey': return <Bot className="h-4 w-4 text-blue-600" />;
+      default: return <Landmark className="h-4 w-4 text-gray-500" />;
+    }
+  };
+  
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, day: number) => {
     e.preventDefault();
-    const moduleData = e.dataTransfer.getData('moduleData');
-    if (!moduleData) return;
     
     try {
+      const moduleData = e.dataTransfer.getData('moduleData');
+      if (!moduleData) {
+        console.log("No module data found in drop event");
+        return;
+      }
+      
       const moduleInfo = JSON.parse(moduleData);
+      
+      // Add icon back based on type since it couldn't be serialized
       const newModule: ItineraryModule = {
         ...moduleInfo,
         id: `${moduleInfo.id}-${Date.now()}`,
         day,
         position: modules.filter(m => m.day === day).length,
         properties: {},
+        icon: getModuleIcon(moduleInfo.type)
       };
       
       setModules(prev => [...prev, newModule]);
@@ -63,6 +93,11 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ itinerary, onSaveCh
       });
     } catch (err) {
       console.error("Failed to parse module data:", err);
+      toast({
+        title: "Error",
+        description: "Failed to add module. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
