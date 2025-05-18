@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, Crown } from 'lucide-react';
+import { Menu, X, User } from 'lucide-react';
 
 interface HeaderProps {
   type: 'traveler' | 'operator';
@@ -21,7 +21,6 @@ export const Header = ({ type }: HeaderProps) => {
       setIsScrolled(window.scrollY > 20);
     };
     
-    // Scroll to top when location changes
     window.scrollTo(0, 0);
     
     window.addEventListener('scroll', handleScroll);
@@ -32,15 +31,17 @@ export const Header = ({ type }: HeaderProps) => {
 
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-black py-3 shadow-md' : 'bg-black/80 backdrop-blur-md py-4'
+      location.pathname === '/' ? 'bg-transparent' : (isScrolled ? 'bg-white shadow-sm' : 'bg-white')
     }`}>
-      <div className="container-custom">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center group">
-              <Crown className="w-8 h-8 mr-2 text-white group-hover:text-gray-300 transition-colors" />
-              <span className="font-sans font-bold text-2xl text-white group-hover:text-gray-300 transition-colors">
-                Culturin OS
+            <Link to="/" className="flex items-center">
+              <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center mr-2">
+                <span className="text-white font-bold">C</span>
+              </div>
+              <span className="font-inter font-bold text-xl">
+                Culturin
               </span>
             </Link>
           </div>
@@ -51,15 +52,15 @@ export const Header = ({ type }: HeaderProps) => {
                 <li>
                   <Link 
                     to="/culturin-pro" 
-                    className="font-medium text-white hover:text-gray-300 transition-colors"
+                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors text-sm"
                   >
-                    Features
+                    Product
                   </Link>
                 </li>
                 <li>
                   <Link 
                     to="/for-operators" 
-                    className="font-medium text-white hover:text-gray-300 transition-colors"
+                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors text-sm"
                   >
                     Pricing
                   </Link>
@@ -67,27 +68,42 @@ export const Header = ({ type }: HeaderProps) => {
                 <li>
                   <Link 
                     to="/operator" 
-                    className="font-medium text-white hover:text-gray-300 transition-colors"
+                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors text-sm"
                   >
-                    Dashboard
+                    How it works
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    to="/discover-trips" 
+                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors text-sm"
+                  >
+                    Company
                   </Link>
                 </li>
               </ul>
             </nav>
             
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="flex items-center bg-transparent border-white/20 text-white hover:bg-white/10"
-              onClick={() => navigate('/sign-in')}
-            >
-              <User className="w-4 h-4 mr-2" />
-              <span>{type === 'traveler' ? 'Sign In' : 'My Account'}</span>
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="ghost"
+                className="font-medium text-gray-800 hover:text-gray-600 text-sm"
+                onClick={() => navigate('/sign-in')}
+              >
+                Login
+              </Button>
+              
+              <Button 
+                className="bg-blue-600 hover:bg-blue-700 text-sm font-medium"
+                onClick={() => navigate('/sign-in')}
+              >
+                Get a free demo
+              </Button>
+            </div>
           </div>
           
           <button 
-            className="md:hidden p-2 text-white" 
+            className="md:hidden p-2 text-gray-800" 
             onClick={toggleMenu}
             aria-label="Toggle menu"
           >
@@ -96,26 +112,36 @@ export const Header = ({ type }: HeaderProps) => {
         </div>
       </div>
       
-      {/* Mobile menu with improved design */}
+      {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-lg z-50 animate-fade-in">
-          <nav className="py-6 px-6">
-            <ul className="space-y-4">
-              <li><Link to="/culturin-pro" className="block py-3 px-4 hover:bg-white/10 rounded-md font-medium text-white">Features</Link></li>
-              <li><Link to="/for-operators" className="block py-3 px-4 hover:bg-white/10 rounded-md font-medium text-white">Pricing</Link></li>
-              <li><Link to="/operator" className="block py-3 px-4 hover:bg-white/10 rounded-md font-medium text-white">Dashboard</Link></li>
-              <li>
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg z-50 animate-fade-in">
+          <nav className="py-4 px-6">
+            <ul className="space-y-2">
+              <li><Link to="/culturin-pro" className="block py-2 font-medium text-gray-800">Product</Link></li>
+              <li><Link to="/for-operators" className="block py-2 font-medium text-gray-800">Pricing</Link></li>
+              <li><Link to="/operator" className="block py-2 font-medium text-gray-800">How it works</Link></li>
+              <li><Link to="/discover-trips" className="block py-2 font-medium text-gray-800">Company</Link></li>
+              <li className="pt-2 border-t border-gray-100 mt-2">
                 <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full bg-transparent border-white/20 text-white hover:bg-white/10 mt-2"
+                  className="w-full text-sm mt-2"
+                  variant="outline"
                   onClick={() => {
                     navigate('/sign-in');
                     setIsMenuOpen(false);
                   }}
                 >
-                  <User className="w-4 h-4 mr-2" />
-                  <span>Sign In</span>
+                  Login
+                </Button>
+              </li>
+              <li>
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-sm mt-2"
+                  onClick={() => {
+                    navigate('/sign-in');
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Get a free demo
                 </Button>
               </li>
             </ul>

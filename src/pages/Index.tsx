@@ -31,7 +31,6 @@ const Index = () => {
       <OperatorInvitation />
       <TravelWithMeSection />
       <JoinCommunity />
-      {/* Footer is now rendered in App.tsx for all pages */}
     </div>
   );
 };

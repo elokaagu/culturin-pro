@@ -1,7 +1,9 @@
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 const Hero = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -12,67 +14,55 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative h-screen-90 min-h-[650px]">
-      <div className="absolute inset-0 bg-black">
-        <img 
-          src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop" 
-          alt="Aerial view of winding mountain road through autumn forest" 
-          className="w-full h-full object-cover opacity-70 transition-transform duration-[20000ms] ease-out hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-black/20" />
+    <div className="flex flex-col min-h-screen relative">
+      {/* Notification banner at top */}
+      <div className="bg-black text-white py-2 px-4 text-center">
+        <p className="text-sm">
+          🎉 BREAKING NEWS: We've just raised $10M. <Link to="/blog" className="underline hover:text-gray-300">Read our memo</Link> &rarr;
+        </p>
       </div>
       
-      <div className="relative container mx-auto h-full flex flex-col items-center justify-center pb-16 px-6">
-        <div className="text-center max-w-[720px]">
-          <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl text-[#F3F3F3] mb-8 tracking-tight leading-tight drop-shadow-sm">
-            <span 
-              className={`block transition-all duration-700 ease-out ${
-                animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
-              style={{transitionDelay: '200ms'}}
-            >
-              Travel With Culture,
-            </span>
-            <span 
-              className={`block text-[#F3F3F3] transition-all duration-700 ease-out ${
-                animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
-              style={{transitionDelay: '400ms'}}
-            >
-              Not Just Itineraries.
-            </span>
-          </h1>
-          <p 
-            className={`text-xl md:text-2xl text-[#E0E0E0] mb-12 leading-relaxed font-light max-w-2xl mx-auto drop-shadow-sm transition-all duration-700 ease-out ${
-              animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-            style={{transitionDelay: '600ms'}}
-          >
-            Join meaningful group trips or publish your own cultural experience — with trust, flexibility, and human connection.
-          </p>
-          <div 
-            className={`flex flex-wrap justify-center gap-6 transition-all duration-700 ease-out ${
-              animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-            style={{transitionDelay: '800ms'}}
-          >
-            <Button 
-              className="bg-[#2B2B2B] text-white hover:bg-[#1E1E1E] hover:scale-[1.02] text-lg py-7 px-8 rounded-xl border-none transition-all duration-500 ease-out active:scale-[0.98]"
-              asChild
-            >
-              <Link to="/discover-trips">Explore Group Trips</Link>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="bg-[#EDEDED] text-[#2B2B2B] hover:bg-[#D4D4D4] hover:scale-[1.02] border-none text-lg py-7 px-8 rounded-xl transition-all duration-500 ease-out active:scale-[0.98]"
-              asChild
-            >
-              <Link to="/for-operators">Create an Experience</Link>
+      <section className="flex-1 flex flex-col justify-center items-center text-center px-4 pt-20 pb-28 max-w-5xl mx-auto">
+        {/* Subtle badge/tag */}
+        <div className="mb-4">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
+            #1 Top-Rated Cultural Experience Platform 4.8 ★ across 279 reviews
+          </span>
+        </div>
+        
+        {/* Main headline */}
+        <h1 
+          className={`font-inter text-4xl md:text-5xl lg:text-6xl text-black mb-10 font-medium tracking-tight leading-tight transition-all duration-700 ease-out ${
+            animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+          style={{transitionDelay: '200ms'}}
+        >
+          See where your cultural <br className="hidden md:block" />
+          experiences need help
+        </h1>
+        
+        {/* Search box area */}
+        <div className="w-full max-w-2xl mt-8 border border-gray-200 rounded-lg p-8 bg-white shadow-sm">
+          <div className="text-left mb-4">
+            <h3 className="text-base font-medium flex items-center gap-2">
+              <span className="inline-flex items-center justify-center w-6 h-6 bg-gray-100 rounded-full text-sm">✓</span>
+              See how much visibility you could get from keywords
+            </h3>
+          </div>
+          
+          <div className="flex gap-3">
+            <Input 
+              placeholder="Find your experience name" 
+              className="h-12 border-gray-200"
+            />
+            <Button className="bg-black text-white h-12 px-5 flex items-center gap-2">
+              Get my report
+              <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };
 
