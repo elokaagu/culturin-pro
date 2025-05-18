@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Edit } from 'lucide-react';
+import React, { useState } from 'react';
+import { Edit, Save } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
@@ -18,6 +18,7 @@ interface ItineraryEditorProps {
   showAIAssistant: boolean;
   onAIAssistantClose: () => void;
   onEditorClose: () => void;
+  onItinerarySave?: (itinerary: ItineraryType) => void;
 }
 
 const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
@@ -26,12 +27,52 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   showAIAssistant,
   onAIAssistantClose,
   onEditorClose,
+  onItinerarySave,
 }) => {
   const { toast } = useToast();
+  const [itinerary, setItinerary] = useState<ItineraryType | null>(selectedItinerary);
+  const [isPublishing, setIsPublishing] = useState(false);
 
-  if (!showEditor || !selectedItinerary) {
+  if (!showEditor || !itinerary) {
     return null;
   }
+
+  const handlePropertyChange = (property: keyof ItineraryType, value: any) => {
+    setItinerary(prev => {
+      if (!prev) return prev;
+      return { ...prev, [property]: value };
+    });
+  };
+
+  const handleSaveChanges = () => {
+    setIsPublishing(true);
+    
+    // Simulate API call with timeout
+    setTimeout(() => {
+      if (itinerary && onItinerarySave) {
+        const updatedItinerary = {
+          ...itinerary,
+          lastUpdated: 'just now',
+        };
+        onItinerarySave(updatedItinerary);
+      }
+      
+      toast({
+        title: "Itinerary Published",
+        description: "Your itinerary has been successfully published.",
+      });
+      
+      setIsPublishing(false);
+      onEditorClose();
+    }, 1000);
+  };
+
+  const handlePreviewSaveChanges = () => {
+    toast({
+      title: "Preview Changes Saved",
+      description: "Your changes have been applied to the preview.",
+    });
+  };
 
   return (
     <Collapsible 
@@ -43,11 +84,11 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
           <div className="flex items-center gap-2">
             <Edit className="h-4 w-4" />
             <h3 className="font-medium">
-              {selectedItinerary.storyMode ? 'Story Editor' : 'Itinerary Editor'}: {selectedItinerary.title}
+              {itinerary.storyMode ? 'Story Editor' : 'Itinerary Editor'}: {itinerary.title}
             </h3>
           </div>
           <Badge variant="outline">
-            {selectedItinerary.status === 'published' ? 'Published' : 'Draft'}
+            {itinerary.status === 'published' ? 'Published' : 'Draft'}
           </Badge>
         </div>
       </CollapsibleTrigger>
@@ -55,13 +96,16 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       <CollapsibleContent>
         <ResizablePanelGroup direction="horizontal" className="min-h-[600px]">
           <ResizablePanel defaultSize={25}>
-            <ModuleLibrary isStoryMode={selectedItinerary.storyMode} />
+            <ModuleLibrary isStoryMode={itinerary.storyMode} />
           </ResizablePanel>
           
           <ResizableHandle withHandle />
           
           <ResizablePanel defaultSize={50}>
-            <ItineraryPreview itinerary={selectedItinerary} />
+            <ItineraryPreview 
+              itinerary={itinerary} 
+              onSaveChanges={handlePreviewSaveChanges}
+            />
           </ResizablePanel>
           
           <ResizableHandle withHandle />
@@ -78,8 +122,8 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                     <input 
                       type="text" 
                       className="w-full border p-2 rounded-md text-sm" 
-                      value={selectedItinerary.title || ''}
-                      onChange={() => {}}
+                      value={itinerary.title || ''}
+                      onChange={(e) => handlePropertyChange('title', e.target.value)}
                     />
                   </div>
                   <div>
@@ -87,28 +131,72 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                     <textarea 
                       className="w-full border p-2 rounded-md text-sm" 
                       rows={3}
-                      value={selectedItinerary.description || ''}
-                      onChange={() => {}}
+                      value={itinerary.description || ''}
+                      onChange={(e) => handlePropertyChange('description', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Days</label>
+                    <input 
+                      type="number" 
+                      className="w-full border p-2 rounded-md text-sm" 
+                      value={itinerary.days || 1}
+                      onChange={(e) => handlePropertyChange('days', parseInt(e.target.value) || 1)}
+                      min={1}
+                      max={30}
                     />
                   </div>
                   <div>
                     <label className="text-sm text-gray-500">Status</label>
-                    <select className="w-full border p-2 rounded-md text-sm">
+                    <select 
+                      className="w-full border p-2 rounded-md text-sm"
+                      value={itinerary.status}
+                      onChange={(e) => handlePropertyChange('status', e.target.value as 'draft' | 'published')}
+                    >
                       <option value="draft">Draft</option>
                       <option value="published">Published</option>
                     </select>
                   </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Cover Image</label>
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      className="w-full border p-2 rounded-md text-sm"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          // Simulating image upload (in a real app, we would upload to a server)
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            handlePropertyChange('image', reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    {itinerary.image && (
+                      <div className="mt-2">
+                        <img 
+                          src={itinerary.image} 
+                          alt="Cover" 
+                          className="w-full h-32 object-cover rounded-md"
+                        />
+                      </div>
+                    )}
+                  </div>
                   <Button 
                     className="w-full mt-4"
-                    onClick={() => {
-                      toast({
-                        title: "Itinerary Saved",
-                        description: "Your changes have been saved successfully."
-                      });
-                      onEditorClose();
-                    }}
+                    onClick={handleSaveChanges}
+                    disabled={isPublishing}
                   >
-                    Save Changes
+                    {isPublishing ? (
+                      'Publishing...'
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-1" /> Publish Changes
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>

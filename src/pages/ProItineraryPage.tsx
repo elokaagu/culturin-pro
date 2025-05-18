@@ -21,11 +21,12 @@ const ProItineraryPage: React.FC = () => {
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [selectedItinerary, setSelectedItinerary] = useState<ItineraryType | null>(null);
+  const [itineraries, setItineraries] = useState<ItineraryType[]>(sampleItineraries);
   const [activeTab, setActiveTab] = useState("itineraries");
   const { toast } = useToast();
   
   const handleCreateNewItinerary = () => {
-    setSelectedItinerary({
+    const newItinerary: ItineraryType = {
       id: `new-${Date.now()}`,
       title: "New Itinerary",
       days: 1,
@@ -33,8 +34,12 @@ const ProItineraryPage: React.FC = () => {
       lastUpdated: "just now",
       image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
       description: "Start building your new cultural experience."
-    });
+    };
+    
+    setItineraries(prev => [newItinerary, ...prev]);
+    setSelectedItinerary(newItinerary);
     setShowEditor(true);
+    
     toast({
       title: "New Itinerary Created",
       description: "Start building your itinerary by adding days and activities.",
@@ -51,15 +56,19 @@ const ProItineraryPage: React.FC = () => {
   };
 
   const handleUseTemplate = (template: any) => {
-    setSelectedItinerary({
+    const newItinerary: ItineraryType = {
       ...template,
       id: `new-${Date.now()}`,
       status: "draft" as const,
       lastUpdated: "just now",
       days: 3, // Default days for templates
       title: `My ${template.title}`
-    });
+    };
+    
+    setItineraries(prev => [newItinerary, ...prev]);
+    setSelectedItinerary(newItinerary);
     setShowEditor(true);
+    
     toast({
       title: `Template Applied: ${template.title}`,
       description: "Customize this template to fit your needs.",
@@ -67,7 +76,7 @@ const ProItineraryPage: React.FC = () => {
   };
 
   const handleStartStoryMode = () => {
-    setSelectedItinerary({
+    const newStoryItinerary: ItineraryType = {
       id: `story-${Date.now()}`,
       title: "My Story Journey",
       storyMode: true,
@@ -76,8 +85,12 @@ const ProItineraryPage: React.FC = () => {
       days: 5, // Default days for story mode
       image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
       description: "Create a narrative-driven experience."
-    });
+    };
+    
+    setItineraries(prev => [newStoryItinerary, ...prev]);
+    setSelectedItinerary(newStoryItinerary);
     setShowEditor(true);
+    
     toast({
       title: "Story Mode Activated",
       description: "Start crafting your narrative-driven journey.",
@@ -96,8 +109,17 @@ const ProItineraryPage: React.FC = () => {
 
   const handleCloseEditor = () => {
     setShowEditor(false);
+    setSelectedItinerary(null);
   };
   
+  const handleSaveItinerary = (updatedItinerary: ItineraryType) => {
+    setItineraries(prev => 
+      prev.map(item => 
+        item.id === updatedItinerary.id ? updatedItinerary : item
+      )
+    );
+  };
+
   return (
     <ProDashboardLayout>
       <div className="space-y-8">
@@ -134,7 +156,7 @@ const ProItineraryPage: React.FC = () => {
             activeTab={activeTab}
             viewType={viewType}
             setViewType={setViewType}
-            itineraries={sampleItineraries}
+            itineraries={itineraries}
             templates={sampleTemplates}
             onCreateNewItinerary={handleCreateNewItinerary}
             onEditItinerary={handleEditItinerary}
@@ -149,6 +171,7 @@ const ProItineraryPage: React.FC = () => {
           showAIAssistant={showAIAssistant}
           onAIAssistantClose={() => setShowAIAssistant(false)}
           onEditorClose={handleCloseEditor}
+          onItinerarySave={handleSaveItinerary}
         />
 
         <ResourcesSection 

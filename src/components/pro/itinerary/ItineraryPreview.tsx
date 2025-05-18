@@ -1,274 +1,327 @@
 
 import React, { useState } from 'react';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Calendar, 
-  LayoutGrid, 
-  Map, 
-  Image as ImageIcon, 
-  Plus,
-  ChevronDown,
-  Book,
-  Pencil
-} from 'lucide-react';
-import Image from '@/components/ui/image';
-import { Card, CardHeader, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Save, Eye } from 'lucide-react';
+import { ItineraryType } from '@/data/itineraryData';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/components/ui/use-toast';
 
 interface ItineraryPreviewProps {
-  itinerary?: any;
+  itinerary: ItineraryType;
+  onSaveChanges?: () => void;
 }
 
-const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ itinerary }) => {
-  const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
-  const [view, setView] = useState<'visual' | 'map'>('visual');
+interface ItineraryModule {
+  id: string;
+  title: string;
+  type: string;
+  description: string;
+  position: number;
+  day: number;
+  icon?: JSX.Element;
+  properties?: Record<string, any>;
+}
+
+const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ itinerary, onSaveChanges }) => {
+  const [viewMode, setViewMode] = useState<'edit' | 'preview'>('edit');
+  const [activeDay, setActiveDay] = useState(1);
+  const [modules, setModules] = useState<ItineraryModule[]>([]);
+  const [editingModule, setEditingModule] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  // Create tabs for each day in the itinerary
+  const dayTabs = Array.from({ length: itinerary.days || 3 }, (_, i) => i + 1);
   
-  // If no itinerary is provided, show a placeholder
-  if (!itinerary) {
-    return (
-      <div className="flex flex-col h-full border-l border-r">
-        <div className="flex justify-between items-center p-4 border-b">
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="h-8" onClick={() => setView('visual')}>
-              <ImageIcon className="h-4 w-4 mr-1" /> Visual
-            </Button>
-            <Button variant="outline" size="sm" className="h-8" onClick={() => setView('map')}>
-              <Map className="h-4 w-4 mr-1" /> Map View
-            </Button>
-          </div>
-          <div className="flex gap-2">
-            <Button 
-              variant={viewMode === 'desktop' ? 'default' : 'outline'} 
-              size="sm" 
-              className="h-8"
-              onClick={() => setViewMode('desktop')}
-            >
-              <LayoutGrid className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant={viewMode === 'mobile' ? 'default' : 'outline'} 
-              size="sm" 
-              className="h-8"
-              onClick={() => setViewMode('mobile')}
-            >
-              <div className="w-3 h-5 border-2 border-current rounded-sm" />
-            </Button>
-          </div>
-        </div>
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, day: number) => {
+    e.preventDefault();
+    const moduleData = e.dataTransfer.getData('moduleData');
+    if (!moduleData) return;
+    
+    try {
+      const moduleInfo = JSON.parse(moduleData);
+      const newModule: ItineraryModule = {
+        ...moduleInfo,
+        id: `${moduleInfo.id}-${Date.now()}`,
+        day,
+        position: modules.filter(m => m.day === day).length,
+        properties: {},
+      };
+      
+      setModules(prev => [...prev, newModule]);
+      toast({
+        title: "Module Added",
+        description: `Added ${moduleInfo.title} to Day ${day}`,
+      });
+    } catch (err) {
+      console.error("Failed to parse module data:", err);
+    }
+  };
 
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <ImageIcon className="h-8 w-8 text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium mb-2">No Preview Available</h3>
-            <p className="text-sm text-gray-500 max-w-md">
-              Select or create an itinerary to view and edit its contents.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
 
-  return (
-    <div className="flex flex-col h-full border-l border-r">
-      <div className="flex justify-between items-center p-4 border-b">
-        <div className="flex gap-2">
-          <Button 
-            variant={view === 'visual' ? 'default' : 'outline'} 
-            size="sm" 
-            className="h-8" 
-            onClick={() => setView('visual')}
-          >
-            <ImageIcon className="h-4 w-4 mr-1" /> Visual
-          </Button>
-          <Button 
-            variant={view === 'map' ? 'default' : 'outline'} 
-            size="sm" 
-            className="h-8" 
-            onClick={() => setView('map')}
-          >
-            <Map className="h-4 w-4 mr-1" /> Map View
-          </Button>
-        </div>
-        <div className="flex gap-2">
-          <Button 
-            variant={viewMode === 'desktop' ? 'default' : 'outline'} 
-            size="sm" 
-            className="h-8"
-            onClick={() => setViewMode('desktop')}
-          >
-            <LayoutGrid className="h-4 w-4" />
-          </Button>
-          <Button 
-            variant={viewMode === 'mobile' ? 'default' : 'outline'} 
-            size="sm" 
-            className="h-8"
-            onClick={() => setViewMode('mobile')}
-          >
-            <div className="w-3 h-5 border-2 border-current rounded-sm" />
-          </Button>
-        </div>
-      </div>
+  const handleDelete = (moduleId: string) => {
+    setModules(prev => prev.filter(m => m.id !== moduleId));
+    setEditingModule(null);
+    toast({
+      title: "Module Removed",
+      description: "Module has been removed from the itinerary",
+    });
+  };
 
-      <div className={`flex-1 p-6 overflow-auto bg-gray-50 ${viewMode === 'mobile' ? 'flex justify-center' : ''}`}>
-        <div 
-          className={
-            viewMode === 'mobile' 
-              ? 'w-80 bg-white shadow-md rounded-lg h-[550px] overflow-auto' 
-              : 'bg-white shadow-sm rounded-lg p-6'
+  const handleEdit = (moduleId: string) => {
+    setEditingModule(moduleId === editingModule ? null : moduleId);
+  };
+
+  const handlePropertyChange = (moduleId: string, property: string, value: any) => {
+    setModules(prev => prev.map(m => {
+      if (m.id === moduleId) {
+        return {
+          ...m,
+          properties: {
+            ...(m.properties || {}),
+            [property]: value
           }
-        >
-          {view === 'visual' ? (
-            <div className="space-y-8">
-              <div className="relative">
-                <AspectRatio ratio={16/9} className="bg-gray-100 rounded-lg overflow-hidden mb-4">
-                  <Image 
-                    src={itinerary.image || "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png"} 
-                    alt={itinerary.title} 
-                    fill 
-                    className="object-cover"
-                  />
-                  <div className="absolute top-2 right-2">
-                    <Button size="sm" variant="secondary" className="bg-white/80 hover:bg-white">
-                      <Pencil className="h-4 w-4 mr-1" /> Edit Cover
-                    </Button>
-                  </div>
-                </AspectRatio>
-                <h1 className="text-2xl font-bold mb-2">{itinerary.title}</h1>
-                <p className="text-gray-600">
-                  {itinerary.description || 'Add a description for your itinerary.'}
-                </p>
-              </div>
+        };
+      }
+      return m;
+    }));
+  };
 
-              {itinerary.storyMode ? (
-                // Story Mode Content
-                <StoryModeContent />
-              ) : (
-                // Regular Itinerary Content
-                <ItineraryDaysContent days={itinerary.days || 1} />
-              )}
-            </div>
-          ) : (
-            <div className="h-full flex items-center justify-center bg-gray-100 rounded-lg">
-              <div className="text-center">
-                <Map className="h-10 w-10 mx-auto text-gray-400" />
-                <p className="mt-2 text-gray-500">Interactive Map View</p>
-                <p className="text-xs text-gray-400">Displays route visualization</p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
+  const handleSaveChanges = () => {
+    // In a real application, this would save to a backend
+    toast({
+      title: "Changes Saved",
+      description: "Your itinerary changes have been published successfully.",
+    });
+    if (onSaveChanges) onSaveChanges();
+  };
 
-const ItineraryDaysContent: React.FC<{ days: number }> = ({ days }) => {
   return (
-    <>
-      {[...Array(days)].map((_, index) => (
-        <div className="space-y-4" key={index}>
-          <h2 className="text-lg font-medium border-b pb-2 flex items-center justify-between">
-            Day {index + 1}: {index === 0 ? 'Arrival' : `Exploration Day ${index}`}
-            <Button variant="ghost" size="sm">
-              <ChevronDown className="h-4 w-4" />
+    <div className="flex flex-col h-full">
+      <div className="p-4 border-b flex justify-between items-center">
+        <h3 className="font-medium">
+          {itinerary.storyMode ? 'Story Journey' : 'Travel Itinerary'}: {itinerary.title}
+        </h3>
+        <div className="flex gap-2">
+          <div className="border rounded-md overflow-hidden">
+            <Button 
+              variant={viewMode === 'edit' ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode('edit')}
+              className="rounded-none"
+            >
+              Edit
             </Button>
-          </h2>
-          
-          {index === 0 && (
-            <div className="border rounded-md p-4">
-              <h3 className="font-medium">Arrival & Welcome Experience</h3>
-              <p className="text-sm text-gray-600 my-2">
-                Welcome guests and help them settle in with a brief orientation.
-              </p>
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>2:00 PM - 4:30 PM</span>
-                <span>Welcome Ceremony</span>
-              </div>
-            </div>
-          )}
-          
-          <div className="bg-gray-50 p-4 rounded-md border border-dashed border-gray-300 flex items-center justify-center">
-            <Button variant="outline" size="sm" className="flex items-center">
-              <Plus className="h-4 w-4 mr-1" /> Add Activity
+            <Button 
+              variant={viewMode === 'preview' ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode('preview')}
+              className="rounded-none"
+              aria-label="Preview"
+            >
+              <Eye className="h-4 w-4" />
             </Button>
           </div>
+          <Button size="sm" onClick={handleSaveChanges}>
+            <Save className="h-4 w-4 mr-1" /> Publish
+          </Button>
         </div>
-      ))}
-      
-      <div className="bg-gray-50 p-4 rounded-md border border-dashed border-gray-300 flex items-center justify-center">
-        <Button variant="outline" size="sm" className="flex items-center">
-          <Plus className="h-4 w-4 mr-1" /> Add Day
-        </Button>
       </div>
-    </>
-  );
-};
+      
+      <Tabs defaultValue={String(activeDay)} onValueChange={(value) => setActiveDay(Number(value))} className="flex-1">
+        <div className="border-b sticky top-0 bg-white z-10">
+          <TabsList className="mx-4 my-2">
+            {dayTabs.map((day) => (
+              <TabsTrigger key={day} value={String(day)}>
+                {itinerary.storyMode ? `Chapter ${day}` : `Day ${day}`}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+        
+        <ScrollArea className="flex-1">
+          {dayTabs.map((day) => (
+            <TabsContent key={day} value={String(day)} className="m-0 p-0">
+              <div 
+                className="min-h-[400px] p-4"
+                onDrop={(e) => handleDrop(e, day)}
+                onDragOver={handleDragOver}
+              >
+                <div className="border-2 border-dashed rounded-lg p-4 mb-4 bg-gray-50 text-center">
+                  <p className="text-gray-500">
+                    {modules.filter(m => m.day === day).length === 0 ? (
+                      "Drag modules here to build your itinerary"
+                    ) : (
+                      "Drag more modules or rearrange existing ones"
+                    )}
+                  </p>
+                </div>
+                
+                {modules
+                  .filter(module => module.day === day)
+                  .sort((a, b) => a.position - b.position)
+                  .map((module) => (
+                    <div 
+                      key={module.id} 
+                      className="border rounded-lg mb-4 overflow-hidden"
+                    >
+                      <div className="bg-white p-3 flex justify-between items-center">
+                        <div className="flex items-center">
+                          {module.icon}
+                          <span className="ml-2 font-medium">{module.title}</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEdit(module.id)}
+                          >
+                            {editingModule === module.id ? 'Done' : 'Edit'}
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleDelete(module.id)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      {editingModule === module.id && (
+                        <div className="bg-gray-50 p-4 border-t">
+                          <h4 className="font-medium mb-2">Edit Properties</h4>
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Title
+                              </label>
+                              <input 
+                                type="text"
+                                className="w-full p-2 border rounded-md"
+                                value={module.properties?.title || ''}
+                                onChange={(e) => handlePropertyChange(module.id, 'title', e.target.value)}
+                                placeholder="Enter title..."
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Description
+                              </label>
+                              <textarea 
+                                className="w-full p-2 border rounded-md"
+                                rows={3}
+                                value={module.properties?.description || ''}
+                                onChange={(e) => handlePropertyChange(module.id, 'description', e.target.value)}
+                                placeholder="Enter description..."
+                              />
+                            </div>
+                            
+                            {module.type === 'Photo Opportunity' && (
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Upload Image
+                                </label>
+                                <input 
+                                  type="file" 
+                                  accept="image/*"
+                                  className="w-full border rounded-md p-2"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      // In a real app, this would upload to a server and get a URL
+                                      const fileReader = new FileReader();
+                                      fileReader.onload = (event) => {
+                                        handlePropertyChange(module.id, 'imageUrl', event.target?.result);
+                                      };
+                                      fileReader.readAsDataURL(file);
+                                    }
+                                  }}
+                                />
+                                {module.properties?.imageUrl && (
+                                  <div className="mt-2">
+                                    <img 
+                                      src={module.properties.imageUrl} 
+                                      alt="Uploaded" 
+                                      className="w-full h-40 object-cover rounded-md"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            )}
 
-const StoryModeContent: React.FC = () => {
-  return (
-    <div className="space-y-8">
-      <div className="space-y-4">
-        <h2 className="text-lg font-medium border-b pb-2 flex items-center">
-          <Book className="h-5 w-5 mr-2 text-indigo-500" /> 
-          Chapter 1: Beginning the Journey
-        </h2>
-        
-        <Card className="border-l-4 border-l-indigo-400">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Introduction</CardTitle>
-          </CardHeader>
-          <CardContent className="py-2">
-            <p className="text-sm text-gray-600">
-              The journey begins as travelers arrive and are introduced to the cultural significance of their upcoming experience.
-            </p>
-          </CardContent>
-          <CardFooter className="pt-0 flex justify-end">
-            <Button variant="ghost" size="sm">Edit</Button>
-          </CardFooter>
-        </Card>
-        
-        <div className="bg-gray-50 p-4 rounded-md border border-dashed border-gray-300 flex items-center justify-center">
-          <Button variant="outline" size="sm" className="flex items-center">
-            <Plus className="h-4 w-4 mr-1" /> Add Story Element
-          </Button>
-        </div>
-      </div>
-      
-      <div className="space-y-4">
-        <h2 className="text-lg font-medium border-b pb-2 flex items-center">
-          <Book className="h-5 w-5 mr-2 text-indigo-500" /> 
-          Chapter 2: Cultural Immersion
-        </h2>
-        
-        <div className="bg-gray-50 p-4 rounded-md border border-dashed border-gray-300 flex items-center justify-center">
-          <Button variant="outline" size="sm" className="flex items-center">
-            <Plus className="h-4 w-4 mr-1" /> Add Story Element
-          </Button>
-        </div>
-      </div>
-      
-      <div className="bg-gray-50 p-4 rounded-md border border-dashed border-gray-300 flex items-center justify-center">
-        <Button variant="outline" size="sm" className="flex items-center">
-          <Plus className="h-4 w-4 mr-1" /> Add Chapter
-        </Button>
-      </div>
-      
-      <div className="border-t pt-4">
-        <h3 className="font-medium text-sm mb-2">Narrative Themes</h3>
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="bg-indigo-50">Transformation</Badge>
-          <Badge variant="outline" className="bg-indigo-50">Heritage</Badge>
-          <Badge variant="outline" className="bg-indigo-50">Tradition</Badge>
-          <Button variant="ghost" size="sm" className="h-6 text-xs">
-            <Plus className="h-3 w-3 mr-1" /> Add Theme
-          </Button>
-        </div>
-      </div>
+                            {module.type === 'Location' && (
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Address
+                                </label>
+                                <input 
+                                  type="text"
+                                  className="w-full p-2 border rounded-md"
+                                  value={module.properties?.address || ''}
+                                  onChange={(e) => handlePropertyChange(module.id, 'address', e.target.value)}
+                                  placeholder="Enter address..."
+                                />
+                              </div>
+                            )}
+                            
+                            {module.type === 'Meal' && (
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Restaurant Name
+                                </label>
+                                <input 
+                                  type="text"
+                                  className="w-full p-2 border rounded-md"
+                                  value={module.properties?.restaurant || ''}
+                                  onChange={(e) => handlePropertyChange(module.id, 'restaurant', e.target.value)}
+                                  placeholder="Enter restaurant name..."
+                                />
+                              </div>
+                            )}
+                            
+                            {(module.type === 'Activity' || module.type === 'Tour') && (
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Duration (hours)
+                                </label>
+                                <input 
+                                  type="number"
+                                  className="w-full p-2 border rounded-md"
+                                  value={module.properties?.duration || ''}
+                                  onChange={(e) => handlePropertyChange(module.id, 'duration', e.target.value)}
+                                  placeholder="Enter duration in hours..."
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {!editingModule && module.properties?.description && (
+                        <div className="p-3 border-t">
+                          <p className="text-sm text-gray-700">{module.properties.description}</p>
+                          {module.properties?.imageUrl && (
+                            <img 
+                              src={module.properties.imageUrl} 
+                              alt={module.properties.title || 'Module image'} 
+                              className="mt-2 w-full h-40 object-cover rounded-md"
+                            />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            </TabsContent>
+          ))}
+        </ScrollArea>
+      </Tabs>
     </div>
   );
 };

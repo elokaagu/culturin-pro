@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import ProDashboardLayout from '@/components/pro/ProDashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,8 +12,34 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { CalendarIcon, Users, CheckCircle, Clock, AlertCircle, Settings, Palette, CreditCard, UserPlus, Plus } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormControl } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import { useToast } from "@/components/ui/use-toast";
+
+interface Booking {
+  id: number;
+  experienceName: string;
+  date: string;
+  time: string;
+  status: string;
+  guests: number;
+  guest: string;
+}
+
+interface Experience {
+  id: number;
+  name: string;
+  capacity: number;
+  autoReminder: boolean;
+}
+
+interface Upsell {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  image: string;
+}
 
 const ProBookingPage: React.FC = () => {
   const [selectedDay, setSelectedDay] = useState<Date>(new Date());
@@ -26,18 +51,21 @@ const ProBookingPage: React.FC = () => {
     groupBooking: false,
     crypto: false
   });
+  const { toast } = useToast();
   
-  // Mock data for bookings
-  const bookings = [
+  // Form states
+  const [newTime, setNewTime] = useState("10:00");
+  const [selectedExperience, setSelectedExperience] = useState<number>(1);
+  const [bookings, setBookings] = useState<Booking[]>([
     { id: 1, experienceName: "Traditional Cooking Class", date: "2025-05-10", time: "10:00 AM", status: "Confirmed", guests: 4, guest: "Maria Johnson" },
     { id: 2, experienceName: "Wine Tasting Tour", date: "2025-05-10", time: "2:00 PM", status: "Confirmed", guests: 2, guest: "Robert Chen" },
     { id: 3, experienceName: "City Walking Tour", date: "2025-05-11", time: "9:00 AM", status: "Pending", guests: 6, guest: "Sarah Williams" },
     { id: 4, experienceName: "Traditional Cooking Class", date: "2025-05-12", time: "10:00 AM", status: "Waitlist", guests: 2, guest: "James Miller" },
     { id: 5, experienceName: "Wine Tasting Tour", date: "2025-05-13", time: "2:00 PM", status: "Confirmed", guests: 5, guest: "Emma Davis" },
-  ];
+  ]);
   
   // Mock data for experiences
-  const experiences = [
+  const experiences: Experience[] = [
     { id: 1, name: "Traditional Cooking Class", capacity: 8, autoReminder: true },
     { id: 2, name: "Wine Tasting Tour", capacity: 10, autoReminder: true },
     { id: 3, name: "City Walking Tour", capacity: 12, autoReminder: false },
@@ -45,7 +73,7 @@ const ProBookingPage: React.FC = () => {
   ];
 
   // Mock data for upsells
-  const upsells = [
+  const upsells: Upsell[] = [
     { id: 1, name: "Tea Ceremony with Local Elder", price: 45, description: "Experience an authentic tea ceremony guided by a respected local elder.", image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png" },
     { id: 2, name: "Private Photography Session", price: 75, description: "Capture your memories with a professional photographer during your experience.", image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png" },
     { id: 3, name: "Calligraphy Workshop Add-on", price: 35, description: "Learn the art of traditional calligraphy with handcrafted materials to take home.", image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png" }
@@ -77,6 +105,56 @@ const ProBookingPage: React.FC = () => {
       allowGuestCheckout: true,
     }
   });
+
+  const handleAddTimeSlot = () => {
+    const experience = experiences.find(exp => exp.id === selectedExperience);
+    if (!experience) return;
+    
+    const formattedDate = format(selectedDay, "yyyy-MM-dd");
+    const timeFormat = (hours: number, minutes: number) => {
+      const period = hours >= 12 ? "PM" : "AM";
+      const hour = hours % 12 || 12;
+      return `${hour}:${minutes.toString().padStart(2, '0')} ${period}`;
+    };
+    
+    // Parse time input
+    const [hours, minutes] = newTime.split(':').map(Number);
+    const formattedTime = timeFormat(hours, minutes);
+    
+    const newBooking: Booking = {
+      id: Date.now(),
+      experienceName: experience.name,
+      date: formattedDate,
+      time: formattedTime,
+      status: "Available",
+      guests: 0,
+      guest: "Open Slot"
+    };
+    
+    setBookings(prev => [...prev, newBooking]);
+    
+    toast({
+      title: "Time Slot Added",
+      description: `Added ${formattedTime} for ${experience.name} on ${format(selectedDay, "MMMM d, yyyy")}`,
+    });
+  };
+
+  const handleViewBooking = (booking: Booking) => {
+    toast({
+      title: "Viewing Booking Details",
+      description: `${booking.guest}'s booking for ${booking.experienceName}`,
+    });
+  };
+  
+  const handlePreviewCheckout = () => {
+    toast({
+      title: "Checkout Preview",
+      description: "In a production environment, this would open a real checkout flow.",
+    });
+    
+    // Simulate checkout and redirect
+    window.open(`/product/booking`, '_blank');
+  };
   
   return (
     <ProDashboardLayout>
@@ -150,7 +228,13 @@ const ProBookingPage: React.FC = () => {
                             </TableCell>
                             <TableCell>{getStatusBadge(booking.status)}</TableCell>
                             <TableCell>
-                              <Button variant="outline" size="sm">View</Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => handleViewBooking(booking)}
+                              >
+                                View
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -179,6 +263,8 @@ const ProBookingPage: React.FC = () => {
                     <select 
                       id="experience"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      value={selectedExperience}
+                      onChange={(e) => setSelectedExperience(Number(e.target.value))}
                     >
                       {experiences.map(exp => (
                         <option key={exp.id} value={exp.id}>{exp.name}</option>
@@ -209,10 +295,20 @@ const ProBookingPage: React.FC = () => {
                   
                   <div>
                     <Label htmlFor="time">Time</Label>
-                    <Input id="time" type="time" />
+                    <Input 
+                      id="time" 
+                      type="time" 
+                      value={newTime}
+                      onChange={(e) => setNewTime(e.target.value)}
+                    />
                   </div>
                 </div>
-                <Button className="mt-4">Add Time Slot</Button>
+                <Button 
+                  className="mt-4"
+                  onClick={handleAddTimeSlot}
+                >
+                  Add Time Slot
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -370,7 +466,7 @@ const ProBookingPage: React.FC = () => {
                               </div>
                             </div>
                             
-                            <Button className="w-full">
+                            <Button className="w-full" onClick={handlePreviewCheckout}>
                               <CreditCard className="h-4 w-4 mr-2" /> Complete Booking
                             </Button>
                           </div>
