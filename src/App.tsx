@@ -30,6 +30,10 @@ import ProductAnalyticsPage from "./pages/product/ProductAnalyticsPage";
 import ProductBookingPage from "./pages/product/ProductBookingPage";
 import ProductCRMPage from "./pages/product/ProductCRMPage";
 import ProductMarketingPage from "./pages/product/ProductMarketingPage";
+import Contact from "./pages/Contact";
+import FAQs from "./pages/FAQs";
+import HelpCenter from "./pages/HelpCenter";
+import CaseStudies from "./pages/CaseStudies";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -102,6 +106,10 @@ const App = () => (
               <Route path="/about-us" element={<OurStoryPage />} />
               <Route path="/careers" element={<CareersPage />} />
               <Route path="/press" element={<PressPage />} />
+              <Route path="/contact" element={<PageWithFooter Component={Contact} />} />
+              <Route path="/faqs" element={<PageWithFooter Component={FAQs} />} />
+              <Route path="/help-center" element={<PageWithFooter Component={HelpCenter} />} />
+              <Route path="/case-studies" element={<PageWithFooter Component={CaseStudies} />} />
               
               {/* Product Pages */}
               <Route path="/product/analytics" element={<ProductAnalyticsPage />} />

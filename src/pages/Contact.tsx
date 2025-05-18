@@ -57,7 +57,7 @@ const Contact = () => {
         <section className="relative bg-culturin-accent text-white py-12 md:py-16 lg:py-20 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
-              src="/public/lovable-uploads/8ee97e98-fd03-4f2b-8d3e-dcb87af6a6ba.png"
+              src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop"
               alt="Contact us"
               className="w-full h-full object-cover opacity-30"
             />

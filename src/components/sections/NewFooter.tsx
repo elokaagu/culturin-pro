@@ -78,6 +78,8 @@ const NewFooter = () => {
                 <li><Link to="/blog" className="hover:opacity-70 transition-opacity">Blog</Link></li>
                 <li><Link to="/how-it-works" className="hover:opacity-70 transition-opacity">How It Works</Link></li>
                 <li><Link to="/pricing" className="hover:opacity-70 transition-opacity">Pricing</Link></li>
+                <li><Link to="/case-studies" className="hover:opacity-70 transition-opacity">Case Studies</Link></li>
+                <li><Link to="/help-center" className="hover:opacity-70 transition-opacity">Help Center</Link></li>
               </ul>
             </div>
             
@@ -106,6 +108,7 @@ const NewFooter = () => {
               <h3 className="text-sm font-semibold uppercase mb-5">Support</h3>
               <ul className="space-y-3">
                 <li><Link to="/contact" className="hover:opacity-70 transition-opacity">Contact Us</Link></li>
+                <li><Link to="/faqs" className="hover:opacity-70 transition-opacity">FAQs</Link></li>
                 <li><a href="mailto:support@culturin.com" className="hover:opacity-70 transition-opacity">support@culturin.com</a></li>
               </ul>
             </div>

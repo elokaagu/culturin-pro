@@ -104,7 +104,7 @@ const FAQs = () => {
         <section className="relative bg-culturin-accent text-white py-12 md:py-16 lg:py-20 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
-              src="/public/lovable-uploads/61e2237f-86de-4ec9-8712-8902092d8c9b.png"
+              src="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=2070&auto=format&fit=crop"
               alt="Frequently Asked Questions"
               className="w-full h-full object-cover opacity-30"
             />
