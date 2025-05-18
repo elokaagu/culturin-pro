@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const CareersPage = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -15,30 +16,35 @@ const CareersPage = () => {
   
   const openings = [
     {
+      id: "senior-fullstack-dev",
       title: "Senior Full Stack Developer",
       department: "Engineering",
       location: "Remote",
       type: "Full-time"
     },
     {
+      id: "content-marketing",
       title: "Content Marketing Specialist",
       department: "Marketing",
       location: "New York",
       type: "Full-time"
     },
     {
+      id: "ux-ui-designer",
       title: "UX/UI Designer",
       department: "Product",
       location: "Remote",
       type: "Full-time"
     },
     {
+      id: "customer-success",
       title: "Customer Success Manager",
       department: "Operations",
       location: "London",
       type: "Full-time"
     },
     {
+      id: "growth-marketing",
       title: "Growth Marketing Manager",
       department: "Marketing",
       location: "Remote",
@@ -74,11 +80,13 @@ const CareersPage = () => {
               <p className="text-lg md:text-xl text-gray-600 mb-10">
                 Help us transform cultural tourism. We're looking for passionate people to join our mission of connecting travelers with authentic experiences.
               </p>
-              <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-white py-6 px-8 rounded-xl h-auto text-lg"
-              >
-                View open positions
-              </Button>
+              <Link to="/careers/open-positions">
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700 text-white py-6 px-8 rounded-xl h-auto text-lg"
+                >
+                  View open positions
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -185,11 +193,13 @@ const CareersPage = () => {
                         <span>{job.type}</span>
                       </div>
                     </div>
-                    <Button 
-                      className="mt-4 md:mt-0 bg-white hover:bg-gray-50 text-blue-600 border border-blue-600"
-                    >
-                      Apply Now
-                    </Button>
+                    <Link to={`/careers/apply/${job.id}`}>
+                      <Button 
+                        className="mt-4 md:mt-0 bg-white hover:bg-gray-50 text-blue-600 border border-blue-600"
+                      >
+                        Apply Now
+                      </Button>
+                    </Link>
                   </div>
                 </Card>
               ))}
@@ -197,9 +207,11 @@ const CareersPage = () => {
             
             <div className="mt-16 text-center">
               <p className="text-gray-600 mb-4">Don't see the right fit? We're always looking for talented people.</p>
-              <Button>
-                Send us your resume
-              </Button>
+              <a href="mailto:support@culturin.com">
+                <Button>
+                  Send us your resume
+                </Button>
+              </a>
             </div>
           </div>
         </section>

@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -34,6 +35,9 @@ import Contact from "./pages/Contact";
 import FAQs from "./pages/FAQs";
 import HelpCenter from "./pages/HelpCenter";
 import CaseStudies from "./pages/CaseStudies";
+import WhatsNewPage from "./pages/WhatsNewPage";
+import OpenPositionsPage from "./pages/careers/OpenPositionsPage";
+import ApplicationPage from "./pages/careers/ApplicationPage";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -106,11 +110,14 @@ const App = () => (
               <Route path="/blog/:slug" element={<BlogPostPage />} />
               <Route path="/about-us" element={<OurStoryPage />} />
               <Route path="/careers" element={<CareersPage />} />
+              <Route path="/careers/open-positions" element={<OpenPositionsPage />} />
+              <Route path="/careers/apply/:jobId" element={<ApplicationPage />} />
               <Route path="/press" element={<PressPage />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/faqs" element={<FAQs />} />
               <Route path="/help-center" element={<HelpCenter />} />
               <Route path="/case-studies" element={<CaseStudies />} />
+              <Route path="/whats-new" element={<WhatsNewPage />} />
               
               {/* Product Pages */}
               <Route path="/product/analytics" element={<ProductAnalyticsPage />} />
