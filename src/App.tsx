@@ -17,6 +17,7 @@ import ProAnalytics from "./pages/ProAnalytics";
 import ProMarketingPage from "./pages/ProMarketingPage";
 import ProSettingsPage from "./pages/ProSettingsPage";
 import ProItineraryPage from "./pages/ProItineraryPage";
+import ProWebsitePage from "./pages/ProWebsitePage";
 import Index from "./pages/Index";
 import PricingPage from "./pages/PricingPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
@@ -31,6 +32,7 @@ import ProductBookingPage from "./pages/product/ProductBookingPage";
 import ProductCRMPage from "./pages/product/ProductCRMPage";
 import ProductMarketingPage from "./pages/product/ProductMarketingPage";
 import BookingFlowPreview from "./pages/product/BookingFlowPreview";
+import TourOperatorWebsite from "./pages/public/TourOperatorWebsite";
 import Contact from "./pages/Contact";
 import FAQs from "./pages/FAQs";
 import HelpCenter from "./pages/HelpCenter";
@@ -153,9 +155,13 @@ const App = () => (
               <Route path="/pro-dashboard/booking" element={<ProBookingPage />} />
               <Route path="/pro-dashboard/crm" element={<ProCRMPage />} />
               <Route path="/pro-dashboard/analytics" element={<ProAnalyticsPage />} />
+              <Route path="/pro-dashboard/website" element={<ProWebsitePage />} />
               <Route path="/pro-analytics" element={<ProAnalytics />} />
               <Route path="/pro-dashboard/marketing" element={<ProMarketingPage />} />
               <Route path="/pro-dashboard/settings" element={<ProSettingsPage />} />
+              
+              {/* Public Tour Operator Website */}
+              <Route path="/tour/:operatorId" element={<TourOperatorWebsite />} />
               <Route path="*" element={<PageWithFooter Component={NotFound} />} />
             </Routes>
           </div>
