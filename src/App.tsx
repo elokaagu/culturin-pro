@@ -21,6 +21,7 @@ import Index from "./pages/Index";
 import PricingPage from "./pages/PricingPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import BlogPage from "./pages/BlogPage";
+import BlogPostPage from "./pages/BlogPostPage";
 import OurStoryPage from "./pages/OurStoryPage";
 import CareersPage from "./pages/CareersPage";
 import PressPage from "./pages/PressPage";
@@ -102,6 +103,7 @@ const App = () => (
               <Route path="/culturin-pro" element={<CulturinProPage />} />
               <Route path="/demo" element={<DemoPage />} />
               <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:slug" element={<BlogPostPage />} />
               <Route path="/about-us" element={<OurStoryPage />} />
               <Route path="/careers" element={<CareersPage />} />
               <Route path="/press" element={<PressPage />} />

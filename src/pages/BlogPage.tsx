@@ -5,75 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Calendar, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-
-type BlogPost = {
-  id: number;
-  title: string;
-  excerpt: string;
-  date: string;
-  category: string;
-  image: string;
-}
+import { blogPosts } from "@/data/blogPosts";
 
 const BlogPage = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
   
   useEffect(() => {
     setAnimateItems(true);
+    document.title = "Blog | Culturin";
   }, []);
   
-  // Blog posts data with actual images
-  const blogPosts: BlogPost[] = [
-    {
-      id: 1,
-      title: "5 Strategies to Increase Tour Bookings During Slow Seasons",
-      excerpt: "Learn proven methods to maintain revenue streams even during traditional off-peak periods in tourism.",
-      date: "May 15, 2025",
-      category: "Marketing",
-      image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2000&auto=format&fit=crop"
-    },
-    {
-      id: 2,
-      title: "How Cultural Tour Operators Can Create More Immersive Experiences",
-      excerpt: "Discover how storytelling and local connections can transform standard tours into unforgettable experiences.",
-      date: "May 7, 2025",
-      category: "Experience Design",
-      image: "https://images.unsplash.com/photo-1486718448742-163732cd1544?q=80&w=2000&auto=format&fit=crop"
-    },
-    {
-      id: 3,
-      title: "The Rise of Solo Cultural Tourism: What Operators Need to Know",
-      excerpt: "Solo travel is booming in the cultural tourism sector. Here's how operators can adapt their offerings.",
-      date: "April 29, 2025",
-      category: "Industry Trends",
-      image: "https://images.unsplash.com/photo-1487252665478-49b61b47f302?q=80&w=2000&auto=format&fit=crop"
-    },
-    {
-      id: 4,
-      title: "Using Customer Data to Personalize Cultural Experiences",
-      excerpt: "Learn how smart data collection can help you tailor experiences to your guests' preferences.",
-      date: "April 22, 2025",
-      category: "Technology",
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=2000&auto=format&fit=crop"
-    },
-    {
-      id: 5,
-      title: "Sustainable Cultural Tourism: Balancing Growth with Preservation",
-      excerpt: "Explore strategies for growing your tour business while protecting cultural heritage and local communities.",
-      date: "April 15, 2025",
-      category: "Sustainability",
-      image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?q=80&w=2000&auto=format&fit=crop"
-    },
-    {
-      id: 6,
-      title: "Tour Operator Success Story: Barcelona Food Tours Increases Bookings by 35%",
-      excerpt: "How one cultural tour company transformed their digital presence and saw dramatic growth.",
-      date: "April 8, 2025",
-      category: "Case Study",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2000&auto=format&fit=crop"
-    }
-  ];
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header type="operator" />
@@ -105,13 +46,15 @@ const BlogPage = () => {
                   }`}
                   style={{transitionDelay: `${index * 100}ms`}}
                 >
-                  <div className="aspect-video bg-gray-200">
-                    <img 
-                      src={post.image} 
-                      alt={post.title} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  <Link to={`/blog/${post.slug}`} className="block">
+                    <div className="aspect-video bg-gray-200">
+                      <img 
+                        src={post.image} 
+                        alt={post.title} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </Link>
                   <div className="p-6">
                     <div className="flex items-center text-sm text-gray-500 mb-3">
                       <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
@@ -122,13 +65,20 @@ const BlogPage = () => {
                         <span>{post.date}</span>
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold mb-2">{post.title}</h3>
+                    <Link to={`/blog/${post.slug}`}>
+                      <h3 className="text-xl font-bold mb-2 hover:text-blue-600 transition-colors">
+                        {post.title}
+                      </h3>
+                    </Link>
                     <p className="text-gray-600 mb-4">{post.excerpt}</p>
                     <Button 
                       variant="link" 
                       className="p-0 h-auto font-medium text-blue-600 flex items-center"
+                      asChild
                     >
-                      Read more <ChevronRight className="h-4 w-4 ml-1" />
+                      <Link to={`/blog/${post.slug}`}>
+                        Read more <ChevronRight className="h-4 w-4 ml-1" />
+                      </Link>
                     </Button>
                   </div>
                 </Card>

@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { blogPosts } from "@/data/blogPosts";
 
 interface GuideCardProps {
   title: string;
@@ -60,6 +61,9 @@ const FreeGuidesSection = () => {
     }
   }, [inView]);
 
+  // Get the three most recent blog posts
+  const featuredPosts = blogPosts.slice(0, 3);
+
   return (
     <section ref={ref} className="py-20 bg-white">
       <div className="container mx-auto px-4 max-w-7xl">
@@ -73,9 +77,11 @@ const FreeGuidesSection = () => {
             </p>
           </div>
           <div className="mt-4 md:mt-0">
-            <Button variant="outline" className="border-gray-300 text-gray-700 flex items-center gap-1">
-              Read the blog
-              <ArrowRight className="h-4 w-4" />
+            <Button variant="outline" asChild className="border-gray-300 text-gray-700 flex items-center gap-1">
+              <Link to="/blog">
+                Read the blog
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </Button>
           </div>
         </div>
@@ -83,22 +89,15 @@ const FreeGuidesSection = () => {
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-700 ease-out ${
           animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
-          <GuideCard 
-            title="3 Best Cultural Tour Marketing Ideas For 2025 (with AI Strategies)" 
-            image="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1000&auto=format&fit=crop"
-            link="/blog/tour-marketing-ideas"
-            hasVideo={true}
-          />
-          <GuideCard 
-            title="SEO for Tour Operators is Easier Than You Think (3 Big Wins)" 
-            image="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=1000&auto=format&fit=crop"
-            link="/blog/seo-for-tour-operators"
-          />
-          <GuideCard 
-            title="Buyer's Guide: The Best Cultural Experience Platforms" 
-            image="https://images.unsplash.com/photo-1601934020023-5dc46e485b4b?q=80&w=1000&auto=format&fit=crop"
-            link="/blog/best-cultural-platforms"
-          />
+          {featuredPosts.map((post, index) => (
+            <GuideCard 
+              key={post.id}
+              title={post.title} 
+              image={post.image}
+              link={`/blog/${post.slug}`}
+              hasVideo={index === 0} // Just make the first one a video for variety
+            />
+          ))}
         </div>
       </div>
     </section>
