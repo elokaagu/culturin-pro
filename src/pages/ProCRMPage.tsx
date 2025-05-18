@@ -212,8 +212,8 @@ const GuestDetails = ({ guest, onBack }) => {
       birthday.setFullYear(today.getFullYear() + 1);
     }
     
-    // Calculate days until birthday
-    const daysUntil = Math.ceil((birthday - today) / (1000 * 60 * 60 * 24));
+    // Calculate days until birthday - FIX: Convert to timestamp milliseconds before calculation
+    const daysUntil = Math.ceil((birthday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     
     return {
       type: 'Birthday',
