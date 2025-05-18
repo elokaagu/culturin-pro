@@ -3,8 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Star, Globe, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
 import { 
   Carousel,
   CarouselContent,
@@ -136,6 +137,19 @@ const TrustedOperators = () => {
       category: "Art Experiences"
     }
   ];
+  
+  const carouselRef = useRef<any>(null);
+
+  // Auto-scrolling functionality
+  useEffect(() => {
+    const autoScroll = setInterval(() => {
+      if (carouselRef.current && carouselRef.current.scrollNext) {
+        carouselRef.current.scrollNext();
+      }
+    }, 5000);
+    
+    return () => clearInterval(autoScroll);
+  }, []);
 
   return (
     <section className="py-16 bg-white">
@@ -169,6 +183,7 @@ const TrustedOperators = () => {
         
         <div className="mb-8">
           <Carousel 
+            ref={carouselRef}
             opts={{
               align: "start",
               loop: true,
@@ -203,8 +218,9 @@ const TrustedOperators = () => {
           <Button 
             size="lg" 
             className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+            asChild
           >
-            Book a Demo
+            <Link to="/demo">Book a Demo</Link>
           </Button>
           <p className="text-sm text-gray-500 mt-3">No credit card required. Free 14-day trial.</p>
         </div>
