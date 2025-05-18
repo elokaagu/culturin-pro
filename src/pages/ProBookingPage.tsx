@@ -11,7 +11,7 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Users, CheckCircle, Clock, AlertCircle, Settings, Palette, CreditCard, UserPlus } from "lucide-react";
+import { CalendarIcon, Users, CheckCircle, Clock, AlertCircle, Settings, Palette, CreditCard, UserPlus, Plus } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
