@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,6 +10,7 @@ import { ItineraryType } from '@/data/itineraryData';
 
 const BookingFlowPreview: React.FC = () => {
   const { itineraryId } = useParams<{ itineraryId: string }>();
+  const navigate = useNavigate();
   const [itinerary, setItinerary] = useState<ItineraryType & {
     price?: number;
     rating?: number;
@@ -20,9 +22,9 @@ const BookingFlowPreview: React.FC = () => {
     description: "",
     days: 0,
     storyMode: false,
-    lastUpdated: "", // Added missing property
-    status: "published", // Added missing property
-    image: "", // Added missing property
+    lastUpdated: "",
+    status: "published",
+    image: "",
     price: 149,
     rating: 4.8,
     ratingCount: 126,
@@ -47,26 +49,39 @@ const BookingFlowPreview: React.FC = () => {
   
   useEffect(() => {
     // In a real app, this would fetch from an API
+    setLoading(true);
+    
+    // Simulate API call to fetch itinerary data
     setTimeout(() => {
+      // Try to load the itinerary from localStorage if it exists
+      const allItineraries = JSON.parse(localStorage.getItem('itineraries') || '[]');
+      const foundItinerary = allItineraries.find((item: any) => item.id === itineraryId);
+      
       const mockItinerary: ItineraryType & {
         price?: number;
         rating?: number;
         ratingCount?: number;
         location?: string;
-      } = {
+      } = foundItinerary || {
         id: itineraryId || "sample",
-        title: "Barcelona Cultural Highlights",
-        description: "Experience the best of Barcelona's rich culture, architecture, and cuisine in this immersive tour.",
-        days: 3,
-        storyMode: false,
-        lastUpdated: "2 days ago", // Added missing property
-        status: "published", // Added missing property
-        image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png", // Added missing property
+        title: foundItinerary?.title || "Barcelona Cultural Highlights",
+        description: foundItinerary?.description || "Experience the best of Barcelona's rich culture, architecture, and cuisine in this immersive tour.",
+        days: foundItinerary?.days || 3,
+        storyMode: foundItinerary?.storyMode || false,
+        lastUpdated: foundItinerary?.lastUpdated || "2 days ago",
+        status: "published",
+        image: foundItinerary?.image || "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
         price: 149,
         rating: 4.8,
         ratingCount: 126,
-        location: "Barcelona, Spain",
+        location: foundItinerary?.location || "Barcelona, Spain",
       };
+      
+      // Get website info from localStorage
+      const companyName = localStorage.getItem('websiteCompanyName') || 'Barcelona Cultural Tours';
+      
+      // Add website info to document title
+      document.title = `Book ${mockItinerary.title} - ${companyName}`;
       
       setItinerary(mockItinerary);
       setLoading(false);
@@ -128,6 +143,10 @@ const BookingFlowPreview: React.FC = () => {
   
   const handlePrevStep = () => {
     setStep(step - 1);
+  };
+  
+  const handleClose = () => {
+    navigate(-1); // Go back to previous page
   };
   
   if (loading && step !== 4) {
@@ -241,7 +260,7 @@ const BookingFlowPreview: React.FC = () => {
                   <div className="bg-white rounded-lg border border-gray-200 p-4">
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span>Base price</span>
+                        <span>{itinerary.title}</span>
                         <span>€{itinerary.price} x {guests}</span>
                       </div>
                       <div className="flex justify-between">
@@ -382,7 +401,7 @@ const BookingFlowPreview: React.FC = () => {
                     <div className="border-t border-gray-200 my-4"></div>
                     
                     <div className="flex justify-between">
-                      <span>Base price</span>
+                      <span>{itinerary.title}</span>
                       <span>€{itinerary.price} x {guests}</span>
                     </div>
                     
@@ -535,7 +554,7 @@ const BookingFlowPreview: React.FC = () => {
                     <div className="border-t border-gray-200 my-4"></div>
                     
                     <div className="flex justify-between">
-                      <span>Base price</span>
+                      <span>{itinerary.title}</span>
                       <span>€{itinerary.price} x {guests}</span>
                     </div>
                     
@@ -567,7 +586,7 @@ const BookingFlowPreview: React.FC = () => {
             <div className="space-y-2">
               <h2 className="text-3xl font-bold">Booking Confirmed!</h2>
               <p className="text-gray-600 text-lg">
-                Thank you for your booking. We've sent a confirmation to your email.
+                Thank you for booking {itinerary.title}. We've sent a confirmation to your email.
               </p>
             </div>
             
@@ -618,8 +637,8 @@ const BookingFlowPreview: React.FC = () => {
             </div>
             
             <div>
-              <Button className="mr-2" onClick={() => window.close()}>
-                Close Preview
+              <Button className="mr-2" onClick={handleClose}>
+                Return to Website
               </Button>
               <Button variant="outline">Download Confirmation</Button>
             </div>
@@ -631,16 +650,19 @@ const BookingFlowPreview: React.FC = () => {
     }
   };
   
+  // Get primary color from localStorage for theming
+  const primaryColor = localStorage.getItem('websitePrimaryColor') || '#9b87f5';
+  
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen" style={{'--primary': primaryColor} as React.CSSProperties}>
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <h1 className="text-xl font-bold">Booking Preview</h1>
+              <h1 className="text-xl font-bold">{itinerary.title}</h1>
               <p className="ml-4 text-sm text-gray-500">
-                {itinerary.title}
+                {itinerary.location}
               </p>
             </div>
             
@@ -691,7 +713,7 @@ const BookingFlowPreview: React.FC = () => {
             <div className="flex items-start gap-4">
               <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-md bg-gray-200">
                 <img 
-                  src="https://placehold.co/300x300" 
+                  src={itinerary.image || "https://placehold.co/300x300"} 
                   alt={itinerary.title} 
                   className="w-full h-full object-cover"
                 />
@@ -743,8 +765,7 @@ const BookingFlowPreview: React.FC = () => {
       
       <footer className="bg-white mt-16 border-t py-8">
         <div className="container mx-auto px-4 text-center text-sm text-gray-500">
-          <p>This is a preview of the booking experience</p>
-          <p className="mt-1">© {new Date().getFullYear()} Culturin Pro. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {localStorage.getItem('websiteCompanyName') || 'Culturin Pro'}. All rights reserved.</p>
         </div>
       </footer>
     </div>
