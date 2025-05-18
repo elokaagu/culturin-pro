@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bed, UtensilsCrossed, Camera, Landmark, MapPin, Bus, Navigation, Sun, Moon, Coffee, Music, Ticket, Boat } from 'lucide-react';
+import { Bed, UtensilsCrossed, Camera, Landmark, MapPin, Bus, Navigation, Sun, Moon, Coffee, Music, Ticket, Bot } from 'lucide-react';
 
 interface ModuleLibraryProps {
   isStoryMode?: boolean;
@@ -109,7 +108,7 @@ const ModuleLibrary: React.FC<ModuleLibraryProps> = ({ isStoryMode = false }) =>
       title: 'Journey Segment',
       description: 'Moving from one place to another',
       type: 'Journey',
-      icon: <Boat className="h-4 w-4 text-blue-600" />
+      icon: <Bot className="h-4 w-4 text-blue-600" />
     }
   ];
 
