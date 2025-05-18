@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Search, Calendar, Mail, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const MoreTrafficSection = () => {
@@ -53,28 +53,27 @@ const MoreTrafficSection = () => {
               <Card className="p-8 bg-[#f5f7ff] border-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div>
-                    <h3 className="text-2xl font-medium mb-2 text-gray-500">Show up where it matters most</h3>
-                    <h2 className="text-3xl font-medium mb-6">When travelers search for "heritage food tours in Oaxaca" — they should find you</h2>
-                    <p className="text-lg text-gray-700 mb-4">
-                      Our specialized SEO tools help your cultural experiences stand out on Google, bringing passionate travelers directly to your booking page.
-                    </p>
+                    <h3 className="text-2xl font-medium mb-2 text-gray-500">Be the first result.</h3>
+                    <h2 className="text-3xl font-medium mb-6">When travelers search for food tours in Oaxaca — you should be the one they find.</h2>
+                    
                     <ul className="space-y-3 text-gray-700 mb-8">
                       <li className="flex items-start">
                         <span className="bg-blue-100 text-blue-800 p-1 rounded-full mr-2">✓</span>
-                        <span>SEO-optimized layouts with no extra work — <span className="text-blue-600">no tech skills needed</span></span>
+                        <span><strong>SEO-ready pages, no tech needed</strong></span>
                       </li>
                       <li className="flex items-start">
                         <span className="bg-blue-100 text-blue-800 p-1 rounded-full mr-2">✓</span>
-                        <span>Built for Google and guests: schema + story-driven content</span>
+                        <span><strong>Built to rank on Google</strong></span>
                       </li>
                       <li className="flex items-start">
                         <span className="bg-blue-100 text-blue-800 p-1 rounded-full mr-2">✓</span>
-                        <span>Get found by travelers searching for exactly what you offer</span>
+                        <span><strong>Get 245% more clicks to your listings</strong></span>
                       </li>
                     </ul>
                     
                     <Button className="flex items-center gap-2 bg-blue-100 text-blue-800 hover:bg-blue-200">
-                      Preview a sample SEO listing
+                      <Search className="h-4 w-4" />
+                      Preview SEO listing
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </div>
@@ -109,28 +108,27 @@ const MoreTrafficSection = () => {
               <Card className="p-8 bg-[#f5f7ff] border-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div>
-                    <h3 className="text-2xl font-medium mb-2 text-gray-500">Convert interest to experience</h3>
-                    <h2 className="text-3xl font-medium mb-6">Seamless booking flows designed for cultural experiences</h2>
-                    <p className="text-lg text-gray-700 mb-4">
-                      Our conversion-optimized booking system makes it easy for visitors to book your unique cultural experiences directly.
-                    </p>
+                    <h3 className="text-2xl font-medium mb-2 text-gray-500">Turn browsers into bookings.</h3>
+                    <h2 className="text-3xl font-medium mb-6">Culturin's booking system is made for cultural tours — easy, local, and reliable.</h2>
+                    
                     <ul className="space-y-3 text-gray-700 mb-8">
                       <li className="flex items-start">
                         <span className="bg-green-100 text-green-800 p-1 rounded-full mr-2">✓</span>
-                        <span>Culturally sensitive scheduling and group options</span>
+                        <span><strong>Group-friendly scheduling</strong></span>
                       </li>
                       <li className="flex items-start">
                         <span className="bg-green-100 text-green-800 p-1 rounded-full mr-2">✓</span>
-                        <span>Local payment methods travelers actually use</span>
+                        <span><strong>Local payment methods</strong></span>
                       </li>
                       <li className="flex items-start">
                         <span className="bg-green-100 text-green-800 p-1 rounded-full mr-2">✓</span>
-                        <span>Smart recovery for abandoned cultural experience carts</span>
+                        <span><strong>Smart abandoned cart recovery</strong></span>
                       </li>
                     </ul>
                     
                     <Button className="flex items-center gap-2 bg-green-100 text-green-800 hover:bg-green-200">
-                      See sample booking flows
+                      <Calendar className="h-4 w-4" />
+                      See booking flows
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </div>
@@ -164,28 +162,27 @@ const MoreTrafficSection = () => {
               <Card className="p-8 bg-[#f5f7ff] border-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div>
-                    <h3 className="text-2xl font-medium mb-2 text-gray-500">Turn one-time visitors into lifelong advocates</h3>
-                    <h2 className="text-3xl font-medium mb-6">Build relationships that extend beyond a single tour</h2>
-                    <p className="text-lg text-gray-700 mb-4">
-                      Our culturally-attuned follow-up tools help you maintain authentic connections with past guests, inspiring them to return again and again.
-                    </p>
+                    <h3 className="text-2xl font-medium mb-2 text-gray-500">Turn one-time guests into lifelong fans.</h3>
+                    <h2 className="text-3xl font-medium mb-6">Stay connected after the tour with tools that build trust and repeat bookings.</h2>
+                    
                     <ul className="space-y-3 text-gray-700 mb-8">
                       <li className="flex items-start">
                         <span className="bg-amber-100 text-amber-800 p-1 rounded-full mr-2">✓</span>
-                        <span>Follow-ups that share cultural insights, not just deals</span>
+                        <span><strong>Culturally attuned follow-ups</strong></span>
                       </li>
                       <li className="flex items-start">
                         <span className="bg-amber-100 text-amber-800 p-1 rounded-full mr-2">✓</span>
-                        <span>Exclusive local experiences for returning guests</span>
+                        <span><strong>Personalised local offers</strong></span>
                       </li>
                       <li className="flex items-start">
                         <span className="bg-amber-100 text-amber-800 p-1 rounded-full mr-2">✓</span>
-                        <span>Story-driven review requests that capture authentic feedback</span>
+                        <span><strong>Story-driven review requests</strong></span>
                       </li>
                     </ul>
                     
                     <Button className="flex items-center gap-2 bg-amber-100 text-amber-800 hover:bg-amber-200">
-                      Explore guest retention tools
+                      <Mail className="h-4 w-4" />
+                      Explore retention tools
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </div>
@@ -216,28 +213,27 @@ const MoreTrafficSection = () => {
               <Card className="p-8 bg-[#f5f7ff] border-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div>
-                    <h3 className="text-2xl font-medium mb-2 text-gray-500">Your cultural context, their fingertips</h3>
-                    <h2 className="text-3xl font-medium mb-6">Create digital experiences as rich as your in-person ones</h2>
-                    <p className="text-lg text-gray-700 mb-4">
-                      With Culturin, your guests get a beautifully designed mobile experience that showcases your unique cultural knowledge and stories.
-                    </p>
+                    <h3 className="text-2xl font-medium mb-2 text-gray-500">Give your guests an app they'll actually love.</h3>
+                    <h2 className="text-3xl font-medium mb-6">Culturin turns your stories into a rich digital experience — at their fingertips.</h2>
+                    
                     <ul className="space-y-3 text-gray-700 mb-8">
                       <li className="flex items-start">
                         <span className="bg-purple-100 text-purple-800 p-1 rounded-full mr-2">✓</span>
-                        <span>Custom-branded apps that honor your cultural identity</span>
+                        <span><strong>Custom-branded tour app</strong></span>
                       </li>
                       <li className="flex items-start">
                         <span className="bg-purple-100 text-purple-800 p-1 rounded-full mr-2">✓</span>
-                        <span>Contextual notifications that respect visitor boundaries</span>
+                        <span><strong>Cultural maps + guides</strong></span>
                       </li>
                       <li className="flex items-start">
                         <span className="bg-purple-100 text-purple-800 p-1 rounded-full mr-2">✓</span>
-                        <span>Rich cultural context through interactive maps and guides</span>
+                        <span><strong>Smart, respectful notifications</strong></span>
                       </li>
                     </ul>
                     
                     <Button className="flex items-center gap-2 bg-purple-100 text-purple-800 hover:bg-purple-200">
-                      See sample cultural app
+                      <Smartphone className="h-4 w-4" />
+                      See sample app
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </div>
