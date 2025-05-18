@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -44,7 +43,7 @@ export const Header = ({ type }: HeaderProps) => {
     {
       title: "Booking Management",
       description: "Streamline guest reservations",
-      path: "/product/booking"
+      path: "/product/booking-management"  // Updated path to the new page
     },
     {
       title: "Guest CRM",
