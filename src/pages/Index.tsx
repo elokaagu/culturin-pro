@@ -9,9 +9,6 @@ import OperatorInvitation from "@/components/sections/OperatorInvitation";
 import TravelWithMeSection from "@/components/sections/TravelWithMeSection";
 import JoinCommunity from "@/components/sections/JoinCommunity";
 import TrustedOperators from "@/components/sections/TrustedOperators";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ChartBar } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
 
 const Index = () => {
@@ -31,20 +28,6 @@ const Index = () => {
       <Header type="traveler" />
       <main className="flex-1">
         <Hero />
-        
-        <section className="py-12 bg-gray-50">
-          <div className="container mx-auto text-center">
-            <h2 className="text-2xl font-medium mb-6">Explore Culturin Pro Tools</h2>
-            <div className="flex justify-center gap-4">
-              <Link to="/pro-analytics">
-                <Button className="bg-black text-white flex items-center gap-2">
-                  <ChartBar size={18} />
-                  View Analytics Dashboard
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
         
         {/* Trusted by operators banner */}
         <section className="py-12 bg-white">
