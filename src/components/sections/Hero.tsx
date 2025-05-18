@@ -15,12 +15,7 @@ const Hero = () => {
 
   return (
     <div className="flex flex-col min-h-screen relative bg-white">
-      {/* Notification banner at top */}
-      <div className="bg-black text-white py-3 px-4 text-center">
-        <p className="text-sm font-medium">
-          🎉 BREAKING NEWS: We've just raised $120M. <Link to="/blog" className="underline hover:text-gray-300">Read our memo</Link> &rarr;
-        </p>
-      </div>
+      {/* Removed announcement banner */}
       
       <section className="flex-1 flex flex-col justify-center items-center text-center px-4 pt-24 pb-28 max-w-7xl mx-auto">
         {/* Rating badge */}
