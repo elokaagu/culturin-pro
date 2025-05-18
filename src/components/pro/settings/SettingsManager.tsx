@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import GeneralSettings from './GeneralSettings';
 import NotificationSettings from './NotificationSettings';
@@ -11,40 +11,25 @@ const SettingsManager: React.FC = () => {
   return (
     <div>
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="mb-6 grid grid-cols-5 gap-4 bg-transparent">
-          <TabsTrigger 
-            value="general" 
-            className="data-[state=active]:bg-gray-100 data-[state=active]:shadow-sm"
-          >
+        <TabsList className="mb-6 flex space-x-8 border-b border-gray-200 w-full">
+          <TabsTrigger value="general">
             General
           </TabsTrigger>
-          <TabsTrigger 
-            value="notifications" 
-            className="data-[state=active]:bg-gray-100 data-[state=active]:shadow-sm"
-          >
+          <TabsTrigger value="notifications">
             Notifications
           </TabsTrigger>
-          <TabsTrigger 
-            value="billing" 
-            className="data-[state=active]:bg-gray-100 data-[state=active]:shadow-sm"
-          >
+          <TabsTrigger value="billing">
             Billing
           </TabsTrigger>
-          <TabsTrigger 
-            value="security" 
-            className="data-[state=active]:bg-gray-100 data-[state=active]:shadow-sm"
-          >
+          <TabsTrigger value="security">
             Security
           </TabsTrigger>
-          <TabsTrigger 
-            value="integrations" 
-            className="data-[state=active]:bg-gray-100 data-[state=active]:shadow-sm"
-          >
+          <TabsTrigger value="integrations">
             Integrations
           </TabsTrigger>
         </TabsList>
         
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <div className="bg-white p-6 rounded-lg border border-gray-100">
           <TabsContent value="general">
             <GeneralSettings />
           </TabsContent>

@@ -18,7 +18,7 @@ const FeaturesCatalogue = () => {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="dashboard">
-          <TabsList className="grid grid-cols-3 md:grid-cols-6 mb-6">
+          <TabsList className="flex space-x-6 mb-6 border-b border-gray-200 w-full overflow-x-auto">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="builder">Experience Builder</TabsTrigger>
             <TabsTrigger value="bookings">Booking Management</TabsTrigger>

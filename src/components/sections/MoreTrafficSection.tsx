@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,29 +28,17 @@ const MoreTrafficSection = () => {
         </div>
         
         <Tabs defaultValue="googleTraffic" className="w-full">
-          <TabsList className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 bg-transparent">
-            <TabsTrigger 
-              value="googleTraffic" 
-              className="py-4 border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent rounded-none text-base"
-            >
+          <TabsList className="flex space-x-6 md:space-x-8 mb-8 border-b border-gray-200 w-full overflow-x-auto pb-0">
+            <TabsTrigger value="googleTraffic">
               <span className="text-gray-400 mr-2">1</span> More Google Traffic
             </TabsTrigger>
-            <TabsTrigger 
-              value="onlineSales" 
-              className="py-4 border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent rounded-none text-base"
-            >
+            <TabsTrigger value="onlineSales">
               <span className="text-gray-400 mr-2">2</span> More Online Sales
             </TabsTrigger>
-            <TabsTrigger 
-              value="repeatOrders" 
-              className="py-4 border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent rounded-none text-base"
-            >
+            <TabsTrigger value="repeatOrders">
               <span className="text-gray-400 mr-2">3</span> More Repeat Orders
             </TabsTrigger>
-            <TabsTrigger 
-              value="appDownloads" 
-              className="py-4 border-b-2 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent rounded-none text-base"
-            >
+            <TabsTrigger value="appDownloads">
               <span className="text-gray-400 mr-2">4</span> More App Downloads
             </TabsTrigger>
           </TabsList>
