@@ -1,9 +1,10 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import Footer from "./components/sections/Footer";
+import NewFooter from "./components/sections/NewFooter";
 import OperatorDashboard from "./pages/OperatorDashboard";
 import ForOperators from "./pages/ForOperators";
 import SignIn from "./pages/SignIn";
@@ -61,7 +62,7 @@ const PageWithFooter = ({ Component }) => {
   return (
     <>
       <Component />
-      {!hideFooter && <Footer />}
+      {!hideFooter && <NewFooter />}
     </>
   );
 };
@@ -76,7 +77,7 @@ const App = () => (
         <div className="flex flex-col min-h-screen">
           <div className="flex-grow">
             <Routes>
-              <Route path="/" element={<EntryPoint />} />
+              <Route path="/" element={<PageWithFooter Component={OperatorDashboard} />} />
               <Route path="/operator" element={<PageWithFooter Component={OperatorDashboard} />} />
               <Route path="/for-operators" element={<ForOperators />} />
               <Route path="/sign-in" element={<PageWithFooter Component={SignIn} />} />

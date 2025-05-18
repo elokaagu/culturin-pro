@@ -12,6 +12,7 @@ import TrustedOperators from "@/components/sections/TrustedOperators";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChartBar } from "lucide-react";
+import NewFooter from "@/components/sections/NewFooter";
 
 const Index = () => {
   // Add a smooth scroll effect when the page loads
@@ -78,6 +79,7 @@ const Index = () => {
         <TravelWithMeSection />
         <JoinCommunity />
       </main>
+      <NewFooter />
     </div>
   );
 };
