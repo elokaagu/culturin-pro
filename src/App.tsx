@@ -74,11 +74,14 @@ const EntryPoint = () => {
 const PageWithFooter = ({ Component }) => {
   const location = useLocation();
   
-  // ForOperators, CulturinProPage, and ProDashboardPage already include their own Footer or don't need one
-  const hideFooter = location.pathname === '/for-operators' || 
-                    location.pathname === '/culturin-pro' || 
-                    location.pathname.startsWith('/pro-dashboard') ||
-                    location.pathname === '/pricing';
+  // Pages that already include their own Footer or don't need one
+  const hideFooter = 
+    location.pathname === '/for-operators' || 
+    location.pathname === '/culturin-pro' || 
+    location.pathname.startsWith('/pro-dashboard') ||
+    location.pathname === '/pricing' ||
+    location.pathname === '/contact' ||
+    location.pathname === '/case-studies';
   
   return (
     <>
@@ -102,28 +105,28 @@ const App = () => (
               <Route path="/operator" element={<PageWithFooter Component={OperatorDashboard} />} />
               <Route path="/for-operators" element={<ForOperators />} />
               <Route path="/pricing" element={<PricingPage />} />
-              <Route path="/how-it-works" element={<HowItWorksPage />} />
+              <Route path="/how-it-works" element={<PageWithFooter Component={HowItWorksPage} />} />
               <Route path="/sign-in" element={<SignIn />} />
               <Route path="/culturin-pro" element={<CulturinProPage />} />
-              <Route path="/demo" element={<DemoPage />} />
-              <Route path="/blog" element={<BlogPage />} />
-              <Route path="/blog/:slug" element={<BlogPostPage />} />
-              <Route path="/about-us" element={<OurStoryPage />} />
-              <Route path="/careers" element={<CareersPage />} />
-              <Route path="/careers/open-positions" element={<OpenPositionsPage />} />
-              <Route path="/careers/apply/:jobId" element={<ApplicationPage />} />
-              <Route path="/press" element={<PressPage />} />
+              <Route path="/demo" element={<PageWithFooter Component={DemoPage} />} />
+              <Route path="/blog" element={<PageWithFooter Component={BlogPage} />} />
+              <Route path="/blog/:slug" element={<PageWithFooter Component={BlogPostPage} />} />
+              <Route path="/about-us" element={<PageWithFooter Component={OurStoryPage} />} />
+              <Route path="/careers" element={<PageWithFooter Component={CareersPage} />} />
+              <Route path="/careers/open-positions" element={<PageWithFooter Component={OpenPositionsPage} />} />
+              <Route path="/careers/apply/:jobId" element={<PageWithFooter Component={ApplicationPage} />} />
+              <Route path="/press" element={<PageWithFooter Component={PressPage} />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/faqs" element={<FAQs />} />
-              <Route path="/help-center" element={<HelpCenter />} />
+              <Route path="/faqs" element={<PageWithFooter Component={FAQs} />} />
+              <Route path="/help-center" element={<PageWithFooter Component={HelpCenter} />} />
               <Route path="/case-studies" element={<CaseStudies />} />
-              <Route path="/whats-new" element={<WhatsNewPage />} />
+              <Route path="/whats-new" element={<PageWithFooter Component={WhatsNewPage} />} />
               
               {/* Product Pages */}
-              <Route path="/product/analytics" element={<ProductAnalyticsPage />} />
-              <Route path="/product/booking" element={<ProductBookingPage />} />
-              <Route path="/product/crm" element={<ProductCRMPage />} />
-              <Route path="/product/marketing" element={<ProductMarketingPage />} />
+              <Route path="/product/analytics" element={<PageWithFooter Component={ProductAnalyticsPage} />} />
+              <Route path="/product/booking" element={<PageWithFooter Component={ProductBookingPage} />} />
+              <Route path="/product/crm" element={<PageWithFooter Component={ProductCRMPage} />} />
+              <Route path="/product/marketing" element={<PageWithFooter Component={ProductMarketingPage} />} />
               
               {/* Pro Dashboard Routes */}
               <Route path="/pro-dashboard" element={<ProDashboardPage />} />

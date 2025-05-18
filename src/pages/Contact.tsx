@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import Header from '../components/Header';
-import Footer from '../components/sections/Footer';
+import NewFooter from '../components/sections/NewFooter';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -54,7 +54,7 @@ const Contact = () => {
       
       <main className="pt-24 md:pt-32">
         {/* Hero Section */}
-        <section className="relative bg-culturin-accent text-white py-12 md:py-16 lg:py-20 overflow-hidden">
+        <section className="relative bg-[#9b87f5] text-white py-12 md:py-16 lg:py-20 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
               src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop"
@@ -62,7 +62,7 @@ const Contact = () => {
               className="w-full h-full object-cover opacity-30"
             />
           </div>
-          <div className="container-custom relative z-10">
+          <div className="container mx-auto px-6 max-w-7xl relative z-10">
             <div className="max-w-2xl mx-auto text-center">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Contact Us</h1>
               <p className="text-lg md:text-xl opacity-90">Have questions or feedback? Reach out to our team and we'll get back to you as soon as possible.</p>
@@ -72,7 +72,7 @@ const Contact = () => {
         
         {/* Contact Form Section */}
         <section className="py-12 md:py-16 lg:py-20 bg-white">
-          <div className="container-custom">
+          <div className="container mx-auto px-6 max-w-7xl">
             <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
               {/* Contact Information */}
               <div className="space-y-8">
@@ -86,8 +86,8 @@ const Contact = () => {
                 
                 <div className="space-y-6">
                   <div className="flex items-start">
-                    <div className="bg-gray-100 p-3 rounded-lg mr-4">
-                      <Mail className="w-6 h-6 text-culturin-indigo" />
+                    <div className="bg-[#E5DEFF] p-3 rounded-lg mr-4">
+                      <Mail className="w-6 h-6 text-[#9b87f5]" />
                     </div>
                     <div>
                       <h3 className="font-medium text-lg">Email</h3>
@@ -96,8 +96,8 @@ const Contact = () => {
                   </div>
                   
                   <div className="flex items-start">
-                    <div className="bg-gray-100 p-3 rounded-lg mr-4">
-                      <MessageSquare className="w-6 h-6 text-culturin-indigo" />
+                    <div className="bg-[#E5DEFF] p-3 rounded-lg mr-4">
+                      <MessageSquare className="w-6 h-6 text-[#9b87f5]" />
                     </div>
                     <div>
                       <h3 className="font-medium text-lg">Social Media</h3>
@@ -109,19 +109,19 @@ const Contact = () => {
                   </div>
                   
                   <div className="flex items-start">
-                    <div className="bg-gray-100 p-3 rounded-lg mr-4">
-                      <Info className="w-6 h-6 text-culturin-indigo" />
+                    <div className="bg-[#E5DEFF] p-3 rounded-lg mr-4">
+                      <Info className="w-6 h-6 text-[#9b87f5]" />
                     </div>
                     <div>
                       <h3 className="font-medium text-lg">Support</h3>
-                      <p className="text-gray-600">See our <a href="/faqs" className="text-culturin-indigo hover:underline">FAQs</a> for quick answers to common questions.</p>
+                      <p className="text-gray-600">See our <a href="/faqs" className="text-[#9b87f5] hover:underline">FAQs</a> for quick answers to common questions.</p>
                     </div>
                   </div>
                 </div>
               </div>
               
               {/* Contact Form */}
-              <div className="bg-white rounded-lg shadow-soft p-6 md:p-8">
+              <div className="bg-white rounded-lg shadow-md border border-gray-100 p-6 md:p-8">
                 <h2 className="text-xl md:text-2xl font-bold mb-6">Send Us a Message</h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div>
@@ -183,7 +183,7 @@ const Contact = () => {
                   <div>
                     <Button 
                       type="submit" 
-                      className="w-full bg-culturin-indigo hover:bg-culturin-indigo/80"
+                      className="w-full bg-[#9b87f5] hover:bg-[#9b87f5]/80"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? "Sending..." : "Send Message"}
@@ -196,7 +196,7 @@ const Contact = () => {
         </section>
       </main>
       
-      <Footer />
+      <NewFooter />
     </>
   );
 };

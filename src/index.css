@@ -113,7 +113,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background-color: black;
+  background-color: #9b87f5;
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 0.2s ease-in-out;

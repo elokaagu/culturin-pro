@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import Header from '@/components/Header';
-import Footer from '@/components/sections/Footer';
+import NewFooter from '@/components/sections/NewFooter';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BadgeCheck, ChevronRight, Images } from 'lucide-react';
@@ -124,7 +124,7 @@ const CaseStudies = () => {
       
       <main className="pt-24">
         {/* Hero Section */}
-        <section className="relative bg-culturin-accent text-white py-16 lg:py-24 overflow-hidden">
+        <section className="relative bg-[#9b87f5] text-white py-16 lg:py-24 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
               src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop"
@@ -132,14 +132,14 @@ const CaseStudies = () => {
               className="w-full h-full object-cover opacity-40"
             />
           </div>
-          <div className="container-custom relative z-10">
+          <div className="container mx-auto px-6 max-w-7xl relative z-10">
             <div className="max-w-3xl">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Case Studies</h1>
               <p className="text-lg md:text-xl opacity-90 mb-6">
                 Discover how tour operators and cultural experience hosts around the world are growing their businesses with Culturin.
               </p>
               <Button 
-                className="bg-white text-culturin-indigo hover:bg-white/90"
+                className="bg-white text-[#9b87f5] hover:bg-white/90"
                 onClick={() => window.location.href = "/demo"}
               >
                 Get Started Free
@@ -150,7 +150,7 @@ const CaseStudies = () => {
         
         {/* Case Studies Content */}
         <section ref={ref} className="py-16 bg-white">
-          <div className="container-custom">
+          <div className="container mx-auto px-6 max-w-7xl">
             {selectedCaseStudy ? (
               // Detailed Case Study View
               <div className="animate-fade-in">
@@ -298,7 +298,7 @@ const CaseStudies = () => {
                   {filteredCaseStudies.map((study) => (
                     <Card 
                       key={study.id}
-                      className={`overflow-hidden h-full hover:shadow-lg transition-all cursor-pointer ${
+                      className={`overflow-hidden h-full hover:shadow-lg transition-all cursor-pointer border border-gray-100 ${
                         inView ? 'animate-fade-in' : 'opacity-0'
                       }`}
                       onClick={() => handleCaseStudyClick(study)}
@@ -321,13 +321,13 @@ const CaseStudies = () => {
                             {study.tags.slice(0, 2).map((tag) => (
                               <span 
                                 key={tag}
-                                className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs"
+                                className="bg-[#E5DEFF] text-[#9b87f5] px-2 py-1 rounded text-xs"
                               >
                                 {tag}
                               </span>
                             ))}
                           </div>
-                          <span className="text-culturin-indigo flex items-center text-sm">
+                          <span className="text-[#9b87f5] flex items-center text-sm font-medium">
                             Read more <ChevronRight className="h-4 w-4 ml-1" />
                           </span>
                         </div>
@@ -355,8 +355,8 @@ const CaseStudies = () => {
         </section>
         
         {/* CTA Section */}
-        <section className="bg-gray-50 py-16">
-          <div className="container-custom">
+        <section className="bg-[#F8F7FF] py-16">
+          <div className="container mx-auto px-6 max-w-7xl">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to achieve similar results?</h2>
               <p className="text-gray-600 mb-8">
@@ -364,14 +364,14 @@ const CaseStudies = () => {
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button 
-                  className="bg-culturin-indigo hover:bg-culturin-indigo/90 text-white"
+                  className="bg-[#9b87f5] hover:bg-[#9b87f5]/90 text-white"
                   onClick={() => window.location.href = "/demo"}
                 >
                   Get a Free Demo
                 </Button>
                 <Button 
                   variant="outline"
-                  className="border-culturin-indigo text-culturin-indigo"
+                  className="border-[#9b87f5] text-[#9b87f5]"
                   onClick={() => window.location.href = "/contact"}
                 >
                   Talk to Sales
@@ -382,7 +382,7 @@ const CaseStudies = () => {
         </section>
       </main>
       
-      <Footer />
+      <NewFooter />
     </>
   );
 };
