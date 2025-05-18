@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChartBar, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -118,25 +118,73 @@ export const Header = ({ type }: HeaderProps) => {
                   </Link>
                 </li>
                 <li>
-                  <Link 
-                    to="/pro-analytics" 
-                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors flex items-center"
-                  >
-                    <ChartBar size={16} className="mr-1" />
-                    Analytics
-                  </Link>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="flex items-center font-medium text-gray-800 hover:text-gray-600 transition-colors focus:outline-none">
+                      Company <ChevronDown className="ml-1 h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2">
+                      <DropdownMenuItem asChild>
+                        <Link to="/about-us" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <span className="font-medium">Our Story</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/about-us#careers" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <span className="font-medium">Careers</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/about-us#press" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <span className="font-medium">Press</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/reviews" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <span className="font-medium">Reviews</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </li>
+                <li>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="flex items-center font-medium text-gray-800 hover:text-gray-600 transition-colors focus:outline-none">
+                      Resources <ChevronDown className="ml-1 h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2">
+                      <DropdownMenuItem asChild>
+                        <Link to="/blog" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <span className="font-medium">Blog</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/help-center" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <span className="font-medium">Help Center</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/case-studies" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <span className="font-medium">Case Studies</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/support-center" className="flex items-start p-3 rounded-md hover:bg-gray-100">
+                          <span className="font-medium">Support Center</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </li>
               </ul>
             </nav>
             
             <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost"
-                className="font-medium text-gray-800 hover:text-gray-600"
-                onClick={() => navigate('/sign-in')}
+              <Link 
+                to="/sign-in"
+                className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
               >
                 Login
-              </Button>
+              </Link>
               
               <Button 
                 className="bg-blue-600 hover:bg-blue-700 font-medium"
@@ -177,26 +225,40 @@ export const Header = ({ type }: HeaderProps) => {
               </li>
               <li><Link to="/for-operators" className="block py-2 font-medium text-gray-800">Pricing</Link></li>
               <li><Link to="/operator" className="block py-2 font-medium text-gray-800">How it works</Link></li>
-              <li>
-                <Link 
-                  to="/pro-analytics" 
-                  className="block py-2 font-medium text-gray-800 flex items-center"
-                >
-                  <ChartBar size={16} className="mr-1" />
-                  Analytics
-                </Link>
+              
+              <li className="py-2">
+                <button className="flex items-center justify-between w-full font-medium text-gray-800">
+                  <span>Company</span>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="pl-4 mt-2 space-y-2 border-l-2 border-gray-100">
+                  <Link to="/about-us" className="block py-1 text-sm">Our Story</Link>
+                  <Link to="/about-us#careers" className="block py-1 text-sm">Careers</Link>
+                  <Link to="/about-us#press" className="block py-1 text-sm">Press</Link>
+                  <Link to="/reviews" className="block py-1 text-sm">Reviews</Link>
+                </div>
               </li>
+              
+              <li className="py-2">
+                <button className="flex items-center justify-between w-full font-medium text-gray-800">
+                  <span>Resources</span>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                <div className="pl-4 mt-2 space-y-2 border-l-2 border-gray-100">
+                  <Link to="/blog" className="block py-1 text-sm">Blog</Link>
+                  <Link to="/help-center" className="block py-1 text-sm">Help Center</Link>
+                  <Link to="/case-studies" className="block py-1 text-sm">Case Studies</Link>
+                  <Link to="/support-center" className="block py-1 text-sm">Support Center</Link>
+                </div>
+              </li>
+              
               <li className="pt-2 border-t border-gray-100 mt-2">
-                <Button 
-                  className="w-full text-sm mt-2"
-                  variant="outline"
-                  onClick={() => {
-                    navigate('/sign-in');
-                    setIsMenuOpen(false);
-                  }}
+                <Link 
+                  to="/sign-in"
+                  className="block py-2 font-medium text-gray-800"
                 >
                   Login
-                </Button>
+                </Link>
               </li>
               <li>
                 <Button 
