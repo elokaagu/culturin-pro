@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import ProDashboardLayout from '@/components/pro/ProDashboardLayout';
 import AnalyticsOverviewCards from '@/components/pro/analytics/AnalyticsOverviewCards';
 import RevenueChart from '@/components/pro/analytics/RevenueChart';
@@ -9,6 +9,8 @@ import RatingsTrendsChart from '@/components/pro/analytics/RatingsTrendsChart';
 import AnalyticsFilter from '@/components/pro/analytics/AnalyticsFilter';
 
 const ProAnalyticsPage: React.FC = () => {
+  const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>("30days");
+  
   return (
     <ProDashboardLayout>
       <div className="space-y-8">
@@ -19,7 +21,10 @@ const ProAnalyticsPage: React.FC = () => {
               Track performance metrics and make data-driven decisions for your experiences
             </p>
           </div>
-          <AnalyticsFilter />
+          <AnalyticsFilter 
+            timeFrame={selectedTimeFrame} 
+            onTimeFrameChange={setSelectedTimeFrame} 
+          />
         </div>
         
         {/* Overview Cards */}
