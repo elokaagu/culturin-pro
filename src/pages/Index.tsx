@@ -2,8 +2,6 @@
 import { useEffect } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/sections/Hero";
-import HowItWorksSection from "@/components/sections/HowItWorksSection";
-import FeaturesSection from "@/components/sections/FeaturesSection";
 import BigBrandsTechSection from "@/components/sections/BigBrandsTechSection";
 import FreeGuidesSection from "@/components/sections/FreeGuidesSection";
 import NewFooter from "@/components/sections/NewFooter";
@@ -27,11 +25,9 @@ const Index = () => {
       <Header type="traveler" />
       <main className="flex-1">
         <Hero />
-        <HowItWorksSection />
         <MoreTrafficSection />
         <BigBrandsTechSection />
         <TrustedOperators />
-        <FeaturesSection />
         <FreeGuidesSection />
       </main>
       <NewFooter />
