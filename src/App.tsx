@@ -33,6 +33,7 @@ import ProItineraryPage from './pages/ProItineraryPage';
 import ProWebsitePage from './pages/ProWebsitePage';
 import ProSettingsPage from './pages/ProSettingsPage';
 import TourOperatorWebsitePage from './pages/TourOperatorWebsitePage';
+import ForOperators from './pages/ForOperators';
 import { Toaster } from "@/components/ui/toaster";
 
 function App() {
@@ -53,6 +54,7 @@ function App() {
         <Route path="/owner" element={<Owner />} />
         <Route path="/traveler" element={<Traveler />} />
         <Route path="/operator" element={<OperatorDashboard />} />
+        <Route path="/for-operators" element={<ForOperators />} />
         <Route path="/product/analytics" element={<ProductAnalyticsPage />} />
         <Route path="/product/booking" element={<ProductBookingPage />} />
         <Route path="/product/booking/:id" element={<ProductBookingPage />} />
