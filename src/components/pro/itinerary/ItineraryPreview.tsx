@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Save, Eye } from 'lucide-react';
+import { Save, Eye, ExternalLink } from 'lucide-react';
 import { ItineraryType } from '@/data/itineraryData';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/components/ui/use-toast';
+import { Link } from 'react-router-dom';
 import { 
   Bed, UtensilsCrossed, Camera, Landmark, MapPin, Bus, 
   Navigation, Sun, Moon, Coffee, Music, Ticket, Bot
@@ -171,6 +172,11 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({ itinerary, onSaveCh
           </div>
           <Button size="sm" onClick={handleSaveChanges}>
             <Save className="h-4 w-4 mr-1" /> Save Changes
+          </Button>
+          <Button size="sm" variant="outline" asChild>
+            <Link to="/product/booking" target="_blank">
+              <ExternalLink className="h-4 w-4 mr-1" /> Preview Booking
+            </Link>
           </Button>
         </div>
       </div>
