@@ -11,7 +11,8 @@ import {
   Settings,
   Crown,
   Megaphone,
-  Globe
+  Globe,
+  Home
 } from "lucide-react";
 
 const menuItems = [
@@ -94,6 +95,15 @@ const ProSidebar: React.FC = () => {
             <p className="text-xs text-gray-500">{planType}</p>
           </div>
         </div>
+        
+        {/* Back to Culturin Home link */}
+        <button
+          onClick={() => navigate('/')}
+          className="mt-4 flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-colors text-sm text-blue-600 hover:bg-blue-50 border border-blue-100"
+        >
+          <Home className="h-4 w-4" />
+          <span>Back to Culturin Home</span>
+        </button>
       </div>
     </div>
   );
