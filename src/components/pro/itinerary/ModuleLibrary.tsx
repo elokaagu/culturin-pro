@@ -1,12 +1,20 @@
 
 import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const ModuleLibrary: React.FC = () => {
-  const categories = ['All', 'Transport', 'Accommodation', 'Activities', 'Food', 'Media'];
+  const categories = ['All', 'Transport', 'Accommodation', 'Activities', 'Food', 'Media', 'Upsells'];
   const [filter, setFilter] = useState('All');
+  
+  // Handle drag start event
+  const handleDragStart = (e: React.DragEvent, module: string, type: string) => {
+    e.dataTransfer.setData('moduleType', type);
+    e.dataTransfer.setData('moduleName', module);
+  };
   
   return (
     <div className="h-full flex flex-col">
@@ -48,11 +56,42 @@ const ModuleLibrary: React.FC = () => {
           
           <TabsContent value="blocks">
             <div className="space-y-4">
-              <ModuleGroup title="Transport" modules={['Flight', 'Train', 'Private Transfer', 'Public Transit']} />
-              <ModuleGroup title="Accommodation" modules={['Hotel', 'Traditional Stay', 'Boutique', 'Home Stay']} />
-              <ModuleGroup title="Activities" modules={['Cultural Experience', 'Guided Tour', 'Workshop', 'Free Time']} />
-              <ModuleGroup title="Food" modules={['Restaurant', 'Street Food', 'Cooking Class', 'Market Visit']} />
-              <ModuleGroup title="Media" modules={['Photo Gallery', 'Video', 'Audio Guide', 'Interactive Map']} />
+              <ModuleGroup 
+                title="Transport" 
+                modules={['Flight', 'Train', 'Private Transfer', 'Public Transit']} 
+                onDragStart={handleDragStart}
+                type="transport"
+              />
+              <ModuleGroup 
+                title="Accommodation" 
+                modules={['Hotel', 'Traditional Stay', 'Boutique', 'Home Stay']} 
+                onDragStart={handleDragStart}
+                type="accommodation"
+              />
+              <ModuleGroup 
+                title="Activities" 
+                modules={['Cultural Experience', 'Guided Tour', 'Workshop', 'Free Time']} 
+                onDragStart={handleDragStart}
+                type="activity"
+              />
+              <ModuleGroup 
+                title="Food" 
+                modules={['Restaurant', 'Street Food', 'Cooking Class', 'Market Visit']} 
+                onDragStart={handleDragStart}
+                type="food"
+              />
+              <ModuleGroup 
+                title="Media" 
+                modules={['Photo Gallery', 'Video', 'Audio Guide', 'Interactive Map']} 
+                onDragStart={handleDragStart}
+                type="media"
+              />
+              <ModuleGroup 
+                title="Upsells" 
+                modules={['Tea Ceremony', 'Private Guide', 'Photography Session', 'Local Elder Meeting', 'Special Dinner']} 
+                onDragStart={handleDragStart}
+                type="upsell"
+              />
             </div>
           </TabsContent>
           
@@ -61,6 +100,7 @@ const ModuleLibrary: React.FC = () => {
               <TemplateItem title="Full Day Template" description="Morning, lunch, afternoon activity, dinner" />
               <TemplateItem title="Arrival Day" description="Airport transfer, hotel check-in, welcome dinner" />
               <TemplateItem title="Cultural Immersion" description="Workshop, local meal, guided neighborhood walk" />
+              <TemplateItem title="Checkout Experience" description="Personalized farewell, memory book, follow-up" />
             </div>
           </TabsContent>
           
@@ -78,9 +118,11 @@ const ModuleLibrary: React.FC = () => {
 interface ModuleGroupProps {
   title: string;
   modules: string[];
+  type: string;
+  onDragStart: (e: React.DragEvent, module: string, type: string) => void;
 }
 
-const ModuleGroup: React.FC<ModuleGroupProps> = ({ title, modules }) => {
+const ModuleGroup: React.FC<ModuleGroupProps> = ({ title, modules, onDragStart, type }) => {
   return (
     <div>
       <h4 className="text-xs font-medium text-gray-500 mb-2">{title}</h4>
@@ -88,10 +130,12 @@ const ModuleGroup: React.FC<ModuleGroupProps> = ({ title, modules }) => {
         {modules.map((module) => (
           <div 
             key={module} 
-            className="border rounded p-2 text-xs cursor-move hover:bg-gray-50 hover:border-gray-400 transition-colors"
+            className="border rounded p-2 text-xs cursor-move hover:bg-gray-50 hover:border-gray-400 transition-colors flex items-center justify-between"
             draggable
+            onDragStart={(e) => onDragStart(e, module, type)}
           >
-            {module}
+            <span>{module}</span>
+            {type === 'upsell' && <Badge className="bg-green-100 text-green-800 text-[10px] px-1">Upsell</Badge>}
           </div>
         ))}
       </div>
