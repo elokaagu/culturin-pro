@@ -3,8 +3,11 @@ import { ArrowRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "@/components/ui/image";
+import { useNavigate } from "react-router-dom";
 
 const GoogleTrafficTab = () => {
+  const navigate = useNavigate();
+  
   return (
     <Card className="p-8 bg-[#f5f7ff] border-0">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -27,7 +30,10 @@ const GoogleTrafficTab = () => {
             </li>
           </ul>
           
-          <Button className="flex items-center gap-2 bg-blue-100 text-blue-800 hover:bg-blue-200">
+          <Button 
+            className="flex items-center gap-2 bg-blue-100 text-blue-800 hover:bg-blue-200"
+            onClick={() => navigate('/pro-dashboard/analytics')}
+          >
             <Search className="h-4 w-4" />
             Preview SEO listing
             <ArrowRight className="h-4 w-4" />

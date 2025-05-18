@@ -3,8 +3,11 @@ import { ArrowRight, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "@/components/ui/image";
+import { useNavigate } from "react-router-dom";
 
 const OnlineSalesTab = () => {
+  const navigate = useNavigate();
+  
   return (
     <Card className="p-8 bg-[#f5f7ff] border-0">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -27,7 +30,10 @@ const OnlineSalesTab = () => {
             </li>
           </ul>
           
-          <Button className="flex items-center gap-2 bg-green-100 text-green-800 hover:bg-green-200">
+          <Button 
+            className="flex items-center gap-2 bg-green-100 text-green-800 hover:bg-green-200"
+            onClick={() => navigate('/product/booking-management')}
+          >
             <Calendar className="h-4 w-4" />
             See booking flows
             <ArrowRight className="h-4 w-4" />

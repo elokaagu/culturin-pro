@@ -3,8 +3,11 @@ import { ArrowRight, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Image from "@/components/ui/image";
+import { useNavigate } from "react-router-dom";
 
 const AppDownloadsTab = () => {
+  const navigate = useNavigate();
+  
   return (
     <Card className="p-8 bg-[#f5f7ff] border-0">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -27,7 +30,10 @@ const AppDownloadsTab = () => {
             </li>
           </ul>
           
-          <Button className="flex items-center gap-2 bg-purple-100 text-purple-800 hover:bg-purple-200">
+          <Button 
+            className="flex items-center gap-2 bg-purple-100 text-purple-800 hover:bg-purple-200"
+            onClick={() => navigate('/pro-dashboard/marketing')}
+          >
             <Smartphone className="h-4 w-4" />
             See sample app
             <ArrowRight className="h-4 w-4" />
