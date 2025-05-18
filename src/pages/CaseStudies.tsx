@@ -119,10 +119,10 @@ const CaseStudies = () => {
   };
   
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Header type="traveler" />
       
-      <main className="pt-24">
+      <main className="flex-grow pt-24">
         {/* Hero Section */}
         <section className="relative bg-[#9b87f5] text-white py-16 lg:py-24 overflow-hidden">
           <div className="absolute inset-0 z-0">
@@ -156,7 +156,7 @@ const CaseStudies = () => {
               <div className="animate-fade-in">
                 <Button 
                   variant="ghost" 
-                  className="mb-6 text-culturin-indigo"
+                  className="mb-6 text-[#9b87f5]"
                   onClick={() => setSelectedCaseStudy(null)}
                 >
                   ← Back to all case studies
@@ -197,7 +197,7 @@ const CaseStudies = () => {
                   </div>
                   
                   <div className="lg:col-span-1">
-                    <Card className="bg-gray-50 border-0">
+                    <Card className="bg-gray-50 border-0 shadow-soft">
                       <CardContent className="p-6">
                         <div className="mb-8">
                           <p className="text-lg italic mb-4">"{selectedCaseStudy.testimonial.quote}"</p>
@@ -216,7 +216,7 @@ const CaseStudies = () => {
                             {selectedCaseStudy.tags.map(tag => (
                               <span 
                                 key={tag} 
-                                className="bg-gray-200 text-gray-700 px-2 py-1 rounded-md text-sm"
+                                className="bg-[#E5DEFF] text-[#9b87f5] px-3 py-1 rounded-full text-sm"
                               >
                                 {tag}
                               </span>
@@ -226,7 +226,7 @@ const CaseStudies = () => {
                         
                         <div className="mt-8">
                           <Button 
-                            className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90"
+                            className="w-full bg-[#9b87f5] hover:bg-[#9b87f5]/90 text-white"
                             onClick={() => window.location.href = "/demo"}
                           >
                             Get similar results
@@ -246,7 +246,7 @@ const CaseStudies = () => {
                       .map(study => (
                         <Card 
                           key={study.id}
-                          className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                          className="overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer border border-gray-100"
                           onClick={() => handleCaseStudyClick(study)}
                         >
                           <div className="aspect-video">
@@ -278,17 +278,21 @@ const CaseStudies = () => {
                 </div>
                 
                 <Tabs defaultValue="all" className="mb-12">
-                  <TabsList className="justify-center">
-                    <TabsTrigger value="all" onClick={() => setSelectedCategory('all')}>
+                  <TabsList className="justify-center mb-8 border-b border-gray-200 w-full gap-6">
+                    <TabsTrigger value="all" onClick={() => setSelectedCategory('all')}
+                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#9b87f5] data-[state=active]:text-[#9b87f5] transition-all duration-200">
                       All Categories
                     </TabsTrigger>
-                    <TabsTrigger value="food-tours" onClick={() => setSelectedCategory('food-tours')}>
+                    <TabsTrigger value="food-tours" onClick={() => setSelectedCategory('food-tours')}
+                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#9b87f5] data-[state=active]:text-[#9b87f5] transition-all duration-200">
                       Food Tours
                     </TabsTrigger>
-                    <TabsTrigger value="walking-tours" onClick={() => setSelectedCategory('walking-tours')}>
+                    <TabsTrigger value="walking-tours" onClick={() => setSelectedCategory('walking-tours')}
+                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#9b87f5] data-[state=active]:text-[#9b87f5] transition-all duration-200">
                       Walking Tours
                     </TabsTrigger>
-                    <TabsTrigger value="culinary-experiences" onClick={() => setSelectedCategory('culinary-experiences')}>
+                    <TabsTrigger value="culinary-experiences" onClick={() => setSelectedCategory('culinary-experiences')}
+                      className="pb-2 px-4 text-base data-[state=active]:border-b-2 data-[state=active]:border-[#9b87f5] data-[state=active]:text-[#9b87f5] transition-all duration-200">
                       Culinary
                     </TabsTrigger>
                   </TabsList>
@@ -298,7 +302,7 @@ const CaseStudies = () => {
                   {filteredCaseStudies.map((study) => (
                     <Card 
                       key={study.id}
-                      className={`overflow-hidden h-full hover:shadow-lg transition-all cursor-pointer border border-gray-100 ${
+                      className={`overflow-hidden h-full hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-100 ${
                         inView ? 'animate-fade-in' : 'opacity-0'
                       }`}
                       onClick={() => handleCaseStudyClick(study)}
@@ -321,7 +325,7 @@ const CaseStudies = () => {
                             {study.tags.slice(0, 2).map((tag) => (
                               <span 
                                 key={tag}
-                                className="bg-[#E5DEFF] text-[#9b87f5] px-2 py-1 rounded text-xs"
+                                className="bg-[#E5DEFF] text-[#9b87f5] px-3 py-1 rounded-full text-xs"
                               >
                                 {tag}
                               </span>
@@ -383,7 +387,7 @@ const CaseStudies = () => {
       </main>
       
       <NewFooter />
-    </>
+    </div>
   );
 };
 

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -70,23 +69,35 @@ const EntryPoint = () => {
   return <Navigate to="/" replace />;
 };
 
+// This list contains routes that already include their own footer
+const routesWithOwnFooters = [
+  '/for-operators',
+  '/culturin-pro', 
+  '/pricing'
+];
+
+// This list contains routes that don't need a footer
+const routesWithNoFooter = [
+  '/sign-in'
+];
+
+// Routes that start with these prefixes don't need a footer
+const prefixesWithNoFooter = [
+  '/pro-dashboard'
+];
+
 // Page wrapper component to control footer display
 const PageWithFooter = ({ Component }) => {
   const location = useLocation();
   
-  // Pages that already include their own Footer or don't need one
-  const hideFooter = 
-    location.pathname === '/for-operators' || 
-    location.pathname === '/culturin-pro' || 
-    location.pathname.startsWith('/pro-dashboard') ||
-    location.pathname === '/pricing' ||
-    location.pathname === '/contact' ||
-    location.pathname === '/case-studies';
+  const hasOwnFooter = routesWithOwnFooters.includes(location.pathname);
+  const needsNoFooter = routesWithNoFooter.includes(location.pathname) || 
+    prefixesWithNoFooter.some(prefix => location.pathname.startsWith(prefix));
   
   return (
     <>
       <Component />
-      {!hideFooter && <NewFooter />}
+      {!hasOwnFooter && !needsNoFooter && <NewFooter />}
     </>
   );
 };

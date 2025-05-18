@@ -49,10 +49,10 @@ const Contact = () => {
   };
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Header type="traveler" />
       
-      <main className="pt-24 md:pt-32">
+      <main className="flex-grow pt-24 md:pt-32">
         {/* Hero Section */}
         <section className="relative bg-[#9b87f5] text-white py-12 md:py-16 lg:py-20 overflow-hidden">
           <div className="absolute inset-0 z-0">
@@ -197,7 +197,7 @@ const Contact = () => {
       </main>
       
       <NewFooter />
-    </>
+    </div>
   );
 };
 
