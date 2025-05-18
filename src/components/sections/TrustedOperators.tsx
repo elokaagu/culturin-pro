@@ -34,7 +34,7 @@ const TestimonialCard = ({ name, company, quote, image }: TestimonialCardProps) 
 const TrustedOperators = () => {
   return (
     <section className="py-16 bg-white">
-      <div className="container-custom">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-3">
             <Users className="h-6 w-6 text-black mr-2" />
