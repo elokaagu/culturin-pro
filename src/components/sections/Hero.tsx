@@ -67,12 +67,72 @@ const Hero = () => {
           </div>
         </div>
 
-        <div className="mt-16 w-full max-w-5xl">
-          <img 
-            src="/lovable-uploads/90db897a-9b44-4eb3-87cd-585b37891618.png"
-            alt="Mobile app showcase"
-            className="w-full h-auto object-contain"
-          />
+        <div className="mt-16 w-full max-w-5xl flex flex-col md:flex-row items-center justify-center gap-8">
+          {/* Mobile mockup display */}
+          <div className="w-full md:w-1/2 relative">
+            <div className="relative mx-auto" style={{ maxWidth: "280px" }}>
+              {/* Phone frame */}
+              <div className="relative z-10 border-8 border-black rounded-[36px] overflow-hidden shadow-xl">
+                <div className="aspect-[9/19]">
+                  <img 
+                    src="/lovable-uploads/8be44817-c794-41ca-a731-2e013805f703.png" 
+                    alt="Culturin Pro mobile app" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {/* Notch */}
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1/3 h-5 bg-black rounded-b-lg"></div>
+              </div>
+              {/* Glow effect */}
+              <div className="absolute -bottom-4 -left-4 -right-4 h-36 bg-gradient-to-t from-blue-500/30 to-transparent rounded-full blur-2xl z-0"></div>
+            </div>
+          </div>
+          
+          {/* App highlights */}
+          <div className="w-full md:w-1/2 space-y-5 text-left">
+            <div className="flex items-start gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 shrink-0 mt-1">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+                  <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-medium text-lg">Real-time Analytics</h3>
+                <p className="text-gray-600 text-sm">Track bookings and customer engagement with detailed analytics</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 shrink-0 mt-1">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 7h-9"></path>
+                  <path d="M14 17H5"></path>
+                  <circle cx="17" cy="17" r="3"></circle>
+                  <circle cx="7" cy="7" r="3"></circle>
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-medium text-lg">Booking Management</h3>
+                <p className="text-gray-600 text-sm">Handle reservations, payments, and guest communications in one place</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-100 text-purple-600 shrink-0 mt-1">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <path d="M16 2v4"></path>
+                  <path d="M8 2v4"></path>
+                  <path d="M3 10h18"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-medium text-lg">Itinerary Builder</h3>
+                <p className="text-gray-600 text-sm">Create and share beautiful itineraries with your guests</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
