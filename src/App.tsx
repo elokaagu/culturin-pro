@@ -8,7 +8,7 @@ import Pricing from './pages/Pricing';
 import HowItWorks from './pages/HowItWorks';
 import AboutUs from './pages/AboutUs';
 import Careers from './pages/Careers';
-import Press from './pages/PressPage';
+import Press from './pages/Press';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import HelpCenter from './pages/HelpCenter';
@@ -39,6 +39,7 @@ import { Toaster } from "@/components/ui/toaster";
 import OpenPositionsPage from './pages/careers/OpenPositionsPage';
 import ApplicationPage from './pages/careers/ApplicationPage';
 import PressArticlePage from './pages/PressArticlePage';
+import OurStoryPage from './pages/OurStoryPage';
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/our-story" element={<OurStoryPage />} />
         <Route path="/careers" element={<Careers />} />
         <Route path="/careers/open-positions" element={<OpenPositionsPage />} />
         <Route path="/careers/apply/:jobId" element={<ApplicationPage />} />
