@@ -6,7 +6,6 @@ import { Laptop, Smartphone, Tablet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { ItineraryType } from '@/data/itineraryData';
-import Image from '@/components/ui/image';
 
 interface WebsitePreviewProps {
   itineraries?: ItineraryType[];
@@ -16,6 +15,8 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({ itineraries = [] }) => 
   const [viewMode, setViewMode] = React.useState('desktop');
   const primaryColor = localStorage.getItem('websitePrimaryColor') || '#9b87f5';
   const headerImage = localStorage.getItem('websiteHeaderImage') || null;
+  const companyName = localStorage.getItem('websiteCompanyName') || 'Barcelona Cultural Tours';
+  const tagline = localStorage.getItem('websiteTagline') || 'Authentic cultural experiences';
   
   return (
     <div className="space-y-4">
@@ -77,8 +78,10 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({ itineraries = [] }) => 
                     </div>
                   )}
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                    <div className="h-6 w-64 rounded bg-white bg-opacity-90"></div>
-                    <div className="h-4 w-48 rounded bg-white bg-opacity-80 mt-2"></div>
+                    <div className="text-white text-center">
+                      <h1 className="text-xl font-bold">{companyName}</h1>
+                      <p className="text-sm mt-1">{tagline}</p>
+                    </div>
                   </div>
                 </div>
 
@@ -92,7 +95,10 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({ itineraries = [] }) => 
                   </div>
                   
                   {/* Tours grid */}
-                  <div className="grid grid-cols-3 gap-4 mb-4">
+                  <div className={cn(
+                    "grid gap-4 mb-4",
+                    viewMode === 'mobile' ? "grid-cols-1" : "grid-cols-3"
+                  )}>
                     {itineraries.slice(0, 3).map((item, index) => (
                       <div key={item.id || index} className="h-32 rounded bg-gray-200 relative overflow-hidden">
                         {item.image && <img src={item.image} alt={item.title} className="w-full h-full object-cover"/>}

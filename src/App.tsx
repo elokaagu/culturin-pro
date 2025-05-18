@@ -32,6 +32,7 @@ import ProMarketingPage from './pages/ProMarketingPage';
 import ProItineraryPage from './pages/ProItineraryPage';
 import ProWebsitePage from './pages/ProWebsitePage';
 import ProSettingsPage from './pages/ProSettingsPage';
+import TourOperatorWebsitePage from './pages/TourOperatorWebsitePage';
 import { Toaster } from "@/components/ui/toaster";
 
 function App() {
@@ -70,6 +71,10 @@ function App() {
         <Route path="/pro-dashboard/itinerary" element={<ProItineraryPage />} />
         <Route path="/pro-dashboard/website" element={<ProWebsitePage />} />
         <Route path="/pro-dashboard/settings" element={<ProSettingsPage />} />
+        
+        {/* Dynamic routes for tour operator websites */}
+        <Route path="/tour/:slug" element={<TourOperatorWebsitePage />} />
+        <Route path="/tour/:slug/*" element={<TourOperatorWebsitePage />} />
       </Routes>
       <Toaster />
     </BrowserRouter>

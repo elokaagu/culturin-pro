@@ -14,7 +14,10 @@ import { sampleItineraries, ItineraryType } from '@/data/itineraryData';
 const WebsiteBuilder: React.FC = () => {
   const [publishLoading, setPublishLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
-  const [publishedUrl, setPublishedUrl] = useState("tour/demo");
+  const [publishedUrl, setPublishedUrl] = useState(() => {
+    const storedUrl = localStorage.getItem('publishedWebsiteUrl');
+    return storedUrl || "tour/demo";
+  });
   const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
   const navigate = useNavigate();
   
@@ -36,10 +39,17 @@ const WebsiteBuilder: React.FC = () => {
   const handlePublish = () => {
     setPublishLoading(true);
     
+    // Generate a unique slug for the website
+    const slug = `demo-${Date.now().toString(36)}`;
+    const newPublishedUrl = `tour/${slug}`;
+    
     // Simulate publishing process - in a real app, this would save to a backend
     setTimeout(() => {
       setPublishLoading(false);
-      setPublishedUrl(`tour/demo?v=${Date.now()}`);
+      setPublishedUrl(newPublishedUrl);
+      
+      // Save the published URL to localStorage
+      localStorage.setItem('publishedWebsiteUrl', newPublishedUrl);
       
       // Get current theme from localStorage
       const currentTheme = localStorage.getItem('selectedWebsiteTheme') || 'classic';
@@ -123,6 +133,13 @@ const WebsiteBuilder: React.FC = () => {
               </a>
             </span>
           </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handlePreviewSite}
+          >
+            Visit
+          </Button>
         </div>
       )}
       
