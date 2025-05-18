@@ -68,9 +68,9 @@ const OurStoryPage = () => {
                 Founded by passionate travelers and cultural enthusiasts, Culturin was born from a simple idea: make cultural experiences more accessible, authentic, and rewarding for everyone involved.
               </p>
             </div>
-            <div className="mt-16 aspect-video max-w-5xl overflow-hidden rounded-xl bg-gray-100">
+            <div className="mt-16 aspect-video max-w-5xl overflow-hidden rounded-xl">
               <img 
-                src="/placeholder.svg" 
+                src="https://images.unsplash.com/photo-1469041797191-50ace28483c3?q=80&w=2000&auto=format&fit=crop" 
                 alt="Culturin team" 
                 className="w-full h-full object-cover"
               />
@@ -159,19 +159,19 @@ const OurStoryPage = () => {
                   name: "Sarah Chen",
                   role: "Co-Founder & CEO",
                   bio: "Former travel guide with a passion for connecting people across cultures.",
-                  image: "/placeholder.svg"
+                  image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=256&auto=format&fit=crop"
                 },
                 {
                   name: "Miguel Rodriguez",
                   role: "Co-Founder & CTO",
                   bio: "Tech entrepreneur focused on creating tools that empower small businesses.",
-                  image: "/placeholder.svg"
+                  image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&auto=format&fit=crop"
                 },
                 {
                   name: "Aisha Kumar",
                   role: "Chief Experience Officer",
                   bio: "Cultural anthropologist and experience design expert with 15+ years in tourism.",
-                  image: "/placeholder.svg"
+                  image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=256&auto=format&fit=crop"
                 }
               ].map((person, index) => (
                 <div 

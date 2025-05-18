@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -99,17 +98,17 @@ const App = () => (
               <Route path="/for-operators" element={<ForOperators />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/how-it-works" element={<HowItWorksPage />} />
-              <Route path="/sign-in" element={<PageWithFooter Component={SignIn} />} />
-              <Route path="/culturin-pro" element={<PageWithFooter Component={CulturinProPage} />} />
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/culturin-pro" element={<CulturinProPage />} />
               <Route path="/demo" element={<DemoPage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/about-us" element={<OurStoryPage />} />
               <Route path="/careers" element={<CareersPage />} />
               <Route path="/press" element={<PressPage />} />
-              <Route path="/contact" element={<PageWithFooter Component={Contact} />} />
-              <Route path="/faqs" element={<PageWithFooter Component={FAQs} />} />
-              <Route path="/help-center" element={<PageWithFooter Component={HelpCenter} />} />
-              <Route path="/case-studies" element={<PageWithFooter Component={CaseStudies} />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/faqs" element={<FAQs />} />
+              <Route path="/help-center" element={<HelpCenter />} />
+              <Route path="/case-studies" element={<CaseStudies />} />
               
               {/* Product Pages */}
               <Route path="/product/analytics" element={<ProductAnalyticsPage />} />

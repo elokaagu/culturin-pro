@@ -119,9 +119,9 @@ const CareersPage = () => {
                   </li>
                 </ul>
               </div>
-              <div className="aspect-square bg-gray-200 rounded-xl overflow-hidden">
+              <div className="aspect-square rounded-xl overflow-hidden">
                 <img 
-                  src="/placeholder.svg" 
+                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=2000&auto=format&fit=crop" 
                   alt="Culturin team culture" 
                   className="w-full h-full object-cover"
                 />

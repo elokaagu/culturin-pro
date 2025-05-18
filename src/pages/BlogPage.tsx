@@ -22,7 +22,7 @@ const BlogPage = () => {
     setAnimateItems(true);
   }, []);
   
-  // Mock blog posts data
+  // Blog posts data with actual images
   const blogPosts: BlogPost[] = [
     {
       id: 1,
@@ -30,7 +30,7 @@ const BlogPage = () => {
       excerpt: "Learn proven methods to maintain revenue streams even during traditional off-peak periods in tourism.",
       date: "May 15, 2025",
       category: "Marketing",
-      image: "/placeholder.svg"
+      image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2000&auto=format&fit=crop"
     },
     {
       id: 2,
@@ -38,7 +38,7 @@ const BlogPage = () => {
       excerpt: "Discover how storytelling and local connections can transform standard tours into unforgettable experiences.",
       date: "May 7, 2025",
       category: "Experience Design",
-      image: "/placeholder.svg"
+      image: "https://images.unsplash.com/photo-1486718448742-163732cd1544?q=80&w=2000&auto=format&fit=crop"
     },
     {
       id: 3,
@@ -46,7 +46,7 @@ const BlogPage = () => {
       excerpt: "Solo travel is booming in the cultural tourism sector. Here's how operators can adapt their offerings.",
       date: "April 29, 2025",
       category: "Industry Trends",
-      image: "/placeholder.svg"
+      image: "https://images.unsplash.com/photo-1487252665478-49b61b47f302?q=80&w=2000&auto=format&fit=crop"
     },
     {
       id: 4,
@@ -54,7 +54,7 @@ const BlogPage = () => {
       excerpt: "Learn how smart data collection can help you tailor experiences to your guests' preferences.",
       date: "April 22, 2025",
       category: "Technology",
-      image: "/placeholder.svg"
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=2000&auto=format&fit=crop"
     },
     {
       id: 5,
@@ -62,7 +62,7 @@ const BlogPage = () => {
       excerpt: "Explore strategies for growing your tour business while protecting cultural heritage and local communities.",
       date: "April 15, 2025",
       category: "Sustainability",
-      image: "/placeholder.svg"
+      image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?q=80&w=2000&auto=format&fit=crop"
     },
     {
       id: 6,
@@ -70,7 +70,7 @@ const BlogPage = () => {
       excerpt: "How one cultural tour company transformed their digital presence and saw dramatic growth.",
       date: "April 8, 2025",
       category: "Case Study",
-      image: "/placeholder.svg"
+      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2000&auto=format&fit=crop"
     }
   ];
 
