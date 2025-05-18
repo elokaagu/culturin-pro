@@ -60,7 +60,7 @@ const OperatorDashboard = () => {
       title: "Create Experience",
       description: "Redirecting to experience builder...",
     });
-    // Would navigate to experience builder in full implementation
+    navigate("/product/booking-management");
   };
 
   const handleUpgradeClick = () => {
@@ -71,12 +71,28 @@ const OperatorDashboard = () => {
     });
   };
 
+  const handleManageGuests = () => {
+    toast({
+      title: "Manage Guests",
+      description: "Redirecting to guest management...",
+    });
+    navigate("/pro-dashboard/crm");
+  };
+
+  const handleGetSupport = () => {
+    toast({
+      title: "Support",
+      description: "Connecting you with our support team...",
+    });
+    navigate("/help-center");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header type="operator" />
       
-      {/* Hero Section */}
-      <section className="bg-white border-b border-gray-200">
+      {/* Hero Section - Added mt-16 for margin top */}
+      <section className="bg-white border-b border-gray-200 mt-16">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
@@ -235,7 +251,10 @@ const OperatorDashboard = () => {
               {/* Quick Actions */}
               <h2 className="text-xl font-medium mb-4">Quick Actions</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={handleCreateExperience}>
+                <Card 
+                  className="hover:shadow-md transition-shadow cursor-pointer" 
+                  onClick={handleCreateExperience}
+                >
                   <CardContent className="p-6 flex flex-col items-center text-center">
                     <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                       <Plus className="w-6 h-6 text-gray-600" />
@@ -245,7 +264,10 @@ const OperatorDashboard = () => {
                   </CardContent>
                 </Card>
                 
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <Card 
+                  className="hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={handleManageGuests}
+                >
                   <CardContent className="p-6 flex flex-col items-center text-center">
                     <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                       <Users className="w-6 h-6 text-gray-600" />
@@ -255,7 +277,10 @@ const OperatorDashboard = () => {
                   </CardContent>
                 </Card>
                 
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <Card 
+                  className="hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={handleGetSupport}
+                >
                   <CardContent className="p-6 flex flex-col items-center text-center">
                     <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                       <MessageSquare className="w-6 h-6 text-gray-600" />
