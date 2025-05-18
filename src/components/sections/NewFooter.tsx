@@ -25,14 +25,14 @@ const NewFooter = () => {
       <section className="bg-[#FAF8F6] py-12">
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Link to="/for-operators" className="bg-black text-white p-6 rounded-xl flex items-center justify-between group">
+            <Link to="/demo" className="bg-black text-white p-6 rounded-xl flex items-center justify-between group">
               <span className="text-lg font-medium">Get a free demo</span>
               <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
                 <ExternalLink className="h-4 w-4 text-white" />
               </div>
             </Link>
             
-            <Link to="#how-it-works" className="bg-[#E5DDCF] text-black p-6 rounded-xl flex items-center justify-between group">
+            <Link to="/how-it-works" className="bg-[#E5DDCF] text-black p-6 rounded-xl flex items-center justify-between group">
               <span className="text-lg font-medium">See how it works</span>
               <div className="w-7 h-7 rounded-full bg-black/10 flex items-center justify-center group-hover:translate-x-1 transition-transform">
                 <ExternalLink className="h-4 w-4 text-black" />
@@ -55,11 +55,10 @@ const NewFooter = () => {
             >
               <h3 className="text-sm font-semibold uppercase mb-5">Products</h3>
               <ul className="space-y-3">
-                <li><Link to="/tour-builder" className="hover:opacity-70 transition-opacity">Tour Builder</Link></li>
-                <li><Link to="/direct-booking" className="hover:opacity-70 transition-opacity">Direct Booking Engine</Link></li>
-                <li><Link to="/guest-crm" className="hover:opacity-70 transition-opacity">Guest CRM</Link></li>
-                <li><Link to="/storytelling" className="hover:opacity-70 transition-opacity">Storytelling Toolkit</Link></li>
-                <li><Link to="/analytics" className="hover:opacity-70 transition-opacity">Analytics Dashboard</Link></li>
+                <li><Link to="/product/booking" className="hover:opacity-70 transition-opacity">Direct Booking Engine</Link></li>
+                <li><Link to="/product/crm" className="hover:opacity-70 transition-opacity">Guest CRM</Link></li>
+                <li><Link to="/product/marketing" className="hover:opacity-70 transition-opacity">Marketing Tools</Link></li>
+                <li><Link to="/product/analytics" className="hover:opacity-70 transition-opacity">Analytics Dashboard</Link></li>
                 <li><Link to="/whats-new" className="hover:opacity-70 transition-opacity flex items-center gap-1.5">
                   <span className="w-4 h-4 rounded-full bg-[#1A1A1A]/10 flex items-center justify-center text-xs">→</span> 
                   See What's New
@@ -76,10 +75,9 @@ const NewFooter = () => {
             >
               <h3 className="text-sm font-semibold uppercase mb-5">Resources</h3>
               <ul className="space-y-3">
-                <li><Link to="/case-studies" className="hover:opacity-70 transition-opacity">Case Studies</Link></li>
-                <li><Link to="/tour-marketing" className="hover:opacity-70 transition-opacity">Tour Marketing Playbook</Link></li>
-                <li><Link to="/seo-guide" className="hover:opacity-70 transition-opacity">SEO for Tour Operators</Link></li>
-                <li><Link to="/templates" className="hover:opacity-70 transition-opacity">Tour Operator Templates</Link></li>
+                <li><Link to="/blog" className="hover:opacity-70 transition-opacity">Blog</Link></li>
+                <li><Link to="/how-it-works" className="hover:opacity-70 transition-opacity">How It Works</Link></li>
+                <li><Link to="/pricing" className="hover:opacity-70 transition-opacity">Pricing</Link></li>
               </ul>
             </div>
             
@@ -92,7 +90,7 @@ const NewFooter = () => {
             >
               <h3 className="text-sm font-semibold uppercase mb-5">Company</h3>
               <ul className="space-y-3">
-                <li><Link to="/about" className="hover:opacity-70 transition-opacity">About</Link></li>
+                <li><Link to="/about-us" className="hover:opacity-70 transition-opacity">About</Link></li>
                 <li><Link to="/careers" className="hover:opacity-70 transition-opacity">Careers</Link></li>
                 <li><Link to="/press" className="hover:opacity-70 transition-opacity">Press</Link></li>
               </ul>
@@ -107,6 +105,7 @@ const NewFooter = () => {
             >
               <h3 className="text-sm font-semibold uppercase mb-5">Support</h3>
               <ul className="space-y-3">
+                <li><Link to="/contact" className="hover:opacity-70 transition-opacity">Contact Us</Link></li>
                 <li><a href="mailto:support@culturin.com" className="hover:opacity-70 transition-opacity">support@culturin.com</a></li>
               </ul>
             </div>

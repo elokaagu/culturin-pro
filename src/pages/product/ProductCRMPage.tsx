@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Heart, Mail, Users, Zap } from "lucide-react";
+import { Heart, Mail, Users } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
 
 const ProductCRMPage = () => {
