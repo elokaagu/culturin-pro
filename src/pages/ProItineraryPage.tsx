@@ -126,47 +126,61 @@ const ProItineraryPage = () => {
       title="Itinerary Builder"
       subtitle="Create and manage your experience itineraries"
     >
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-        <TabsList>
-          <TabsTrigger value="itineraries">Your Itineraries</TabsTrigger>
-          <TabsTrigger value="templates">Templates</TabsTrigger>
-          <TabsTrigger value="story-mode" className="relative">
-            Story Mode
-            <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
-              β
-            </span>
-          </TabsTrigger>
-        </TabsList>
-        
-        <ItineraryTabs
-          activeTab={activeTab}
-          viewType={viewType}
-          setViewType={setViewType}
-          itineraries={itineraries}
-          templates={sampleTemplates}
-          onCreateNewItinerary={handleCreateNewItinerary}
-          onEditItinerary={handleEditItinerary}
-          onUseTemplate={handleUseTemplate}
-          onStartStoryMode={handleStartStoryMode}
-        />
-      </Tabs>
+      <div className="px-4 sm:px-0">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <div className="overflow-x-auto">
+            <TabsList className="w-full sm:w-auto min-w-full sm:min-w-0">
+              <TabsTrigger value="itineraries" className="flex-1 sm:flex-initial text-xs sm:text-sm">
+                <span className="hidden sm:inline">Your Itineraries</span>
+                <span className="sm:hidden">Itineraries</span>
+              </TabsTrigger>
+              <TabsTrigger value="templates" className="flex-1 sm:flex-initial text-xs sm:text-sm">
+                Templates
+              </TabsTrigger>
+              <TabsTrigger value="story-mode" className="relative flex-1 sm:flex-initial text-xs sm:text-sm">
+                <span className="hidden sm:inline">Story Mode</span>
+                <span className="sm:hidden">Story</span>
+                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[8px] sm:text-[10px] rounded-full w-3 h-3 sm:w-4 sm:h-4 flex items-center justify-center">
+                  β
+                </span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
+          
+          <ItineraryTabs
+            activeTab={activeTab}
+            viewType={viewType}
+            setViewType={setViewType}
+            itineraries={itineraries}
+            templates={sampleTemplates}
+            onCreateNewItinerary={handleCreateNewItinerary}
+            onEditItinerary={handleEditItinerary}
+            onUseTemplate={handleUseTemplate}
+            onStartStoryMode={handleStartStoryMode}
+          />
+        </Tabs>
+      </div>
       
       {showEditor && selectedItinerary && (
-        <ItineraryEditor
-          showEditor={showEditor}
-          selectedItinerary={selectedItinerary}
-          showAIAssistant={showAIAssistant}
-          onAIAssistantClose={() => setShowAIAssistant(false)}
-          onEditorClose={handleEditorClose}
-          onItinerarySave={handleItinerarySave}
-        />
+        <div className="mx-4 sm:mx-0">
+          <ItineraryEditor
+            showEditor={showEditor}
+            selectedItinerary={selectedItinerary}
+            showAIAssistant={showAIAssistant}
+            onAIAssistantClose={() => setShowAIAssistant(false)}
+            onEditorClose={handleEditorClose}
+            onItinerarySave={handleItinerarySave}
+          />
+        </div>
       )}
       
       {!showEditor && (
-        <ResourcesSection
-          resources={resourcesData}
-          onResourceClick={handleResourceClick}
-        />
+        <div className="px-4 sm:px-0">
+          <ResourcesSection
+            resources={resourcesData}
+            onResourceClick={handleResourceClick}
+          />
+        </div>
       )}
     </ProDashboardLayout>
   );

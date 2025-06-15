@@ -84,35 +84,40 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
   return (
     <>
       <TabsContent value="itineraries" className="mt-6">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Toggle
               variant="outline"
               pressed={viewType === 'daily'}
               onPressedChange={() => setViewType('daily')}
-              className="data-[state=on]:bg-slate-100"
+              className="data-[state=on]:bg-slate-100 flex-1 sm:flex-initial text-xs sm:text-sm"
             >
-              <Calendar className="h-4 w-4 mr-1" /> Daily View
+              <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> 
+              <span className="hidden xs:inline">Daily View</span>
+              <span className="xs:hidden">Daily</span>
             </Toggle>
             <Toggle
               variant="outline"
               pressed={viewType === 'thematic'}
               onPressedChange={() => setViewType('thematic')}
-              className="data-[state=on]:bg-slate-100"
+              className="data-[state=on]:bg-slate-100 flex-1 sm:flex-initial text-xs sm:text-sm"
             >
-              <FileText className="h-4 w-4 mr-1" /> Thematic View
+              <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> 
+              <span className="hidden xs:inline">Thematic View</span>
+              <span className="xs:hidden">Thematic</span>
             </Toggle>
           </div>
-          <Button onClick={onCreateNewItinerary}>
-            Create New Itinerary
+          <Button onClick={onCreateNewItinerary} className="w-full sm:w-auto text-sm">
+            <span className="hidden sm:inline">Create New Itinerary</span>
+            <span className="sm:hidden">Create New</span>
           </Button>
         </div>
         
         {itineraries.length === 0 ? (
-          <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed">
-            <h3 className="text-xl font-medium mb-2">No Itineraries Yet</h3>
-            <p className="text-gray-500 mb-6">Start creating your first itinerary</p>
-            <Button onClick={onCreateNewItinerary}>
+          <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed mx-4 sm:mx-0">
+            <h3 className="text-lg sm:text-xl font-medium mb-2">No Itineraries Yet</h3>
+            <p className="text-gray-500 mb-6 text-sm sm:text-base px-4">Start creating your first itinerary</p>
+            <Button onClick={onCreateNewItinerary} className="text-sm">
               Create New Itinerary
             </Button>
           </div>
@@ -122,7 +127,7 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
       </TabsContent>
       
       <TabsContent value="templates" className="mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-0">
           {templates.map((template, index) => (
             <TemplateCard
               key={index}
@@ -134,14 +139,14 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
       </TabsContent>
       
       <TabsContent value="story-mode" className="mt-6">
-        <div className="text-center py-16 bg-slate-50 rounded-lg border-2 border-dashed">
-          <h3 className="text-xl font-medium mb-2">Story Mode</h3>
-          <p className="text-gray-500 mb-1">Create narrative-driven experiences</p>
-          <p className="text-gray-400 text-sm mb-6">Perfect for walking tours and cultural journeys</p>
+        <div className="text-center py-12 sm:py-16 bg-slate-50 rounded-lg border-2 border-dashed mx-4 sm:mx-0">
+          <h3 className="text-lg sm:text-xl font-medium mb-2">Story Mode</h3>
+          <p className="text-gray-500 mb-1 text-sm sm:text-base px-4">Create narrative-driven experiences</p>
+          <p className="text-gray-400 text-xs sm:text-sm mb-6 px-4">Perfect for walking tours and cultural journeys</p>
           
           <div className="flex flex-col items-center gap-2">
-            <Badge variant="outline" className="mb-4">New Feature</Badge>
-            <Button onClick={onStartStoryMode} className="px-8">
+            <Badge variant="outline" className="mb-4 text-xs sm:text-sm">New Feature</Badge>
+            <Button onClick={onStartStoryMode} className="px-6 sm:px-8 text-sm">
               Start Story Mode
             </Button>
           </div>
