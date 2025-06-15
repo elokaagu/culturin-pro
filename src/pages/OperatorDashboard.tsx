@@ -59,7 +59,7 @@ const OperatorDashboard = () => {
       title: "Create Experience",
       description: "Redirecting to experience builder...",
     });
-    navigate("/product/booking-management");
+    navigate("/pro-dashboard/itinerary?new=true");
   };
 
   const handleUpgradeClick = () => {
