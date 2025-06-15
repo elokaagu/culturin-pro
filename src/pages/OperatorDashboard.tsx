@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -13,6 +14,7 @@ import OperatorCreateExperienceModal from "@/components/OperatorCreateExperience
 import DashboardOverviewTab from "@/components/operator/DashboardOverviewTab";
 import ExperiencesTab from "@/components/operator/ExperiencesTab";
 import BookingsTab from "@/components/operator/BookingsTab";
+import GuestsTab from "@/components/operator/GuestsTab";
 import Image from "@/components/ui/image";
 import { Plus, Calendar, Crown, ArrowRight } from "lucide-react";
 import ProAccessDialog, { useProAccess } from "@/components/pro/ProAccessDialog";
@@ -119,11 +121,11 @@ const OperatorDashboard = () => {
   };
 
   const handleManageGuests = () => {
+    setActiveTab("guests");
     toast({
-      title: "Manage Guests",
-      description: "Redirecting to guest management...",
+      title: "Guest Management",
+      description: "Viewing your guest management dashboard...",
     });
-    navigate("/pro-dashboard/crm");
   };
 
   const handleGetSupport = () => {
@@ -214,6 +216,12 @@ const OperatorDashboard = () => {
                 >
                   Booking Management
                 </TabsTrigger>
+                <TabsTrigger
+                  value="guests"
+                  className="data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 rounded-lg px-4 py-2 text-gray-600"
+                >
+                  Manage Guests
+                </TabsTrigger>
               </TabsList>
             </div>
 
@@ -233,6 +241,9 @@ const OperatorDashboard = () => {
             </TabsContent>
             <TabsContent value="bookings">
               <BookingsTab />
+            </TabsContent>
+            <TabsContent value="guests">
+              <GuestsTab />
             </TabsContent>
           </Tabs>
         </div>
