@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, Filter, Mail, Phone, Calendar, MapPin, Star, Users } from "lucide-react";
+import GuestDetailsModal from "./GuestDetailsModal";
 
 // Mock guest data
 const mockGuests = [
@@ -77,6 +78,8 @@ const GuestsTab = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
+  const [selectedGuest, setSelectedGuest] = useState(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
   const filteredGuests = mockGuests.filter(guest => {
     const matchesSearch = guest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -95,6 +98,11 @@ const GuestsTab = () => {
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  };
+
+  const handleViewDetails = (guest: any) => {
+    setSelectedGuest(guest);
+    setDetailsModalOpen(true);
   };
 
   return (
@@ -227,7 +235,12 @@ const GuestsTab = () => {
                     <div className="text-xs text-gray-500">Rating</div>
                   </div>
                   <div>
-                    <Button variant="outline" size="sm" className="w-full">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => handleViewDetails(guest)}
+                    >
                       View Details
                     </Button>
                   </div>
@@ -262,6 +275,13 @@ const GuestsTab = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Guest Details Modal */}
+      <GuestDetailsModal 
+        open={detailsModalOpen}
+        onOpenChange={setDetailsModalOpen}
+        guest={selectedGuest}
+      />
     </div>
   );
 };
