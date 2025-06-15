@@ -15,6 +15,7 @@ import ExperiencesTab from "@/components/operator/ExperiencesTab";
 import BookingsTab from "@/components/operator/BookingsTab";
 import Image from "@/components/ui/image";
 import { Plus, Calendar, Crown, ArrowRight } from "lucide-react";
+import ProAccessDialog, { useProAccess } from "@/components/pro/ProAccessDialog";
 
 // Mock experiences data
 // Mock experiences data
@@ -95,9 +96,17 @@ const OperatorDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // State to control the Pro Access Dialog
+  const [proDialogOpen, setProDialogOpen] = useState(false);
+
+  // Show Pro dialog automatically if user doesn't have access
+  const { hasAccess } = useProAccess();
   useEffect(() => {
+    if (!hasAccess) {
+      setProDialogOpen(true);
+    }
     window.scrollTo(0, 0);
-  }, []);
+  }, [hasAccess]);
 
   // Changed: open modal instead of navigating away
   const handleCreateExperience = () => {
@@ -251,6 +260,19 @@ const OperatorDashboard = () => {
           </div>
         </div>
       </footer>
+
+      {/* Add the 'View Pro Features' toggle button */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <Button
+          variant="secondary"
+          className="shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold"
+          onClick={() => setProDialogOpen(true)}
+        >
+          View Pro Features
+        </Button>
+      </div>
+      {/* Toggleable Pro Access Dialog */}
+      <ProAccessDialog open={proDialogOpen} setOpen={setProDialogOpen} />
     </div>
   );
 };
