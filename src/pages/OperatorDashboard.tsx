@@ -16,6 +16,7 @@ import {
 import Image from "@/components/ui/image";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import OperatorCreateExperienceModal from "@/components/OperatorCreateExperienceModal";
 
 // Mock experiences data
 const mockExperiences = [
@@ -47,6 +48,7 @@ const mockExperiences = [
 
 const OperatorDashboard = () => {
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -54,12 +56,9 @@ const OperatorDashboard = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Changed: open modal instead of navigating away
   const handleCreateExperience = () => {
-    toast({
-      title: "Create Experience",
-      description: "Redirecting to experience builder...",
-    });
-    navigate("/pro-dashboard/itinerary?new=true");
+    setCreateModalOpen(true);
   };
 
   const handleUpgradeClick = () => {
@@ -89,6 +88,7 @@ const OperatorDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header type="operator" />
+      <OperatorCreateExperienceModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
       
       {/* Hero Section - Removed mt-16 to align with fixed header */}
       <section className="bg-white border-b border-gray-200">
