@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, Mail, Phone, Calendar, MapPin, Star } from "lucide-react";
+import { Search, Filter, Mail, Phone, Calendar, MapPin, Star, Users } from "lucide-react";
 
 // Mock guest data
 const mockGuests = [
