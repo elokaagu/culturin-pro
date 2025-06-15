@@ -7,7 +7,6 @@ import ItineraryEditor from '@/components/pro/itinerary/ItineraryEditor';
 import ResourcesSection from '@/components/pro/itinerary/ResourcesSection';
 import { sampleItineraries, sampleTemplates, resourcesData, ItineraryType, ResourceType } from '@/data/itineraryData';
 import { useToast } from '@/components/ui/use-toast';
-import { PlusCircle } from 'lucide-react';
 
 const ProItineraryPage = () => {
   const [activeTab, setActiveTab] = useState('itineraries');
@@ -168,16 +167,6 @@ const ProItineraryPage = () => {
           resources={resourcesData}
           onResourceClick={handleResourceClick}
         />
-      )}
-      
-      {/* Quick Add Button */}
-      {!showEditor && (
-        <button 
-          className="fixed bottom-8 right-8 bg-blue-600 text-white rounded-full p-3 shadow-lg flex items-center gap-2 hover:bg-blue-700 transition-colors"
-          onClick={handleCreateNewItinerary}
-        >
-          <PlusCircle className="h-5 w-5" /> Create New Itinerary
-        </button>
       )}
     </ProDashboardLayout>
   );
