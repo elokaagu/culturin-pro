@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -91,8 +90,8 @@ const OperatorDashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <Header type="operator" />
       
-      {/* Hero Section - Added mt-16 for margin top */}
-      <section className="bg-white border-b border-gray-200 mt-16">
+      {/* Hero Section - Removed mt-16 to align with fixed header */}
+      <section className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
