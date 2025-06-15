@@ -39,6 +39,11 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
   const navigate = useNavigate();
   const { hasAccess, grantAccess } = useProAccess();
 
+  const handleMaybeLater = () => {
+    setOpen(false);
+    navigate("/operator");
+  };
+
   const handlePurchase = () => {
     grantAccess();
     setOpen(false);
@@ -138,7 +143,7 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
             <DialogFooter className="flex flex-col gap-3 mt-6">
               <Button 
                 variant="ghost" 
-                onClick={() => setOpen(false)}
+                onClick={handleMaybeLater}
                 className="text-white hover:bg-white/20 w-full justify-center border border-white/30 py-3 text-sm"
               >
                 Maybe Later
