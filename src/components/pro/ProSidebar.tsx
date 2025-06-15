@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
@@ -56,17 +57,20 @@ const ProSidebar: React.FC = () => {
     <div className="w-64 bg-white h-screen border-r border-gray-200 flex flex-col fixed left-0 top-0 font-sans">
       {/* Logo & Header */}
       <div className="p-4 border-b border-gray-100">
-        <div className="flex items-center gap-2">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
           <div className="h-14"> {/* Increased from h-12 to h-14 */}
             <Image 
               src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png" 
               alt="Culturin" 
-              className="h-full" 
+              className="h-full cursor-pointer" 
               width={160} /* Increased from 140 to 160 */
               height={56} /* Increased from 48 to 56 */
             />
           </div>
-        </div>
+        </button>
         <p className="text-xs text-gray-500 mt-1">Cultural Experience Platform</p>
       </div>
       
