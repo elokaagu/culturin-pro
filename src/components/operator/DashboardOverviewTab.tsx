@@ -1,10 +1,10 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Users, MessageSquare, Crown, ArrowRight } from "lucide-react";
 import Image from "@/components/ui/image";
 import { mockExperiences } from "./operatorMockData";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   onCreateExperience: () => void;
@@ -19,6 +19,12 @@ const DashboardOverviewTab: React.FC<Props> = ({
   onManageGuests,
   onGetSupport,
 }) => {
+  const navigate = useNavigate();
+
+  const handleExperienceClick = (experienceId: string) => {
+    navigate(`/experience/${experienceId}`);
+  };
+
   return (
     <>
       {/* Stats Cards */}
@@ -56,7 +62,11 @@ const DashboardOverviewTab: React.FC<Props> = ({
         <h2 className="text-xl font-medium mb-4">Your Popular Experiences</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {mockExperiences.map((exp) => (
-            <Card key={exp.id} className="overflow-hidden">
+            <Card 
+              key={exp.id} 
+              className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => handleExperienceClick(exp.id)}
+            >
               <div className="h-40 relative">
                 <Image src={exp.image} alt={exp.title} className="object-cover" fill={true} />
               </div>

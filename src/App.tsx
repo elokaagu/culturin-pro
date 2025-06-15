@@ -16,6 +16,7 @@ import CaseStudies from './pages/CaseStudies';
 import Owner from './pages/Owner';
 import Traveler from './pages/Traveler';
 import OperatorDashboard from './pages/OperatorDashboard';
+import ExperienceDetailPage from './pages/ExperienceDetailPage';
 import ProductAnalyticsPage from './pages/product/ProductAnalyticsPage';
 import ProductBookingPage from './pages/product/ProductBookingPage';
 import ProductCRMPage from './pages/product/ProductCRMPage';
@@ -67,6 +68,7 @@ function App() {
         <Route path="/owner" element={<Owner />} />
         <Route path="/traveler" element={<Traveler />} />
         <Route path="/operator" element={<OperatorDashboard />} />
+        <Route path="/experience/:id" element={<ExperienceDetailPage />} />
         <Route path="/for-operators" element={<ForOperators />} />
         <Route path="/product/analytics" element={<ProductAnalyticsPage />} />
         <Route path="/product/booking" element={<ProductBookingPage />} />
