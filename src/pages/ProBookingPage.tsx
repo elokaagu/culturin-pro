@@ -22,7 +22,7 @@ const ProBookingPage = () => {
       title="Booking System"
       subtitle="A conversion-optimised booking experience that reflects the emotional frame of the trip"
     >
-      <div className="flex justify-between items-center mb-4">
+      <div className="space-y-6">
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
@@ -46,9 +46,11 @@ const ProBookingPage = () => {
           </TabsContent>
         </Tabs>
         
-        <Button onClick={handleCreateNewExperience} className="bg-blue-600 hover:bg-blue-700">
-          Create New Experience
-        </Button>
+        <div className="flex justify-center">
+          <Button onClick={handleCreateNewExperience} className="bg-blue-600 hover:bg-blue-700">
+            Create New Experience
+          </Button>
+        </div>
       </div>
     </ProDashboardLayout>
   );
