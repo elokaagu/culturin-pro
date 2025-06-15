@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -14,8 +13,6 @@ import FileTextIcon from '@/components/pro/FileText';
 import CircleDollarSignIcon from '@/components/pro/CircleDollarSign';
 import ProAccessDialog, { useProAccess } from "@/components/pro/ProAccessDialog";
 
-// Removed the local declaration of useProAccess
-
 const ProDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const [showAccessDialog, setShowAccessDialog] = useState(false);
@@ -26,7 +23,7 @@ const ProDashboardPage: React.FC = () => {
       setShowAccessDialog(true);
     }
     localStorage.setItem('lastRoute', '/pro-dashboard');
-  }, [hasAccess]);
+  }, []);
   
   const handlePurchase = () => {
     grantAccess();
@@ -115,8 +112,10 @@ const ProDashboardPage: React.FC = () => {
         </div>
       </ProDashboardLayout>
       
-      {/* Redesigned Premium Access Dialog */}
-      <ProAccessDialog open={showAccessDialog} setOpen={setShowAccessDialog} />
+      {/* Only show dialog if user doesn't have access */}
+      {!hasAccess && (
+        <ProAccessDialog open={showAccessDialog} setOpen={setShowAccessDialog} />
+      )}
     </>
   );
 };
