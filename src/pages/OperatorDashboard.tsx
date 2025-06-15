@@ -99,14 +99,11 @@ const OperatorDashboard = () => {
   // State to control the Pro Access Dialog
   const [proDialogOpen, setProDialogOpen] = useState(false);
 
-  // Show Pro dialog automatically if user doesn't have access
+  // Remove automatic Pro dialog display
   const { hasAccess } = useProAccess();
   useEffect(() => {
-    if (!hasAccess) {
-      setProDialogOpen(true);
-    }
     window.scrollTo(0, 0);
-  }, [hasAccess]);
+  }, []);
 
   // Changed: open modal instead of navigating away
   const handleCreateExperience = () => {
@@ -143,7 +140,7 @@ const OperatorDashboard = () => {
       <OperatorCreateExperienceModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
 
       {/* Hero Section */}
-      <section className="bg-white border-b border-gray-200">
+      <section className="bg-white border-b border-gray-200 mt-5">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>

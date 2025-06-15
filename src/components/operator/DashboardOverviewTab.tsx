@@ -82,29 +82,6 @@ const DashboardOverviewTab: React.FC<Props> = ({
           ))}
         </div>
       </div>
-      {/* Pro Upgrade Banner */}
-      <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200 mb-6">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center">
-                <Crown className="h-5 w-5 text-amber-500 mr-2" />
-                <h3 className="font-medium">Unlock Advanced Analytics with Culturin Pro</h3>
-              </div>
-              <p className="text-sm text-gray-600">
-                Get deeper insights into your business performance and customer preferences.
-              </p>
-            </div>
-            <Button
-              onClick={onUpgradeClick}
-              className="bg-black hover:bg-gray-800 text-white whitespace-nowrap"
-            >
-              Upgrade to Pro
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
       {/* Quick Actions */}
       <h2 className="text-xl font-medium mb-4">Quick Actions</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
