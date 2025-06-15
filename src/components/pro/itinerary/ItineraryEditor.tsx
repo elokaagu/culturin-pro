@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Edit, Save } from 'lucide-react';
+import { Edit, Save, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { Link } from 'react-router-dom';
 import ModuleLibrary from '@/components/pro/itinerary/ModuleLibrary';
 import ItineraryPreview from '@/components/pro/itinerary/ItineraryPreview';
 import AIContentAssistant from '@/components/pro/itinerary/AIContentAssistant';
@@ -100,9 +101,16 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
               {itinerary.storyMode ? 'Story Editor' : 'Itinerary Editor'}: {itinerary.title}
             </h3>
           </div>
-          <Badge variant="outline">
-            {itinerary.status === 'published' ? 'Published' : 'Draft'}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" asChild>
+              <Link to={`/product/booking-preview/${itinerary.id}`} target="_blank">
+                <ExternalLink className="h-4 w-4 mr-1" /> Preview Booking
+              </Link>
+            </Button>
+            <Badge variant="outline">
+              {itinerary.status === 'published' ? 'Published' : 'Draft'}
+            </Badge>
+          </div>
         </div>
       </CollapsibleTrigger>
       <Separator />
