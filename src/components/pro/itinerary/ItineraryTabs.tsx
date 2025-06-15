@@ -32,6 +32,55 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
   onUseTemplate,
   onStartStoryMode,
 }) => {
+  // Group itineraries by theme type for thematic view
+  const groupedItineraries = itineraries.reduce((acc, itinerary) => {
+    const theme = itinerary.themeType || 'general';
+    if (!acc[theme]) {
+      acc[theme] = [];
+    }
+    acc[theme].push(itinerary);
+    return acc;
+  }, {} as Record<string, ItineraryType[]>);
+
+  const renderItinerariesView = () => {
+    if (viewType === 'thematic') {
+      return (
+        <div className="space-y-8">
+          {Object.entries(groupedItineraries).map(([theme, themeItineraries]) => (
+            <div key={theme} className="space-y-4">
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-medium capitalize">{theme} Experiences</h3>
+                <Badge variant="outline">{themeItineraries.length}</Badge>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {themeItineraries.map((itinerary) => (
+                  <ItineraryCard
+                    key={itinerary.id}
+                    {...itinerary}
+                    onEdit={() => onEditItinerary(itinerary)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Daily view (default)
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {itineraries.map((itinerary) => (
+          <ItineraryCard
+            key={itinerary.id}
+            {...itinerary}
+            onEdit={() => onEditItinerary(itinerary)}
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <>
       <TabsContent value="itineraries" className="mt-6">
@@ -68,15 +117,7 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {itineraries.map((itinerary) => (
-              <ItineraryCard
-                key={itinerary.id}
-                {...itinerary}
-                onEdit={() => onEditItinerary(itinerary)}
-              />
-            ))}
-          </div>
+          renderItinerariesView()
         )}
       </TabsContent>
       
