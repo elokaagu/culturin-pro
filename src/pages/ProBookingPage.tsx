@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import BookingsTab from '@/components/BookingsTab';
 import BookingOverview from '@/components/BookingOverview';
+import DynamicPricingSystem from '@/components/pro/booking/DynamicPricingSystem';
 
 const ProBookingPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -28,9 +29,10 @@ const ProBookingPage = () => {
           onValueChange={setActiveTab}
           className="space-y-4"
         >
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-lg grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
+            <TabsTrigger value="pricing">Dynamic Pricing</TabsTrigger>
           </TabsList>
           
           <TabsContent value="overview" className="space-y-4 mt-0">
@@ -43,6 +45,10 @@ const ProBookingPage = () => {
                 <BookingsTab />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="pricing" className="mt-0">
+            <DynamicPricingSystem />
           </TabsContent>
         </Tabs>
         
