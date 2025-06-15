@@ -139,13 +139,13 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
               <Button 
                 variant="ghost" 
                 onClick={() => setOpen(false)}
-                className="text-white hover:bg-white/20 w-full justify-center border border-white/30 py-6 text-base"
+                className="text-white hover:bg-white/20 w-full justify-center border border-white/30 py-3 text-sm"
               >
                 Maybe Later
               </Button>
               <Button 
                 onClick={handlePurchase} 
-                className="bg-white text-blue-700 hover:bg-blue-50 w-full justify-center py-6 text-base"
+                className="bg-white text-blue-700 hover:bg-blue-50 w-full justify-center py-3 text-sm"
               >
                 Upgrade to Pro
                 <ArrowRight className="h-4 w-4 ml-2" />
