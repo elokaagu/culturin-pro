@@ -65,12 +65,12 @@ export const Header = ({ type }: HeaderProps) => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
+            <Link to="/" className="flex items-center" onClick={() => navigate('/')}>
               <div className="h-16 mr-2"> {/* Increased height from h-14 to h-16 */}
                 <Image 
                   src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png" 
                   alt="Culturin" 
-                  className="h-full" 
+                  className="h-full cursor-pointer" 
                   width={180} /* Increased from 150 to 180 */
                   height={64} /* Increased from 56 to 64 */
                 />
