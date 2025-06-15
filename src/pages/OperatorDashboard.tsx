@@ -3,21 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Plus,
-  Users,
-  Calendar,
-  BarChart,
-  MessageSquare,
-  ArrowRight,
-  Crown
-} from "lucide-react";
-import Image from "@/components/ui/image";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/ui/tabs";
 import OperatorCreateExperienceModal from "@/components/OperatorCreateExperienceModal";
+import DashboardOverviewTab from "@/components/operator/DashboardOverviewTab";
+import ExperiencesTab from "@/components/operator/ExperiencesTab";
+import BookingsTab from "@/components/operator/BookingsTab";
+import Image from "@/components/ui/image";
+import { Plus, Calendar, Crown, ArrowRight } from "lucide-react";
 
+// Mock experiences data
 // Mock experiences data
 const mockExperiences = [
   {
@@ -133,8 +132,8 @@ const OperatorDashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <Header type="operator" />
       <OperatorCreateExperienceModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
-      
-      {/* Hero Section - Removed mt-16 to align with fixed header */}
+
+      {/* Hero Section */}
       <section className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -145,17 +144,17 @@ const OperatorDashboard = () => {
               <p className="text-lg text-gray-600 mb-6">
                 Manage your offerings, track bookings, and grow your cultural experience business.
               </p>
-              
+
               <div className="flex flex-wrap gap-4">
-                <Button 
+                <Button
                   className="bg-black hover:bg-gray-800 text-white"
                   onClick={handleCreateExperience}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Create New Experience
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="border-gray-300"
                   onClick={() => setActiveTab("bookings")}
                 >
@@ -164,12 +163,12 @@ const OperatorDashboard = () => {
                 </Button>
               </div>
             </div>
-            
+
             <div className="hidden lg:block">
               <div className="relative h-72 rounded-lg overflow-hidden shadow-lg">
-                <Image 
-                  src="https://images.unsplash.com/photo-1466442929976-97f336a657be" 
-                  alt="Cultural tour guide showing historical site to tourists" 
+                <Image
+                  src="https://images.unsplash.com/photo-1466442929976-97f336a657be"
+                  alt="Cultural tour guide showing historical site to tourists"
                   className="object-cover"
                   fill={true}
                 />
@@ -179,26 +178,31 @@ const OperatorDashboard = () => {
           </div>
         </div>
       </section>
-      
+
       {/* Dashboard Content */}
       <section className="py-10">
         <div className="container mx-auto px-4">
-          <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <Tabs
+            defaultValue={activeTab}
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="space-y-8"
+          >
             <div className="flex justify-between items-center border-b border-gray-200 pb-4">
               <TabsList className="bg-transparent p-0">
-                <TabsTrigger 
+                <TabsTrigger
                   value="overview"
                   className="data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 rounded-lg px-4 py-2 text-gray-600"
                 >
                   Dashboard Overview
                 </TabsTrigger>
-                <TabsTrigger 
+                <TabsTrigger
                   value="experiences"
                   className="data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 rounded-lg px-4 py-2 text-gray-600"
                 >
                   My Experiences
                 </TabsTrigger>
-                <TabsTrigger 
+                <TabsTrigger
                   value="bookings"
                   className="data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 rounded-lg px-4 py-2 text-gray-600"
                 >
@@ -206,208 +210,37 @@ const OperatorDashboard = () => {
                 </TabsTrigger>
               </TabsList>
             </div>
-            
+
             {/* Dashboard Overview Tab */}
             <TabsContent value="overview">
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-gray-500">Total Bookings</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">54</div>
-                    <p className="text-sm text-gray-500 mt-1">Last 30 days</p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-gray-500">Revenue</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">$3,390</div>
-                    <p className="text-sm text-gray-500 mt-1">Last 30 days</p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-gray-500">Avg. Rating</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">4.8</div>
-                    <p className="text-sm text-gray-500 mt-1">From 36 reviews</p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Popular Experiences */}
-              <div className="mb-10">
-                <h2 className="text-xl font-medium mb-4">Your Popular Experiences</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {mockExperiences.map((exp) => (
-                    <Card key={exp.id} className="overflow-hidden">
-                      <div className="h-40 relative">
-                        <Image 
-                          src={exp.image} 
-                          alt={exp.title} 
-                          className="object-cover"
-                          fill={true}
-                        />
-                      </div>
-                      <CardContent className="pt-4">
-                        <h3 className="font-medium mb-1">{exp.title}</h3>
-                        <p className="text-sm text-gray-500 mb-2">{exp.location}</p>
-                        <div className="flex justify-between text-sm">
-                          <span>{exp.bookings} bookings</span>
-                          <span>${exp.revenue} revenue</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Pro Upgrade Banner */}
-              <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200 mb-6">
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center">
-                        <Crown className="h-5 w-5 text-amber-500 mr-2" />
-                        <h3 className="font-medium">Unlock Advanced Analytics with Culturin Pro</h3>
-                      </div>
-                      <p className="text-sm text-gray-600">Get deeper insights into your business performance and customer preferences.</p>
-                    </div>
-                    <Button 
-                      onClick={handleUpgradeClick}
-                      className="bg-black hover:bg-gray-800 text-white whitespace-nowrap"
-                    >
-                      Upgrade to Pro
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              {/* Quick Actions */}
-              <h2 className="text-xl font-medium mb-4">Quick Actions</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card 
-                  className="hover:shadow-md transition-shadow cursor-pointer" 
-                  onClick={handleCreateExperience}
-                >
-                  <CardContent className="p-6 flex flex-col items-center text-center">
-                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                      <Plus className="w-6 h-6 text-gray-600" />
-                    </div>
-                    <h3 className="font-medium mb-1">Create Experience</h3>
-                    <p className="text-sm text-gray-500">Add a new tour or workshop</p>
-                  </CardContent>
-                </Card>
-                
-                <Card 
-                  className="hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={handleManageGuests}
-                >
-                  <CardContent className="p-6 flex flex-col items-center text-center">
-                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                      <Users className="w-6 h-6 text-gray-600" />
-                    </div>
-                    <h3 className="font-medium mb-1">Manage Guests</h3>
-                    <p className="text-sm text-gray-500">View and edit guest information</p>
-                  </CardContent>
-                </Card>
-                
-                <Card 
-                  className="hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={handleGetSupport}
-                >
-                  <CardContent className="p-6 flex flex-col items-center text-center">
-                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                      <MessageSquare className="w-6 h-6 text-gray-600" />
-                    </div>
-                    <h3 className="font-medium mb-1">Support</h3>
-                    <p className="text-sm text-gray-500">Contact our team for help</p>
-                  </CardContent>
-                </Card>
-              </div>
+              <DashboardOverviewTab
+                onCreateExperience={handleCreateExperience}
+                onUpgradeClick={handleUpgradeClick}
+                onManageGuests={handleManageGuests}
+                onGetSupport={handleGetSupport}
+              />
             </TabsContent>
-            
-            {/* Experiences Tab Placeholder */}
             <TabsContent value="experiences">
-              <div className="bg-white p-8 rounded-lg border border-gray-200 text-center">
-                <h2 className="text-xl font-medium mb-2">My Experiences</h2>
-                <p className="text-gray-500 mb-6">Manage your tours, workshops, and cultural experiences</p>
-                <Button 
-                  className="bg-black hover:bg-gray-800 text-white"
-                  onClick={handleCreateExperience}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add New Experience
-                </Button>
-              </div>
+              <ExperiencesTab 
+                onCreateExperience={handleCreateExperience} 
+              />
             </TabsContent>
-            
-            {/* Bookings Tab */}
             <TabsContent value="bookings">
-              <div className="bg-white p-8 rounded-lg border border-gray-200">
-                <h2 className="text-xl font-medium mb-2">Booking Management</h2>
-                <p className="text-gray-500 mb-6">View and manage all your upcoming and past bookings</p>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 text-left">
-                    <thead>
-                      <tr>
-                        <th className="py-2 px-3 font-medium text-gray-600">Booking ID</th>
-                        <th className="py-2 px-3 font-medium text-gray-600">Guest</th>
-                        <th className="py-2 px-3 font-medium text-gray-600">Experience</th>
-                        <th className="py-2 px-3 font-medium text-gray-600">Date</th>
-                        <th className="py-2 px-3 font-medium text-gray-600">Amount</th>
-                        <th className="py-2 px-3 font-medium text-gray-600">Status</th>
-                        <th className="py-2 px-3 font-medium text-gray-600"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {mockBookings.map(booking => (
-                        <tr key={booking.id} className="border-b">
-                          <td className="py-2 px-3">{booking.id}</td>
-                          <td className="py-2 px-3">{booking.guest}</td>
-                          <td className="py-2 px-3">{booking.experience}</td>
-                          <td className="py-2 px-3">{new Date(booking.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
-                          <td className="py-2 px-3">{booking.amount}</td>
-                          <td className="py-2 px-3">
-                            {booking.status === 'confirmed' && <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">Confirmed</span>}
-                            {booking.status === 'pending' && <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs">Pending</span>}
-                            {booking.status === 'completed' && <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">Completed</span>}
-                            {booking.status === 'cancelled' && <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs">Cancelled</span>}
-                          </td>
-                          <td className="py-2 px-3">
-                            <button className="text-indigo-600 hover:underline text-sm">View</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {mockBookings.length === 0 && (
-                    <div className="py-6 text-center text-gray-500">No bookings found</div>
-                  )}
-                </div>
-              </div>
+              <BookingsTab />
             </TabsContent>
           </Tabs>
         </div>
       </section>
-      
+
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 py-8 mt-10">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
             <p className="text-gray-500 text-sm">© 2025 Culturin. All rights reserved.</p>
             <div className="flex items-center">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="text-gray-500 hover:text-gray-900"
                 onClick={handleUpgradeClick}
               >
