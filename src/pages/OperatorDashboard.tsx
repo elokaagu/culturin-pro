@@ -137,7 +137,7 @@ const OperatorDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-5">
       <Header type="operator" />
       <OperatorCreateExperienceModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
 
