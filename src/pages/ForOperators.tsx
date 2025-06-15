@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -28,8 +29,8 @@ const ForOperators = () => {
     <div className="min-h-screen flex flex-col font-sans">
       <Header type="operator" />
       
-      {/* Main content wrapper with proper top padding */}
-      <div className="pt-20"> {/* Increased padding to ensure content doesn't hide behind fixed header */}
+      {/* Main content wrapper with proper top padding for fixed header */}
+      <div className="pt-16"> {/* Reduced from pt-20 to pt-16 to match header height */}
         {/* Hero Section */}
         <section className="pt-20 pb-20 bg-gradient-to-br from-[#f1f0fb] to-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
