@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Image from "@/components/ui/image";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ArrowLeft, MapPin, Calendar, Users, DollarSign, Edit, Share, Settings } from "lucide-react";
 import { mockExperiences } from "@/components/operator/operatorMockData";
 import ExperienceEditModal from "@/components/ExperienceEditModal";
@@ -16,11 +17,20 @@ const ExperienceDetailPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   
   // Find the experience by ID
   const [experience, setExperience] = useState(() => 
     mockExperiences.find(exp => exp.id === id)
   );
+
+  // Additional thumbnail images for the gallery
+  const galleryImages = experience ? [
+    experience.image,
+    "https://images.unsplash.com/photo-1466442929976-97f336a657be",
+    "https://images.unsplash.com/photo-1518877593221-1f28583780b4",
+    "https://images.unsplash.com/photo-1487252665478-49b61b47f302"
+  ] : [];
   
   if (!experience) {
     return (
@@ -87,13 +97,45 @@ const ExperienceDetailPage = () => {
 
         {/* Experience Header */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="relative h-80 rounded-lg overflow-hidden">
-            <Image 
-              src={experience.image} 
-              alt={experience.title} 
-              className="object-cover" 
-              fill={true} 
-            />
+          <div className="space-y-4">
+            {/* Main Image */}
+            <div className="relative h-80 rounded-lg overflow-hidden">
+              <Image 
+                src={galleryImages[selectedImageIndex]} 
+                alt={experience.title} 
+                className="object-cover" 
+                fill={true} 
+              />
+            </div>
+            
+            {/* Thumbnail Images */}
+            <div className="px-8">
+              <Carousel className="w-full">
+                <CarouselContent className="-ml-2">
+                  {galleryImages.map((image, index) => (
+                    <CarouselItem key={index} className="pl-2 basis-1/3">
+                      <div 
+                        className={`relative h-20 rounded-lg overflow-hidden cursor-pointer transition-all ${
+                          selectedImageIndex === index 
+                            ? 'ring-2 ring-black ring-offset-2' 
+                            : 'hover:opacity-80'
+                        }`}
+                        onClick={() => setSelectedImageIndex(index)}
+                      >
+                        <Image 
+                          src={image} 
+                          alt={`${experience.title} gallery ${index + 1}`} 
+                          className="object-cover" 
+                          fill={true} 
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </div>
           </div>
           
           <div className="space-y-6">
