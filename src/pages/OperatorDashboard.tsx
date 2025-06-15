@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -143,7 +144,7 @@ const OperatorDashboard = () => {
       <OperatorCreateExperienceModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
 
       {/* Hero Section */}
-      <section className="bg-white border-b border-gray-200">
+      <section className="bg-white border-b border-gray-200 mt-5">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
