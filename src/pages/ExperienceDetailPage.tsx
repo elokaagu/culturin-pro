@@ -9,14 +9,18 @@ import { Badge } from "@/components/ui/badge";
 import Image from "@/components/ui/image";
 import { ArrowLeft, MapPin, Calendar, Users, DollarSign, Edit, Share, Settings } from "lucide-react";
 import { mockExperiences } from "@/components/operator/operatorMockData";
+import ExperienceEditModal from "@/components/ExperienceEditModal";
 
 const ExperienceDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [editModalOpen, setEditModalOpen] = useState(false);
   
   // Find the experience by ID
-  const experience = mockExperiences.find(exp => exp.id === id);
+  const [experience, setExperience] = useState(() => 
+    mockExperiences.find(exp => exp.id === id)
+  );
   
   if (!experience) {
     return (
@@ -34,9 +38,14 @@ const ExperienceDetailPage = () => {
   }
 
   const handleEditExperience = () => {
+    setEditModalOpen(true);
+  };
+
+  const handleSaveExperience = (updatedExperience: any) => {
+    setExperience(updatedExperience);
     toast({
-      title: "Edit Experience",
-      description: `Opening editor for ${experience.title}`,
+      title: "Experience Updated",
+      description: "Your experience has been successfully updated.",
     });
   };
 
@@ -57,6 +66,13 @@ const ExperienceDetailPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header type="operator" />
+      
+      <ExperienceEditModal 
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+        experience={experience}
+        onSave={handleSaveExperience}
+      />
       
       <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
