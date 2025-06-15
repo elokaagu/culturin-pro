@@ -139,7 +139,7 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
               <Button 
                 variant="ghost" 
                 onClick={() => setOpen(false)}
-                className="text-white hover:bg-white/20 w-full justify-center border border-white/30"
+                className="text-white hover:bg-white/20 w-full justify-center border border-white/30 py-6 text-base"
               >
                 Maybe Later
               </Button>
