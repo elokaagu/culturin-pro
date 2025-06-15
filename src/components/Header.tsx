@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -60,7 +59,7 @@ export const Header = ({ type }: HeaderProps) => {
   ];
 
   return (
-    <header className={`fixed w-full z-50 transition-all duration-300 ${
+    <header className={`fixed w-full z-[60] transition-all duration-300 ${
       location.pathname === '/' ? (isScrolled ? 'bg-white shadow-sm' : 'bg-transparent') : 'bg-white'
     }`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -202,7 +201,7 @@ export const Header = ({ type }: HeaderProps) => {
       
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg z-50 animate-fade-in">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg z-[60] animate-fade-in">
           <nav className="py-4 px-6">
             <ul className="space-y-2">
               <li className="py-2">
