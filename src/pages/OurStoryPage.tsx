@@ -22,9 +22,9 @@ const OurStoryPage = () => {
     },
     {
       year: "2023",
-      title: "First Events",
+      title: "AmAfrobeat Experience",
       description:
-        "Launched our early Afrobeats After Dark events in Cannes and curated city takeovers in Accra and Lagos, proving the demand for authentic cultural experiences.",
+        "Launched our signature AmAfrobeat Experience events at Cannes, UNGA, New York Fashion Week, and Notting Hill Carnival, proving the demand for authentic cultural experiences.",
     },
     {
       year: "2024",
@@ -99,68 +99,8 @@ const OurStoryPage = () => {
           </div>
         </section>
 
-        {/* Mission Section */}
-        <section className="bg-gray-50 py-16 md:py-24">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-8">
-                What We Do
-              </h2>
-              <p className="text-xl text-gray-700 leading-relaxed mb-8">
-                Culturin is a global travel platform for culturally curious
-                explorers and independent experience creators.
-              </p>
-              <p className="text-lg text-gray-600 leading-relaxed">
-                We exist to bridge the gap between modern travellers seeking
-                meaningful, safe, and flexible adventures—and the local hosts,
-                guides, and storytellers who bring those journeys to life. Born
-                from the belief that travel should feel personal, not packaged,
-                Culturin curates immersive experiences across cities, festivals,
-                and cultural hotspots.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Origin Story Section */}
-        <section className="bg-white py-16 md:py-24">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">
-                Born from Lived Experience
-              </h2>
-              <div className="prose prose-lg max-w-none text-gray-700">
-                <p className="text-lg leading-relaxed mb-6">
-                  In 2023, at a rooftop in Cannes during Lions Festival week,
-                  we—<strong>Unik Ernest</strong>, a cultural entrepreneur with
-                  deep roots in travel and impact, and{" "}
-                  <strong>Eloka Agu</strong>, a creative technologist and
-                  systems designer—had a conversation about how broken the
-                  travel experience felt for both sides: the explorers and the
-                  experience creators.
-                </p>
-                <p className="text-lg leading-relaxed mb-6">
-                  Travellers wanted more than cookie-cutter tours. Hosts,
-                  guides, and curators had incredible cultural offerings—but no
-                  modern tools to bring them to a wider audience.
-                </p>
-                <p className="text-lg leading-relaxed mb-6">
-                  So we started building.
-                </p>
-                <p className="text-lg leading-relaxed">
-                  From our early Afrobeats After Dark events in Cannes and
-                  curated city takeovers in Accra and Lagos, to our first
-                  500-member creator network, we saw something powerful: a
-                  global demand for curated, authentic, and shareable
-                  experiences that reflect the energy of our generation.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Milestones Section */}
-        <section className="bg-gray-50 py-16 md:py-24">
+        <section className="bg-white py-16 md:py-24">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-16 text-center">
               Our Journey
@@ -198,7 +138,7 @@ const OurStoryPage = () => {
         </section>
 
         {/* Values Section */}
-        <section className="bg-white py-16 md:py-24">
+        <section className="bg-gray-50 py-16 md:py-24">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-16 text-center">Our Values</h2>
 
@@ -206,7 +146,7 @@ const OurStoryPage = () => {
               {values.map((value, index) => (
                 <div
                   key={index}
-                  className={`bg-gray-50 p-8 rounded-xl shadow-sm text-center transition-all duration-500 ${
+                  className={`bg-white p-8 rounded-xl shadow-sm text-center transition-all duration-500 ${
                     animateItems
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-8"
@@ -225,7 +165,7 @@ const OurStoryPage = () => {
         </section>
 
         {/* Founders Section */}
-        <section className="bg-gray-50 py-16 md:py-24">
+        <section className="bg-white py-16 md:py-24">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-6 text-center">
               Meet Our Founders
@@ -283,7 +223,7 @@ const OurStoryPage = () => {
         </section>
 
         {/* Vision Section */}
-        <section className="bg-white py-16 md:py-24">
+        <section className="bg-gray-50 py-16 md:py-24">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-8">
