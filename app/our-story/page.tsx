@@ -3,11 +3,11 @@ import OurStoryPage from "../../src/pages/OurStoryPage";
 export const metadata = {
   title: "Our Story | Culturin",
   description:
-    "Founded by passionate travelers and cultural enthusiasts, Culturin was born from a simple idea: make cultural experiences more accessible, authentic, and rewarding for everyone involved.",
+    "Born from a rooftop conversation in Cannes, Culturin bridges the gap between modern travelers seeking meaningful adventures and local hosts who bring those journeys to life. Founded by Unik Ernest and Eloka Agu.",
   openGraph: {
     title: "Our Story | Culturin",
     description:
-      "Founded by passionate travelers and cultural enthusiasts, Culturin was born from a simple idea: make cultural experiences more accessible, authentic, and rewarding for everyone involved.",
+      "Born from a rooftop conversation in Cannes, Culturin bridges the gap between modern travelers seeking meaningful adventures and local hosts who bring those journeys to life. Founded by Unik Ernest and Eloka Agu.",
   },
 };
 

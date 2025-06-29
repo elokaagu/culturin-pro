@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "../../../lib/navigation";
 import {
@@ -98,7 +98,7 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
                 </div>
                 <h3 className="font-medium text-blue-900">Pro Plan</h3>
                 <p className="text-xl font-bold mt-1 text-blue-900">
-                  $49<span className="text-sm font-normal">/month</span>
+                  $99<span className="text-sm font-normal">/month</span>
                 </p>
                 <ul className="mt-3 space-y-2">
                   <li className="text-sm text-gray-700 flex items-start gap-2">

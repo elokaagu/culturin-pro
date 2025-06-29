@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "../../lib/navigation";
 import {
@@ -61,7 +60,8 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
                 Unlock the full potential of Culturin Pro
               </DialogTitle>
               <DialogDescription className="text-base mt-2">
-                Take your cultural experiences to the next level with our professional toolkit.
+                Take your cultural experiences to the next level with our
+                professional toolkit.
               </DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -69,7 +69,9 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
               <div className="border rounded-xl p-4">
                 <h3 className="font-medium flex items-center">
                   Free Plan
-                  <Badge variant="outline" className="ml-2">Current</Badge>
+                  <Badge variant="outline" className="ml-2">
+                    Current
+                  </Badge>
                 </h3>
                 <ul className="mt-3 space-y-2">
                   <li className="text-sm text-gray-600 flex items-start gap-2">
@@ -94,7 +96,9 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
                   </Badge>
                 </div>
                 <h3 className="font-medium text-blue-900">Pro Plan</h3>
-                <p className="text-xl font-bold mt-1 text-blue-900">$49<span className="text-sm font-normal">/month</span></p>
+                <p className="text-xl font-bold mt-1 text-blue-900">
+                  $99<span className="text-sm font-normal">/month</span>
+                </p>
                 <ul className="mt-3 space-y-2">
                   <li className="text-sm text-gray-700 flex items-start gap-2">
                     <Check className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
@@ -124,11 +128,14 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
           <div className="md:col-span-2 bg-gradient-to-br from-blue-600 to-blue-800 text-white p-8 flex flex-col justify-between">
             <div>
               <div className="mb-6">
-                <p className="text-lg font-semibold">Join 1,000+ cultural experience creators</p>
+                <p className="text-lg font-semibold">
+                  Join 1,000+ cultural experience creators
+                </p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6">
                 <p className="italic text-white/90 text-sm">
-                  "Since upgrading to Pro, we've seen a 32% increase in repeat bookings and save over 10 hours a week on admin tasks."
+                  "Since upgrading to Pro, we've seen a 32% increase in repeat
+                  bookings and save over 10 hours a week on admin tasks."
                 </p>
                 <p className="mt-2 text-white/80 text-xs">
                   — Maria Lopez, Oaxaca Food Tours
@@ -141,15 +148,15 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
               </div>
             </div>
             <DialogFooter className="flex flex-col gap-3 mt-6">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 onClick={handleMaybeLater}
                 className="text-white hover:bg-white/20 w-full justify-center border border-white/30 py-3 text-sm"
               >
                 Maybe Later
               </Button>
-              <Button 
-                onClick={handlePurchase} 
+              <Button
+                onClick={handlePurchase}
                 className="bg-white text-blue-700 hover:bg-blue-50 w-full justify-center py-3 text-sm"
               >
                 Upgrade to Pro

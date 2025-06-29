@@ -15,49 +15,49 @@ const OurStoryPage = () => {
 
   const milestones = [
     {
-      year: "2022",
-      title: "Culturin Was Born",
+      year: "2023",
+      title: "The Rooftop Conversation",
       description:
-        "Founded with the mission of making cultural tourism more accessible and authentic for travelers and operators alike.",
+        "At a rooftop in Cannes during Lions Festival week, Unik and Eloka had a conversation about how broken the travel experience felt for both explorers and experience creators.",
     },
     {
       year: "2023",
-      title: "First 100 Partners",
+      title: "First Events",
       description:
-        "We celebrated onboarding our first 100 cultural tour operators across 15 countries.",
+        "Launched our early Afrobeats After Dark events in Cannes and curated city takeovers in Accra and Lagos, proving the demand for authentic cultural experiences.",
     },
     {
       year: "2024",
-      title: "Culturin Pro Launch",
+      title: "Creator Network",
       description:
-        "We launched our professional tools for tour operators, helping them create and manage their experiences.",
+        "Built our first 500-member creator network, connecting experience makers with modern tools and a global audience.",
     },
     {
       year: "2025",
-      title: "Global Expansion",
+      title: "Platform Evolution",
       description:
-        "Expanding our presence to over 50 countries with 1,000+ operators using our platform.",
+        "Expanding from events to a full platform—bridging meaningful travel with modern infrastructure for the next generation.",
     },
   ];
 
   const values = [
     {
       icon: <Users className="h-8 w-8 text-blue-600" />,
-      title: "Cultural Connection",
+      title: "Authentic Connection",
       description:
-        "We believe that authentic cultural connections transform both travelers and communities.",
+        "Travel should feel personal, not packaged. We curate experiences that create genuine cultural connections.",
     },
     {
       icon: <Briefcase className="h-8 w-8 text-blue-600" />,
-      title: "Operator Empowerment",
+      title: "Global Community",
       description:
-        "We're committed to giving cultural experience creators the tools they need to thrive.",
+        "We empower local hosts, guides, and storytellers to share their culture with a worldwide audience.",
     },
     {
       icon: <Calendar className="h-8 w-8 text-blue-600" />,
-      title: "Responsible Tourism",
+      title: "Modern Infrastructure",
       description:
-        "We promote tourism that respects and preserves cultural heritage and local communities.",
+        "Bridging the gap between meaningful experiences and the tools needed to scale them effectively.",
     },
   ];
 
@@ -73,10 +73,20 @@ const OurStoryPage = () => {
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
                 Our Story
               </h1>
-              <p className="text-lg md:text-xl text-gray-600 mb-10">
-                Founded by passionate travelers and cultural enthusiasts,
-                Culturin was born from a simple idea: make cultural experiences
-                more accessible, authentic, and rewarding for everyone involved.
+              <p className="text-lg md:text-xl text-gray-600 mb-8">
+                Culturin began with a simple frustration: travel was either too
+                rigid or too random.
+              </p>
+              <p className="text-lg md:text-xl text-gray-600 mb-8">
+                On one side, there were traditional travel agencies—outdated,
+                overpriced, and out of touch with what modern explorers really
+                wanted. On the other, there were endless recommendation lists
+                and chaotic group chats that made planning feel overwhelming. We
+                knew there had to be a better way—one that felt curated,
+                connected, and culturally rich.
+              </p>
+              <p className="text-xl font-semibold text-gray-800 mb-10">
+                So we built Culturin.
               </p>
             </div>
             <div className="mt-16 aspect-video max-w-5xl overflow-hidden rounded-xl">
@@ -92,21 +102,65 @@ const OurStoryPage = () => {
         {/* Mission Section */}
         <section className="bg-gray-50 py-16 md:py-24">
           <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Our Mission
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-8">
+                What We Do
               </h2>
-              <p className="text-xl text-gray-700 leading-relaxed">
-                "To transform cultural tourism by connecting travelers with
-                authentic cultural experiences and empowering local experience
-                creators with the tools to share their heritage."
+              <p className="text-xl text-gray-700 leading-relaxed mb-8">
+                Culturin is a global travel platform for culturally curious
+                explorers and independent experience creators.
+              </p>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                We exist to bridge the gap between modern travellers seeking
+                meaningful, safe, and flexible adventures—and the local hosts,
+                guides, and storytellers who bring those journeys to life. Born
+                from the belief that travel should feel personal, not packaged,
+                Culturin curates immersive experiences across cities, festivals,
+                and cultural hotspots.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Milestones Section */}
+        {/* Origin Story Section */}
         <section className="bg-white py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">
+                Born from Lived Experience
+              </h2>
+              <div className="prose prose-lg max-w-none text-gray-700">
+                <p className="text-lg leading-relaxed mb-6">
+                  In 2023, at a rooftop in Cannes during Lions Festival week,
+                  we—<strong>Unik Ernest</strong>, a cultural entrepreneur with
+                  deep roots in travel and impact, and{" "}
+                  <strong>Eloka Agu</strong>, a creative technologist and
+                  systems designer—had a conversation about how broken the
+                  travel experience felt for both sides: the explorers and the
+                  experience creators.
+                </p>
+                <p className="text-lg leading-relaxed mb-6">
+                  Travellers wanted more than cookie-cutter tours. Hosts,
+                  guides, and curators had incredible cultural offerings—but no
+                  modern tools to bring them to a wider audience.
+                </p>
+                <p className="text-lg leading-relaxed mb-6">
+                  So we started building.
+                </p>
+                <p className="text-lg leading-relaxed">
+                  From our early Afrobeats After Dark events in Cannes and
+                  curated city takeovers in Accra and Lagos, to our first
+                  500-member creator network, we saw something powerful: a
+                  global demand for curated, authentic, and shareable
+                  experiences that reflect the energy of our generation.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Milestones Section */}
+        <section className="bg-gray-50 py-16 md:py-24">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-16 text-center">
               Our Journey
@@ -144,7 +198,7 @@ const OurStoryPage = () => {
         </section>
 
         {/* Values Section */}
-        <section className="bg-gray-50 py-16 md:py-24">
+        <section className="bg-white py-16 md:py-24">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-16 text-center">Our Values</h2>
 
@@ -152,7 +206,7 @@ const OurStoryPage = () => {
               {values.map((value, index) => (
                 <div
                   key={index}
-                  className={`bg-white p-8 rounded-xl shadow-sm text-center transition-all duration-500 ${
+                  className={`bg-gray-50 p-8 rounded-xl shadow-sm text-center transition-all duration-500 ${
                     animateItems
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-8"
@@ -170,39 +224,33 @@ const OurStoryPage = () => {
           </div>
         </section>
 
-        {/* Team Section */}
-        <section className="bg-white py-16 md:py-24">
+        {/* Founders Section */}
+        <section className="bg-gray-50 py-16 md:py-24">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-6 text-center">
-              Meet Our Leadership
+              Meet Our Founders
             </h2>
             <p className="text-lg text-gray-600 mb-16 text-center max-w-3xl mx-auto">
-              Our diverse team brings together expertise in travel, technology,
-              and cultural heritage preservation.
+              Together, we're building more than a travel company. We're
+              creating an infrastructure for the next generation of cultural
+              explorers and experience-makers.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
               {[
                 {
-                  name: "Sarah Chen",
-                  role: "Co-Founder & CEO",
-                  bio: "Former travel guide with a passion for connecting people across cultures.",
+                  name: "Unik Ernest",
+                  role: "Co-Founder",
+                  bio: "Cultural entrepreneur with deep roots in travel and impact. Unik leads vision, partnerships, and cultural strategy—drawing from decades of experience across travel, nightlife, and global philanthropy.",
                   image:
-                    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=256&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
                 },
                 {
-                  name: "Miguel Rodriguez",
-                  role: "Co-Founder & CTO",
-                  bio: "Tech entrepreneur focused on creating tools that empower small businesses.",
+                  name: "Eloka Agu",
+                  role: "Co-Founder",
+                  bio: "Creative technologist and systems designer. Eloka leads product, brand, and platform design—merging community insight with elegant technology to build meaningful connections.",
                   image:
-                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&auto=format&fit=crop",
-                },
-                {
-                  name: "Aisha Kumar",
-                  role: "Chief Experience Officer",
-                  bio: "Cultural anthropologist and experience design expert with 15+ years in tourism.",
-                  image:
-                    "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=256&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&auto=format&fit=crop",
                 },
               ].map((person, index) => (
                 <div
@@ -214,18 +262,51 @@ const OurStoryPage = () => {
                   }`}
                   style={{ transitionDelay: `${400 + index * 100}ms` }}
                 >
-                  <div className="aspect-square bg-gray-100 rounded-xl mb-4 overflow-hidden">
+                  <div className="aspect-square bg-gray-100 rounded-xl mb-6 overflow-hidden max-w-sm mx-auto">
                     <img
                       src={person.image}
                       alt={person.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <h3 className="text-xl font-bold">{person.name}</h3>
-                  <p className="text-blue-600 mb-2">{person.role}</p>
-                  <p className="text-gray-600">{person.bio}</p>
+                  <div className="text-center">
+                    <h3 className="text-2xl font-bold mb-2">{person.name}</h3>
+                    <p className="text-blue-600 text-lg mb-4">{person.role}</p>
+                    <p className="text-gray-600 leading-relaxed">
+                      {person.bio}
+                    </p>
+                  </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Vision Section */}
+        <section className="bg-white py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-8">
+                This is More Than a Platform
+              </h2>
+              <p className="text-xl text-gray-700 leading-relaxed mb-8">
+                From group trips and creative retreats to behind-the-scenes
+                tours and pop-up gatherings, we empower communities to design
+                the kind of travel they'd want to experience themselves.
+              </p>
+              <p className="text-lg text-gray-600 leading-relaxed mb-8">
+                Whether you're planning your next adventure or launching your
+                own travel-based brand, Culturin helps you discover, create, and
+                share journeys that matter.
+              </p>
+              <div className="bg-blue-50 p-8 rounded-xl">
+                <p className="text-xl font-semibold text-gray-800 mb-4">
+                  This is travel—powered by culture, built for connection.
+                </p>
+                <p className="text-lg text-gray-700">
+                  It's a new way to see the world—and your place in it.
+                </p>
+              </div>
             </div>
           </div>
         </section>
