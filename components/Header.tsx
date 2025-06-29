@@ -92,7 +92,7 @@ export const Header = ({ type }: HeaderProps) => {
                     <DropdownMenuTrigger className="flex items-center font-medium text-gray-800 hover:text-gray-600 transition-colors focus:outline-none">
                       Product <ChevronDown className="ml-1 h-4 w-4" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-64 bg-white shadow-lg rounded-md p-2">
+                    <DropdownMenuContent className="w-64 bg-white shadow-lg rounded-md p-2 z-[9999]">
                       {productLinks.map((item, index) => (
                         <DropdownMenuItem key={index} asChild>
                           <Link
@@ -140,7 +140,7 @@ export const Header = ({ type }: HeaderProps) => {
                     <DropdownMenuTrigger className="flex items-center font-medium text-gray-800 hover:text-gray-600 transition-colors focus:outline-none">
                       Company <ChevronDown className="ml-1 h-4 w-4" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2">
+                    <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2 z-[9999]">
                       <DropdownMenuItem asChild>
                         <Link
                           to="/our-story"
@@ -173,7 +173,7 @@ export const Header = ({ type }: HeaderProps) => {
                     <DropdownMenuTrigger className="flex items-center font-medium text-gray-800 hover:text-gray-600 transition-colors focus:outline-none">
                       Resources <ChevronDown className="ml-1 h-4 w-4" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2">
+                    <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2 z-[9999]">
                       <DropdownMenuItem asChild>
                         <Link
                           to="/blog"
@@ -237,7 +237,7 @@ export const Header = ({ type }: HeaderProps) => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg z-[60] animate-fade-in">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg z-[9999] animate-fade-in">
           <nav className="py-4 px-6">
             <ul className="space-y-2">
               <li className="py-2">
