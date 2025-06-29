@@ -61,15 +61,7 @@ export const Header = ({ type }: HeaderProps) => {
   ];
 
   return (
-    <header
-      className={`fixed w-full z-[60] transition-all duration-300 ${
-        location.pathname === "/"
-          ? isScrolled
-            ? "bg-white shadow-sm"
-            : "bg-transparent"
-          : "bg-white"
-      }`}
-    >
+    <header className="fixed w-full z-[60] bg-white shadow-sm border-b border-gray-100 transition-all duration-300">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           <div className="flex items-center">
