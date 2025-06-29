@@ -1,5 +1,11 @@
-import Blog from "../../src/pages/Blog";
+import BlogPage from "../../src/pages/BlogPage";
 
-export default function BlogPage() {
-  return <Blog />;
+export const metadata = {
+  title: "Blog | Culturin",
+  description:
+    "Insights, strategies, and inspiration for cultural experience creators and tour operators.",
+};
+
+export default function Blog() {
+  return <BlogPage />;
 }
