@@ -206,6 +206,12 @@ export const Header = ({ type }: HeaderProps) => {
 
             <div className="flex items-center gap-4">
               <Link
+                to="/admin"
+                className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
+              >
+                Admin
+              </Link>
+              <Link
                 to="/sign-in"
                 className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
               >
@@ -338,6 +344,15 @@ export const Header = ({ type }: HeaderProps) => {
               </li>
 
               <li className="pt-2 border-t border-gray-100 mt-2">
+                <Link
+                  to="/admin"
+                  className="block py-2 font-medium text-gray-800"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Admin
+                </Link>
+              </li>
+              <li>
                 <Link
                   to="/sign-in"
                   className="block py-2 font-medium text-gray-800"
