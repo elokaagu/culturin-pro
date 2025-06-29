@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { blogPosts } from "@/data/blogPosts";
-import BlogPostPage from "@/src/pages/BlogPostPage";
+import { getBlogPosts, getBlogPostBySlug } from "@/lib/blog-service";
+import BlogPostPage from "@/components/BlogPostPage";
 
 interface BlogPostProps {
   params: {
@@ -9,15 +9,16 @@ interface BlogPostProps {
 }
 
 export async function generateStaticParams() {
-  return blogPosts.map((post) => ({
+  const posts = await getBlogPosts({ published: true });
+  return posts.map((post) => ({
     slug: post.slug,
   }));
 }
 
 export async function generateMetadata({ params }: BlogPostProps) {
-  const post = blogPosts.find((post) => post.slug === params.slug);
+  const post = await getBlogPostBySlug(params.slug);
 
-  if (!post) {
+  if (!post || !post.published) {
     return {
       title: "Blog Post Not Found | Culturin",
     };
@@ -29,17 +30,17 @@ export async function generateMetadata({ params }: BlogPostProps) {
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      images: [post.image],
+      images: post.featured_image_url ? [post.featured_image_url] : [],
     },
   };
 }
 
-export default function BlogPost({ params }: BlogPostProps) {
-  const post = blogPosts.find((post) => post.slug === params.slug);
+export default async function BlogPost({ params }: BlogPostProps) {
+  const post = await getBlogPostBySlug(params.slug);
 
-  if (!post) {
+  if (!post || !post.published) {
     notFound();
   }
 
-  return <BlogPostPage />;
+  return <BlogPostPage post={post} />;
 }

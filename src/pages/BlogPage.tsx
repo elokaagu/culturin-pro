@@ -4,18 +4,36 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Calendar, ChevronRight } from "lucide-react";
+import { Calendar, ChevronRight, Loader2 } from "lucide-react";
 import { Link } from "../../lib/navigation";
-import { blogPosts } from "@/data/blogPosts";
+import { getBlogPosts } from "@/lib/blog-service";
+import type { Database } from "@/lib/supabase";
 import NewFooter from "@/components/sections/NewFooter";
+
+type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 
 const BlogPage = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setAnimateItems(true);
     document.title = "Blog | Culturin";
+    loadBlogPosts();
   }, []);
+
+  const loadBlogPosts = async () => {
+    try {
+      setLoading(true);
+      const posts = await getBlogPosts({ published: true });
+      setBlogPosts(posts);
+    } catch (error) {
+      console.error("Error loading blog posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -40,61 +58,84 @@ const BlogPage = () => {
         {/* Blog Posts Grid */}
         <section className="bg-gray-50 py-16">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {blogPosts.map((post, index) => (
-                <Card
-                  key={post.id}
-                  className={`overflow-hidden border-0 shadow-sm transition-all duration-500 ${
-                    animateItems
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-8"
-                  }`}
-                  style={{ transitionDelay: `${index * 100}ms` }}
-                >
-                  <Link to={`/blog/${post.slug}`} className="block">
-                    <div className="aspect-video bg-gray-200">
-                      <img
-                        src={post.image}
-                        alt={post.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </Link>
-                  <div className="p-6">
-                    <div className="flex items-center text-sm text-gray-500 mb-3">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                        {post.category}
-                      </span>
-                      <div className="flex items-center ml-4">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        <span>{post.date}</span>
+            {loading ? (
+              <div className="flex justify-center items-center py-16">
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <span className="ml-2 text-gray-600">
+                  Loading blog posts...
+                </span>
+              </div>
+            ) : blogPosts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {blogPosts.map((post, index) => (
+                  <Card
+                    key={post.id}
+                    className={`overflow-hidden border-0 shadow-sm transition-all duration-500 ${
+                      animateItems
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-8"
+                    }`}
+                    style={{ transitionDelay: `${index * 100}ms` }}
+                  >
+                    <Link to={`/blog/${post.slug}`} className="block">
+                      <div className="aspect-video bg-gray-200">
+                        {post.featured_image_url ? (
+                          <img
+                            src={post.featured_image_url}
+                            alt={post.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                            <span className="text-gray-500">No image</span>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                    <Link to={`/blog/${post.slug}`}>
-                      <h3 className="text-xl font-bold mb-2 hover:text-blue-600 transition-colors">
-                        {post.title}
-                      </h3>
                     </Link>
-                    <p className="text-gray-600 mb-4">{post.excerpt}</p>
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto font-medium text-blue-600 flex items-center"
-                      asChild
-                    >
+                    <div className="p-6">
+                      <div className="flex items-center text-sm text-gray-500 mb-3">
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                          {post.category}
+                        </span>
+                        <div className="flex items-center ml-4">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          <span>
+                            {new Date(post.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
                       <Link to={`/blog/${post.slug}`}>
-                        Read more <ChevronRight className="h-4 w-4 ml-1" />
+                        <h3 className="text-xl font-bold mb-2 hover:text-blue-600 transition-colors">
+                          {post.title}
+                        </h3>
                       </Link>
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
+                      <p className="text-gray-600 mb-4">{post.excerpt}</p>
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto font-medium text-blue-600 flex items-center"
+                        asChild
+                      >
+                        <Link to={`/blog/${post.slug}`}>
+                          Read more <ChevronRight className="h-4 w-4 ml-1" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-gray-600">No blog posts available yet.</p>
+              </div>
+            )}
 
-            <div className="mt-16 text-center">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg">
-                Load more articles
-              </Button>
-            </div>
+            {!loading && blogPosts.length > 0 && (
+              <div className="mt-16 text-center">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg">
+                  Load more articles
+                </Button>
+              </div>
+            )}
           </div>
         </section>
 

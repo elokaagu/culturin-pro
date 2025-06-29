@@ -210,14 +210,6 @@ export const Header = ({ type }: HeaderProps) => {
             <div className="flex items-center gap-4">
               {isAuthenticated ? (
                 <>
-                  {isSuperAdmin && (
-                    <Link
-                      to="/admin"
-                      className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
-                    >
-                      Admin
-                    </Link>
-                  )}
                   <DropdownMenu>
                     <DropdownMenuTrigger className="flex items-center gap-2 font-medium text-gray-800 hover:text-gray-600 transition-colors">
                       <User className="h-4 w-4" />

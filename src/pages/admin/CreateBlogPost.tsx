@@ -8,48 +8,66 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Save, Eye, Upload, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Save,
+  Eye,
+  Upload,
+  Plus,
+  Trash2,
+  Loader2,
+} from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
-import { blogPosts } from "@/data/blogPosts";
+import { ImageUploader } from "@/components/ui/image-uploader";
+import { createBlogPost, generateSlug, isSlugUnique } from "@/lib/blog-service";
+import { getCurrentUser } from "@/lib/auth";
+import type { CreateBlogPostData } from "@/lib/blog-service";
 
-interface BlogPost {
+interface BlogPostForm {
   title: string;
   slug: string;
   excerpt: string;
   category: string;
-  date: string;
-  image: string;
   content: string[];
+  meta_title: string;
+  meta_description: string;
+  tags: string[];
+  published: boolean;
+  featured_image: File | null;
 }
 
 const CreateBlogPost = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
-  const [formData, setFormData] = useState<BlogPost>({
+  const [formData, setFormData] = useState<BlogPostForm>({
     title: "",
     slug: "",
     excerpt: "",
     category: "",
-    date: new Date().toISOString().split("T")[0],
-    image: "",
     content: [""],
+    meta_title: "",
+    meta_description: "",
+    tags: [],
+    published: false,
+    featured_image: null,
   });
   const [isPreview, setIsPreview] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [tagInput, setTagInput] = useState("");
 
   useEffect(() => {
     setAnimateItems(true);
     document.title = "Create New Blog Post | Admin - Culturin";
   }, []);
 
-  const categories = [...new Set(blogPosts.map((post) => post.category))];
-
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9 -]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .trim();
-  };
+  const categories = [
+    "Travel Tips",
+    "Cultural Experiences",
+    "Destination Guides",
+    "Food & Cuisine",
+    "Adventure Travel",
+    "Sustainable Tourism",
+    "Local Insights",
+  ];
 
   const handleTitleChange = (title: string) => {
     setFormData((prev) => ({
@@ -79,7 +97,7 @@ const CreateBlogPost = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Basic validation
@@ -93,15 +111,93 @@ const CreateBlogPost = () => {
       return;
     }
 
-    // In a real application, this would make an API call to create the post
-    console.log("Creating blog post:", formData);
-    alert(
-      "Blog post created successfully! (In a real app, this would save to the database)"
-    );
+    // Check if slug is unique
+    const slugUnique = await isSlugUnique(formData.slug);
+    if (!slugUnique) {
+      alert("This slug is already in use. Please choose a different one.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const currentUser = getCurrentUser();
+
+      if (!currentUser) {
+        alert("You must be logged in to create a blog post.");
+        return;
+      }
+
+      const blogPostData: CreateBlogPostData = {
+        title: formData.title,
+        slug: formData.slug,
+        excerpt: formData.excerpt,
+        content: formData.content.filter((p) => p.trim() !== ""),
+        category: formData.category,
+        author_id: currentUser.id,
+        author_name: currentUser.name,
+        author_email: currentUser.email,
+        featured_image: formData.featured_image,
+        published: formData.published,
+        meta_title: formData.meta_title || formData.title,
+        meta_description: formData.meta_description || formData.excerpt,
+        tags: formData.tags,
+      };
+
+      const result = await createBlogPost(blogPostData);
+
+      if (result) {
+        alert("Blog post created successfully!");
+        // Reset form
+        setFormData({
+          title: "",
+          slug: "",
+          excerpt: "",
+          category: "",
+          content: [""],
+          meta_title: "",
+          meta_description: "",
+          tags: [],
+          published: false,
+          featured_image: null,
+        });
+        setTagInput("");
+      } else {
+        alert("Failed to create blog post. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating blog post:", error);
+      alert("An error occurred while creating the blog post.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePreview = () => {
     setIsPreview(!isPreview);
+  };
+
+  const addTag = () => {
+    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
+      setFormData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, tagInput.trim()],
+      }));
+      setTagInput("");
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
+    }));
+  };
+
+  const handleTagInputKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addTag();
+    }
   };
 
   return (
@@ -213,33 +309,37 @@ const CreateBlogPost = () => {
                       </div>
 
                       <div>
-                        <Label htmlFor="date">Publication Date</Label>
-                        <Input
-                          id="date"
-                          type="date"
-                          value={formData.date}
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              date: e.target.value,
-                            }))
-                          }
-                        />
+                        <Label>
+                          <input
+                            type="checkbox"
+                            checked={formData.published}
+                            onChange={(e) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                published: e.target.checked,
+                              }))
+                            }
+                            className="mr-2"
+                          />
+                          Publish immediately
+                        </Label>
                       </div>
 
-                      <div>
-                        <Label htmlFor="image">Featured Image URL</Label>
-                        <Input
-                          id="image"
-                          type="url"
-                          value={formData.image}
-                          onChange={(e) =>
+                      <div className="md:col-span-2">
+                        <Label htmlFor="featured-image">Featured Image</Label>
+                        <ImageUploader
+                          onImageSelect={(file) =>
                             setFormData((prev) => ({
                               ...prev,
-                              image: e.target.value,
+                              featured_image: file,
                             }))
                           }
-                          placeholder="https://example.com/image.jpg"
+                          currentImageUrl={
+                            formData.featured_image
+                              ? URL.createObjectURL(formData.featured_image)
+                              : undefined
+                          }
+                          className="mt-2"
                         />
                       </div>
 
@@ -314,6 +414,101 @@ const CreateBlogPost = () => {
                     </div>
                   </Card>
 
+                  {/* Tags */}
+                  <Card className="p-6">
+                    <h2 className="text-xl font-semibold mb-6">Tags</h2>
+                    <div className="space-y-4">
+                      <div className="flex gap-2">
+                        <Input
+                          type="text"
+                          value={tagInput}
+                          onChange={(e) => setTagInput(e.target.value)}
+                          onKeyPress={handleTagInputKeyPress}
+                          placeholder="Enter a tag and press Enter"
+                          className="flex-1"
+                        />
+                        <Button
+                          type="button"
+                          onClick={addTag}
+                          variant="outline"
+                        >
+                          Add Tag
+                        </Button>
+                      </div>
+                      {formData.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {formData.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded flex items-center gap-1"
+                            >
+                              {tag}
+                              <button
+                                type="button"
+                                onClick={() => removeTag(tag)}
+                                className="text-blue-600 hover:text-blue-800"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+
+                  {/* SEO Settings */}
+                  <Card className="p-6">
+                    <h2 className="text-xl font-semibold mb-6">SEO Settings</h2>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="meta_title">Meta Title</Label>
+                        <Input
+                          id="meta_title"
+                          type="text"
+                          value={formData.meta_title}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              meta_title: e.target.value,
+                            }))
+                          }
+                          placeholder={
+                            formData.title || "Leave empty to use post title"
+                          }
+                          maxLength={60}
+                        />
+                        <p className="text-sm text-gray-500 mt-1">
+                          {formData.meta_title.length}/60 characters
+                        </p>
+                      </div>
+                      <div>
+                        <Label htmlFor="meta_description">
+                          Meta Description
+                        </Label>
+                        <Textarea
+                          id="meta_description"
+                          value={formData.meta_description}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              meta_description: e.target.value,
+                            }))
+                          }
+                          placeholder={
+                            formData.excerpt ||
+                            "Leave empty to use post excerpt"
+                          }
+                          rows={3}
+                          maxLength={160}
+                        />
+                        <p className="text-sm text-gray-500 mt-1">
+                          {formData.meta_description.length}/160 characters
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+
                   {/* Submit */}
                   <div className="flex justify-end gap-4">
                     <Button type="button" variant="outline" asChild>
@@ -321,10 +516,15 @@ const CreateBlogPost = () => {
                     </Button>
                     <Button
                       type="submit"
+                      disabled={loading}
                       className="bg-blue-600 hover:bg-blue-700"
                     >
-                      <Save className="h-4 w-4 mr-2" />
-                      Create Blog Post
+                      {loading ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4 mr-2" />
+                      )}
+                      {loading ? "Creating..." : "Create Blog Post"}
                     </Button>
                   </div>
                 </form>
@@ -333,9 +533,9 @@ const CreateBlogPost = () => {
                 <Card className="p-8">
                   <h2 className="text-2xl font-semibold mb-6">Preview</h2>
                   <article className="prose prose-lg max-w-none">
-                    {formData.image && (
+                    {formData.featured_image && (
                       <img
-                        src={formData.image}
+                        src={URL.createObjectURL(formData.featured_image)}
                         alt={formData.title}
                         className="w-full h-64 object-cover rounded-lg mb-6"
                       />
@@ -347,13 +547,16 @@ const CreateBlogPost = () => {
                           {formData.category}
                         </span>
                       )}
-                      {formData.date && (
-                        <span className="text-gray-500 text-sm">
-                          {new Date(formData.date).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
+                      <span className="text-gray-500 text-sm">
+                        {new Date().toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
+                      {formData.published && (
+                        <span className="bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded">
+                          Published
                         </span>
                       )}
                     </div>

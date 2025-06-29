@@ -14,19 +14,39 @@ import {
   Search,
   Filter,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
-import { blogPosts } from "@/data/blogPosts";
+import { getBlogPosts, deleteBlogPost } from "@/lib/blog-service";
+import type { Database } from "@/lib/supabase";
+
+type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 
 const BlogManagement = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     setAnimateItems(true);
     document.title = "Blog Management | Admin - Culturin";
+    loadBlogPosts();
   }, []);
+
+  const loadBlogPosts = async () => {
+    try {
+      setLoading(true);
+      const posts = await getBlogPosts();
+      setBlogPosts(posts);
+    } catch (error) {
+      console.error("Error loading blog posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categories = [
     "All",
@@ -45,10 +65,30 @@ const BlogManagement = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleDeletePost = (postId: number) => {
-    // In a real application, this would make an API call to delete the post
-    console.log("Delete post:", postId);
-    alert("Delete functionality would be implemented with backend API");
+  const handleDeletePost = async (postId: string) => {
+    if (
+      !confirm(
+        "Are you sure you want to delete this blog post? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setDeleting(postId);
+      const success = await deleteBlogPost(postId);
+      if (success) {
+        setBlogPosts((prev) => prev.filter((post) => post.id !== postId));
+        alert("Blog post deleted successfully!");
+      } else {
+        alert("Failed to delete blog post. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error deleting blog post:", error);
+      alert("An error occurred while deleting the blog post.");
+    } finally {
+      setDeleting(null);
+    }
   };
 
   return (
@@ -145,7 +185,7 @@ const BlogManagement = () => {
                     <p className="text-2xl font-bold text-orange-600">
                       {
                         blogPosts.filter((post) => {
-                          const postDate = new Date(post.date);
+                          const postDate = new Date(post.created_at);
                           const thirtyDaysAgo = new Date();
                           thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
                           return postDate > thirtyDaysAgo;
@@ -164,7 +204,12 @@ const BlogManagement = () => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl">
-              {filteredPosts.length > 0 ? (
+              {loading ? (
+                <Card className="p-12 text-center">
+                  <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+                  <p className="text-gray-600">Loading blog posts...</p>
+                </Card>
+              ) : filteredPosts.length > 0 ? (
                 <div className="space-y-6">
                   {filteredPosts.map((post, index) => (
                     <Card
@@ -183,7 +228,7 @@ const BlogManagement = () => {
                               {post.category}
                             </span>
                             <span className="text-sm text-gray-500">
-                              {post.date}
+                              {new Date(post.created_at).toLocaleDateString()}
                             </span>
                             <span className="text-xs text-gray-400">
                               ID: {post.id}
@@ -214,9 +259,14 @@ const BlogManagement = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleDeletePost(post.id)}
+                            disabled={deleting === post.id}
                             className="text-red-600 hover:text-red-700 hover:bg-red-50"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            {deleting === post.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
                           </Button>
                         </div>
                       </div>

@@ -131,28 +131,6 @@ const SignIn = () => {
                 )}
               </Button>
             </form>
-
-            <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-semibold text-blue-900 mb-2">
-                Demo Accounts
-              </h3>
-              <div className="space-y-2 text-sm text-blue-800">
-                <div>
-                  <strong>Super Admin:</strong>
-                  <br />
-                  Email: eloka.agu@icloud.com
-                  <br />
-                  Password: Honour18!!
-                </div>
-                <div>
-                  <strong>Regular User:</strong>
-                  <br />
-                  Email: demo@culturin.com
-                  <br />
-                  Password: demo123
-                </div>
-              </div>
-            </div>
           </Card>
         </div>
       </main>

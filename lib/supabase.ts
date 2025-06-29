@@ -1,7 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -121,6 +123,68 @@ export type Database = {
           guest_email?: string;
           guest_phone?: string | null;
           special_requests?: string | null;
+        };
+      };
+      blog_posts: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          title: string;
+          slug: string;
+          excerpt: string;
+          content: string[];
+          category: string;
+          author_id: string;
+          author_name: string;
+          author_email: string;
+          featured_image_url: string | null;
+          featured_image_path: string | null;
+          published: boolean;
+          published_at: string | null;
+          meta_title: string | null;
+          meta_description: string | null;
+          tags: string[] | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          title: string;
+          slug: string;
+          excerpt: string;
+          content: string[];
+          category: string;
+          author_id: string;
+          author_name: string;
+          author_email: string;
+          featured_image_url?: string | null;
+          featured_image_path?: string | null;
+          published?: boolean;
+          published_at?: string | null;
+          meta_title?: string | null;
+          meta_description?: string | null;
+          tags?: string[] | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          title?: string;
+          slug?: string;
+          excerpt?: string;
+          content?: string[];
+          category?: string;
+          author_id?: string;
+          author_name?: string;
+          author_email?: string;
+          featured_image_url?: string | null;
+          featured_image_path?: string | null;
+          published?: boolean;
+          published_at?: string | null;
+          meta_title?: string | null;
+          meta_description?: string | null;
+          tags?: string[] | null;
         };
       };
     };
