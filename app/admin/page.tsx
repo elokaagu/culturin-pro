@@ -1,4 +1,5 @@
 import AdminDashboard from "../../src/pages/admin/AdminDashboard";
+import ProtectedRoute from "../../components/auth/ProtectedRoute";
 
 export const metadata = {
   title: "Admin Dashboard | Culturin",
@@ -7,5 +8,9 @@ export const metadata = {
 };
 
 export default function Admin() {
-  return <AdminDashboard />;
+  return (
+    <ProtectedRoute requireSuperAdmin>
+      <AdminDashboard />
+    </ProtectedRoute>
+  );
 }

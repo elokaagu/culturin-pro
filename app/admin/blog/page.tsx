@@ -1,4 +1,5 @@
 import BlogManagement from "../../../src/pages/admin/BlogManagement";
+import ProtectedRoute from "../../../components/auth/ProtectedRoute";
 
 export const metadata = {
   title: "Blog Management | Admin - Culturin",
@@ -7,5 +8,9 @@ export const metadata = {
 };
 
 export default function BlogAdmin() {
-  return <BlogManagement />;
+  return (
+    <ProtectedRoute requireSuperAdmin>
+      <BlogManagement />
+    </ProtectedRoute>
+  );
 }

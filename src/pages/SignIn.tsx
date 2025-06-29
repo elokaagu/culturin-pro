@@ -1,296 +1,163 @@
-'use client'
+"use client";
 
-import { useState } from "react";
-import { Link, useNavigate } from "../../lib/navigation";
-import { Globe, Shield, Eye, EyeOff } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "../../lib/auth";
+import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/hooks/use-toast";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import Header from "@/components/Header";
-
-const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  rememberMe: z.boolean().optional(),
-  use2FA: z.boolean().optional()
-});
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Eye, EyeOff, LogIn, AlertCircle } from "lucide-react";
+import NewFooter from "@/components/sections/NewFooter";
 
 const SignIn = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [show2FAInput, setShow2FAInput] = useState(false);
-  const [verificationCode, setVerificationCode] = useState("");
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      rememberMe: false,
-      use2FA: false
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const { login, isAuthenticated } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push(redirectTo);
     }
-  });
-  
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // If 2FA is enabled and we haven't shown the 2FA input yet
-    if (values.use2FA && !show2FAInput) {
-      setShow2FAInput(true);
-      toast({
-        title: "Verification code sent",
-        description: "Please check your email for a verification code."
-      });
-      return;
-    }
-    
-    // Proceed with login
-    setIsLoading(true);
-    
+  }, [isAuthenticated, router, redirectTo]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
     try {
-      // Simulating authentication delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      localStorage.setItem('culturinProAccess', 'true');
-      
-      // Show success message
-      toast({
-        title: "Signed in successfully",
-        description: values.use2FA ? 
-          "You've been authenticated with two-factor authentication!" :
-          "Welcome back to Culturin!"
-      });
-      
-      navigate("/");
-    } catch (error) {
-      toast({
-        title: "Sign in failed",
-        description: "Please check your credentials and try again.",
-        variant: "destructive"
-      });
+      const user = await login(email, password);
+
+      if (user) {
+        // Redirect to intended page or dashboard based on role
+        if (user.role === "super_admin") {
+          router.push(redirectTo === "/" ? "/admin" : redirectTo);
+        } else {
+          router.push(redirectTo);
+        }
+      } else {
+        setError("Invalid email or password. Please try again.");
+      }
+    } catch (err) {
+      setError("An error occurred during login. Please try again.");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-  
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Header type="operator" />
-      
-      <main className="flex-1 pt-24 bg-gray-50">
-        <div className="container mx-auto px-4 py-12 md:py-20">
-          <div className="max-w-md mx-auto">
+
+      <main className="flex-1 pt-24 flex items-center justify-center px-4">
+        <div className="w-full max-w-md">
+          <Card className="p-8">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
-              <p className="text-gray-600">
-                Sign in to continue your cultural journey
-              </p>
+              <LogIn className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+              <h1 className="text-2xl font-bold mb-2">Welcome Back</h1>
+              <p className="text-gray-600">Sign in to your Culturin account</p>
             </div>
-            
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
-              <Form {...form}>
-                <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-700">Email address</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            type="email"
-                            placeholder="you@example.com"
-                            required
-                            className="h-12"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex justify-between items-center">
-                          <FormLabel className="text-gray-700">Password</FormLabel>
-                          <Link 
-                            to="/forgot-password" 
-                            className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
-                          >
-                            Forgot password?
-                          </Link>
-                        </div>
-                        <FormControl>
-                          <div className="relative">
-                            <Input
-                              {...field}
-                              type={showPassword ? "text" : "password"}
-                              placeholder="••••••••"
-                              required
-                              className="h-12 pr-10"
-                            />
-                            <button 
-                              type="button"
-                              onClick={togglePasswordVisibility} 
-                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                              tabIndex={-1}
-                            >
-                              {showPassword ? (
-                                <EyeOff className="h-5 w-5" />
-                              ) : (
-                                <Eye className="h-5 w-5" />
-                              )}
-                            </button>
-                          </div>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  
-                  {show2FAInput && (
-                    <div className="space-y-2 animate-in fade-in duration-300">
-                      <FormLabel className="text-gray-700" htmlFor="verification-code">Verification Code</FormLabel>
-                      <Input
-                        id="verification-code"
-                        type="text"
-                        value={verificationCode}
-                        onChange={(e) => setVerificationCode(e.target.value)}
-                        placeholder="Enter the 6-digit code"
-                        className="h-12"
-                        required
-                      />
-                      <p className="text-xs text-gray-500">
-                        Enter the verification code sent to your email
-                      </p>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    <FormField
-                      control={form.control}
-                      name="rememberMe"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <FormLabel className="text-sm font-normal cursor-pointer text-gray-600">
-                            Remember me
-                          </FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="use2FA"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                              disabled={show2FAInput}
-                            />
-                          </FormControl>
-                          <div className="flex items-center space-x-1">
-                            <FormLabel className="text-sm font-normal cursor-pointer text-gray-600">
-                              Use 2FA
-                            </FormLabel>
-                            <Shield className="h-4 w-4 text-blue-600" />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Signing in..." : show2FAInput ? "Verify & Sign In" : "Sign In"}
-                  </Button>
-                  
-                  {form.watch("use2FA") && !show2FAInput && (
-                    <div className="bg-blue-50 border border-blue-100 rounded-md p-3 text-sm text-blue-800 flex items-start">
-                      <Shield className="h-4 w-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <p>Two-factor authentication adds an extra layer of security to your account by requiring a verification code in addition to your password.</p>
-                    </div>
-                  )}
-                </form>
-              </Form>
-              
-              <div className="mt-6 text-center">
-                <p className="text-gray-600">
-                  Don't have an account?{" "}
-                  <Link to="/sign-up" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
-                    Create one
-                  </Link>
-                </p>
+
+            {error && (
+              <Alert className="mb-6 border-red-200 bg-red-50">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <AlertDescription className="text-red-800">
+                  {error}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  required
+                  className="mt-1"
+                />
               </div>
-              
-              <div className="mt-8">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <Separator className="w-full" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="bg-white px-4 text-gray-500">
-                      Or continue with
-                    </span>
-                  </div>
+
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <div className="relative mt-1">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
                 </div>
-                
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="w-full mt-6 h-12 border border-gray-300 hover:border-gray-400"
-                  onClick={() => {
-                    toast({
-                      title: "Google Sign In",
-                      description: "This feature is coming soon!",
-                    });
-                  }}
-                >
-                  <svg
-                    className="mr-2 h-4 w-4"
-                    aria-hidden="true"
-                    focusable="false"
-                    data-prefix="fab"
-                    data-icon="google"
-                    role="img"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 488 512"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
-                    ></path>
-                  </svg>
-                  Sign in with Google
-                </Button>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Signing in...
+                  </div>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </form>
+
+            <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-semibold text-blue-900 mb-2">
+                Demo Accounts
+              </h3>
+              <div className="space-y-2 text-sm text-blue-800">
+                <div>
+                  <strong>Super Admin:</strong>
+                  <br />
+                  Email: eloka.agu@icloud.com
+                  <br />
+                  Password: Honour18!!
+                </div>
+                <div>
+                  <strong>Regular User:</strong>
+                  <br />
+                  Email: demo@culturin.com
+                  <br />
+                  Password: demo123
+                </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </main>
+
+      <NewFooter />
     </div>
   );
 };

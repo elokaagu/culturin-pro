@@ -1,4 +1,5 @@
 import CreateBlogPost from "../../../../src/pages/admin/CreateBlogPost";
+import ProtectedRoute from "../../../../components/auth/ProtectedRoute";
 
 export const metadata = {
   title: "Create New Blog Post | Admin - Culturin",
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function NewBlogPost() {
-  return <CreateBlogPost />;
+  return (
+    <ProtectedRoute requireSuperAdmin>
+      <CreateBlogPost />
+    </ProtectedRoute>
+  );
 }

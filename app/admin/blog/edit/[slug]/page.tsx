@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import EditBlogPost from "../../../../../src/pages/admin/EditBlogPost";
+import ProtectedRoute from "../../../../../components/auth/ProtectedRoute";
 import { blogPosts } from "../../../../../data/blogPosts";
 
 interface EditBlogPostProps {
@@ -36,5 +37,9 @@ export default function EditBlogPostPage({ params }: EditBlogPostProps) {
     notFound();
   }
 
-  return <EditBlogPost />;
+  return (
+    <ProtectedRoute requireSuperAdmin>
+      <EditBlogPost />
+    </ProtectedRoute>
+  );
 }

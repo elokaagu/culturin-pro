@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "../lib/navigation";
+import { useAuth } from "../lib/auth";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Image from "@/components/ui/image";
 
@@ -21,6 +23,7 @@ export const Header = ({ type }: HeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isAuthenticated, isSuperAdmin, logout } = useAuth();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -205,25 +208,67 @@ export const Header = ({ type }: HeaderProps) => {
             </nav>
 
             <div className="flex items-center gap-4">
-              <Link
-                to="/admin"
-                className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
-              >
-                Admin
-              </Link>
-              <Link
-                to="/sign-in"
-                className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
-              >
-                Login
-              </Link>
+              {isAuthenticated ? (
+                <>
+                  {isSuperAdmin && (
+                    <Link
+                      to="/admin"
+                      className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="flex items-center gap-2 font-medium text-gray-800 hover:text-gray-600 transition-colors">
+                      <User className="h-4 w-4" />
+                      {user?.name}
+                      <ChevronDown className="h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2 z-[9999]">
+                      <div className="px-3 py-2 text-sm text-gray-500">
+                        {user?.email}
+                      </div>
+                      <div className="px-3 py-1 text-xs text-gray-400 capitalize">
+                        {user?.role?.replace("_", " ")}
+                      </div>
+                      <DropdownMenuSeparator />
+                      {isSuperAdmin && (
+                        <DropdownMenuItem asChild>
+                          <Link
+                            to="/admin"
+                            className="flex items-center p-3 rounded-md hover:bg-gray-100"
+                          >
+                            <span className="font-medium">Admin Dashboard</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem
+                        onClick={logout}
+                        className="flex items-center p-3 rounded-md hover:bg-gray-100 cursor-pointer"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        <span className="font-medium">Sign Out</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/sign-in"
+                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
+                  >
+                    Login
+                  </Link>
 
-              <Button
-                className="bg-blue-600 hover:bg-blue-700 font-medium"
-                onClick={() => navigate("/demo")}
-              >
-                Get a free demo
-              </Button>
+                  <Button
+                    className="bg-blue-600 hover:bg-blue-700 font-medium"
+                    onClick={() => navigate("/demo")}
+                  >
+                    Get a free demo
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
@@ -344,33 +389,56 @@ export const Header = ({ type }: HeaderProps) => {
               </li>
 
               <li className="pt-2 border-t border-gray-100 mt-2">
-                <Link
-                  to="/admin"
-                  className="block py-2 font-medium text-gray-800"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Admin
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/sign-in"
-                  className="block py-2 font-medium text-gray-800"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Login
-                </Link>
-              </li>
-              <li>
-                <Button
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-sm mt-2"
-                  onClick={() => {
-                    navigate("/demo");
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  Get a free demo
-                </Button>
+                {isAuthenticated ? (
+                  <div className="space-y-2">
+                    <div className="py-2">
+                      <div className="text-sm font-medium text-gray-800">
+                        {user?.name}
+                      </div>
+                      <div className="text-xs text-gray-500">{user?.email}</div>
+                      <div className="text-xs text-gray-400 capitalize">
+                        {user?.role?.replace("_", " ")}
+                      </div>
+                    </div>
+                    {isSuperAdmin && (
+                      <Link
+                        to="/admin"
+                        className="block py-2 font-medium text-gray-800"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="block py-2 font-medium text-gray-800 w-full text-left"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      to="/sign-in"
+                      className="block py-2 font-medium text-gray-800"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Button
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-sm mt-2"
+                      onClick={() => {
+                        navigate("/demo");
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Get a free demo
+                    </Button>
+                  </>
+                )}
               </li>
             </ul>
           </nav>
