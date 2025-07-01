@@ -24,9 +24,6 @@ import {
   Camera,
   FileText,
   ExternalLink,
-} from "lucide-react";
-import Image from "@/components/ui/image";
-import {
   Bed,
   UtensilsCrossed,
   Landmark,
@@ -39,6 +36,7 @@ import {
   Ticket,
   Bot,
 } from "lucide-react";
+import Image from "@/components/ui/image";
 import { ItineraryType, ItineraryModule } from "@/data/itineraryData";
 
 interface ItineraryPreviewProps {
