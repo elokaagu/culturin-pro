@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Star, Globe, Info } from "lucide-react";
@@ -12,8 +12,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Link } from "../../../lib/navigation";
-import {
 import Image from "@/components/ui/image";
+import {
   Carousel,
   CarouselContent,
   CarouselItem,

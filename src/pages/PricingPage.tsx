@@ -1,3 +1,5 @@
+"use client";
+
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
@@ -352,7 +354,12 @@ const PricingPage = () => {
           <div className="max-w-md mx-auto mt-20">
             <div className="bg-black rounded-xl overflow-hidden">
               <div className="aspect-[4/5] relative">
-                <Image src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1000&auto=format&fit=crop" alt="Testimonial" className="w-full h-full object-cover" fill />
+                <Image
+                  src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1000&auto=format&fit=crop"
+                  alt="Testimonial"
+                  className="w-full h-full object-cover"
+                  fill
+                />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/60 to-transparent p-6">
                   <div className="text-white">
                     <p className="text-xl font-medium mb-6">
