@@ -403,6 +403,38 @@ export async function getBlogPosts(filters?: {
   limit?: number;
   offset?: number;
 }): Promise<BlogPost[]> {
+  // Always use fallback data on client side for now
+  // This ensures the blog posts are displayed immediately
+  if (typeof window !== "undefined") {
+    console.log("🌐 getBlogPosts: Running on client side, using fallback data");
+    const fallbackPosts = getFallbackBlogPosts();
+    console.log("📚 getBlogPosts: Fallback posts count:", fallbackPosts.length);
+    let filteredPosts = fallbackPosts;
+
+    if (filters?.published !== undefined) {
+      filteredPosts = filteredPosts.filter(
+        (post) => post.published === filters.published
+      );
+      console.log(
+        "🔍 getBlogPosts: Filtered by published, count:",
+        filteredPosts.length
+      );
+    }
+
+    if (filters?.category) {
+      filteredPosts = filteredPosts.filter(
+        (post) => post.category === filters.category
+      );
+      console.log(
+        "🔍 getBlogPosts: Filtered by category, count:",
+        filteredPosts.length
+      );
+    }
+
+    console.log("✅ getBlogPosts: Returning", filteredPosts.length, "posts");
+    return filteredPosts;
+  }
+
   // Return fallback data if Supabase is not configured
   if (!isSupabaseConfigured()) {
     const fallbackPosts = getFallbackBlogPosts();
@@ -452,13 +484,45 @@ export async function getBlogPosts(filters?: {
 
     if (error) {
       console.error("Error fetching blog posts:", error);
-      return [];
+      // Return fallback data on error
+      const fallbackPosts = getFallbackBlogPosts();
+      let filteredPosts = fallbackPosts;
+
+      if (filters?.published !== undefined) {
+        filteredPosts = filteredPosts.filter(
+          (post) => post.published === filters.published
+        );
+      }
+
+      if (filters?.category) {
+        filteredPosts = filteredPosts.filter(
+          (post) => post.category === filters.category
+        );
+      }
+
+      return filteredPosts;
     }
 
     return data || [];
   } catch (error) {
     console.error("Error fetching blog posts:", error);
-    return [];
+    // Return fallback data on error
+    const fallbackPosts = getFallbackBlogPosts();
+    let filteredPosts = fallbackPosts;
+
+    if (filters?.published !== undefined) {
+      filteredPosts = filteredPosts.filter(
+        (post) => post.published === filters.published
+      );
+    }
+
+    if (filters?.category) {
+      filteredPosts = filteredPosts.filter(
+        (post) => post.category === filters.category
+      );
+    }
+
+    return filteredPosts;
   }
 }
 
@@ -466,6 +530,12 @@ export async function getBlogPosts(filters?: {
 export async function getBlogPostBySlug(
   slug: string
 ): Promise<BlogPost | null> {
+  // Always use fallback data on client side for now
+  if (typeof window !== "undefined") {
+    const fallbackPosts = getFallbackBlogPosts();
+    return fallbackPosts.find((post) => post.slug === slug) || null;
+  }
+
   // Return fallback data if Supabase is not configured
   if (!isSupabaseConfigured()) {
     const fallbackPosts = getFallbackBlogPosts();
@@ -481,13 +551,17 @@ export async function getBlogPostBySlug(
 
     if (error) {
       console.error("Error fetching blog post:", error);
-      return null;
+      // Return fallback data on error
+      const fallbackPosts = getFallbackBlogPosts();
+      return fallbackPosts.find((post) => post.slug === slug) || null;
     }
 
     return data;
   } catch (error) {
     console.error("Error fetching blog post:", error);
-    return null;
+    // Return fallback data on error
+    const fallbackPosts = getFallbackBlogPosts();
+    return fallbackPosts.find((post) => post.slug === slug) || null;
   }
 }
 

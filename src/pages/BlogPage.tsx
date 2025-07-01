@@ -25,13 +25,22 @@ const BlogPage = () => {
 
   const loadBlogPosts = async () => {
     try {
+      console.log("🔍 BlogPage: Starting to load blog posts...");
       setLoading(true);
       const posts = await getBlogPosts({ published: true });
+      console.log("📚 BlogPage: Received posts:", posts?.length, posts);
       setBlogPosts(posts);
+      console.log("✅ BlogPage: State updated with posts");
     } catch (error) {
-      console.error("Error loading blog posts:", error);
+      console.error("❌ BlogPage: Error loading blog posts:", error);
+      // Set empty array on error to show "no posts" message instead of infinite loading
+      setBlogPosts([]);
     } finally {
       setLoading(false);
+      console.log(
+        "🏁 BlogPage: Loading finished, posts count:",
+        blogPosts.length
+      );
     }
   };
 
