@@ -1,11 +1,14 @@
-
+"use client";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
 import { Link } from "../../lib/navigation";
-import { blogPosts } from "@/data/blogPosts";
+import { getBlogPosts } from "@/lib/blog-service";
+import type { Database } from "@/lib/supabase";
+
+type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 
 interface GuideCardProps {
   title: string;
@@ -14,15 +17,20 @@ interface GuideCardProps {
   hasVideo?: boolean;
 }
 
-const GuideCard = ({ title, image, link, hasVideo = false }: GuideCardProps) => {
+const GuideCard = ({
+  title,
+  image,
+  link,
+  hasVideo = false,
+}: GuideCardProps) => {
   return (
     <Card className="overflow-hidden group hover:shadow-lg transition-all duration-300 border-0">
       <Link to={link} className="block">
         <div className="relative h-60 md:h-72">
-          <img 
-            src={image} 
-            alt={title} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 flex flex-col justify-end p-5">
             <h3 className="text-white text-xl font-semibold">{title}</h3>
@@ -50,16 +58,33 @@ const GuideCard = ({ title, image, link, hasVideo = false }: GuideCardProps) => 
 
 const FreeGuidesSection = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const { ref, inView } = useInView({
     threshold: 0.1,
-    triggerOnce: true
+    triggerOnce: true,
   });
-  
+
   useEffect(() => {
     if (inView) {
       setAnimateItems(true);
     }
   }, [inView]);
+
+  useEffect(() => {
+    const loadBlogPosts = async () => {
+      try {
+        const posts = await getBlogPosts({ published: true, limit: 3 });
+        setBlogPosts(posts);
+      } catch (error) {
+        console.error("Error loading blog posts for free guides:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBlogPosts();
+  }, []);
 
   // Get the three most recent blog posts
   const featuredPosts = blogPosts.slice(0, 3);
@@ -73,11 +98,16 @@ const FreeGuidesSection = () => {
               See our free guides on growing your tour business
             </h2>
             <p className="text-gray-600 max-w-2xl">
-              Expert advice and actionable strategies to help cultural tour operators thrive in today's market
+              Expert advice and actionable strategies to help cultural tour
+              operators thrive in today's market
             </p>
           </div>
           <div className="mt-4 md:mt-0">
-            <Button variant="outline" asChild className="border-gray-300 text-gray-700 flex items-center gap-1">
+            <Button
+              variant="outline"
+              asChild
+              className="border-gray-300 text-gray-700 flex items-center gap-1"
+            >
               <Link to="/blog">
                 Read the blog
                 <ArrowRight className="h-4 w-4" />
@@ -85,19 +115,42 @@ const FreeGuidesSection = () => {
             </Button>
           </div>
         </div>
-        
-        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-700 ease-out ${
-          animateItems ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}>
-          {featuredPosts.map((post, index) => (
-            <GuideCard 
-              key={post.id}
-              title={post.title} 
-              image={post.image}
-              link={`/blog/${post.slug}`}
-              hasVideo={index === 0} // Just make the first one a video for variety
-            />
-          ))}
+
+        <div
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-700 ease-out ${
+            animateItems
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-8"
+          }`}
+        >
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 3 }).map((_, index) => (
+              <Card key={index} className="overflow-hidden border-0 shadow-sm">
+                <div className="h-60 md:h-72 bg-gray-200 animate-pulse"></div>
+                <div className="p-5">
+                  <div className="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+                </div>
+              </Card>
+            ))
+          ) : featuredPosts.length > 0 ? (
+            featuredPosts.map((post, index) => (
+              <GuideCard
+                key={post.id}
+                title={post.title}
+                image={post.featured_image_url || "/placeholder.svg"}
+                link={`/blog/${post.slug}`}
+                hasVideo={index === 0} // Just make the first one a video for variety
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-500">
+                No guides available at the moment.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </section>

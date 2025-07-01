@@ -1,11 +1,14 @@
-'use client'
+"use client";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
 import { Link } from "../../../lib/navigation";
-import { blogPosts } from "@/data/blogPosts";
+import { getBlogPosts } from "@/lib/blog-service";
+import type { Database } from "@/lib/supabase";
+
+type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 
 interface GuideCardProps {
   title: string;
@@ -55,6 +58,8 @@ const GuideCard = ({
 
 const FreeGuidesSection = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true,
@@ -65,6 +70,21 @@ const FreeGuidesSection = () => {
       setAnimateItems(true);
     }
   }, [inView]);
+
+  useEffect(() => {
+    const loadBlogPosts = async () => {
+      try {
+        const posts = await getBlogPosts({ published: true, limit: 3 });
+        setBlogPosts(posts);
+      } catch (error) {
+        console.error("Error loading blog posts for free guides:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBlogPosts();
+  }, []);
 
   // Get the three most recent blog posts
   const featuredPosts = blogPosts.slice(0, 3);
@@ -103,15 +123,34 @@ const FreeGuidesSection = () => {
               : "opacity-0 translate-y-8"
           }`}
         >
-          {featuredPosts.map((post, index) => (
-            <GuideCard
-              key={post.id}
-              title={post.title}
-              image={post.image}
-              link={`/blog/${post.slug}`}
-              hasVideo={index === 0} // Just make the first one a video for variety
-            />
-          ))}
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 3 }).map((_, index) => (
+              <Card key={index} className="overflow-hidden border-0 shadow-sm">
+                <div className="h-60 md:h-72 bg-gray-200 animate-pulse"></div>
+                <div className="p-5">
+                  <div className="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+                </div>
+              </Card>
+            ))
+          ) : featuredPosts.length > 0 ? (
+            featuredPosts.map((post, index) => (
+              <GuideCard
+                key={post.id}
+                title={post.title}
+                image={post.featured_image_url || "/placeholder.svg"}
+                link={`/blog/${post.slug}`}
+                hasVideo={index === 0} // Just make the first one a video for variety
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-500">
+                No guides available at the moment.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </section>
