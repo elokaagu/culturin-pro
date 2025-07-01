@@ -4,6 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ItineraryType } from '@/data/itineraryData';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import Image from "@/components/ui/image";
 
 interface WebsiteSettingsProps {
   itineraries: ItineraryType[];

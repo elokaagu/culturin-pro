@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Link } from "../../lib/navigation";
+import Image from "@/components/ui/image";
 
 const PricingPage = () => {
   return (
@@ -351,11 +352,7 @@ const PricingPage = () => {
           <div className="max-w-md mx-auto mt-20">
             <div className="bg-black rounded-xl overflow-hidden">
               <div className="aspect-[4/5] relative">
-                <img
-                  src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1000&auto=format&fit=crop"
-                  alt="Testimonial"
-                  className="w-full h-full object-cover"
-                />
+                <Image src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1000&auto=format&fit=crop" alt="Testimonial" className="w-full h-full object-cover" fill />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/60 to-transparent p-6">
                   <div className="text-white">
                     <p className="text-xl font-medium mb-6">

@@ -131,10 +131,11 @@ const Hero = () => {
                   <div className="p-3 h-full overflow-y-auto">
                     {/* Featured Experience */}
                     <div className="rounded-lg overflow-hidden mb-3 relative">
-                      <img
+                      <Image
                         src="https://images.unsplash.com/photo-1466442929976-97f336a657be"
                         alt="Oaxaca Food Tour experience"
                         className="w-full h-40 object-cover"
+                        fill
                       />
                       <div className="absolute top-4 left-3 bg-blue-600 text-white text-xs px-2 py-1 rounded-md">
                         Featured Tour
@@ -195,10 +196,11 @@ const Hero = () => {
                     </div>
 
                     <div className="rounded-lg overflow-hidden mb-3 relative">
-                      <img
+                      <Image
                         src="https://images.unsplash.com/photo-1469041797191-50ace28483c3"
                         alt="Cultural tour experience"
                         className="w-full h-32 object-cover"
+                        fill
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
                         <span className="text-white font-medium">

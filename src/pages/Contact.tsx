@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import Image from "@/components/ui/image";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -64,11 +65,7 @@ const Contact = () => {
         {/* Hero Section */}
         <section className="relative bg-blue-600 text-white py-16 md:py-20 overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <img 
-              src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop"
-              alt="Contact us"
-              className="w-full h-full object-cover opacity-20"
-            />
+            <Image src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop" alt="Contact us" className="w-full h-full object-cover opacity-20" fill />
             <div className="absolute inset-0 bg-blue-600/70"></div>
           </div>
           <div className="container mx-auto px-6 max-w-7xl relative z-10">

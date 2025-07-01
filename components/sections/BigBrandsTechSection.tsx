@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
 import { Link } from "../../lib/navigation";
+import Image from "@/components/ui/image";
 
 const BigBrandsTechSection = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -96,11 +97,7 @@ const BigBrandsTechSection = () => {
                       
                       {/* App content - using a cultural tour image instead of food */}
                       <div className="relative h-[65%]">
-                        <img 
-                          src="https://images.unsplash.com/photo-1516939884455-1445c8652f83?q=80&w=1000&auto=format&fit=crop" 
-                          alt="Cultural tour guide showing experience" 
-                          className="w-full h-full object-cover"
-                        />
+                        <Image src="https://images.unsplash.com/photo-1516939884455-1445c8652f83?q=80&w=1000&auto=format&fit=crop" alt="Cultural tour guide showing experience" className="w-full h-full object-cover" fill />
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
                           <div className="flex justify-between items-center">
                             <div>

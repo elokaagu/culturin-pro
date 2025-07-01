@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import { Separator } from "@/components/ui/separator";
 import { Users, Calendar, Briefcase } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
+import Image from "@/components/ui/image";
 
 const OurStoryPage = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -90,11 +91,7 @@ const OurStoryPage = () => {
               </p>
             </div>
             <div className="mt-16 aspect-video max-w-5xl overflow-hidden rounded-xl">
-              <img
-                src="https://images.unsplash.com/photo-1469041797191-50ace28483c3?q=80&w=2000&auto=format&fit=crop"
-                alt="Culturin team"
-                className="w-full h-full object-cover"
-              />
+              <Image src="https://images.unsplash.com/photo-1469041797191-50ace28483c3?q=80&w=2000&auto=format&fit=crop" alt="Culturin team" className="w-full h-full object-cover" fill />
             </div>
           </div>
         </section>

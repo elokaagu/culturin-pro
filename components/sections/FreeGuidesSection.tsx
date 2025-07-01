@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Link } from "../../lib/navigation";
 import { getBlogPosts } from "@/lib/blog-service";
 import type { Database } from "@/lib/supabase";
+import Image from "@/components/ui/image";
 
 type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 
@@ -27,10 +28,11 @@ const GuideCard = ({
     <Card className="overflow-hidden group hover:shadow-lg transition-all duration-300 border-0">
       <Link to={link} className="block">
         <div className="relative h-60 md:h-72">
-          <img
+          <Image
             src={image}
             alt={title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            fill
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 flex flex-col justify-end p-5">
             <h3 className="text-white text-xl font-semibold">{title}</h3>

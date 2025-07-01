@@ -290,11 +290,7 @@ const DiscoverTrips = () => {
         {/* Adjusted banner positioning to overlap with the header */}
         <div className="relative w-full h-80 overflow-hidden">
           <div className="absolute inset-0 bg-black/60 z-10"></div>
-          <img 
-            src="/lovable-uploads/61e2237f-86de-4ec9-8712-8902092d8c9b.png" 
-            alt="Cultural Experiences" 
-            className="w-full h-full object-cover"
-          />
+          <Image src="/lovable-uploads/61e2237f-86de-4ec9-8712-8902092d8c9b.png" alt="Cultural Experiences" className="w-full h-full object-cover" fill />
           <div className="absolute inset-0 flex flex-col justify-center z-20 container mx-auto px-6">
             {/* Added a mt-16 to push the content down a bit so it's not hidden by the header */}
             <div className="mt-16">

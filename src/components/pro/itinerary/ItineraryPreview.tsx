@@ -8,6 +8,7 @@ import { ItineraryType } from '@/data/itineraryData';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/components/ui/use-toast';
 import { 
+import Image from "@/components/ui/image";
   Bed, UtensilsCrossed, Camera, Landmark, MapPin, Bus, 
   Navigation, Sun, Moon, Coffee, Music, Ticket, Bot
 } from 'lucide-react';

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { ItineraryType } from "@/data/itineraryData";
+import Image from "@/components/ui/image";
 
 const BookingFlowPreview: React.FC = () => {
   const { itineraryId } = useParams();

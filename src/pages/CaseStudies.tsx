@@ -141,11 +141,7 @@ const CaseStudies = () => {
         {/* Hero Section */}
         <section className="relative bg-blue-600 text-white py-16 lg:py-24 overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <img 
-              src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop"
-              alt="Case Studies"
-              className="w-full h-full object-cover opacity-40"
-            />
+            <Image src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop" alt="Case Studies" className="w-full h-full object-cover opacity-40" fill />
             <div className="absolute inset-0 bg-blue-600/70"></div>
           </div>
           <div className="container mx-auto px-6 max-w-7xl relative z-10">

@@ -12,6 +12,7 @@ import ModuleLibrary from '@/components/pro/itinerary/ModuleLibrary';
 import ItineraryPreview from '@/components/pro/itinerary/ItineraryPreview';
 import AIContentAssistant from '@/components/pro/itinerary/AIContentAssistant';
 import { ItineraryType } from '@/data/itineraryData';
+import Image from "@/components/ui/image";
 
 interface ItineraryEditorProps {
   showEditor: boolean;

@@ -15,6 +15,7 @@ import Header from '../components/Header';
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from '../../lib/navigation';
 import NewFooter from "@/components/sections/NewFooter";
+import Image from "@/components/ui/image";
 
 const faqCategories = [
   { id: 'getting-started', name: 'Getting Started' },
@@ -90,11 +91,7 @@ const HelpCenter = () => {
         {/* Hero Section */}
         <section className="relative bg-blue-600 text-white py-20 overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <img 
-              src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop"
-              alt="Help Center"
-              className="w-full h-full object-cover opacity-30"
-            />
+            <Image src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop" alt="Help Center" className="w-full h-full object-cover opacity-30" fill />
             <div className="absolute inset-0 bg-blue-600/70"></div>
           </div>
           <div className="container mx-auto px-4 relative z-10">

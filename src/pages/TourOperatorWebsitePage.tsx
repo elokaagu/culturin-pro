@@ -7,6 +7,7 @@ import AboutSection from '@/components/pro/website/AboutSection';
 import ContactSection from '@/components/pro/website/ContactSection';
 import ToursGrid from '@/components/pro/website/ToursGrid';
 import { cn } from '@/lib/utils';
+import Image from "@/components/ui/image";
 
 const TourOperatorWebsitePage: React.FC = () => {
   const { slug, '*': subpath } = useParams();

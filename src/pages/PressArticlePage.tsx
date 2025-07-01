@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Calendar } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
+import Image from "@/components/ui/image";
 
 // This would normally come from an API or CMS
 const pressArticles = [

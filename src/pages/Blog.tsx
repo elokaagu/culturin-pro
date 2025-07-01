@@ -8,6 +8,7 @@ import { Calendar, ChevronRight } from "lucide-react";
 import { Link } from "../../lib/navigation";
 import { blogPosts } from "@/data/blogPosts";
 import NewFooter from "@/components/sections/NewFooter";
+import Image from "@/components/ui/image";
 
 const Blog = () => {
   useEffect(() => {

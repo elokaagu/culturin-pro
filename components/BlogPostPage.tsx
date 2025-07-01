@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, Calendar, Tag } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
 import FreeGuidesSection from "@/components/sections/FreeGuidesSection";
+import Image from "@/components/ui/image";
 import type { Database } from "@/lib/supabase";
 
 type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];

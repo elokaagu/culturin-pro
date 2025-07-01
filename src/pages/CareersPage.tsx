@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, ChevronRight } from "lucide-react";
 import { Link } from "../../lib/navigation";
+import Image from "@/components/ui/image";
 
 const CareersPage = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -129,11 +130,7 @@ const CareersPage = () => {
                 </ul>
               </div>
               <div className="aspect-square rounded-xl overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=2000&auto=format&fit=crop" 
-                  alt="Culturin team culture" 
-                  className="w-full h-full object-cover"
-                />
+                <Image src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=2000&auto=format&fit=crop" alt="Culturin team culture" className="w-full h-full object-cover" fill />
               </div>
             </div>
           </div>

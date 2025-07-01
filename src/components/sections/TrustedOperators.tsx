@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Link } from "../../../lib/navigation";
 import {
+import Image from "@/components/ui/image";
   Carousel,
   CarouselContent,
   CarouselItem,

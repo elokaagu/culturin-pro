@@ -9,6 +9,7 @@ import { Link } from "../../lib/navigation";
 import { getBlogPosts } from "@/lib/blog-service";
 import type { Database } from "@/lib/supabase";
 import NewFooter from "@/components/sections/NewFooter";
+import Image from "@/components/ui/image";
 
 type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 

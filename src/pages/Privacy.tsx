@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import Footer from '../components/sections/Footer';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from '../../lib/navigation';
+import Image from "@/components/ui/image";
 
 const Privacy = () => {
   const navigate = useNavigate();
@@ -26,11 +27,7 @@ const Privacy = () => {
         {/* Hero Section */}
         <section className="relative bg-culturin-accent text-white py-12 md:py-16 lg:py-20 overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <img 
-              src="/public/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png"
-              alt="Privacy Policy"
-              className="w-full h-full object-cover opacity-30"
-            />
+            <Image src="/public/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png" alt="Privacy Policy" className="w-full h-full object-cover opacity-30" fill />
           </div>
           <div className="container-custom relative z-10">
             <div className="max-w-2xl mx-auto text-center">

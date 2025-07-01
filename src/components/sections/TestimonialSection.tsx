@@ -44,11 +44,7 @@ const TestimonialSection = () => {
                   </div>
                   <div className="flex items-center">
                     <div className="w-12 h-12 rounded-full bg-[#403E43] overflow-hidden mr-4 shadow-md border-2 border-white/30">
-                      <img 
-                        src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=256" 
-                        alt="Sofia" 
-                        className="w-full h-full object-cover" 
-                      />
+                      <Image src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=256" alt="Sofia" className="w-full h-full object-cover" fill />
                     </div>
                     <div className="bg-black/70 backdrop-blur-sm px-4 py-2 rounded-lg">
                       <p className="text-xl font-medium text-white">Sofia</p>
@@ -65,11 +61,7 @@ const TestimonialSection = () => {
           }`}>
             {/* Updated to make image fill the entire card */}
             <div className="h-full w-full overflow-hidden rounded-xl shadow-lg">
-              <img 
-                src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=830&auto=format&fit=crop" 
-                alt="Person walking through historic Italian street with buildings" 
-                className="w-full h-full object-cover"
-              />
+              <Image src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=830&auto=format&fit=crop" alt="Person walking through historic Italian street with buildings" className="w-full h-full object-cover" fill />
             </div>
           </div>
         </div>
