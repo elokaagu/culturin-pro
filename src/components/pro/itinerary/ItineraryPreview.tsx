@@ -3,17 +3,35 @@
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Save, Eye } from "lucide-react";
-import { ItineraryType } from "@/data/itineraryData";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
+import { Separator } from "@/components/ui/separator";
+import {
+  Save,
+  Eye,
+  Edit,
+  Trash2,
+  Clock,
+  MapPin,
+  DollarSign,
+  Users,
+  Calendar,
+  GripVertical,
+  Plus,
+  Camera,
+  FileText,
+  ExternalLink,
+} from "lucide-react";
 import Image from "@/components/ui/image";
 import {
   Bed,
   UtensilsCrossed,
-  Camera,
   Landmark,
-  MapPin,
   Bus,
   Navigation,
   Sun,
@@ -23,21 +41,11 @@ import {
   Ticket,
   Bot,
 } from "lucide-react";
+import { ItineraryType, ItineraryModule } from "@/data/itineraryData";
 
 interface ItineraryPreviewProps {
   itinerary: ItineraryType;
   onSaveChanges?: () => void;
-}
-
-interface ItineraryModule {
-  id: string;
-  title: string;
-  type: string;
-  description: string;
-  position: number;
-  day: number;
-  icon?: JSX.Element;
-  properties?: Record<string, any>;
 }
 
 const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
@@ -46,17 +54,20 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
 }) => {
   const [viewMode, setViewMode] = useState<"edit" | "preview">("edit");
   const [activeDay, setActiveDay] = useState(1);
-  const [modules, setModules] = useState<ItineraryModule[]>([]);
+  const [modules, setModules] = useState<ItineraryModule[]>(
+    itinerary.modules || []
+  );
   const [editingModule, setEditingModule] = useState<string | null>(null);
+  const [draggedModule, setDraggedModule] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Reset modules when itinerary changes
   useEffect(() => {
     if (itinerary.id) {
-      setModules([]);
+      setModules(itinerary.modules || []);
       setActiveDay(1);
     }
-  }, [itinerary.id]);
+  }, [itinerary.id, itinerary.modules]);
 
   // Create tabs for each day in the itinerary
   const dayTabs = Array.from({ length: itinerary.days || 3 }, (_, i) => i + 1);
@@ -111,8 +122,13 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
         id: `${moduleInfo.id}-${Date.now()}`,
         day,
         position: modules.filter((m) => m.day === day).length,
-        properties: {},
-        icon: getModuleIcon(moduleInfo.type),
+        time: "09:00",
+        duration: 60,
+        description: moduleInfo.description || "",
+        location: "",
+        price: 0,
+        notes: "",
+        images: [],
       };
 
       setModules((prev) => [...prev, newModule]);
@@ -148,25 +164,47 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
     setEditingModule(moduleId === editingModule ? null : moduleId);
   };
 
-  const handlePropertyChange = (
+  const handleModuleUpdate = (
     moduleId: string,
-    property: string,
-    value: any
+    updates: Partial<ItineraryModule>
   ) => {
     setModules((prev) =>
       prev.map((m) => {
         if (m.id === moduleId) {
-          return {
-            ...m,
-            properties: {
-              ...(m.properties || {}),
-              [property]: value,
-            },
-          };
+          return { ...m, ...updates };
         }
         return m;
       })
     );
+  };
+
+  const handleDragStart = (e: React.DragEvent, moduleId: string) => {
+    setDraggedModule(moduleId);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleReorder = (e: React.DragEvent, targetModuleId: string) => {
+    e.preventDefault();
+    if (!draggedModule || draggedModule === targetModuleId) return;
+
+    const draggedIndex = modules.findIndex((m) => m.id === draggedModule);
+    const targetIndex = modules.findIndex((m) => m.id === targetModuleId);
+
+    if (draggedIndex === -1 || targetIndex === -1) return;
+
+    const newModules = [...modules];
+    const [draggedItem] = newModules.splice(draggedIndex, 1);
+    newModules.splice(targetIndex, 0, draggedItem);
+
+    // Update positions
+    newModules.forEach((module, index) => {
+      if (module.day === draggedItem.day) {
+        module.position = index;
+      }
+    });
+
+    setModules(newModules);
+    setDraggedModule(null);
   };
 
   const handleSaveChanges = () => {
@@ -177,6 +215,266 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
     });
     if (onSaveChanges) onSaveChanges();
   };
+
+  const calculateDayTotal = (day: number) => {
+    return modules
+      .filter((m) => m.day === day)
+      .reduce((total, module) => total + (module.price || 0), 0);
+  };
+
+  const calculateTotalDuration = (day: number) => {
+    return modules
+      .filter((m) => m.day === day)
+      .reduce((total, module) => total + (module.duration || 0), 0);
+  };
+
+  const formatDuration = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (hours > 0) {
+      return `${hours}h ${mins > 0 ? `${mins}m` : ""}`;
+    }
+    return `${mins}m`;
+  };
+
+  const ModuleEditForm = ({ module }: { module: ItineraryModule }) => (
+    <Card className="mt-2">
+      <CardContent className="p-4 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor={`title-${module.id}`}>Title</Label>
+            <Input
+              id={`title-${module.id}`}
+              value={module.title}
+              onChange={(e) =>
+                handleModuleUpdate(module.id, { title: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <Label htmlFor={`time-${module.id}`}>Time</Label>
+            <Input
+              id={`time-${module.id}`}
+              type="time"
+              value={module.time || "09:00"}
+              onChange={(e) =>
+                handleModuleUpdate(module.id, { time: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <Label htmlFor={`duration-${module.id}`}>Duration (minutes)</Label>
+            <Input
+              id={`duration-${module.id}`}
+              type="number"
+              value={module.duration || 60}
+              onChange={(e) =>
+                handleModuleUpdate(module.id, {
+                  duration: parseInt(e.target.value) || 60,
+                })
+              }
+            />
+          </div>
+          <div>
+            <Label htmlFor={`price-${module.id}`}>Price ($)</Label>
+            <Input
+              id={`price-${module.id}`}
+              type="number"
+              step="0.01"
+              value={module.price || 0}
+              onChange={(e) =>
+                handleModuleUpdate(module.id, {
+                  price: parseFloat(e.target.value) || 0,
+                })
+              }
+            />
+          </div>
+        </div>
+        <div>
+          <Label htmlFor={`location-${module.id}`}>Location</Label>
+          <Input
+            id={`location-${module.id}`}
+            value={module.location || ""}
+            onChange={(e) =>
+              handleModuleUpdate(module.id, { location: e.target.value })
+            }
+            placeholder="Enter location"
+          />
+        </div>
+        <div>
+          <Label htmlFor={`description-${module.id}`}>Description</Label>
+          <Textarea
+            id={`description-${module.id}`}
+            value={module.description || ""}
+            onChange={(e) =>
+              handleModuleUpdate(module.id, { description: e.target.value })
+            }
+            placeholder="Describe this activity..."
+            rows={3}
+          />
+        </div>
+        <div>
+          <Label htmlFor={`notes-${module.id}`}>Notes</Label>
+          <Textarea
+            id={`notes-${module.id}`}
+            value={module.notes || ""}
+            onChange={(e) =>
+              handleModuleUpdate(module.id, { notes: e.target.value })
+            }
+            placeholder="Additional notes or requirements..."
+            rows={2}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const PreviewMode = () => (
+    <div className="space-y-6">
+      {/* Itinerary Header */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-2xl">{itinerary.title}</CardTitle>
+              <p className="text-gray-600 mt-2">{itinerary.description}</p>
+            </div>
+            {itinerary.image && (
+              <div className="w-24 h-24 relative rounded-lg overflow-hidden">
+                <Image
+                  src={itinerary.image}
+                  alt={itinerary.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-4 mt-4">
+            <Badge variant="outline" className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {itinerary.days} days
+            </Badge>
+            {itinerary.price && (
+              <Badge variant="outline" className="flex items-center gap-1">
+                <DollarSign className="h-3 w-3" />${itinerary.price}{" "}
+                {itinerary.currency || "USD"}
+              </Badge>
+            )}
+            {itinerary.groupSize && (
+              <Badge variant="outline" className="flex items-center gap-1">
+                <Users className="h-3 w-3" />
+                {itinerary.groupSize.min}-{itinerary.groupSize.max} people
+              </Badge>
+            )}
+            {itinerary.difficulty && (
+              <Badge variant="outline">{itinerary.difficulty}</Badge>
+            )}
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Day by Day Preview */}
+      {dayTabs.map((day) => {
+        const dayModules = modules
+          .filter((module) => module.day === day)
+          .sort((a, b) => (a.position || 0) - (b.position || 0));
+
+        const dayTotal = calculateDayTotal(day);
+        const totalDuration = calculateTotalDuration(day);
+
+        return (
+          <Card key={day}>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-lg">
+                  {itinerary.storyMode ? `Chapter ${day}` : `Day ${day}`}
+                </CardTitle>
+                <div className="flex gap-2">
+                  {totalDuration > 0 && (
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1"
+                    >
+                      <Clock className="h-3 w-3" />
+                      {formatDuration(totalDuration)}
+                    </Badge>
+                  )}
+                  {dayTotal > 0 && (
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1"
+                    >
+                      <DollarSign className="h-3 w-3" />${dayTotal}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {dayModules.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">
+                  No activities planned for this day
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {dayModules.map((module, index) => (
+                    <div
+                      key={module.id}
+                      className="flex gap-4 p-4 border rounded-lg"
+                    >
+                      <div className="flex-shrink-0">
+                        {getModuleIcon(module.type)}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-medium">{module.title}</h4>
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            {module.time && (
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {module.time}
+                              </span>
+                            )}
+                            {module.duration && (
+                              <span>({formatDuration(module.duration)})</span>
+                            )}
+                          </div>
+                        </div>
+                        {module.description && (
+                          <p className="text-gray-600 mb-2">
+                            {module.description}
+                          </p>
+                        )}
+                        <div className="flex flex-wrap gap-2 text-sm text-gray-500">
+                          {module.location && (
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              {module.location}
+                            </span>
+                          )}
+                          {module.price && module.price > 0 && (
+                            <span className="flex items-center gap-1">
+                              <DollarSign className="h-3 w-3" />${module.price}
+                            </span>
+                          )}
+                        </div>
+                        {module.notes && (
+                          <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
+                            <strong>Notes:</strong> {module.notes}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
 
   return (
     <div className="flex flex-col h-full">
@@ -211,247 +509,146 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
         </div>
       </div>
 
-      <Tabs
-        defaultValue={String(activeDay)}
-        onValueChange={(value) => setActiveDay(Number(value))}
-        className="flex-1"
-      >
-        <div className="border-b sticky top-0 bg-white z-10">
-          <TabsList className="mx-4 my-2">
+      {viewMode === "preview" ? (
+        <ScrollArea className="flex-1 p-4">
+          <PreviewMode />
+        </ScrollArea>
+      ) : (
+        <Tabs
+          defaultValue={String(activeDay)}
+          onValueChange={(value) => setActiveDay(Number(value))}
+          className="flex-1"
+        >
+          <div className="border-b sticky top-0 bg-white z-10">
+            <TabsList className="mx-4 my-2">
+              {dayTabs.map((day) => {
+                const dayModules = modules.filter((m) => m.day === day);
+                const dayTotal = calculateDayTotal(day);
+                return (
+                  <TabsTrigger
+                    key={day}
+                    value={String(day)}
+                    className="flex flex-col"
+                  >
+                    <span>
+                      {itinerary.storyMode ? `Chapter ${day}` : `Day ${day}`}
+                    </span>
+                    <div className="flex gap-2 text-xs">
+                      <span>{dayModules.length} items</span>
+                      {dayTotal > 0 && <span>${dayTotal}</span>}
+                    </div>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </div>
+
+          <ScrollArea className="flex-1">
             {dayTabs.map((day) => (
-              <TabsTrigger key={day} value={String(day)}>
-                {itinerary.storyMode ? `Chapter ${day}` : `Day ${day}`}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
+              <TabsContent key={day} value={String(day)} className="m-0 p-0">
+                <div
+                  className="min-h-[400px] p-4"
+                  onDrop={(e) => handleDrop(e, day)}
+                  onDragOver={handleDragOver}
+                >
+                  <div className="border-2 border-dashed rounded-lg p-4 mb-4 bg-gray-50 text-center">
+                    <p className="text-gray-500">
+                      {modules.filter((m) => m.day === day).length === 0
+                        ? "Drag modules here to build your itinerary"
+                        : "Drag more modules or rearrange existing ones"}
+                    </p>
+                  </div>
 
-        <ScrollArea className="flex-1">
-          {dayTabs.map((day) => (
-            <TabsContent key={day} value={String(day)} className="m-0 p-0">
-              <div
-                className="min-h-[400px] p-4"
-                onDrop={(e) => handleDrop(e, day)}
-                onDragOver={handleDragOver}
-              >
-                <div className="border-2 border-dashed rounded-lg p-4 mb-4 bg-gray-50 text-center">
-                  <p className="text-gray-500">
-                    {modules.filter((m) => m.day === day).length === 0
-                      ? "Drag modules here to build your itinerary"
-                      : "Drag more modules or rearrange existing ones"}
-                  </p>
-                </div>
-
-                {modules
-                  .filter((module) => module.day === day)
-                  .sort((a, b) => a.position - b.position)
-                  .map((module) => (
-                    <div
-                      key={module.id}
-                      className="border rounded-lg mb-4 overflow-hidden"
-                    >
-                      <div className="bg-white p-3 flex justify-between items-center">
-                        <div className="flex items-center">
-                          {module.icon}
-                          <span className="ml-2 font-medium">
-                            {module.title}
-                          </span>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEdit(module.id)}
-                          >
-                            {editingModule === module.id ? "Done" : "Edit"}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(module.id)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      </div>
-
-                      {editingModule === module.id && (
-                        <div className="bg-gray-50 p-4 border-t">
-                          <h4 className="font-medium mb-2">Edit Properties</h4>
-                          <div className="space-y-3">
+                  {modules
+                    .filter((module) => module.day === day)
+                    .sort((a, b) => (a.position || 0) - (b.position || 0))
+                    .map((module) => (
+                      <div
+                        key={module.id}
+                        className="border rounded-lg mb-4 overflow-hidden"
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, module.id)}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => handleReorder(e, module.id)}
+                      >
+                        <div className="bg-white p-3 flex justify-between items-center">
+                          <div className="flex items-center gap-2">
+                            <GripVertical className="h-4 w-4 text-gray-400 cursor-move" />
+                            {getModuleIcon(module.type)}
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Title
-                              </label>
-                              <input
-                                type="text"
-                                className="w-full p-2 border rounded-md"
-                                value={module.properties?.title || ""}
-                                onChange={(e) =>
-                                  handlePropertyChange(
-                                    module.id,
-                                    "title",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Enter title..."
-                              />
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Description
-                              </label>
-                              <textarea
-                                className="w-full p-2 border rounded-md"
-                                rows={3}
-                                value={module.properties?.description || ""}
-                                onChange={(e) =>
-                                  handlePropertyChange(
-                                    module.id,
-                                    "description",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Enter description..."
-                              />
-                            </div>
-
-                            {module.type === "Photo Opportunity" && (
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Upload Image
-                                </label>
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  className="w-full border rounded-md p-2"
-                                  onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) {
-                                      // In a real app, this would upload to a server and get a URL
-                                      const fileReader = new FileReader();
-                                      fileReader.onload = (event) => {
-                                        handlePropertyChange(
-                                          module.id,
-                                          "imageUrl",
-                                          event.target?.result
-                                        );
-                                      };
-                                      fileReader.readAsDataURL(file);
-                                    }
-                                  }}
-                                />
-                                {module.properties?.imageUrl && (
-                                  <div className="mt-2">
-                                    <img
-                                      src={module.properties.imageUrl}
-                                      alt="Uploaded"
-                                      className="w-full h-40 object-cover rounded-md"
-                                    />
-                                  </div>
+                              <span className="font-medium">
+                                {module.title}
+                              </span>
+                              <div className="flex items-center gap-2 text-sm text-gray-500">
+                                {module.time && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    {module.time}
+                                  </span>
+                                )}
+                                {module.duration && (
+                                  <span>
+                                    ({formatDuration(module.duration)})
+                                  </span>
+                                )}
+                                {module.price && module.price > 0 && (
+                                  <span className="flex items-center gap-1">
+                                    <DollarSign className="h-3 w-3" />$
+                                    {module.price}
+                                  </span>
                                 )}
                               </div>
-                            )}
-
-                            {module.type === "Location" && (
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Address
-                                </label>
-                                <input
-                                  type="text"
-                                  className="w-full p-2 border rounded-md"
-                                  value={module.properties?.address || ""}
-                                  onChange={(e) =>
-                                    handlePropertyChange(
-                                      module.id,
-                                      "address",
-                                      e.target.value
-                                    )
-                                  }
-                                  placeholder="Enter address..."
-                                />
-                              </div>
-                            )}
-
-                            {module.type === "Meal" && (
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Restaurant Name
-                                </label>
-                                <input
-                                  type="text"
-                                  className="w-full p-2 border rounded-md"
-                                  value={module.properties?.restaurant || ""}
-                                  onChange={(e) =>
-                                    handlePropertyChange(
-                                      module.id,
-                                      "restaurant",
-                                      e.target.value
-                                    )
-                                  }
-                                  placeholder="Enter restaurant name..."
-                                />
-                              </div>
-                            )}
-
-                            {(module.type === "Activity" ||
-                              module.type === "Tour") && (
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Duration (hours)
-                                </label>
-                                <input
-                                  type="number"
-                                  className="w-full p-2 border rounded-md"
-                                  value={module.properties?.duration || ""}
-                                  onChange={(e) =>
-                                    handlePropertyChange(
-                                      module.id,
-                                      "duration",
-                                      e.target.value
-                                    )
-                                  }
-                                  placeholder="Enter duration in hours..."
-                                />
-                              </div>
-                            )}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEdit(module.id)}
+                            >
+                              <Edit className="h-3 w-3 mr-1" />
+                              {editingModule === module.id ? "Done" : "Edit"}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(module.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
-                      )}
 
-                      {!editingModule &&
-                        (module.properties?.title ||
-                          module.properties?.description) && (
-                          <div className="p-3 border-t">
-                            {module.properties?.title && (
-                              <h4 className="font-medium mb-1">
-                                {module.properties.title}
-                              </h4>
-                            )}
-                            {module.properties?.description && (
-                              <p className="text-sm text-gray-700">
-                                {module.properties.description}
+                        {editingModule === module.id && (
+                          <ModuleEditForm module={module} />
+                        )}
+
+                        {editingModule !== module.id && (
+                          <div className="px-3 pb-3">
+                            {module.description && (
+                              <p className="text-sm text-gray-600 mb-2">
+                                {module.description}
                               </p>
                             )}
-                            {module.properties?.imageUrl && (
-                              <img
-                                src={module.properties.imageUrl}
-                                alt={module.properties.title || "Module image"}
-                                className="mt-2 w-full h-40 object-cover rounded-md"
-                              />
-                            )}
+                            <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                              {module.location && (
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="h-3 w-3" />
+                                  {module.location}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         )}
-                    </div>
-                  ))}
-              </div>
-            </TabsContent>
-          ))}
-        </ScrollArea>
-      </Tabs>
+                      </div>
+                    ))}
+                </div>
+              </TabsContent>
+            ))}
+          </ScrollArea>
+        </Tabs>
+      )}
     </div>
   );
 };
