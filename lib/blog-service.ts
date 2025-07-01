@@ -627,6 +627,18 @@ export async function isSlugUnique(
   slug: string,
   excludeId?: string
 ): Promise<boolean> {
+  // If Supabase is not configured, check against fallback data
+  if (!isSupabaseConfigured()) {
+    const fallbackPosts = getFallbackBlogPosts();
+    const existingPost = fallbackPosts.find((post) => post.slug === slug);
+
+    if (excludeId && existingPost) {
+      return existingPost.id !== excludeId;
+    }
+
+    return !existingPost;
+  }
+
   try {
     let query = supabase.from("blog_posts").select("id").eq("slug", slug);
 
@@ -638,12 +650,18 @@ export async function isSlugUnique(
 
     if (error) {
       console.error("Error checking slug uniqueness:", error);
-      return false;
+      // In case of error, allow the slug to be used rather than blocking
+      console.warn(
+        "Allowing slug due to database error - please check manually"
+      );
+      return true;
     }
 
     return data.length === 0;
   } catch (error) {
     console.error("Error checking slug uniqueness:", error);
-    return false;
+    // In case of error, allow the slug to be used rather than blocking
+    console.warn("Allowing slug due to database error - please check manually");
+    return true;
   }
 }
