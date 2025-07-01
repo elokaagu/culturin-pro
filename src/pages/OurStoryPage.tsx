@@ -91,7 +91,12 @@ const OurStoryPage = () => {
               </p>
             </div>
             <div className="mt-16 aspect-video max-w-5xl overflow-hidden rounded-xl">
-              <Image src="https://images.unsplash.com/photo-1469041797191-50ace28483c3?q=80&w=2000&auto=format&fit=crop" alt="Culturin team" className="w-full h-full object-cover" fill />
+              <Image
+                src="https://images.unsplash.com/photo-1469041797191-50ace28483c3?q=80&w=2000&auto=format&fit=crop"
+                alt="Culturin team"
+                className="w-full h-full object-cover"
+                fill
+              />
             </div>
           </div>
         </section>
@@ -179,15 +184,13 @@ const OurStoryPage = () => {
                   name: "Unik Ernest",
                   role: "Co-Founder",
                   bio: "Cultural entrepreneur with deep roots in travel and impact. Unik leads vision, partnerships, and cultural strategy—drawing from decades of experience across travel, nightlife, and global philanthropy.",
-                  image:
-                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
+                  image: "/unik-ernest-headshot.png",
                 },
                 {
                   name: "Eloka Agu",
                   role: "Co-Founder",
                   bio: "Creative technologist and systems designer. Eloka leads product, brand, and platform design—merging community insight with elegant technology to build meaningful connections.",
-                  image:
-                    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&auto=format&fit=crop",
+                  image: "/eloka-agu-headshot.png",
                 },
               ].map((person, index) => (
                 <div
@@ -199,11 +202,12 @@ const OurStoryPage = () => {
                   }`}
                   style={{ transitionDelay: `${400 + index * 100}ms` }}
                 >
-                  <div className="aspect-square bg-gray-100 rounded-xl mb-6 overflow-hidden max-w-sm mx-auto">
-                    <img
+                  <div className="aspect-square bg-gray-100 rounded-xl mb-6 overflow-hidden max-w-sm mx-auto relative">
+                    <Image
                       src={person.image}
                       alt={person.name}
                       className="w-full h-full object-cover"
+                      fill
                     />
                   </div>
                   <div className="text-center">
