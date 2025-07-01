@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
@@ -66,7 +66,7 @@ const Hero = () => {
 
         {/* Headline - Added more spacing */}
         <h1
-          className={`font-inter text-4xl md:text-5xl lg:text-6xl text-black mb-10 font-bold tracking-tight leading-tight transition-all duration-700 ease-out ${
+          className={`font-inter text-4xl md:text-5xl lg:text-6xl text-black mb-10 font-bold tracking-tight leading-tight max-w-4xl mx-auto transition-all duration-700 ease-out ${
             animateItems
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-8"
