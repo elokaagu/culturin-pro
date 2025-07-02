@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
 import { blogPosts } from "@/data/blogPosts";
+import { faqItems } from "@/data/helpCenterData";
+import { caseStudies } from "@/data/caseStudiesData";
 
 const AdminDashboard = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -33,19 +35,19 @@ const AdminDashboard = () => {
       color: "bg-blue-100 text-blue-600",
     },
     {
-      title: "Published Posts",
-      value: blogPosts.length.toString(),
-      icon: Eye,
-      color: "bg-green-100 text-green-600",
+      title: "Help Center FAQs",
+      value: faqItems.length.toString(),
+      icon: Settings,
+      color: "bg-orange-100 text-orange-600",
     },
     {
-      title: "Categories",
-      value: new Set(blogPosts.map((post) => post.category)).size.toString(),
+      title: "Case Studies",
+      value: caseStudies.length.toString(),
       icon: BarChart3,
       color: "bg-purple-100 text-purple-600",
     },
     {
-      title: "Recent Posts",
+      title: "Recent Updates",
       value: blogPosts
         .filter((post) => {
           const postDate = new Date(post.date);
@@ -55,7 +57,7 @@ const AdminDashboard = () => {
         })
         .length.toString(),
       icon: Plus,
-      color: "bg-orange-100 text-orange-600",
+      color: "bg-green-100 text-green-600",
     },
   ];
 
@@ -75,11 +77,25 @@ const AdminDashboard = () => {
       color: "bg-green-600 hover:bg-green-700",
     },
     {
+      title: "Manage Help Center",
+      description: "Update FAQs and help center content",
+      icon: Settings,
+      link: "/admin/help-center",
+      color: "bg-orange-600 hover:bg-orange-700",
+    },
+    {
+      title: "Manage Case Studies",
+      description: "Add and edit success stories",
+      icon: FileText,
+      link: "/admin/case-studies",
+      color: "bg-purple-600 hover:bg-purple-700",
+    },
+    {
       title: "View Live Blog",
       description: "See how the blog appears to visitors",
       icon: Eye,
       link: "/blog",
-      color: "bg-purple-600 hover:bg-purple-700",
+      color: "bg-gray-600 hover:bg-gray-700",
     },
   ];
 
