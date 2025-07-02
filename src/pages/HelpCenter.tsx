@@ -11,7 +11,7 @@ import { useInView } from "react-intersection-observer";
 import { HelpCircle, Search, BookOpen, Phone, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Header from "../components/Header";
+import Header from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "../../lib/navigation";
 import NewFooter from "@/components/sections/NewFooter";

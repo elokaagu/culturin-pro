@@ -99,17 +99,23 @@ export const useAuth = () => {
 
   useEffect(() => {
     const currentUser = getCurrentUser();
+    console.log("🔍 Auth Debug - Current user from localStorage:", currentUser);
+    console.log("🔍 Auth Debug - isAuthenticated:", !!currentUser);
+    console.log("🔍 Auth Debug - isSuperAdmin:", isSuperAdmin(currentUser));
     setUser(currentUser);
     setLoading(false);
   }, []);
 
   const loginUser = async (email: string, password: string) => {
+    console.log("🔍 Auth Debug - Attempting login with:", email);
     const loggedInUser = await login(email, password);
+    console.log("🔍 Auth Debug - Login result:", loggedInUser);
     setUser(loggedInUser);
     return loggedInUser;
   };
 
   const logoutUser = () => {
+    console.log("🔍 Auth Debug - Logging out");
     logout();
     setUser(null);
   };
