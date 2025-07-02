@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "../../lib/navigation";
-import { useAuth } from "../../lib/auth";
+import { useAuth } from "../../src/components/auth/AuthProvider";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -54,7 +54,7 @@ const menuItems = [
 const ProSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, isSuperAdmin } = useAuth();
+  const { user, logout } = useAuth();
   const [userName, setUserName] = useState<string>("Cultural Host");
   const [planType, setplanType] = useState<string>("Growth Plan");
 
@@ -145,10 +145,10 @@ const ProSidebar: React.FC = () => {
               {user?.email || "eloka.agu@icloud.com"}
             </div>
             <div className="px-3 py-1 text-xs text-gray-400 capitalize">
-              {user?.role?.replace("_", " ") || "Super Admin"}
+              {user?.role === "admin" ? "Admin" : "User"}
             </div>
             <DropdownMenuSeparator />
-            {isSuperAdmin && (
+            {user?.role === "admin" && (
               <DropdownMenuItem onClick={() => navigate("/admin")}>
                 <Crown className="h-4 w-4 mr-2" />
                 Admin Dashboard

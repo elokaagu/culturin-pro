@@ -7,6 +7,7 @@ interface User {
   name: string;
   email: string;
   avatar?: string;
+  role?: "admin" | "user";
 }
 
 interface AuthContextType {
@@ -15,6 +16,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   hasStudioAccess: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
 }
 
@@ -31,6 +33,7 @@ export const useAuth = () => {
         login: async () => {},
         logout: () => {},
         hasStudioAccess: false,
+        isAdmin: false,
         isLoading: true,
       };
     }
@@ -62,7 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setIsLoggedIn(true);
           setHasStudioAccess(studioAccess === "true");
         } catch (error) {
-          console.error("Error parsing stored user data:", error);
+          // Clean up invalid data
           localStorage.removeItem("culturin_user");
           localStorage.removeItem("culturinProAccess");
         }
@@ -72,12 +75,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
-    // Simulate login - in real app, this would be an API call
+    // Validate credentials
+    const validCredentials = [
+      {
+        email: "eloka.agu@icloud.com",
+        password: "Honour18!!",
+        name: "Eloka Agu",
+        role: "admin" as const,
+      },
+      {
+        email: "demo@culturin.com",
+        password: "demo123",
+        name: "Demo User",
+        role: "user" as const,
+      },
+    ];
+
+    const validUser = validCredentials.find(
+      (cred) => cred.email === email && cred.password === password
+    );
+
+    if (!validUser) {
+      throw new Error(
+        "Invalid email or password. Please check your credentials and try again."
+      );
+    }
+
     const userData: User = {
-      id: "1",
-      name: "Eloka Agu",
-      email: email,
-      avatar: "/eloka-agu-headshot.png",
+      id: validUser.email === "eloka.agu@icloud.com" ? "1" : "2",
+      name: validUser.name,
+      email: validUser.email,
+      role: validUser.role,
+      avatar:
+        validUser.email === "eloka.agu@icloud.com"
+          ? "/eloka-agu-headshot.png"
+          : undefined,
     };
 
     setUser(userData);
@@ -108,6 +140,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     hasStudioAccess,
+    isAdmin: user?.role === "admin",
     isLoading,
   };
 

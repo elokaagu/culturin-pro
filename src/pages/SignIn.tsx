@@ -63,8 +63,10 @@ const SignIn = () => {
     try {
       await login(email, password);
       // Navigation will be handled by the useEffect above
-    } catch (err) {
-      setError("An error occurred during login. Please try again.");
+    } catch (err: any) {
+      setError(
+        err.message || "An error occurred during login. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -149,7 +151,11 @@ const SignIn = () => {
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Demo credentials: Any email and password will work
+                Demo credentials:
+                <br />
+                Email: demo@culturin.com, Password: demo123
+                <br />
+                Or use: eloka.agu@icloud.com, Password: Honour18!!
               </p>
             </div>
           </Card>

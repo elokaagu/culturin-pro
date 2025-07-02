@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "../lib/navigation";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "../src/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
 import {
@@ -15,29 +15,20 @@ import {
 import Image from "@/components/ui/image";
 
 interface HeaderProps {
-  type: "traveler" | "operator";
+  type: "traveler" | "operator" | "default";
 }
 
-export const Header = ({ type }: HeaderProps) => {
+export const Header = ({ type = "default" }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAuthenticated, isSuperAdmin, logout } = useAuth();
+  const { user, isLoggedIn, isAdmin, logout } = useAuth();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-
     window.scrollTo(0, 0);
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
   }, [location.pathname]);
 
   const productLinks = [
@@ -200,42 +191,66 @@ export const Header = ({ type }: HeaderProps) => {
             </nav>
 
             <div className="flex items-center gap-4">
-              {isAuthenticated ? (
-                <>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="flex items-center gap-2 font-medium text-gray-800 hover:text-gray-600 transition-colors">
-                      <User className="h-4 w-4" />
-                      {user?.name}
-                      <ChevronDown className="h-4 w-4" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2 z-[9999]">
-                      <div className="px-3 py-2 text-sm text-gray-500">
-                        {user?.email}
-                      </div>
-                      <div className="px-3 py-1 text-xs text-gray-400 capitalize">
-                        {user?.role?.replace("_", " ")}
-                      </div>
-                      <DropdownMenuSeparator />
-                      {isSuperAdmin && (
-                        <DropdownMenuItem asChild>
+              {isLoggedIn && user ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
+                  >
+                    {user.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        className="w-8 h-8 rounded-full"
+                      />
+                    ) : (
+                      <User className="w-6 h-6" />
+                    )}
+                    <span className="font-medium">{user.name}</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+
+                  {isUserMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                      <div className="space-y-2">
+                        <div className="py-2">
+                          <div className="text-sm font-medium text-gray-800">
+                            {user.name}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {user.email}
+                          </div>
+                        </div>
+                        <Link
+                          to="/studio"
+                          className="block py-2 font-medium text-gray-800"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          Culturin Studio
+                        </Link>
+                        {isAdmin && (
                           <Link
                             to="/admin"
-                            className="flex items-center p-3 rounded-md hover:bg-gray-100"
+                            className="block py-2 font-medium text-gray-800"
+                            onClick={() => setIsUserMenuOpen(false)}
                           >
-                            <span className="font-medium">Admin Dashboard</span>
+                            Admin Dashboard
                           </Link>
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem
-                        onClick={logout}
-                        className="flex items-center p-3 rounded-md hover:bg-gray-100 cursor-pointer"
-                      >
-                        <LogOut className="h-4 w-4 mr-2" />
-                        <span className="font-medium">Sign Out</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </>
+                        )}
+                        <button
+                          onClick={() => {
+                            logout();
+                            setIsUserMenuOpen(false);
+                          }}
+                          className="block w-full text-left py-2 font-medium text-gray-800"
+                        >
+                          <LogOut className="inline w-4 h-4 mr-2" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <>
                   <Link
@@ -373,18 +388,22 @@ export const Header = ({ type }: HeaderProps) => {
               </li>
 
               <li className="pt-2 border-t border-gray-100 mt-2">
-                {isAuthenticated ? (
+                {isLoggedIn && user ? (
                   <div className="space-y-2">
                     <div className="py-2">
                       <div className="text-sm font-medium text-gray-800">
-                        {user?.name}
+                        {user.name}
                       </div>
-                      <div className="text-xs text-gray-500">{user?.email}</div>
-                      <div className="text-xs text-gray-400 capitalize">
-                        {user?.role?.replace("_", " ")}
-                      </div>
+                      <div className="text-xs text-gray-500">{user.email}</div>
                     </div>
-                    {isSuperAdmin && (
+                    <Link
+                      to="/studio"
+                      className="block py-2 font-medium text-gray-800"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Culturin Studio
+                    </Link>
+                    {isAdmin && (
                       <Link
                         to="/admin"
                         className="block py-2 font-medium text-gray-800"
@@ -398,8 +417,9 @@ export const Header = ({ type }: HeaderProps) => {
                         logout();
                         setIsMenuOpen(false);
                       }}
-                      className="block py-2 font-medium text-gray-800 w-full text-left"
+                      className="block w-full text-left py-2 font-medium text-gray-800"
                     >
+                      <LogOut className="inline w-4 h-4 mr-2" />
                       Sign Out
                     </button>
                   </div>

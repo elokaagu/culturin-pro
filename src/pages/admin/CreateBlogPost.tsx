@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "../../../lib/navigation";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ import {
 import NewFooter from "@/components/sections/NewFooter";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { createBlogPost, generateSlug, isSlugUnique } from "@/lib/blog-service";
-import { getCurrentUser } from "@/lib/auth";
+import { useAuth } from "../../components/auth/AuthProvider";
 import Image from "@/components/ui/image";
 import type { CreateBlogPostData } from "@/lib/blog-service";
 
@@ -38,6 +38,7 @@ interface BlogPostForm {
 }
 
 const CreateBlogPost = () => {
+  const { user } = useAuth();
   const [animateItems, setAnimateItems] = useState<boolean>(false);
   const [formData, setFormData] = useState<BlogPostForm>({
     title: "",
@@ -121,9 +122,8 @@ const CreateBlogPost = () => {
 
     try {
       setLoading(true);
-      const currentUser = getCurrentUser();
 
-      if (!currentUser) {
+      if (!user) {
         alert("You must be logged in to create a blog post.");
         return;
       }
@@ -134,9 +134,9 @@ const CreateBlogPost = () => {
         excerpt: formData.excerpt,
         content: formData.content.filter((p) => p.trim() !== ""),
         category: formData.category,
-        author_id: currentUser.id,
-        author_name: currentUser.name,
-        author_email: currentUser.email,
+        author_id: user.id,
+        author_name: user.name,
+        author_email: user.email,
         featured_image: formData.featured_image,
         published: formData.published,
         meta_title: formData.meta_title || formData.title,
