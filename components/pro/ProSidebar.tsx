@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "../../lib/navigation";
+import { useAuth } from "../../lib/auth";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -14,7 +15,16 @@ import {
   Megaphone,
   Globe,
   Home,
+  LogOut,
+  ChevronDown,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import Image from "@/components/ui/image";
 
 const menuItems = [
@@ -44,16 +54,22 @@ const menuItems = [
 const ProSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout, isSuperAdmin } = useAuth();
   const [userName, setUserName] = useState<string>("Cultural Host");
   const [planType, setplanType] = useState<string>("Growth Plan");
 
   useEffect(() => {
-    const storedUserName = localStorage.getItem("userName");
-    if (storedUserName) {
-      setUserName(storedUserName);
+    // Use authenticated user's name if available, otherwise fallback to localStorage
+    if (user?.name) {
+      setUserName(user.name);
     } else {
-      localStorage.setItem("userName", "Eloka Agu");
-      setUserName("Eloka Agu");
+      const storedUserName = localStorage.getItem("userName");
+      if (storedUserName) {
+        setUserName(storedUserName);
+      } else {
+        localStorage.setItem("userName", "Eloka Agu");
+        setUserName("Eloka Agu");
+      }
     }
 
     const storedPlanType = localStorage.getItem("planType");
@@ -63,7 +79,7 @@ const ProSidebar: React.FC = () => {
       localStorage.setItem("planType", "Growth Plan");
       setplanType("Growth Plan");
     }
-  }, []);
+  }, [user]);
 
   return (
     <div className="w-64 bg-white h-screen border-r border-gray-200 flex flex-col fixed left-0 top-0 font-sans">
@@ -113,15 +129,44 @@ const ProSidebar: React.FC = () => {
 
       {/* Plan & Account Section */}
       <div className="p-4 border-t border-gray-100">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-            <Users className="h-4 w-4 text-gray-700" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium">{userName}</p>
-            <p className="text-xs text-gray-500">{planType}</p>
-          </div>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex w-full items-center gap-2 p-2 rounded-md hover:bg-gray-50 transition-colors">
+            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+              <Users className="h-4 w-4 text-gray-700" />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-medium">{userName}</p>
+              <p className="text-xs text-gray-500">{planType}</p>
+            </div>
+            <ChevronDown className="h-4 w-4 text-gray-400" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56 mb-2">
+            <div className="px-3 py-2 text-sm text-gray-500">
+              {user?.email || "eloka.agu@icloud.com"}
+            </div>
+            <div className="px-3 py-1 text-xs text-gray-400 capitalize">
+              {user?.role?.replace("_", " ") || "Super Admin"}
+            </div>
+            <DropdownMenuSeparator />
+            {isSuperAdmin && (
+              <DropdownMenuItem onClick={() => navigate("/admin")}>
+                <Crown className="h-4 w-4 mr-2" />
+                Admin Dashboard
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem
+              onClick={() => navigate("/pro-dashboard/settings")}
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={logout} className="text-red-600">
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         {/* Back to Culturin Home link */}
         <button
