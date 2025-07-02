@@ -380,7 +380,7 @@ export default function BookingPage({
 
                     <div>
                       <Label htmlFor="cardName">Name on Card</Label>
-                      <Input id="cardName" placeholder="John Doe" required />
+                      <Input id="cardName" placeholder="Eloka Agu" required />
                     </div>
 
                     <div className="flex gap-4">

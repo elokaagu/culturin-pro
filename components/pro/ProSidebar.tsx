@@ -51,8 +51,8 @@ const ProSidebar: React.FC = () => {
     if (storedUserName) {
       setUserName(storedUserName);
     } else {
-      localStorage.setItem("userName", "Jane Doe");
-      setUserName("Jane Doe");
+      localStorage.setItem("userName", "Eloka Agu");
+      setUserName("Eloka Agu");
     }
 
     const storedPlanType = localStorage.getItem("planType");

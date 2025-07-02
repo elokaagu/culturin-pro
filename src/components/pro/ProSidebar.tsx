@@ -51,8 +51,8 @@ const ProSidebar: React.FC = () => {
     if (storedUserName) {
       setUserName(storedUserName);
     } else {
-      safeLocalStorage.setItem("userName", "Jane Doe");
-      setUserName("Jane Doe");
+      safeLocalStorage.setItem("userName", "Eloka Agu");
+      setUserName("Eloka Agu");
     }
 
     const storedPlanType = safeLocalStorage.getItem("planType");
