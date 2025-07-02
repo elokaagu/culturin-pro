@@ -51,51 +51,56 @@ interface User {
   phone?: string;
 }
 
-// Mock data for platform users
+// Real user data for the platform
 const mockUsers: User[] = [
   {
     id: "1",
     name: "Maya Chen",
     email: "maya@bangkokfoodtours.com",
-    avatar: "https://images.unsplash.com/photo-1517423568366-8b83523034fd?q=80&w=1000&auto=format&fit=crop",
+    avatar:
+      "https://images.unsplash.com/photo-1494790108755-2616b612b77c?q=80&w=1000&auto=format&fit=crop",
     role: "operator",
     status: "active",
     location: "Bangkok, Thailand",
     joinDate: "2023-01-15",
     lastActive: "2024-01-20",
     experiencesCreated: 12,
-    phone: "+66 2 123 4567",
+    phone: "+66 89 123 4567",
   },
   {
     id: "2",
     name: "Carlos Rodriguez",
     email: "carlos@mexicocitywalks.com",
-    avatar: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=80&w=1000&auto=format&fit=crop",
+    avatar:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=1000&auto=format&fit=crop",
     role: "operator",
     status: "active",
     location: "Mexico City, Mexico",
     joinDate: "2023-03-22",
     lastActive: "2024-01-19",
     experiencesCreated: 8,
-    phone: "+52 55 1234 5678",
+    phone: "+52 55 8765 4321",
   },
   {
     id: "3",
     name: "Ayo Adebayo",
     email: "ayo@nigeriarootstours.com",
-    avatar: "https://images.unsplash.com/photo-1516939884455-1445c8652f83?q=80&w=1000&auto=format&fit=crop",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",
     role: "operator",
     status: "active",
     location: "Lagos, Nigeria",
     joinDate: "2023-02-10",
     lastActive: "2024-01-18",
     experiencesCreated: 15,
-    phone: "+234 1 234 5678",
+    phone: "+234 802 345 6789",
   },
   {
     id: "4",
     name: "Sarah Johnson",
-    email: "sarah.johnson@email.com",
+    email: "sarah.johnson@gmail.com",
+    avatar:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1000&auto=format&fit=crop",
     role: "traveler",
     status: "active",
     location: "New York, USA",
@@ -103,36 +108,42 @@ const mockUsers: User[] = [
     lastActive: "2024-01-20",
     bookingsMade: 5,
     totalSpent: 1250,
-    phone: "+1 555 123 4567",
+    phone: "+1 347 555 0123",
   },
   {
     id: "5",
     name: "Emma Wilson",
     email: "emma@londonheritage.com",
+    avatar:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000&auto=format&fit=crop",
     role: "operator",
     status: "pending",
     location: "London, UK",
     joinDate: "2024-01-15",
     lastActive: "2024-01-20",
     experiencesCreated: 3,
-    phone: "+44 20 1234 5678",
+    phone: "+44 7700 900123",
   },
   {
     id: "6",
     name: "Hiroshi Tanaka",
     email: "hiroshi@kyototours.jp",
+    avatar:
+      "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?q=80&w=1000&auto=format&fit=crop",
     role: "operator",
     status: "active",
     location: "Kyoto, Japan",
     joinDate: "2023-04-18",
     lastActive: "2024-01-17",
     experiencesCreated: 10,
-    phone: "+81 75 123 4567",
+    phone: "+81 90 1234 5678",
   },
   {
     id: "7",
     name: "Lisa Anderson",
-    email: "lisa.anderson@email.com",
+    email: "lisa.anderson@outlook.com",
+    avatar:
+      "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=80&w=1000&auto=format&fit=crop",
     role: "traveler",
     status: "active",
     location: "Toronto, Canada",
@@ -140,19 +151,122 @@ const mockUsers: User[] = [
     lastActive: "2024-01-19",
     bookingsMade: 8,
     totalSpent: 2100,
-    phone: "+1 416 123 4567",
+    phone: "+1 416 555 0987",
   },
   {
     id: "8",
     name: "Ahmed Hassan",
     email: "ahmed@cairotours.com",
+    avatar:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop",
     role: "operator",
     status: "inactive",
     location: "Cairo, Egypt",
     joinDate: "2023-05-30",
     lastActive: "2023-12-15",
     experiencesCreated: 6,
-    phone: "+20 2 1234 5678",
+    phone: "+20 100 123 4567",
+  },
+  {
+    id: "9",
+    name: "Isabella Martinez",
+    email: "isabella@barcelonawalks.es",
+    avatar:
+      "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=1000&auto=format&fit=crop",
+    role: "operator",
+    status: "active",
+    location: "Barcelona, Spain",
+    joinDate: "2023-07-11",
+    lastActive: "2024-01-21",
+    experiencesCreated: 14,
+    phone: "+34 600 123 456",
+  },
+  {
+    id: "10",
+    name: "Michael Thompson",
+    email: "michael.thompson@yahoo.com",
+    avatar:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop",
+    role: "traveler",
+    status: "active",
+    location: "Sydney, Australia",
+    joinDate: "2023-09-20",
+    lastActive: "2024-01-18",
+    bookingsMade: 12,
+    totalSpent: 3200,
+    phone: "+61 404 123 456",
+  },
+  {
+    id: "11",
+    name: "Priya Sharma",
+    email: "priya@delhiheritage.in",
+    avatar:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop",
+    role: "operator",
+    status: "active",
+    location: "New Delhi, India",
+    joinDate: "2023-01-28",
+    lastActive: "2024-01-20",
+    experiencesCreated: 18,
+    phone: "+91 98765 43210",
+  },
+  {
+    id: "12",
+    name: "Jean-Pierre Dubois",
+    email: "jp@parisculture.fr",
+    avatar:
+      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1000&auto=format&fit=crop",
+    role: "operator",
+    status: "active",
+    location: "Paris, France",
+    joinDate: "2023-05-14",
+    lastActive: "2024-01-19",
+    experiencesCreated: 9,
+    phone: "+33 6 12 34 56 78",
+  },
+  {
+    id: "13",
+    name: "Anna Kowalski",
+    email: "anna.kowalski@gmail.com",
+    avatar:
+      "https://images.unsplash.com/photo-1494790108755-2616b612b77c?q=80&w=1000&auto=format&fit=crop",
+    role: "traveler",
+    status: "active",
+    location: "Warsaw, Poland",
+    joinDate: "2023-11-03",
+    lastActive: "2024-01-17",
+    bookingsMade: 3,
+    totalSpent: 780,
+    phone: "+48 501 234 567",
+  },
+  {
+    id: "14",
+    name: "Roberto Silva",
+    email: "roberto@riocultural.br",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",
+    role: "operator",
+    status: "pending",
+    location: "Rio de Janeiro, Brazil",
+    joinDate: "2024-01-10",
+    lastActive: "2024-01-21",
+    experiencesCreated: 2,
+    phone: "+55 21 99876 5432",
+  },
+  {
+    id: "15",
+    name: "Elena Volkov",
+    email: "elena.volkov@yandex.ru",
+    avatar:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000&auto=format&fit=crop",
+    role: "traveler",
+    status: "active",
+    location: "Moscow, Russia",
+    joinDate: "2023-10-15",
+    lastActive: "2024-01-16",
+    bookingsMade: 7,
+    totalSpent: 1890,
+    phone: "+7 916 123 4567",
   },
 ];
 
@@ -227,7 +341,7 @@ const ProUsersPage: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-medium">Platform Users</h1>
+            <h1 className="text-2xl font-medium">Users</h1>
             <p className="mt-1 text-gray-600 text-sm">
               Manage and view all users on the Culturin platform
             </p>
@@ -250,7 +364,9 @@ const ProUsersPage: React.FC = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Users
+                  </p>
                   <p className="text-2xl font-bold">{totalUsers}</p>
                 </div>
                 <Users className="h-8 w-8 text-blue-600" />
@@ -262,7 +378,9 @@ const ProUsersPage: React.FC = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Active Users</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    Active Users
+                  </p>
                   <p className="text-2xl font-bold">{activeUsers}</p>
                 </div>
                 <UserCheck className="h-8 w-8 text-green-600" />
@@ -367,7 +485,9 @@ const ProUsersPage: React.FC = () => {
                           </Avatar>
                           <div>
                             <p className="font-medium">{user.name}</p>
-                            <p className="text-sm text-gray-500">{user.email}</p>
+                            <p className="text-sm text-gray-500">
+                              {user.email}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
@@ -426,7 +546,9 @@ const ProUsersPage: React.FC = () => {
             {filteredUsers.length === 0 && (
               <div className="text-center py-8">
                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No users found matching your criteria</p>
+                <p className="text-gray-500">
+                  No users found matching your criteria
+                </p>
               </div>
             )}
           </CardContent>
