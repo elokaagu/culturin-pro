@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,24 +42,9 @@ const BillingSettings: React.FC = () => {
   ];
 
   const billingHistory = [
-    {
-      id: "inv-001",
-      date: "May 15, 2025",
-      amount: "$99.00",
-      status: "Paid",
-    },
-    {
-      id: "inv-002",
-      date: "April 15, 2025",
-      amount: "$99.00",
-      status: "Paid",
-    },
-    {
-      id: "inv-003",
-      date: "March 15, 2025",
-      amount: "$99.00",
-      status: "Paid",
-    },
+    { id: "inv-001", date: "May 15, 2025", amount: "$99.00", status: "Paid" },
+    { id: "inv-002", date: "April 15, 2025", amount: "$99.00", status: "Paid" },
+    { id: "inv-003", date: "March 15, 2025", amount: "$99.00", status: "Paid" },
   ];
 
   const handleUpgradePlan = () => {
@@ -81,7 +68,6 @@ const BillingSettings: React.FC = () => {
         </p>
       </div>
 
-      {/* Current Plan */}
       <Card>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
@@ -149,7 +135,6 @@ const BillingSettings: React.FC = () => {
         </CardFooter>
       </Card>
 
-      {/* Payment Methods */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-medium">Payment Methods</h3>
@@ -191,7 +176,6 @@ const BillingSettings: React.FC = () => {
         </div>
       </div>
 
-      {/* Billing History */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Billing History</h3>
 
@@ -200,7 +184,7 @@ const BillingSettings: React.FC = () => {
             <div>Invoice</div>
             <div>Date</div>
             <div>Amount</div>
-            <div className="text-right">Actions</div>
+            <div>Status</div>
           </div>
 
           {billingHistory.map((invoice) => (
@@ -208,25 +192,30 @@ const BillingSettings: React.FC = () => {
               key={invoice.id}
               className="grid grid-cols-4 p-4 border-b last:border-0"
             >
-              <div>{invoice.id}</div>
+              <div className="font-mono text-sm">{invoice.id}</div>
               <div>{invoice.date}</div>
               <div>{invoice.amount}</div>
-              <div className="text-right">
-                <Button variant="ghost" size="sm">
-                  <Download className="h-4 w-4 mr-1" />
-                  <span className="sr-only sm:not-sr-only sm:inline">
-                    Download
-                  </span>
-                </Button>
+              <div>
+                <Badge
+                  variant="outline"
+                  className="bg-green-50 text-green-700 border-green-200"
+                >
+                  {invoice.status}
+                </Badge>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between items-center">
+          <Button variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-2" />
+            Download All Invoices
+          </Button>
+
           <Button variant="outline" size="sm">
             <ExternalLink className="h-4 w-4 mr-2" />
-            View All Invoices
+            View Billing Portal
           </Button>
         </div>
       </div>
