@@ -1,14 +1,29 @@
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   businessName: z.string().min(2, {
@@ -26,18 +41,21 @@ const formSchema = z.object({
   timezone: z.string({
     required_error: "Please select a timezone.",
   }),
-  bio: z.string().max(500, {
-    message: "Bio must not be more than 500 characters.",
-  }).optional(),
+  bio: z
+    .string()
+    .max(500, {
+      message: "Bio must not be more than 500 characters.",
+    })
+    .optional(),
 });
 
 const timezones = [
-  { value: 'utc-8', label: 'Pacific Time (UTC-8)' },
-  { value: 'utc-5', label: 'Eastern Time (UTC-5)' },
-  { value: 'utc+0', label: 'Greenwich Mean Time (UTC+0)' },
-  { value: 'utc+1', label: 'Central European Time (UTC+1)' },
-  { value: 'utc+8', label: 'China Standard Time (UTC+8)' },
-  { value: 'utc+9', label: 'Japan Standard Time (UTC+9)' },
+  { value: "utc-8", label: "Pacific Time (UTC-8)" },
+  { value: "utc-5", label: "Eastern Time (UTC-5)" },
+  { value: "utc+0", label: "Greenwich Mean Time (UTC+0)" },
+  { value: "utc+1", label: "Central European Time (UTC+1)" },
+  { value: "utc+8", label: "China Standard Time (UTC+8)" },
+  { value: "utc+9", label: "Japan Standard Time (UTC+9)" },
 ];
 
 const GeneralSettings: React.FC = () => {
@@ -62,7 +80,9 @@ const GeneralSettings: React.FC = () => {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold">General Settings</h2>
-        <p className="text-gray-500">Manage your basic information and preferences.</p>
+        <p className="text-gray-500">
+          Manage your basic information and preferences.
+        </p>
       </div>
 
       <Form {...form}>
@@ -116,7 +136,10 @@ const GeneralSettings: React.FC = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Timezone</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a timezone" />
@@ -157,10 +180,10 @@ const GeneralSettings: React.FC = () => {
               <FormItem>
                 <FormLabel>Business Bio</FormLabel>
                 <FormControl>
-                  <Textarea 
-                    placeholder="Tell us about your business..." 
-                    className="resize-none min-h-[100px]" 
-                    {...field} 
+                  <Textarea
+                    placeholder="Tell us about your business..."
+                    className="resize-none min-h-[100px]"
+                    {...field}
                   />
                 </FormControl>
                 <FormDescription>
