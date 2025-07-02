@@ -84,9 +84,7 @@ const ProSidebar: React.FC = () => {
             />
           </div>
         </button>
-        <p className="text-xs text-gray-500 mt-1">
-          Cultural Experience Platform
-        </p>
+        <p className="text-xs text-gray-500 mt-1">Culturin Studio</p>
       </div>
 
       {/* Navigation Items */}

@@ -111,14 +111,6 @@ export const Header = ({ type }: HeaderProps) => {
                           </Link>
                         </DropdownMenuItem>
                       ))}
-                      <DropdownMenuItem asChild>
-                        <Link
-                          to="/culturin-pro"
-                          className="flex py-2 px-3 bg-gray-50 rounded-md mt-1 text-blue-600 font-medium"
-                        >
-                          View all features →
-                        </Link>
-                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </li>

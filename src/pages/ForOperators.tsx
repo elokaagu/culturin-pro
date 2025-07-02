@@ -59,7 +59,7 @@ const ForOperators = () => {
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <Button
                     className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white px-6 py-6 rounded-xl"
-                    onClick={() => navigate("/culturin-pro")}
+                    onClick={() => navigate("/sign-in")}
                   >
                     Start Free Trial
                   </Button>
@@ -258,7 +258,7 @@ const ForOperators = () => {
 
                 <Button
                   className="mt-8 bg-[#9b87f5] hover:bg-[#7E69AB] text-white px-6 py-6 rounded-xl"
-                  onClick={() => navigate("/culturin-pro")}
+                  onClick={() => navigate("/sign-in")}
                 >
                   Start Free Trial
                 </Button>
@@ -427,7 +427,7 @@ const ForOperators = () => {
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button
                   className="bg-white text-[#9b87f5] hover:bg-gray-100 px-6 py-6 rounded-xl"
-                  onClick={() => navigate("/culturin-pro")}
+                  onClick={() => navigate("/sign-in")}
                 >
                   Start Free Trial
                 </Button>

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "../../lib/auth";
+import { useAuth } from "../components/auth/AuthProvider";
+import { useNavigate } from "../../lib/navigation";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,16 +19,14 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { login, isAuthenticated } = useAuth();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/";
+  const { login, isLoggedIn } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push(redirectTo);
+    if (isLoggedIn) {
+      navigate("/studio");
     }
-  }, [isAuthenticated, router, redirectTo]);
+  }, [isLoggedIn, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,18 +34,8 @@ const SignIn = () => {
     setError("");
 
     try {
-      const user = await login(email, password);
-
-      if (user) {
-        // Redirect to intended page or dashboard based on role
-        if (user.role === "super_admin") {
-          router.push(redirectTo === "/" ? "/admin" : redirectTo);
-        } else {
-          router.push(redirectTo);
-        }
-      } else {
-        setError("Invalid email or password. Please try again.");
-      }
+      await login(email, password);
+      // Navigation will be handled by the useEffect above
     } catch (err) {
       setError("An error occurred during login. Please try again.");
     } finally {
@@ -65,7 +53,7 @@ const SignIn = () => {
             <div className="text-center mb-8">
               <LogIn className="h-12 w-12 text-blue-600 mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-2">Welcome Back</h1>
-              <p className="text-gray-600">Sign in to your Culturin account</p>
+              <p className="text-gray-600">Sign in to access Culturin Studio</p>
             </div>
 
             {error && (
@@ -131,6 +119,12 @@ const SignIn = () => {
                 )}
               </Button>
             </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Demo credentials: Any email and password will work
+              </p>
+            </div>
           </Card>
         </div>
       </main>

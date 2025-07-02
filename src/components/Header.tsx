@@ -3,13 +3,24 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "../../lib/navigation";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown } from "lucide-react";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  User,
+  Settings,
+  LogOut,
+  Palette,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "./auth/AuthProvider";
 import Image from "@/components/ui/image";
 
 interface HeaderProps {
@@ -21,6 +32,7 @@ export const Header = ({ type }: HeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isLoggedIn, logout, hasStudioAccess } = useAuth();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -59,6 +71,11 @@ export const Header = ({ type }: HeaderProps) => {
       path: "/product/marketing",
     },
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <header
@@ -116,14 +133,6 @@ export const Header = ({ type }: HeaderProps) => {
                           </Link>
                         </DropdownMenuItem>
                       ))}
-                      <DropdownMenuItem asChild>
-                        <Link
-                          to="/culturin-pro"
-                          className="flex py-2 px-3 bg-gray-50 rounded-md mt-1 text-blue-600 font-medium"
-                        >
-                          View all features →
-                        </Link>
-                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </li>
@@ -213,19 +222,84 @@ export const Header = ({ type }: HeaderProps) => {
             </nav>
 
             <div className="flex items-center gap-4">
-              <Link
-                to="/sign-in"
-                className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
-              >
-                Login
-              </Link>
+              {isLoggedIn && user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarFallback>
+                        {user.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="font-medium text-gray-800">
+                      {user.name}
+                    </span>
+                    <ChevronDown className="h-4 w-4 text-gray-600" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-56 bg-white shadow-lg rounded-md p-2"
+                    align="end"
+                  >
+                    <DropdownMenuItem asChild>
+                      <div className="flex items-center p-3 rounded-md">
+                        <div className="flex flex-col">
+                          <span className="font-medium">{user.name}</span>
+                          <span className="text-xs text-gray-500">
+                            {user.email}
+                          </span>
+                        </div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {hasStudioAccess && (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link
+                            to="/studio"
+                            className="flex items-center p-3 rounded-md hover:bg-gray-100 cursor-pointer"
+                          >
+                            <Palette className="h-4 w-4 mr-3" />
+                            <span className="font-medium">Studio</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
+                    <DropdownMenuItem asChild>
+                      <Link
+                        to="/settings"
+                        className="flex items-center p-3 rounded-md hover:bg-gray-100 cursor-pointer"
+                      >
+                        <Settings className="h-4 w-4 mr-3" />
+                        <span>Settings</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="h-4 w-4 mr-3" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Link
+                    to="/sign-in"
+                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
+                  >
+                    Login
+                  </Link>
 
-              <Button
-                className="bg-blue-600 hover:bg-blue-700 font-medium"
-                onClick={() => navigate("/demo")}
-              >
-                Get a free demo
-              </Button>
+                  <Button
+                    className="bg-blue-600 hover:bg-blue-700 font-medium"
+                    onClick={() => navigate("/demo")}
+                  >
+                    Get a free demo
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
@@ -346,24 +420,70 @@ export const Header = ({ type }: HeaderProps) => {
               </li>
 
               <li className="pt-2 border-t border-gray-100 mt-2">
-                <Link
-                  to="/sign-in"
-                  className="block py-2 font-medium text-gray-800"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Login
-                </Link>
-              </li>
-              <li>
-                <Button
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-sm mt-2"
-                  onClick={() => {
-                    navigate("/demo");
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  Get a free demo
-                </Button>
+                {isLoggedIn && user ? (
+                  <div className="space-y-2">
+                    <div className="py-2">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage src={user.avatar} alt={user.name} />
+                          <AvatarFallback className="text-xs">
+                            {user.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium text-gray-800">
+                          {user.name}
+                        </span>
+                      </div>
+                    </div>
+                    {hasStudioAccess && (
+                      <Link
+                        to="/studio"
+                        className="block py-2 font-medium text-blue-600"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Studio
+                      </Link>
+                    )}
+                    <Link
+                      to="/settings"
+                      className="block py-2 font-medium text-gray-800"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Settings
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="block py-2 font-medium text-gray-800 w-full text-left"
+                    >
+                      Log out
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      to="/sign-in"
+                      className="block py-2 font-medium text-gray-800"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Button
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-sm mt-2"
+                      onClick={() => {
+                        navigate("/demo");
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      Get a free demo
+                    </Button>
+                  </>
+                )}
               </li>
             </ul>
           </nav>

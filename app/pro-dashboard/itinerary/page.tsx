@@ -1,7 +1,7 @@
 import ProItineraryPage from "../../../src/pages/ProItineraryPage";
 
 export const metadata = {
-  title: "Itinerary Builder | Culturin Pro",
+  title: "Itinerary Builder | Culturin Studio",
   description:
     "Create and manage your cultural experience itineraries with our powerful builder tools.",
 };

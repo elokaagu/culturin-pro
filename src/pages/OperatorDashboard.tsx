@@ -1,16 +1,11 @@
-'use client'
+"use client";
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "../../lib/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import OperatorCreateExperienceModal from "@/components/OperatorCreateExperienceModal";
 import DashboardOverviewTab from "@/components/operator/DashboardOverviewTab";
 import ExperiencesTab from "@/components/operator/ExperiencesTab";
@@ -18,7 +13,9 @@ import BookingsTab from "@/components/operator/BookingsTab";
 import GuestsTab from "@/components/operator/GuestsTab";
 import Image from "@/components/ui/image";
 import { Plus, Calendar, Crown, ArrowRight } from "lucide-react";
-import ProAccessDialog, { useProAccess } from "@/components/pro/ProAccessDialog";
+import ProAccessDialog, {
+  useProAccess,
+} from "@/components/pro/ProAccessDialog";
 
 // Mock experiences data
 // Mock experiences data
@@ -46,51 +43,51 @@ const mockExperiences = [
     revenue: 780,
     location: "Bali, Indonesia",
     image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
-  }
+  },
 ];
 
 // Mock bookings data
 const mockBookings = [
-  { 
-    id: 'BK-1001', 
-    guest: 'Emma Thompson', 
-    experience: 'Cultural Heritage Walk', 
-    date: '2025-05-24', 
-    amount: '£95.00',
-    status: 'confirmed',
+  {
+    id: "BK-1001",
+    guest: "Emma Thompson",
+    experience: "Cultural Heritage Walk",
+    date: "2025-05-24",
+    amount: "£95.00",
+    status: "confirmed",
   },
-  { 
-    id: 'BK-1002', 
-    guest: 'Michael Chen', 
-    experience: 'Food & Culinary Tour', 
-    date: '2025-05-26', 
-    amount: '£120.00',
-    status: 'pending',
+  {
+    id: "BK-1002",
+    guest: "Michael Chen",
+    experience: "Food & Culinary Tour",
+    date: "2025-05-26",
+    amount: "£120.00",
+    status: "pending",
   },
-  { 
-    id: 'BK-1003', 
-    guest: 'Sarah Johnson', 
-    experience: 'Artisan Workshop Visit', 
-    date: '2025-05-29', 
-    amount: '£75.00',
-    status: 'completed',
+  {
+    id: "BK-1003",
+    guest: "Sarah Johnson",
+    experience: "Artisan Workshop Visit",
+    date: "2025-05-29",
+    amount: "£75.00",
+    status: "completed",
   },
-  { 
-    id: 'BK-1004', 
-    guest: 'David Rodriguez', 
-    experience: 'Sunset Cultural Tour', 
-    date: '2025-05-31', 
-    amount: '£85.00',
-    status: 'confirmed',
+  {
+    id: "BK-1004",
+    guest: "David Rodriguez",
+    experience: "Sunset Cultural Tour",
+    date: "2025-05-31",
+    amount: "£85.00",
+    status: "confirmed",
   },
-  { 
-    id: 'BK-1005', 
-    guest: 'Aisha Patel', 
-    experience: 'Heritage Site Tour', 
-    date: '2025-06-02', 
-    amount: '£110.00',
-    status: 'cancelled',
-  }
+  {
+    id: "BK-1005",
+    guest: "Aisha Patel",
+    experience: "Heritage Site Tour",
+    date: "2025-06-02",
+    amount: "£110.00",
+    status: "cancelled",
+  },
 ];
 
 const OperatorDashboard = () => {
@@ -114,10 +111,10 @@ const OperatorDashboard = () => {
   };
 
   const handleUpgradeClick = () => {
-    navigate('/culturin-pro');
+    navigate("/sign-in");
     toast({
-      title: "Exploring Pro Features",
-      description: "Redirecting to Culturin Pro options...",
+      title: "Exploring Studio Features",
+      description: "Please sign in to access Culturin Studio...",
     });
   };
 
@@ -140,7 +137,10 @@ const OperatorDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header type="operator" />
-      <OperatorCreateExperienceModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
+      <OperatorCreateExperienceModal
+        open={createModalOpen}
+        onOpenChange={setCreateModalOpen}
+      />
 
       {/* Hero Section */}
       <section className="bg-white border-b border-gray-200">
@@ -151,7 +151,8 @@ const OperatorDashboard = () => {
                 Welcome to Your Cultural Experience Dashboard
               </h1>
               <p className="text-lg text-gray-600 mb-6">
-                Manage your offerings, track bookings, and grow your cultural experience business.
+                Manage your offerings, track bookings, and grow your cultural
+                experience business.
               </p>
 
               <div className="flex flex-wrap gap-4">
@@ -236,9 +237,7 @@ const OperatorDashboard = () => {
               />
             </TabsContent>
             <TabsContent value="experiences">
-              <ExperiencesTab 
-                onCreateExperience={handleCreateExperience} 
-              />
+              <ExperiencesTab onCreateExperience={handleCreateExperience} />
             </TabsContent>
             <TabsContent value="bookings">
               <BookingsTab />
@@ -254,7 +253,9 @@ const OperatorDashboard = () => {
       <footer className="bg-white border-t border-gray-200 py-8 mt-10">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
-            <p className="text-gray-500 text-sm">© 2025 Culturin. All rights reserved.</p>
+            <p className="text-gray-500 text-sm">
+              © 2025 Culturin. All rights reserved.
+            </p>
             <div className="flex items-center">
               <Button
                 variant="ghost"

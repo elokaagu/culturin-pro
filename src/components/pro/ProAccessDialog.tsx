@@ -58,7 +58,7 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
           <div className="md:col-span-3 p-8 bg-white">
             <DialogHeader className="mb-6">
               <DialogTitle className="text-2xl font-semibold">
-                Unlock the full potential of Culturin Pro
+                Unlock the full potential of Culturin Studio
               </DialogTitle>
               <DialogDescription className="text-base mt-2">
                 Take your cultural experiences to the next level with our

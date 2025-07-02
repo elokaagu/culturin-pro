@@ -44,7 +44,7 @@ const PricingPage = () => {
                     className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-6 h-auto text-lg"
                     asChild
                   >
-                    <Link to="/culturin-pro">Get a free demo →</Link>
+                    <Link to="/sign-in">Get started →</Link>
                   </Button>
                 </div>
               </div>
@@ -274,7 +274,7 @@ const PricingPage = () => {
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 h-auto text-lg"
                 asChild
               >
-                <Link to="/culturin-pro">Get started with a free demo</Link>
+                <Link to="/sign-in">Get started with Studio</Link>
               </Button>
               <p className="mt-4 text-gray-500">No credit card required</p>
             </div>

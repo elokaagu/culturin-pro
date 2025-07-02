@@ -1,7 +1,7 @@
 import ProDashboardLayout from "../../../components/pro/ProDashboardLayout";
 
 export const metadata = {
-  title: "Settings | Culturin Pro",
+  title: "Settings | Culturin Studio",
   description:
     "Configure your account settings, billing, team management, and platform preferences.",
 };

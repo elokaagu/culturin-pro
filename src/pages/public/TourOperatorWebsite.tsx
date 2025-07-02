@@ -819,10 +819,10 @@ const TourOperatorWebsite: React.FC = () => {
                 <p className="mt-2 md:mt-0">
                   Powered by{" "}
                   <a
-                    href="/culturin-pro"
+                    href="/studio"
                     className="text-white hover:text-opacity-80 font-medium"
                   >
-                    Culturin Pro
+                    Culturin Studio
                   </a>
                 </p>
               </div>
