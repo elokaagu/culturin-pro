@@ -28,8 +28,10 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   const [viewMode, setViewMode] = useState("desktop");
   const [primaryColor, setPrimaryColor] = useState("#9b87f5");
   const [headerImage, setHeaderImage] = useState<string | null>(null);
-  const [companyName, setCompanyName] = useState("Barcelona Cultural Tours");
-  const [tagline, setTagline] = useState("Authentic cultural experiences");
+  const [companyName, setCompanyName] = useState("Culturin Tours");
+  const [tagline, setTagline] = useState(
+    "Authentic cultural experiences curated by Eloka Agu"
+  );
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
@@ -40,12 +42,11 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
       );
       setHeaderImage(safeLocalStorage.getItem("websiteHeaderImage"));
       setCompanyName(
-        safeLocalStorage.getItem("websiteCompanyName") ||
-          "Barcelona Cultural Tours"
+        safeLocalStorage.getItem("websiteCompanyName") || "Culturin Tours"
       );
       setTagline(
         safeLocalStorage.getItem("websiteTagline") ||
-          "Authentic cultural experiences"
+          "Authentic cultural experiences curated by Eloka Agu"
       );
     };
 
@@ -69,12 +70,11 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     );
     setHeaderImage(safeLocalStorage.getItem("websiteHeaderImage"));
     setCompanyName(
-      safeLocalStorage.getItem("websiteCompanyName") ||
-        "Barcelona Cultural Tours"
+      safeLocalStorage.getItem("websiteCompanyName") || "Culturin Tours"
     );
     setTagline(
       safeLocalStorage.getItem("websiteTagline") ||
-        "Authentic cultural experiences"
+        "Authentic cultural experiences curated by Eloka Agu"
     );
     setRefreshKey((prev) => prev + 1);
     toast.success("Preview refreshed", {

@@ -66,14 +66,13 @@ const WebsiteBuilder: React.FC = () => {
       // Save website content and theme to localStorage for the tour operator website
       const websiteContent = {
         companyName:
-          safeLocalStorage.getItem("websiteCompanyName") ||
-          "Barcelona Cultural Tours",
+          safeLocalStorage.getItem("websiteCompanyName") || "Culturin Tours",
         tagline:
           safeLocalStorage.getItem("websiteTagline") ||
-          "Authentic cultural experiences in the heart of Catalonia",
+          "Authentic cultural experiences curated by Eloka Agu",
         description:
           safeLocalStorage.getItem("websiteDescription") ||
-          "We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots.",
+          "Founded by Eloka Agu, Culturin Tours specializes in immersive cultural experiences that connect travelers with authentic local traditions, stories, and communities around the world.",
         primaryColor:
           safeLocalStorage.getItem("websitePrimaryColor") || "#9b87f5",
         headerImage: safeLocalStorage.getItem("websiteHeaderImage") || null,

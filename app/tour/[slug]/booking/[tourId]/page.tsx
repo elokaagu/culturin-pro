@@ -55,7 +55,7 @@ export default function BookingPage({
 }) {
   const [loading, setLoading] = useState(true);
   const [tour, setTour] = useState<Tour | null>(null);
-  const [operatorName, setOperatorName] = useState("Barcelona Cultural Tours");
+  const [operatorName, setOperatorName] = useState("Culturin Tours");
   const [primaryColor, setPrimaryColor] = useState("#9b87f5");
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<BookingFormData>({
@@ -74,9 +74,7 @@ export default function BookingPage({
     if (publishedContentStr) {
       try {
         const publishedContent = JSON.parse(publishedContentStr);
-        setOperatorName(
-          publishedContent.companyName || "Barcelona Cultural Tours"
-        );
+        setOperatorName(publishedContent.companyName || "Culturin Tours");
         setPrimaryColor(publishedContent.primaryColor || "#9b87f5");
       } catch (e) {
         console.error("Error parsing published content:", e);

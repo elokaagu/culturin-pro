@@ -11,7 +11,7 @@ import Image from "@/components/ui/image";
 import { safeLocalStorage } from "../../../../lib/localStorage";
 
 const WebsiteContent: React.FC = () => {
-  const [companyName, setCompanyName] = useState("Barcelona Cultural Tours");
+  const [companyName, setCompanyName] = useState("Culturin Tours");
   const [tagline, setTagline] = useState(
     "Authentic cultural experiences in the heart of Catalonia"
   );
@@ -24,8 +24,7 @@ const WebsiteContent: React.FC = () => {
   useEffect(() => {
     // Load values from localStorage safely
     setCompanyName(
-      safeLocalStorage.getItem("websiteCompanyName") ||
-        "Barcelona Cultural Tours"
+      safeLocalStorage.getItem("websiteCompanyName") || "Culturin Tours"
     );
     setTagline(
       safeLocalStorage.getItem("websiteTagline") ||

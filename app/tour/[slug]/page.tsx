@@ -97,18 +97,18 @@ export default function TourOperatorPage({
     setTimeout(() => {
       const defaultData: OperatorData = {
         id: params.slug || "demo",
-        name: "Barcelona Cultural Tours",
-        tagline: "Authentic cultural experiences in the heart of Catalonia",
+        name: "Culturin Tours",
+        tagline: "Authentic cultural experiences curated by Eloka Agu",
         description:
-          "We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots. Our expert local guides bring history and culture to life with immersive experiences.",
+          "Founded by Eloka Agu, Culturin Tours specializes in immersive cultural experiences that connect travelers with authentic local traditions, stories, and communities around the world.",
         logo: "https://placehold.co/200x80",
         coverImage: headerImage || null,
         theme: publishedTheme,
         primaryColor: "#9b87f5",
         contact: {
-          email: "info@barcelonaculturaltours.com",
-          phone: "+34 932 123 456",
-          address: "Carrer de la Diputació 215, 08011 Barcelona, Spain",
+          email: "eloka@culturintours.com",
+          phone: "+1 (555) 123-4567",
+          address: "Global Cultural Experiences",
         },
         tours: [],
       };
