@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../components/auth/AuthProvider";
-import { useNavigate } from "../../lib/navigation";
+import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,14 +19,41 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { login, isLoggedIn } = useAuth();
-  const navigate = useNavigate();
+  const { login, isLoggedIn, isLoading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
+    // Don't redirect while auth is still loading
+    if (isLoading) return;
+
     if (isLoggedIn) {
-      navigate("/studio");
+      router.push("/studio");
     }
-  }, [isLoggedIn, navigate]);
+  }, [isLoggedIn, isLoading, router]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If already logged in, show loading while redirecting
+  if (isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Redirecting to Studio...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

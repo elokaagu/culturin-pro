@@ -15,6 +15,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   hasStudioAccess: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,6 +31,7 @@ export const useAuth = () => {
         login: async () => {},
         logout: () => {},
         hasStudioAccess: false,
+        isLoading: true,
       };
     }
     throw new Error("useAuth must be used within an AuthProvider");
@@ -44,21 +46,28 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [hasStudioAccess, setHasStudioAccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is logged in from localStorage
-    const storedUser = localStorage.getItem("culturin_user");
-    const studioAccess = localStorage.getItem("culturinProAccess");
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("culturin_user");
+      const studioAccess = localStorage.getItem("culturinProAccess");
 
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
-        setIsLoggedIn(true);
-      } catch (error) {
-        console.error("Error parsing stored user data:", error);
-        localStorage.removeItem("culturin_user");
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+          setIsLoggedIn(true);
+          setHasStudioAccess(studioAccess === "true");
+        } catch (error) {
+          console.error("Error parsing stored user data:", error);
+          localStorage.removeItem("culturin_user");
+          localStorage.removeItem("culturinProAccess");
+        }
       }
+      setIsLoading(false);
     }
   }, []);
 
@@ -73,21 +82,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     setUser(userData);
     setIsLoggedIn(true);
+    setHasStudioAccess(true);
 
     // Store user data and grant studio access
-    localStorage.setItem("culturin_user", JSON.stringify(userData));
-    localStorage.setItem("culturinProAccess", "true");
+    if (typeof window !== "undefined") {
+      localStorage.setItem("culturin_user", JSON.stringify(userData));
+      localStorage.setItem("culturinProAccess", "true");
+    }
   };
 
   const logout = () => {
     setUser(null);
     setIsLoggedIn(false);
-    localStorage.removeItem("culturin_user");
-    localStorage.removeItem("culturinProAccess");
-  };
+    setHasStudioAccess(false);
 
-  const hasStudioAccess =
-    isLoggedIn && localStorage.getItem("culturinProAccess") === "true";
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("culturin_user");
+      localStorage.removeItem("culturinProAccess");
+    }
+  };
 
   const value: AuthContextType = {
     user,
@@ -95,6 +108,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     hasStudioAccess,
+    isLoading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

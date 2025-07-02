@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useAuth } from "./AuthProvider";
-import { useNavigate } from "../../../lib/navigation";
+import { useRouter } from "next/navigation";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,26 +13,32 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireStudioAccess = false,
 }) => {
-  const { isLoggedIn, hasStudioAccess } = useAuth();
-  const navigate = useNavigate();
+  const { isLoggedIn, hasStudioAccess, isLoading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
+    // Don't redirect while still loading
+    if (isLoading) return;
+
     if (!isLoggedIn) {
-      navigate("/sign-in");
+      router.push("/sign-in");
       return;
     }
 
     if (requireStudioAccess && !hasStudioAccess) {
-      navigate("/");
+      router.push("/");
       return;
     }
-  }, [isLoggedIn, hasStudioAccess, requireStudioAccess, navigate]);
+  }, [isLoggedIn, hasStudioAccess, requireStudioAccess, isLoading, router]);
 
-  // Show loading while checking authentication
-  if (!isLoggedIn || (requireStudioAccess && !hasStudioAccess)) {
+  // Show loading while checking authentication or during redirects
+  if (isLoading || !isLoggedIn || (requireStudioAccess && !hasStudioAccess)) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
       </div>
     );
   }

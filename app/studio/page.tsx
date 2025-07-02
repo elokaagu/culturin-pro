@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ProtectedRoute } from "@/src/components/auth/ProtectedRoute";
-import { useNavigate } from "../../lib/navigation";
+import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Crown, ArrowRight } from "lucide-react";
@@ -12,10 +12,10 @@ import FeatureHighlights from "@/components/pro/FeatureHighlights";
 import SecuritySection from "@/components/pro/SecuritySection";
 
 function StudioContent() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleLaunchDashboard = () => {
-    navigate("/pro-dashboard");
+    router.push("/pro-dashboard");
   };
 
   return (
