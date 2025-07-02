@@ -22,47 +22,6 @@ const NewFooter = () => {
 
   return (
     <>
-      {/* Bonus CTAs above footer */}
-      <section className="bg-[#FAF8F6] py-12">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Link
-              to="/demo"
-              className="relative overflow-hidden bg-black text-white p-8 rounded-xl flex items-center justify-between group transition-all duration-300 hover:shadow-card hover:translate-y-[-2px]"
-            >
-              <div className="flex flex-col items-start">
-                <span className="text-xl font-medium mb-1">
-                  Get a free demo
-                </span>
-                <span className="text-sm text-white/70">
-                  See how Culturin can transform your business
-                </span>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                <ArrowRight className="h-5 w-5 text-white" />
-              </div>
-            </Link>
-
-            <Link
-              to="/how-it-works"
-              className="relative overflow-hidden bg-white border border-gray-200 text-black p-8 rounded-xl flex items-center justify-between group transition-all duration-300 hover:shadow-card hover:translate-y-[-2px]"
-            >
-              <div className="flex flex-col items-start">
-                <span className="text-xl font-medium mb-1">
-                  See how it works
-                </span>
-                <span className="text-sm text-black/60">
-                  Explore our platform features and benefits
-                </span>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                <ArrowRight className="h-5 w-5 text-black" />
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* Main footer */}
       <footer ref={footerRef} className="bg-[#FAF8F6] py-16 text-[#1A1A1A]">
         <div className="container mx-auto px-6 max-w-7xl">
