@@ -30,6 +30,7 @@ const menuItems = [
     icon: ShoppingCart,
   },
   { name: "Guest CRM", path: "/pro-dashboard/crm", icon: Users },
+  { name: "Platform Users", path: "/pro-dashboard/users", icon: Users },
   { name: "Marketing", path: "/pro-dashboard/marketing", icon: Megaphone },
   { name: "Website", path: "/pro-dashboard/website", icon: Globe },
   {
