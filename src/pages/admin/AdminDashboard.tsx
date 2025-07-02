@@ -18,6 +18,7 @@ import NewFooter from "@/components/sections/NewFooter";
 import { blogPosts } from "@/data/blogPosts";
 import { faqItems } from "@/data/helpCenterData";
 import { caseStudies } from "@/data/caseStudiesData";
+import { jobApplications } from "@/data/careersData";
 
 const AdminDashboard = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -35,6 +36,12 @@ const AdminDashboard = () => {
       color: "bg-blue-100 text-blue-600",
     },
     {
+      title: "Job Applications",
+      value: jobApplications.length.toString(),
+      icon: Users,
+      color: "bg-indigo-100 text-indigo-600",
+    },
+    {
       title: "Help Center FAQs",
       value: faqItems.length.toString(),
       icon: Settings,
@@ -45,19 +52,6 @@ const AdminDashboard = () => {
       value: caseStudies.length.toString(),
       icon: BarChart3,
       color: "bg-purple-100 text-purple-600",
-    },
-    {
-      title: "Recent Updates",
-      value: blogPosts
-        .filter((post) => {
-          const postDate = new Date(post.date);
-          const thirtyDaysAgo = new Date();
-          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-          return postDate > thirtyDaysAgo;
-        })
-        .length.toString(),
-      icon: Plus,
-      color: "bg-green-100 text-green-600",
     },
   ];
 
@@ -75,6 +69,13 @@ const AdminDashboard = () => {
       icon: Edit,
       link: "/admin/blog",
       color: "bg-green-600 hover:bg-green-700",
+    },
+    {
+      title: "Manage Careers",
+      description: "View job applications and manage postings",
+      icon: Users,
+      link: "/admin/careers",
+      color: "bg-indigo-600 hover:bg-indigo-700",
     },
     {
       title: "Manage Help Center",
