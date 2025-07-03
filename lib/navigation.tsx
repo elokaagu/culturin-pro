@@ -2,11 +2,25 @@
 
 import React from "react";
 
+// Add smooth transition utility
+const addPageTransition = (callback: () => void) => {
+  // Add fade-out effect
+  document.body.style.transition = "opacity 0.3s ease";
+  document.body.style.opacity = "0.7";
+
+  // Execute navigation after fade-out
+  setTimeout(() => {
+    callback();
+  }, 150);
+};
+
 // Navigation compatibility layer for React Router migration
 export const useNavigate = () => {
   return (path: string) => {
     if (typeof window !== "undefined") {
-      window.location.href = path;
+      addPageTransition(() => {
+        window.location.href = path;
+      });
     }
   };
 };
@@ -67,7 +81,7 @@ export const useParams = () => {
   return {};
 };
 
-// Link component compatibility
+// Link component compatibility with smooth transitions
 export const Link = ({
   to,
   children,
@@ -82,9 +96,16 @@ export const Link = ({
   [key: string]: any;
 }) => {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+
     if (onClick) {
       onClick(e);
     }
+
+    // Add smooth transition before navigation
+    addPageTransition(() => {
+      window.location.href = to;
+    });
   };
 
   return (
@@ -104,13 +125,32 @@ export const Navigate = ({
 }) => {
   React.useEffect(() => {
     if (typeof window !== "undefined") {
-      if (replace) {
-        window.location.replace(to);
-      } else {
-        window.location.href = to;
-      }
+      addPageTransition(() => {
+        if (replace) {
+          window.location.replace(to);
+        } else {
+          window.location.href = to;
+        }
+      });
     }
   }, [to, replace]);
 
   return null;
 };
+
+// Add page load transition effect
+if (typeof window !== "undefined") {
+  window.addEventListener("load", () => {
+    document.body.style.transition = "opacity 0.4s ease";
+    document.body.style.opacity = "1";
+  });
+
+  // Add fade-in effect on page load
+  document.addEventListener("DOMContentLoaded", () => {
+    document.body.style.opacity = "0";
+    setTimeout(() => {
+      document.body.style.transition = "opacity 0.4s ease";
+      document.body.style.opacity = "1";
+    }, 50);
+  });
+}

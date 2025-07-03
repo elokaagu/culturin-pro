@@ -2,6 +2,7 @@ import React from "react";
 import "./globals.css";
 import { Toaster } from "../components/ui/toaster";
 import { AuthProvider } from "../src/components/auth/AuthProvider";
+import PageTransition from "../components/PageTransition";
 
 export const metadata = {
   title: "Culturin Studio - Journey Together",
@@ -17,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <PageTransition>{children}</PageTransition>
+        </AuthProvider>
         <Toaster />
       </body>
     </html>
