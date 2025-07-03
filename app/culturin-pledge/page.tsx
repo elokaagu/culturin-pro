@@ -95,28 +95,28 @@ const impactAreas = [
     title: "Education",
     description: "Building schools and providing educational resources",
     projects: "47 schools built",
-    color: "bg-blue-500",
+    color: "bg-blue-100",
   },
   {
     icon: Droplets,
     title: "Clean Water",
     description: "Installing water systems and sanitation facilities",
     projects: "23 water systems installed",
-    color: "bg-cyan-500",
+    color: "bg-blue-100",
   },
   {
     icon: Building,
     title: "Infrastructure",
     description: "Developing sustainable community infrastructure",
     projects: "15 community centers built",
-    color: "bg-orange-500",
+    color: "bg-blue-100",
   },
   {
     icon: Leaf,
     title: "Environmental",
     description: "Conservation and sustainable development projects",
     projects: "32 conservation initiatives",
-    color: "bg-green-500",
+    color: "bg-blue-100",
   },
 ];
 
@@ -170,7 +170,7 @@ export default function CulturinPledgePage() {
             {/* Fallback for browsers that don't support video */}
           </video>
           {/* Fallback animated background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] via-[#2D2D2D] to-[#1A1A1A] animate-gradient-x">
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 animate-gradient-x">
             <div
               className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
               style={{
@@ -192,8 +192,8 @@ export default function CulturinPledgePage() {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 container mx-auto px-6 max-w-7xl">
-          <div className="text-center max-w-4xl mx-auto text-white">
+        <div className="relative z-10 container mx-auto px-4 max-w-4xl">
+          <div className="text-center text-white">
             <div
               className={`transition-all duration-700 ease-out ${
                 animateItems
@@ -205,10 +205,10 @@ export default function CulturinPledgePage() {
                 <Heart className="w-4 h-4 mr-2" />
                 Making Travel Matter
               </Badge>
-              <h1 className="text-5xl md:text-7xl font-bold mb-6 drop-shadow-lg">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg">
                 The Culturin Pledge
               </h1>
-              <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed drop-shadow-md">
+              <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed drop-shadow-md max-w-3xl mx-auto">
                 Join travelers and influencers worldwide in dedicating 1% of
                 travel spending to local development projects that build
                 schools, provide clean water, and foster sustainable growth in
@@ -217,7 +217,7 @@ export default function CulturinPledgePage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
                   size="lg"
-                  className="bg-white text-[#1A1A1A] hover:bg-white/90 backdrop-blur-sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white py-5 px-8 rounded-xl text-lg h-auto"
                 >
                   Take the Pledge
                   <ArrowRight className="w-5 h-5 ml-2" />
@@ -225,7 +225,7 @@ export default function CulturinPledgePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white text-white hover:bg-white/10 backdrop-blur-sm"
+                  className="border-white text-white hover:bg-white/10 backdrop-blur-sm py-5 px-8 rounded-xl text-lg h-auto"
                 >
                   Learn More
                 </Button>
@@ -246,8 +246,8 @@ export default function CulturinPledgePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-[#FAF8F6]">
-        <div className="container mx-auto px-6 max-w-7xl">
+      <section className="py-24 bg-gray-50">
+        <div className="container mx-auto px-4 max-w-5xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div
@@ -259,13 +259,13 @@ export default function CulturinPledgePage() {
                 }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <div className="w-16 h-16 mx-auto mb-4 bg-[#1A1A1A] rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-blue-600 rounded-full flex items-center justify-center">
                   <stat.icon className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-3xl font-bold text-[#1A1A1A] mb-2">
+                <div className="text-3xl font-bold text-gray-900 mb-2">
                   {stat.value}
                 </div>
-                <div className="text-[#1A1A1A]/70">{stat.label}</div>
+                <div className="text-gray-600">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -273,13 +273,13 @@ export default function CulturinPledgePage() {
       </section>
 
       {/* How It Works */}
-      <section className="py-20">
-        <div className="container mx-auto px-6 max-w-7xl">
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-[#1A1A1A] mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
               How It Works
             </h2>
-            <p className="text-xl text-[#1A1A1A]/70 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Simple, transparent, and impactful - every booking makes a
               difference
             </p>
@@ -306,122 +306,122 @@ export default function CulturinPledgePage() {
                   "See exactly how your contributions are making a difference in communities",
               },
             ].map((item, index) => (
-              <Card
+              <div
                 key={index}
-                className="text-center p-8 border-2 hover:border-[#1A1A1A]/20 transition-colors"
+                className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm"
               >
-                <CardContent className="p-0">
-                  <div className="text-4xl font-bold text-[#1A1A1A]/20 mb-4">
-                    {item.step}
-                  </div>
-                  <h3 className="text-2xl font-semibold text-[#1A1A1A] mb-4">
-                    {item.title}
-                  </h3>
-                  <p className="text-[#1A1A1A]/70">{item.description}</p>
-                </CardContent>
-              </Card>
+                <div className="text-4xl font-bold text-gray-200 mb-4">
+                  {item.step}
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  {item.title}
+                </h3>
+                <p className="text-gray-600">{item.description}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Impact Areas */}
-      <section className="py-20 bg-[#FAF8F6]">
-        <div className="container mx-auto px-6 max-w-7xl">
+      <section className="py-24 bg-gray-50">
+        <div className="container mx-auto px-4 max-w-5xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-[#1A1A1A] mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
               Our Impact Areas
             </h2>
-            <p className="text-xl text-[#1A1A1A]/70 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Supporting sustainable development across four key areas
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {impactAreas.map((area, index) => (
-              <Card
+              <div
                 key={index}
-                className="text-center p-6 hover:shadow-lg transition-shadow"
+                className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
               >
-                <CardContent className="p-0">
-                  <div
-                    className={`w-16 h-16 mx-auto mb-4 ${area.color} rounded-full flex items-center justify-center`}
+                <div
+                  className={`w-16 h-16 mx-auto mb-4 ${area.color} rounded-full flex items-center justify-center`}
+                >
+                  <area.icon className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">
+                  {area.title}
+                </h3>
+                <p className="text-gray-600 mb-4 text-center text-sm">
+                  {area.description}
+                </p>
+                <div className="text-center">
+                  <Badge
+                    variant="secondary"
+                    className="bg-gray-100 text-gray-700"
                   >
-                    <area.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">
-                    {area.title}
-                  </h3>
-                  <p className="text-[#1A1A1A]/70 mb-4">{area.description}</p>
-                  <Badge variant="secondary">{area.projects}</Badge>
-                </CardContent>
-              </Card>
+                    {area.projects}
+                  </Badge>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Pledge Signatories Carousel */}
-      <section className="py-20">
-        <div className="container mx-auto px-6 max-w-7xl">
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-[#1A1A1A] mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
               Pledge Signatories
             </h2>
-            <p className="text-xl text-[#1A1A1A]/70 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Join these travelers and influencers who are making a difference
             </p>
           </div>
 
-          <div className="relative max-w-4xl mx-auto">
-            <Card className="p-8 md:p-12 border-2">
-              <CardContent className="p-0">
-                <div className="flex flex-col md:flex-row items-center gap-8">
-                  <div className="flex-shrink-0">
-                    <div className="w-24 h-24 rounded-full overflow-hidden">
-                      <img
-                        src={pledgeSignatories[currentSignatory].image}
-                        alt={pledgeSignatories[currentSignatory].name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+          <div className="relative">
+            <div className="bg-gray-50 rounded-xl p-8 md:p-12 border border-gray-200">
+              <div className="flex flex-col md:flex-row items-center gap-8">
+                <div className="flex-shrink-0">
+                  <div className="w-24 h-24 rounded-full overflow-hidden">
+                    <img
+                      src={pledgeSignatories[currentSignatory].image}
+                      alt={pledgeSignatories[currentSignatory].name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <div className="flex-1 text-center md:text-left">
-                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                        />
-                      ))}
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                      />
+                    ))}
+                  </div>
+                  <blockquote className="text-lg md:text-xl text-gray-900 mb-4 italic">
+                    "{pledgeSignatories[currentSignatory].quote}"
+                  </blockquote>
+                  <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <div>
+                      <div className="font-semibold text-gray-900">
+                        {pledgeSignatories[currentSignatory].name}
+                      </div>
+                      <div className="text-gray-600">
+                        {pledgeSignatories[currentSignatory].role} •{" "}
+                        {pledgeSignatories[currentSignatory].location}
+                      </div>
                     </div>
-                    <blockquote className="text-lg md:text-xl text-[#1A1A1A] mb-4 italic">
-                      "{pledgeSignatories[currentSignatory].quote}"
-                    </blockquote>
-                    <div className="flex flex-col md:flex-row md:items-center gap-4">
-                      <div>
-                        <div className="font-semibold text-[#1A1A1A]">
-                          {pledgeSignatories[currentSignatory].name}
-                        </div>
-                        <div className="text-[#1A1A1A]/70">
-                          {pledgeSignatories[currentSignatory].role} •{" "}
-                          {pledgeSignatories[currentSignatory].location}
-                        </div>
-                      </div>
-                      <div className="md:ml-auto">
-                        <Badge className="bg-green-100 text-green-800">
-                          Contributed{" "}
-                          {
-                            pledgeSignatories[currentSignatory]
-                              .contributionAmount
-                          }
-                        </Badge>
-                      </div>
+                    <div className="md:ml-auto">
+                      <Badge className="bg-green-100 text-green-800">
+                        Contributed{" "}
+                        {pledgeSignatories[currentSignatory].contributionAmount}
+                      </Badge>
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Carousel Indicators */}
             <div className="flex justify-center mt-8 gap-2">
@@ -430,9 +430,7 @@ export default function CulturinPledgePage() {
                   key={index}
                   onClick={() => setCurrentSignatory(index)}
                   className={`w-3 h-3 rounded-full transition-colors ${
-                    index === currentSignatory
-                      ? "bg-[#1A1A1A]"
-                      : "bg-[#1A1A1A]/20"
+                    index === currentSignatory ? "bg-blue-600" : "bg-gray-300"
                   }`}
                 />
               ))}
@@ -442,19 +440,19 @@ export default function CulturinPledgePage() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-gradient-to-r from-[#1A1A1A] to-[#2D2D2D] text-white">
-        <div className="container mx-auto px-6 max-w-7xl text-center">
-          <h2 className="text-4xl font-bold mb-6">
+      <section className="py-24 bg-blue-600">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
             Ready to Make Your Travel Matter?
           </h2>
-          <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             Join the movement of conscious travelers who believe that every
             journey should leave a positive impact.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              className="bg-white text-[#1A1A1A] hover:bg-white/90"
+              className="bg-white text-blue-600 hover:bg-gray-100 py-5 px-8 rounded-xl text-lg h-auto"
             >
               Take the Pledge Now
               <Heart className="w-5 h-5 ml-2" />
@@ -462,7 +460,7 @@ export default function CulturinPledgePage() {
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white/10"
+              className="border-white text-white hover:bg-white/10 py-5 px-8 rounded-xl text-lg h-auto"
             >
               View Impact Report
             </Button>

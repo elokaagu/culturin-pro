@@ -178,11 +178,8 @@ const NewFooter = () => {
                 <li>
                   <Link
                     to="/culturin-pledge"
-                    className="hover:opacity-70 transition-opacity flex items-center gap-1.5"
+                    className="hover:opacity-70 transition-opacity"
                   >
-                    <span className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center text-xs">
-                      ♥
-                    </span>
                     Culturin Pledge
                   </Link>
                 </li>
