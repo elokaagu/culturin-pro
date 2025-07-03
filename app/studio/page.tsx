@@ -13,7 +13,7 @@ import FeatureHighlights from "@/components/pro/FeatureHighlights";
 import SecuritySection from "@/components/pro/SecuritySection";
 import BookingFlowBuilder from "@/components/pro/website/BookingFlowBuilder";
 import BookingWidget from "@/components/pro/website/BookingWidget";
-import { sampleItineraries } from "@/data/itineraryData";
+import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
 import { useUserData } from "@/src/contexts/UserDataContext";
 
 function StudioContent() {
@@ -25,17 +25,23 @@ function StudioContent() {
     router.push("/pro-dashboard");
   };
 
-  // Sample tour for booking preview
-  const sampleTour = sampleItineraries[0] || {
+  // Sample tour for booking preview - ensure we always have a valid ItineraryType
+  const sampleTour: ItineraryType = sampleItineraries[0] || {
     id: "sample-1",
     title: "Cultural Heritage Experience",
     description: "Immerse yourself in local traditions and history",
     days: 3,
-    price: 150,
+    lastUpdated: "1 day ago",
+    status: "published",
     image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
-    highlights: ["Traditional crafts", "Local cuisine", "Historical sites"],
-    includes: ["Guide", "Meals", "Transportation"],
-    itinerary: [],
+    themeType: "cultural",
+    regions: ["Local Area"],
+    price: 150,
+    currency: "USD",
+    groupSize: { min: 1, max: 8 },
+    difficulty: "easy",
+    tags: ["traditional crafts", "local cuisine", "historical sites"],
+    modules: [],
   };
 
   return (
