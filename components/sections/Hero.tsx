@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/carousel";
 import Image from "@/components/ui/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import TranslatableText from "../TranslatableText";
 
 const Hero = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -73,7 +74,7 @@ const Hero = () => {
           }`}
           style={{ transitionDelay: "200ms" }}
         >
-          Own your bookings. Tell richer stories. Grow your cultural tour brand.
+          <TranslatableText text="Own your bookings. Tell richer stories. Grow your cultural tour brand." />
         </h1>
 
         {/* Subheadline - Added more spacing */}
@@ -85,8 +86,7 @@ const Hero = () => {
           }`}
           style={{ transitionDelay: "300ms" }}
         >
-          Get more direct bookings, build guest loyalty, and craft unforgettable
-          cultural journeys — without using five different tools.
+          <TranslatableText text="Get more direct bookings, build guest loyalty, and craft unforgettable cultural journeys — without using five different tools." />
         </p>
 
         {/* Main content with iPhone mockup and searchbox side by side */}
