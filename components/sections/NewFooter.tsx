@@ -5,6 +5,7 @@ import { useInView } from "react-intersection-observer";
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import LanguageSelector from "../LanguageSelector";
 
 const NewFooter = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -25,7 +26,7 @@ const NewFooter = () => {
       {/* Main footer */}
       <footer ref={footerRef} className="bg-[#FAF8F6] py-16 text-[#1A1A1A]">
         <div className="container mx-auto px-6 max-w-7xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 mb-16">
             {/* PRODUCTS */}
             <div
               className={`transition-all duration-700 ease-out ${
@@ -174,6 +175,17 @@ const NewFooter = () => {
                     Press
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    to="/culturin-pledge"
+                    className="hover:opacity-70 transition-opacity flex items-center gap-1.5"
+                  >
+                    <span className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center text-xs">
+                      ♥
+                    </span>
+                    Culturin Pledge
+                  </Link>
+                </li>
               </ul>
             </div>
 
@@ -214,6 +226,26 @@ const NewFooter = () => {
                 </li>
               </ul>
             </div>
+
+            {/* CONNECT */}
+            <div
+              className={`transition-all duration-700 ease-out ${
+                animateItems
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
+              }`}
+              style={{ transitionDelay: "500ms" }}
+            >
+              <h3 className="text-sm font-semibold uppercase mb-5">Connect</h3>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm text-[#1A1A1A]/70 mb-3">
+                    Choose your language
+                  </p>
+                  <LanguageSelector variant="footer" />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Divider */}
@@ -227,7 +259,7 @@ const NewFooter = () => {
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-8"
               }`}
-              style={{ transitionDelay: "500ms" }}
+              style={{ transitionDelay: "600ms" }}
             >
               © 2025 Culturin. All rights reserved.
             </div>
@@ -238,7 +270,7 @@ const NewFooter = () => {
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-8"
               }`}
-              style={{ transitionDelay: "600ms" }}
+              style={{ transitionDelay: "700ms" }}
             >
               <Link
                 to="/cookie-settings"

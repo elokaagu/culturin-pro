@@ -1,0 +1,429 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Heart,
+  Globe,
+  Users,
+  Droplets,
+  GraduationCap,
+  Building,
+  Leaf,
+  ArrowRight,
+  CheckCircle,
+  Star,
+} from "lucide-react";
+import { useInView } from "react-intersection-observer";
+
+// Mock data for pledge signatories
+const pledgeSignatories = [
+  {
+    id: 1,
+    name: "Sarah Chen",
+    role: "Travel Blogger",
+    location: "San Francisco, CA",
+    image: "/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png",
+    contributionAmount: "$2,450",
+    joinedDate: "2024-03-15",
+    quote:
+      "Travel should leave places better than we found them. The Culturin Pledge makes this possible.",
+  },
+  {
+    id: 2,
+    name: "Marcus Rodriguez",
+    role: "Adventure Influencer",
+    location: "Barcelona, Spain",
+    image: "/lovable-uploads/2e9a9e9e-af76-4913-8148-9fce248d55c9.png",
+    contributionAmount: "$3,200",
+    joinedDate: "2024-02-28",
+    quote:
+      "Every adventure can create positive change. I'm proud to be part of this movement.",
+  },
+  {
+    id: 3,
+    name: "Aisha Patel",
+    role: "Cultural Explorer",
+    location: "Mumbai, India",
+    image: "/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png",
+    contributionAmount: "$1,875",
+    joinedDate: "2024-04-10",
+    quote:
+      "Supporting local communities through travel creates authentic connections and lasting impact.",
+  },
+  {
+    id: 4,
+    name: "David Kim",
+    role: "Sustainable Tourism Advocate",
+    location: "Seoul, South Korea",
+    image: "/lovable-uploads/57645fce-47c3-43f5-82f6-080cd2577e06.png",
+    contributionAmount: "$4,100",
+    joinedDate: "2024-01-20",
+    quote:
+      "The future of travel is responsible travel. The Culturin Pledge is leading the way.",
+  },
+  {
+    id: 5,
+    name: "Elena Popov",
+    role: "Photography & Travel",
+    location: "Prague, Czech Republic",
+    image: "/lovable-uploads/61e2237f-86de-4ec9-8712-8902092d8c9b.png",
+    contributionAmount: "$2,800",
+    joinedDate: "2024-03-05",
+    quote:
+      "Through my lens, I see the beauty of the world. Through the pledge, I help preserve it.",
+  },
+  {
+    id: 6,
+    name: "James Thompson",
+    role: "Adventure Tour Guide",
+    location: "Cape Town, South Africa",
+    image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
+    contributionAmount: "$3,650",
+    joinedDate: "2024-02-15",
+    quote:
+      "As a guide, I've seen firsthand how tourism can transform communities for the better.",
+  },
+];
+
+const impactAreas = [
+  {
+    icon: GraduationCap,
+    title: "Education",
+    description: "Building schools and providing educational resources",
+    projects: "47 schools built",
+    color: "bg-blue-500",
+  },
+  {
+    icon: Droplets,
+    title: "Clean Water",
+    description: "Installing water systems and sanitation facilities",
+    projects: "23 water systems installed",
+    color: "bg-cyan-500",
+  },
+  {
+    icon: Building,
+    title: "Infrastructure",
+    description: "Developing sustainable community infrastructure",
+    projects: "15 community centers built",
+    color: "bg-orange-500",
+  },
+  {
+    icon: Leaf,
+    title: "Environmental",
+    description: "Conservation and sustainable development projects",
+    projects: "32 conservation initiatives",
+    color: "bg-green-500",
+  },
+];
+
+const stats = [
+  { label: "Total Pledged", value: "$2.4M", icon: Heart },
+  { label: "Countries Impacted", value: "34", icon: Globe },
+  { label: "Pledge Signatories", value: "1,247", icon: Users },
+  { label: "Projects Funded", value: "117", icon: CheckCircle },
+];
+
+export default function CulturinPledgePage() {
+  const [currentSignatory, setCurrentSignatory] = useState(0);
+  const [animateItems, setAnimateItems] = useState(false);
+
+  const { ref: heroRef, inView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      setAnimateItems(true);
+    }
+  }, [inView]);
+
+  // Auto-rotate carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSignatory((prev) => (prev + 1) % pledgeSignatories.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section
+        ref={heroRef}
+        className="relative bg-gradient-to-br from-[#1A1A1A] to-[#2D2D2D] text-white py-20"
+      >
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="text-center max-w-4xl mx-auto">
+            <div
+              className={`transition-all duration-700 ease-out ${
+                animateItems
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
+              }`}
+            >
+              <Badge className="mb-6 bg-white/10 text-white border-white/20">
+                <Heart className="w-4 h-4 mr-2" />
+                Making Travel Matter
+              </Badge>
+              <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                The Culturin Pledge
+              </h1>
+              <p className="text-xl md:text-2xl text-white/80 mb-8 leading-relaxed">
+                Join travelers and influencers worldwide in dedicating 1% of
+                travel spending to local development projects that build
+                schools, provide clean water, and foster sustainable growth in
+                communities around the globe.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  size="lg"
+                  className="bg-white text-[#1A1A1A] hover:bg-white/90"
+                >
+                  Take the Pledge
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white/10"
+                >
+                  Learn More
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-[#FAF8F6]">
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div
+                key={stat.label}
+                className={`text-center transition-all duration-700 ease-out ${
+                  animateItems
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
+                }`}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <div className="w-16 h-16 mx-auto mb-4 bg-[#1A1A1A] rounded-full flex items-center justify-center">
+                  <stat.icon className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-[#1A1A1A] mb-2">
+                  {stat.value}
+                </div>
+                <div className="text-[#1A1A1A]/70">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-20">
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-[#1A1A1A] mb-4">
+              How It Works
+            </h2>
+            <p className="text-xl text-[#1A1A1A]/70 max-w-2xl mx-auto">
+              Simple, transparent, and impactful - every booking makes a
+              difference
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                step: "01",
+                title: "Book Your Experience",
+                description:
+                  "Choose from thousands of Culturin-affiliated tours and experiences worldwide",
+              },
+              {
+                step: "02",
+                title: "Automatic Contribution",
+                description:
+                  "1% of your booking automatically goes to the Culturin Pledge fund",
+              },
+              {
+                step: "03",
+                title: "Track Your Impact",
+                description:
+                  "See exactly how your contributions are making a difference in communities",
+              },
+            ].map((item, index) => (
+              <Card
+                key={index}
+                className="text-center p-8 border-2 hover:border-[#1A1A1A]/20 transition-colors"
+              >
+                <CardContent className="p-0">
+                  <div className="text-4xl font-bold text-[#1A1A1A]/20 mb-4">
+                    {item.step}
+                  </div>
+                  <h3 className="text-2xl font-semibold text-[#1A1A1A] mb-4">
+                    {item.title}
+                  </h3>
+                  <p className="text-[#1A1A1A]/70">{item.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Impact Areas */}
+      <section className="py-20 bg-[#FAF8F6]">
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-[#1A1A1A] mb-4">
+              Our Impact Areas
+            </h2>
+            <p className="text-xl text-[#1A1A1A]/70 max-w-2xl mx-auto">
+              Supporting sustainable development across four key areas
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {impactAreas.map((area, index) => (
+              <Card
+                key={index}
+                className="text-center p-6 hover:shadow-lg transition-shadow"
+              >
+                <CardContent className="p-0">
+                  <div
+                    className={`w-16 h-16 mx-auto mb-4 ${area.color} rounded-full flex items-center justify-center`}
+                  >
+                    <area.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">
+                    {area.title}
+                  </h3>
+                  <p className="text-[#1A1A1A]/70 mb-4">{area.description}</p>
+                  <Badge variant="secondary">{area.projects}</Badge>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pledge Signatories Carousel */}
+      <section className="py-20">
+        <div className="container mx-auto px-6 max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-[#1A1A1A] mb-4">
+              Pledge Signatories
+            </h2>
+            <p className="text-xl text-[#1A1A1A]/70 max-w-2xl mx-auto">
+              Join these travelers and influencers who are making a difference
+            </p>
+          </div>
+
+          <div className="relative max-w-4xl mx-auto">
+            <Card className="p-8 md:p-12 border-2">
+              <CardContent className="p-0">
+                <div className="flex flex-col md:flex-row items-center gap-8">
+                  <div className="flex-shrink-0">
+                    <div className="w-24 h-24 rounded-full overflow-hidden">
+                      <img
+                        src={pledgeSignatories[currentSignatory].image}
+                        alt={pledgeSignatories[currentSignatory].name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                        />
+                      ))}
+                    </div>
+                    <blockquote className="text-lg md:text-xl text-[#1A1A1A] mb-4 italic">
+                      "{pledgeSignatories[currentSignatory].quote}"
+                    </blockquote>
+                    <div className="flex flex-col md:flex-row md:items-center gap-4">
+                      <div>
+                        <div className="font-semibold text-[#1A1A1A]">
+                          {pledgeSignatories[currentSignatory].name}
+                        </div>
+                        <div className="text-[#1A1A1A]/70">
+                          {pledgeSignatories[currentSignatory].role} •{" "}
+                          {pledgeSignatories[currentSignatory].location}
+                        </div>
+                      </div>
+                      <div className="md:ml-auto">
+                        <Badge className="bg-green-100 text-green-800">
+                          Contributed{" "}
+                          {
+                            pledgeSignatories[currentSignatory]
+                              .contributionAmount
+                          }
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Carousel Indicators */}
+            <div className="flex justify-center mt-8 gap-2">
+              {pledgeSignatories.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSignatory(index)}
+                  className={`w-3 h-3 rounded-full transition-colors ${
+                    index === currentSignatory
+                      ? "bg-[#1A1A1A]"
+                      : "bg-[#1A1A1A]/20"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-20 bg-gradient-to-r from-[#1A1A1A] to-[#2D2D2D] text-white">
+        <div className="container mx-auto px-6 max-w-7xl text-center">
+          <h2 className="text-4xl font-bold mb-6">
+            Ready to Make Your Travel Matter?
+          </h2>
+          <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+            Join the movement of conscious travelers who believe that every
+            journey should leave a positive impact.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              size="lg"
+              className="bg-white text-[#1A1A1A] hover:bg-white/90"
+            >
+              Take the Pledge Now
+              <Heart className="w-5 h-5 ml-2" />
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white/10"
+            >
+              View Impact Report
+            </Button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
