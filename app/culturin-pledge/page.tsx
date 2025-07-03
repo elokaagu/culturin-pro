@@ -225,7 +225,7 @@ export default function CulturinPledgePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white text-white hover:bg-white/10 backdrop-blur-sm py-5 px-8 rounded-xl text-lg h-auto"
+                  className="border-2 border-white text-white hover:bg-white hover:text-blue-600 backdrop-blur-sm py-5 px-8 rounded-xl text-lg h-auto transition-all duration-300"
                 >
                   Learn More
                 </Button>
@@ -460,7 +460,7 @@ export default function CulturinPledgePage() {
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white/10 py-5 px-8 rounded-xl text-lg h-auto"
+              className="border-2 border-white text-white hover:bg-white hover:text-blue-600 backdrop-blur-sm py-5 px-8 rounded-xl text-lg h-auto transition-all duration-300"
             >
               View Impact Report
             </Button>
