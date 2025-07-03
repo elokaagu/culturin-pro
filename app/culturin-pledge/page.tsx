@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import Header from "@/components/Header";
+import NewFooter from "@/components/sections/NewFooter";
 import {
   Heart,
   Globe,
@@ -30,7 +32,7 @@ const pledgeSignatories = [
     contributionAmount: "$2,450",
     joinedDate: "2024-03-15",
     quote:
-      "Travel should leave places better than we found them. The Culturin Pledge makes this possible.",
+      "Travel should leave places better than we found them. The Giving Pledge makes this possible.",
   },
   {
     id: 2,
@@ -63,7 +65,7 @@ const pledgeSignatories = [
     contributionAmount: "$4,100",
     joinedDate: "2024-01-20",
     quote:
-      "The future of travel is responsible travel. The Culturin Pledge is leading the way.",
+      "The future of travel is responsible travel. The Giving Pledge is leading the way.",
   },
   {
     id: 5,
@@ -127,7 +129,7 @@ const stats = [
   { label: "Projects Funded", value: "117", icon: CheckCircle },
 ];
 
-export default function CulturinPledgePage() {
+export default function GivingPledgePage() {
   const [currentSignatory, setCurrentSignatory] = useState(0);
   const [animateItems, setAnimateItems] = useState(false);
 
@@ -152,6 +154,8 @@ export default function CulturinPledgePage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Header type="operator" />
+
       {/* Hero Section */}
       <section
         ref={heroRef}
@@ -201,14 +205,16 @@ export default function CulturinPledgePage() {
                   : "opacity-0 translate-y-8"
               }`}
             >
-              <Badge className="mb-6 bg-white/10 text-white border-white/20 backdrop-blur-sm">
-                <Heart className="w-4 h-4 mr-2" />
-                Making Travel Matter
-              </Badge>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg">
-                The Culturin Pledge
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <Heart className="w-6 h-6 text-white" />
+                <span className="text-lg font-medium">
+                  Making Travel Matter
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                The Giving Pledge
               </h1>
-              <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed drop-shadow-md max-w-3xl mx-auto">
+              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed">
                 Join travelers and influencers worldwide in dedicating 1% of
                 travel spending to local development projects that build
                 schools, provide clean water, and foster sustainable growth in
@@ -225,21 +231,21 @@ export default function CulturinPledgePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-2 border-white text-white hover:bg-white hover:text-blue-600 backdrop-blur-sm py-5 px-8 rounded-xl text-lg h-auto transition-all duration-300"
+                  className="border-2 border-white text-black bg-white hover:bg-gray-100 backdrop-blur-sm py-5 px-8 rounded-xl text-lg h-auto transition-all duration-300"
                 >
                   Learn More
                 </Button>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/70 animate-bounce">
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-sm">Scroll to explore</span>
-            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-              <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white">
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-sm font-medium">Scroll to explore</span>
+              <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
+                <div className="w-1 h-3 bg-white rounded-full mt-2 animate-bounce"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -297,7 +303,7 @@ export default function CulturinPledgePage() {
                 step: "02",
                 title: "Automatic Contribution",
                 description:
-                  "1% of your booking automatically goes to the Culturin Pledge fund",
+                  "1% of your booking automatically goes to the Giving Pledge fund",
               },
               {
                 step: "03",
@@ -467,6 +473,8 @@ export default function CulturinPledgePage() {
           </div>
         </div>
       </section>
+
+      <NewFooter />
     </div>
   );
 }

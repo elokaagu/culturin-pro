@@ -178,9 +178,9 @@ const NewFooter = () => {
                 <li>
                   <Link
                     to="/culturin-pledge"
-                    className="hover:opacity-70 transition-opacity"
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
                   >
-                    Culturin Pledge
+                    Giving Pledge
                   </Link>
                 </li>
               </ul>
