@@ -13,7 +13,6 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Image from "@/components/ui/image";
-import LanguageSelector from "./LanguageSelector";
 
 interface HeaderProps {
   type: "traveler" | "operator" | "default";
@@ -192,7 +191,6 @@ export const Header = ({ type = "default" }: HeaderProps) => {
             </nav>
 
             <div className="flex items-center gap-4">
-              <LanguageSelector />
               {isLoggedIn && user ? (
                 <div className="relative">
                   <button

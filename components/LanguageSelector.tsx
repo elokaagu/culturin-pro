@@ -12,7 +12,13 @@ import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "../src/contexts/TranslationContext";
 import { Globe, Check, Loader2 } from "lucide-react";
 
-const LanguageSelector: React.FC = () => {
+interface LanguageSelectorProps {
+  variant?: "header" | "footer";
+}
+
+const LanguageSelector: React.FC<LanguageSelectorProps> = ({
+  variant = "header",
+}) => {
   const { currentLanguage, availableLanguages, setLanguage, isTranslating } =
     useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -22,13 +28,19 @@ const LanguageSelector: React.FC = () => {
     setIsOpen(false);
   };
 
+  const isFooter = variant === "footer";
+
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
+          variant={isFooter ? "secondary" : "outline"}
           size="sm"
-          className="flex items-center gap-2 min-w-[120px]"
+          className={`flex items-center gap-2 min-w-[120px] ${
+            isFooter
+              ? "bg-white/10 hover:bg-white/20 text-white border-white/20 hover:border-white/30"
+              : ""
+          }`}
           disabled={isTranslating}
         >
           {isTranslating ? (
