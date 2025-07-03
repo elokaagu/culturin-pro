@@ -131,6 +131,7 @@ const stats = [
 
 export default function GivingPledgePage() {
   const [currentSignatory, setCurrentSignatory] = useState(0);
+  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
   const [animateItems, setAnimateItems] = useState(false);
 
   const { ref: heroRef, inView } = useInView({
@@ -138,13 +139,49 @@ export default function GivingPledgePage() {
     triggerOnce: true,
   });
 
+  // Hero slides data
+  const heroSlides = [
+    {
+      id: 1,
+      video: "/videos/culturin-pledge-hero.mp4",
+      image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
+      title: "The Giving Pledge",
+      subtitle:
+        "Join travelers and influencers worldwide in dedicating 1% of travel spending to local development projects that build schools, provide clean water, and foster sustainable growth in communities around the globe.",
+    },
+    {
+      id: 2,
+      video: "/videos/culturin-pledge-hero-2.mp4",
+      image: "/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png",
+      title: "Building Communities",
+      subtitle:
+        "Every journey becomes a force for positive change, creating lasting impact in the places we visit while fostering meaningful connections between travelers and local communities.",
+    },
+    {
+      id: 3,
+      video: "/videos/culturin-pledge-hero-3.mp4",
+      image: "/lovable-uploads/2e9a9e9e-af76-4913-8148-9fce248d55c9.png",
+      title: "Sustainable Impact",
+      subtitle:
+        "Transform your travel experiences into powerful tools for sustainable development, supporting education, clean water initiatives, and environmental conservation projects worldwide.",
+    },
+  ];
+
   useEffect(() => {
     if (inView) {
       setAnimateItems(true);
     }
   }, [inView]);
 
-  // Auto-rotate carousel
+  // Auto-rotate hero carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeroSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 7000); // Change slide every 7 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  // Auto-rotate signatories carousel
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSignatory((prev) => (prev + 1) % pledgeSignatories.length);
@@ -163,42 +200,48 @@ export default function GivingPledgePage() {
       >
         {/* Background Video */}
         <div className="absolute inset-0 w-full h-full">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover"
-          >
-            <source src="/videos/culturin-pledge-hero.mp4" type="video/mp4" />
-            {/* Fallback for browsers that don't support video */}
-          </video>
-          {/* Fallback animated background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 animate-gradient-x">
-            <div
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-              style={{
-                backgroundImage:
-                  "url('/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png')",
-              }}
-            />
-            {/* Animated overlay particles */}
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/20 rounded-full animate-float"></div>
-              <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-white/30 rounded-full animate-float-delayed"></div>
-              <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-white/10 rounded-full animate-float-slow"></div>
-              <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-white/25 rounded-full animate-float"></div>
-              <div className="absolute bottom-1/3 right-2/3 w-2 h-2 bg-white/15 rounded-full animate-float-delayed"></div>
+          <div className="relative w-full h-full transition-all duration-1000 ease-in-out">
+            <video
+              key={heroSlides[currentHeroSlide].id}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover transition-opacity duration-1000"
+            >
+              <source
+                src={heroSlides[currentHeroSlide].video}
+                type="video/mp4"
+              />
+              {/* Fallback for browsers that don't support video */}
+            </video>
+            {/* Fallback animated background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 animate-gradient-x">
+              <div
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30 transition-all duration-1000"
+                style={{
+                  backgroundImage: `url(${heroSlides[currentHeroSlide].image})`,
+                }}
+              />
+              {/* Animated overlay particles */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/20 rounded-full animate-float"></div>
+                <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-white/30 rounded-full animate-float-delayed"></div>
+                <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-white/10 rounded-full animate-float-slow"></div>
+                <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-white/25 rounded-full animate-float"></div>
+                <div className="absolute bottom-1/3 right-2/3 w-2 h-2 bg-white/15 rounded-full animate-float-delayed"></div>
+              </div>
             </div>
+            {/* Dark overlay for better text readability */}
+            <div className="absolute inset-0 bg-black/40" />
           </div>
-          {/* Dark overlay for better text readability */}
-          <div className="absolute inset-0 bg-black/40" />
         </div>
 
         {/* Hero Content */}
         <div className="relative z-10 container mx-auto px-4 max-w-4xl">
           <div className="text-center text-white">
             <div
+              key={heroSlides[currentHeroSlide].id}
               className={`transition-all duration-700 ease-out ${
                 animateItems
                   ? "opacity-100 translate-y-0"
@@ -211,14 +254,11 @@ export default function GivingPledgePage() {
                   Making Travel Matter
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                The Giving Pledge
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight transition-all duration-500">
+                {heroSlides[currentHeroSlide].title}
               </h1>
-              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed">
-                Join travelers and influencers worldwide in dedicating 1% of
-                travel spending to local development projects that build
-                schools, provide clean water, and foster sustainable growth in
-                communities around the globe.
+              <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed transition-all duration-500">
+                {heroSlides[currentHeroSlide].subtitle}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
@@ -235,6 +275,19 @@ export default function GivingPledgePage() {
                 >
                   Learn More
                 </Button>
+              </div>
+
+              {/* Hero Carousel Indicators */}
+              <div className="flex justify-center mt-8 gap-2">
+                {heroSlides.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentHeroSlide(index)}
+                    className={`w-3 h-3 rounded-full transition-colors duration-300 ${
+                      index === currentHeroSlide ? "bg-white" : "bg-white/40"
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           </div>
@@ -466,7 +519,7 @@ export default function GivingPledgePage() {
             <Button
               size="lg"
               variant="outline"
-              className="border-2 border-white text-white hover:bg-white hover:text-blue-600 backdrop-blur-sm py-5 px-8 rounded-xl text-lg h-auto transition-all duration-300"
+              className="border-2 border-white text-black bg-white hover:bg-gray-100 backdrop-blur-sm py-5 px-8 rounded-xl text-lg h-auto transition-all duration-300"
             >
               View Impact Report
             </Button>
