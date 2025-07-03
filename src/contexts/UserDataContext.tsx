@@ -215,6 +215,7 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
   // Auto-save when userData changes
   useEffect(() => {
     if (!isLoading) {
+      console.log("UserDataContext: Auto-saving userData:", userData); // Debug log
       saveUserData();
     }
   }, [userData, isLoading]);
