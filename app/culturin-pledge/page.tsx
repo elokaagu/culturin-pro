@@ -155,10 +155,45 @@ export default function CulturinPledgePage() {
       {/* Hero Section */}
       <section
         ref={heroRef}
-        className="relative bg-gradient-to-br from-[#1A1A1A] to-[#2D2D2D] text-white py-20"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
-        <div className="container mx-auto px-6 max-w-7xl">
-          <div className="text-center max-w-4xl mx-auto">
+        {/* Background Video */}
+        <div className="absolute inset-0 w-full h-full">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src="/videos/culturin-pledge-hero.mp4" type="video/mp4" />
+            {/* Fallback for browsers that don't support video */}
+          </video>
+          {/* Fallback animated background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] via-[#2D2D2D] to-[#1A1A1A] animate-gradient-x">
+            <div
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+              style={{
+                backgroundImage:
+                  "url('/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png')",
+              }}
+            />
+            {/* Animated overlay particles */}
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/20 rounded-full animate-float"></div>
+              <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-white/30 rounded-full animate-float-delayed"></div>
+              <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-white/10 rounded-full animate-float-slow"></div>
+              <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-white/25 rounded-full animate-float"></div>
+              <div className="absolute bottom-1/3 right-2/3 w-2 h-2 bg-white/15 rounded-full animate-float-delayed"></div>
+            </div>
+          </div>
+          {/* Dark overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative z-10 container mx-auto px-6 max-w-7xl">
+          <div className="text-center max-w-4xl mx-auto text-white">
             <div
               className={`transition-all duration-700 ease-out ${
                 animateItems
@@ -166,14 +201,14 @@ export default function CulturinPledgePage() {
                   : "opacity-0 translate-y-8"
               }`}
             >
-              <Badge className="mb-6 bg-white/10 text-white border-white/20">
+              <Badge className="mb-6 bg-white/10 text-white border-white/20 backdrop-blur-sm">
                 <Heart className="w-4 h-4 mr-2" />
                 Making Travel Matter
               </Badge>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6">
+              <h1 className="text-5xl md:text-7xl font-bold mb-6 drop-shadow-lg">
                 The Culturin Pledge
               </h1>
-              <p className="text-xl md:text-2xl text-white/80 mb-8 leading-relaxed">
+              <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed drop-shadow-md">
                 Join travelers and influencers worldwide in dedicating 1% of
                 travel spending to local development projects that build
                 schools, provide clean water, and foster sustainable growth in
@@ -182,7 +217,7 @@ export default function CulturinPledgePage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
                   size="lg"
-                  className="bg-white text-[#1A1A1A] hover:bg-white/90"
+                  className="bg-white text-[#1A1A1A] hover:bg-white/90 backdrop-blur-sm"
                 >
                   Take the Pledge
                   <ArrowRight className="w-5 h-5 ml-2" />
@@ -190,11 +225,21 @@ export default function CulturinPledgePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white text-white hover:bg-white/10"
+                  className="border-white text-white hover:bg-white/10 backdrop-blur-sm"
                 >
                   Learn More
                 </Button>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/70 animate-bounce">
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-sm">Scroll to explore</span>
+            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+              <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
             </div>
           </div>
         </div>
