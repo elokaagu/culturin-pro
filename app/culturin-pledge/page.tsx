@@ -17,7 +17,6 @@ import {
   Leaf,
   ArrowRight,
   CheckCircle,
-  Star,
 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 
@@ -291,16 +290,6 @@ export default function GivingPledgePage() {
               </div>
             </div>
           </div>
-
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white">
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-sm font-medium">Scroll to explore</span>
-              <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
-                <div className="w-1 h-3 bg-white rounded-full mt-2 animate-bounce"></div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -450,14 +439,6 @@ export default function GivingPledgePage() {
                   </div>
                 </div>
                 <div className="flex-1 text-center md:text-left">
-                  <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
-                  </div>
                   <blockquote className="text-lg md:text-xl text-gray-900 mb-4 italic">
                     "{pledgeSignatories[currentSignatory].quote}"
                   </blockquote>
