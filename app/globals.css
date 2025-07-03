@@ -40,6 +40,8 @@
     --culturin-mustard: #ffd700;
     --culturin-clay: #d48166;
     --culturin-terracotta: #a44a3f;
+
+    --header-height: 5rem; /* 80px */
   }
 
   [data-theme="dark"] {
@@ -88,6 +90,18 @@
   html {
     scroll-behavior: smooth;
   }
+}
+
+/* Sticky header support */
+@supports (backdrop-filter: blur(12px)) {
+  .backdrop-blur-md {
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* Ensure content doesn't hide behind sticky header */
+main {
+  scroll-margin-top: var(--header-height);
 }
 
 /* Custom animations and styles */
@@ -187,4 +201,11 @@ a[href^="#"] {
   opacity: 0.7;
   pointer-events: none;
   transition: opacity 0.3s ease;
+}
+
+/* Sticky header enhancements */
+header.sticky {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }

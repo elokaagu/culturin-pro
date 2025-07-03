@@ -24,6 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import { useUserData } from "../../../src/contexts/UserDataContext";
 
 const formSchema = z.object({
   businessName: z.string().min(2, {
@@ -59,21 +60,37 @@ const timezones = [
 ];
 
 const GeneralSettings: React.FC = () => {
+  const { userData, updateUserData } = useUserData();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      businessName: "Cultural Experiences Co.",
-      email: "host@culturalexperiences.com",
-      phone: "1234567890",
-      address: "123 Culture St, Art District, CA 90210",
-      timezone: "utc-8",
-      bio: "We offer unique cultural experiences around the world.",
+      businessName: userData.businessName,
+      email: userData.email,
+      phone: userData.phone,
+      address: userData.address,
+      timezone: userData.timezone,
+      bio: userData.bio,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    toast.success("Settings updated successfully");
-    console.log(values);
+    updateUserData(values);
+
+    // Also update website settings if business name changed
+    if (values.businessName !== userData.businessName) {
+      updateUserData({
+        websiteSettings: {
+          ...userData.websiteSettings,
+          companyName: values.businessName,
+        },
+      });
+    }
+
+    toast.success("Settings updated successfully", {
+      description:
+        "Your profile information has been saved and will be reflected across the platform.",
+    });
   }
 
   return (
@@ -81,7 +98,8 @@ const GeneralSettings: React.FC = () => {
       <div>
         <h2 className="text-2xl font-semibold">General Settings</h2>
         <p className="text-gray-500">
-          Manage your basic information and preferences.
+          Manage your basic information and preferences. Changes here will
+          automatically update your website and other platform features.
         </p>
       </div>
 
@@ -97,6 +115,9 @@ const GeneralSettings: React.FC = () => {
                   <FormControl>
                     <Input placeholder="Your business name" {...field} />
                   </FormControl>
+                  <FormDescription>
+                    This will be used as your company name on your website
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -111,6 +132,9 @@ const GeneralSettings: React.FC = () => {
                   <FormControl>
                     <Input placeholder="your@email.com" {...field} />
                   </FormControl>
+                  <FormDescription>
+                    Primary contact email for your business
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -187,7 +211,8 @@ const GeneralSettings: React.FC = () => {
                   />
                 </FormControl>
                 <FormDescription>
-                  This will appear on your public profile. Max 500 characters.
+                  This will appear on your website and public profile. Max 500
+                  characters.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

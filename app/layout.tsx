@@ -2,6 +2,7 @@ import React from "react";
 import "./globals.css";
 import { Toaster } from "../components/ui/toaster";
 import { AuthProvider } from "../src/components/auth/AuthProvider";
+import { UserDataProvider } from "../src/contexts/UserDataContext";
 import PageTransition from "../components/PageTransition";
 
 export const metadata = {
@@ -19,7 +20,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
-          <PageTransition>{children}</PageTransition>
+          <UserDataProvider>
+            <PageTransition>{children}</PageTransition>
+          </UserDataProvider>
         </AuthProvider>
         <Toaster />
       </body>

@@ -1,176 +1,274 @@
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
-import { Upload } from 'lucide-react';
-import Image from '@/components/ui/image';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { Upload, X, Eye, EyeOff } from "lucide-react";
+import { useUserData } from "../../../src/contexts/UserDataContext";
 
 const WebsiteContent: React.FC = () => {
-  const [companyName, setCompanyName] = useState(() => 
-    localStorage.getItem('websiteCompanyName') || 'Barcelona Cultural Tours'
-  );
-  const [tagline, setTagline] = useState(() => 
-    localStorage.getItem('websiteTagline') || 'Authentic cultural experiences in the heart of Catalonia'
-  );
-  const [description, setDescription] = useState(() => 
-    localStorage.getItem('websiteDescription') || 'We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots.'
-  );
-  const [primaryColor, setPrimaryColor] = useState(() => 
-    localStorage.getItem('websitePrimaryColor') || '#9b87f5'
-  );
-  const [headerImage, setHeaderImage] = useState<string | null>(
-    localStorage.getItem('websiteHeaderImage')
-  );
+  const { userData, updateWebsiteSettings } = useUserData();
+  const [previewChanges, setPreviewChanges] = useState(false);
+
+  // Local state for form inputs
+  const [companyName, setCompanyName] = useState("");
+  const [tagline, setTagline] = useState("");
+  const [description, setDescription] = useState("");
+  const [primaryColor, setPrimaryColor] = useState("");
+  const [headerImage, setHeaderImage] = useState<string | null>(null);
+
+  // Initialize form with user data
+  useEffect(() => {
+    setCompanyName(userData.websiteSettings.companyName);
+    setTagline(userData.websiteSettings.tagline);
+    setDescription(userData.websiteSettings.description);
+    setPrimaryColor(userData.websiteSettings.primaryColor);
+    setHeaderImage(userData.websiteSettings.headerImage);
+  }, [userData.websiteSettings]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-    
-    // Check if file is an image
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file');
-      return;
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string;
+        setHeaderImage(imageUrl);
+        handleQuickSave("headerImage", imageUrl);
+      };
+      reader.readAsDataURL(file);
     }
-    
-    // Check file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size should be less than 5MB');
-      return;
-    }
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const imageDataUrl = e.target?.result as string;
-      setHeaderImage(imageDataUrl);
-      // Store in localStorage immediately for instant preview
-      localStorage.setItem('websiteHeaderImage', imageDataUrl);
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleRemoveImage = () => {
     setHeaderImage(null);
-    localStorage.removeItem('websiteHeaderImage');
-    toast.success("Header image removed");
+    handleQuickSave("headerImage", null);
+  };
+
+  const handleQuickSave = (field: string, value: any) => {
+    updateWebsiteSettings({ [field]: value });
+    toast.success(`${field} updated`, {
+      description: "Changes will appear in your website preview",
+    });
   };
 
   const handleSave = () => {
-    localStorage.setItem('websiteCompanyName', companyName);
-    localStorage.setItem('websiteTagline', tagline);
-    localStorage.setItem('websiteDescription', description);
-    localStorage.setItem('websitePrimaryColor', primaryColor);
-    
-    if (headerImage) {
-      localStorage.setItem('websiteHeaderImage', headerImage);
-    } else {
-      localStorage.removeItem('websiteHeaderImage');
-    }
-    
-    toast.success("Content changes saved", {
-      description: "Your changes will be applied when you publish your website"
+    const updates = {
+      companyName,
+      tagline,
+      description,
+      primaryColor,
+      headerImage,
+    };
+
+    updateWebsiteSettings(updates);
+
+    toast.success("Website content saved", {
+      description: "All changes have been applied to your website",
     });
+  };
+
+  const handleReset = () => {
+    const defaultSettings = {
+      companyName: userData.businessName,
+      tagline: `Authentic cultural experiences curated by ${userData.businessName}`,
+      description: userData.bio,
+      primaryColor: "#9b87f5",
+      headerImage: null,
+    };
+
+    setCompanyName(defaultSettings.companyName);
+    setTagline(defaultSettings.tagline);
+    setDescription(defaultSettings.description);
+    setPrimaryColor(defaultSettings.primaryColor);
+    setHeaderImage(defaultSettings.headerImage);
+
+    updateWebsiteSettings(defaultSettings);
+
+    toast.success("Content reset to defaults");
   };
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <div>
-        <h2 className="text-lg font-medium">Website Content</h2>
-        <p className="text-gray-600 text-sm">Customize the content of your tour operator website</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-lg font-medium">Website Content</h2>
+          <p className="text-gray-600 text-sm">
+            Customize the content of your tour operator website with real-time
+            updates
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setPreviewChanges(!previewChanges)}
+            size="sm"
+          >
+            {previewChanges ? (
+              <EyeOff className="h-4 w-4 mr-2" />
+            ) : (
+              <Eye className="h-4 w-4 mr-2" />
+            )}
+            {previewChanges ? "Hide" : "Show"} Preview
+          </Button>
+          <Button variant="outline" onClick={handleReset} size="sm">
+            Reset to Defaults
+          </Button>
+        </div>
       </div>
-      
+
+      {previewChanges && (
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h3 className="font-medium mb-2">Live Preview</h3>
+          <div
+            className="bg-white p-4 rounded border"
+            style={{ color: primaryColor }}
+          >
+            <h4 className="text-xl font-bold">{companyName}</h4>
+            <p className="text-sm italic">{tagline}</p>
+            <p className="text-sm mt-2">{description}</p>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="companyName">Company Name</Label>
-          <Input 
-            id="companyName" 
-            value={companyName} 
-            onChange={(e) => setCompanyName(e.target.value)}
+          <Input
+            id="companyName"
+            value={companyName}
+            onChange={(e) => {
+              setCompanyName(e.target.value);
+              handleQuickSave("companyName", e.target.value);
+            }}
             placeholder="Your company name"
           />
+          <p className="text-xs text-gray-500">
+            This will be the main heading on your website
+          </p>
         </div>
-        
+
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="tagline">Tagline</Label>
-          <Input 
-            id="tagline" 
-            value={tagline} 
-            onChange={(e) => setTagline(e.target.value)}
+          <Input
+            id="tagline"
+            value={tagline}
+            onChange={(e) => {
+              setTagline(e.target.value);
+              handleQuickSave("tagline", e.target.value);
+            }}
             placeholder="A short, catchy tagline"
           />
+          <p className="text-xs text-gray-500">
+            Appears below your company name
+          </p>
         </div>
-        
+
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="description">Description</Label>
-          <Textarea 
-            id="description" 
-            value={description} 
-            onChange={(e) => setDescription(e.target.value)}
+          <Textarea
+            id="description"
+            value={description}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              handleQuickSave("description", e.target.value);
+            }}
             placeholder="Describe your tour company"
             rows={4}
           />
+          <p className="text-xs text-gray-500">
+            Main description for your business
+          </p>
         </div>
-        
+
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="primaryColor">Primary Brand Color</Label>
           <div className="flex items-center gap-3">
-            <Input 
-              id="primaryColor" 
+            <Input
+              id="primaryColor"
               type="color"
               value={primaryColor}
-              onChange={(e) => setPrimaryColor(e.target.value)}
-              className="w-16 h-10 p-1"
+              onChange={(e) => {
+                setPrimaryColor(e.target.value);
+                handleQuickSave("primaryColor", e.target.value);
+              }}
+              className="w-16 h-10 p-1 cursor-pointer"
             />
-            <Input 
-              type="text" 
-              value={primaryColor} 
-              onChange={(e) => setPrimaryColor(e.target.value)}
+            <Input
+              type="text"
+              value={primaryColor}
+              onChange={(e) => {
+                setPrimaryColor(e.target.value);
+                handleQuickSave("primaryColor", e.target.value);
+              }}
               className="w-32"
+              placeholder="#9b87f5"
+            />
+            <div
+              className="w-8 h-8 rounded border-2 border-gray-300"
+              style={{ backgroundColor: primaryColor }}
             />
           </div>
+          <p className="text-xs text-gray-500">
+            This color will be used for buttons, links, and accents
+          </p>
         </div>
-        
+
         <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="headerImage">Header Background Image</Label>
-          <div className="flex flex-col gap-4">
+          <Label htmlFor="headerImage">Header Image</Label>
+          <div className="flex items-center gap-3">
             {headerImage ? (
-              <div className="relative rounded-lg overflow-hidden w-full h-40">
+              <div className="relative">
                 <img
                   src={headerImage}
-                  alt="Website header preview"
-                  className="w-full h-full object-cover"
+                  alt="Header"
+                  className="w-32 h-20 object-cover rounded border"
                 />
                 <Button
                   variant="destructive"
                   size="sm"
-                  className="absolute top-2 right-2"
                   onClick={handleRemoveImage}
+                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
                 >
-                  Remove
+                  <X className="h-3 w-3" />
                 </Button>
               </div>
             ) : (
-              <label htmlFor="headerImage" className="cursor-pointer">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500">
-                  <Upload className="h-8 w-8 mb-2" />
-                  <p className="text-sm mb-2">Drag and drop an image, or click to browse</p>
-                  <p className="text-xs text-gray-400">Recommended size: 1200x400px, Max 5MB</p>
-                </div>
-              </label>
+              <div className="w-32 h-20 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
+                <span className="text-sm text-gray-500">No image</span>
+              </div>
             )}
-            <Input
-              id="headerImage"
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className={headerImage ? "hidden" : ""}
-            />
+            <div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+                id="image-upload"
+              />
+              <Button
+                variant="outline"
+                onClick={() => document.getElementById("image-upload")?.click()}
+                className="flex items-center gap-2"
+              >
+                <Upload className="h-4 w-4" />
+                Upload Image
+              </Button>
+            </div>
           </div>
+          <p className="text-xs text-gray-500">
+            Optional header image for your website (recommended: 1200x400px)
+          </p>
         </div>
-        
-        <Button onClick={handleSave}>Save Content</Button>
+
+        <div className="flex justify-between pt-4">
+          <div className="text-sm text-gray-500">
+            Changes are automatically saved as you type
+          </div>
+          <Button onClick={handleSave}>Save All Changes</Button>
+        </div>
       </div>
     </div>
   );

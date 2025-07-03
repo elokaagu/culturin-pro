@@ -1,103 +1,137 @@
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import WebsitePreview from './WebsitePreview';
-import WebsiteThemes from './WebsiteThemes';
-import WebsiteContent from './WebsiteContent';
-import WebsiteSettings from './WebsiteSettings';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { Globe, ExternalLink, Check, Loader2 } from 'lucide-react';
-import { useNavigate } from '../../../lib/navigation';
-import { sampleItineraries, ItineraryType } from '@/data/itineraryData';
+import React, { useState, useEffect } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import WebsitePreview from "./WebsitePreview";
+import WebsiteThemes from "./WebsiteThemes";
+import WebsiteContent from "./WebsiteContent";
+import WebsiteSettings from "./WebsiteSettings";
+import BookingFlowBuilder from "./BookingFlowBuilder";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  Globe,
+  ExternalLink,
+  Check,
+  Loader2,
+  ShoppingCart,
+} from "lucide-react";
+import { useNavigate } from "../../../lib/navigation";
+import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
+import { useUserData } from "../../../src/contexts/UserDataContext";
 
 const WebsiteBuilder: React.FC = () => {
   const [publishLoading, setPublishLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
   const [publishedUrl, setPublishedUrl] = useState(() => {
-    const storedUrl = localStorage.getItem('publishedWebsiteUrl');
+    const storedUrl = localStorage.getItem("publishedWebsiteUrl");
     return storedUrl || "tour/demo";
   });
   const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
+  const [previewKey, setPreviewKey] = useState(0);
   const navigate = useNavigate();
-  
+  const { userData, updateWebsiteSettings } = useUserData();
+
   useEffect(() => {
     // Get itineraries from localStorage or use sample data
-    const storedItineraries = localStorage.getItem('culturinItineraries');
+    const storedItineraries = localStorage.getItem("culturinItineraries");
     if (storedItineraries) {
       try {
         setItineraries(JSON.parse(storedItineraries));
       } catch (e) {
-        console.error('Error parsing itineraries:', e);
+        console.error("Error parsing itineraries:", e);
         setItineraries(sampleItineraries);
       }
     } else {
       setItineraries(sampleItineraries);
-      localStorage.setItem('culturinItineraries', JSON.stringify(sampleItineraries));
+      localStorage.setItem(
+        "culturinItineraries",
+        JSON.stringify(sampleItineraries)
+      );
     }
   }, []);
 
+  // Auto-refresh preview when user data changes
+  useEffect(() => {
+    setPreviewKey((prev) => prev + 1);
+  }, [userData.websiteSettings]);
+
   const handlePublish = () => {
     setPublishLoading(true);
-    
+
     // Generate a unique slug for the website
-    const slug = `demo-${Date.now().toString(36)}`;
+    const slug = `${userData.businessName
+      .toLowerCase()
+      .replace(/\s+/g, "-")}-${Date.now().toString(36)}`;
     const newPublishedUrl = `tour/${slug}`;
-    
+
     // Simulate publishing process - in a real app, this would save to a backend
     setTimeout(() => {
       setPublishLoading(false);
       setPublishedUrl(newPublishedUrl);
-      
+
       // Save the published URL to localStorage
-      localStorage.setItem('publishedWebsiteUrl', newPublishedUrl);
-      
-      // Get current theme from localStorage
-      const currentTheme = localStorage.getItem('selectedWebsiteTheme') || 'classic';
-      
+      localStorage.setItem("publishedWebsiteUrl", newPublishedUrl);
+
       // Save website content and theme to localStorage for the tour operator website
       const websiteContent = {
-        companyName: localStorage.getItem('websiteCompanyName') || 'Barcelona Cultural Tours',
-        tagline: localStorage.getItem('websiteTagline') || 'Authentic cultural experiences in the heart of Catalonia',
-        description: localStorage.getItem('websiteDescription') || 'We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots.',
-        primaryColor: localStorage.getItem('websitePrimaryColor') || '#9b87f5',
-        headerImage: localStorage.getItem('websiteHeaderImage') || null
+        companyName: userData.websiteSettings.companyName,
+        tagline: userData.websiteSettings.tagline,
+        description: userData.websiteSettings.description,
+        primaryColor: userData.websiteSettings.primaryColor,
+        headerImage: userData.websiteSettings.headerImage,
+        enableBooking: userData.websiteSettings.enableBooking,
+        bookingSettings: userData.websiteSettings.bookingSettings,
       };
-      
-      localStorage.setItem('publishedWebsiteTheme', currentTheme);
-      localStorage.setItem('publishedWebsiteContent', JSON.stringify(websiteContent));
-      localStorage.setItem('publishedItineraries', JSON.stringify(itineraries));
-      
+
+      localStorage.setItem(
+        "publishedWebsiteTheme",
+        userData.websiteSettings.theme
+      );
+      localStorage.setItem(
+        "publishedWebsiteContent",
+        JSON.stringify(websiteContent)
+      );
+      localStorage.setItem("publishedItineraries", JSON.stringify(itineraries));
+
       toast.success("Website published successfully!", {
-        description: "Your changes are now live."
+        description:
+          "Your changes are now live with the latest booking settings.",
       });
     }, 1500);
   };
 
   const handlePreviewSite = () => {
-    window.open(`/${publishedUrl}`, '_blank');
+    window.open(`/${publishedUrl}`, "_blank");
   };
 
   const handleReloadPreview = () => {
     // Trigger a refresh for the preview
-    const storedItineraries = localStorage.getItem('culturinItineraries');
+    const storedItineraries = localStorage.getItem("culturinItineraries");
     if (storedItineraries) {
       try {
         setItineraries(JSON.parse(storedItineraries));
       } catch (e) {
-        console.error('Error parsing itineraries:', e);
+        console.error("Error parsing itineraries:", e);
       }
     }
-    toast.success("Preview refreshed");
+    setPreviewKey((prev) => prev + 1);
+    toast.success("Preview refreshed with latest changes");
   };
-  
+
+  const handleQuickUpdate = (field: string, value: any) => {
+    updateWebsiteSettings({ [field]: value });
+    toast.success("Website updated - changes will appear in preview");
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-xl font-medium">Your Website</h2>
           <p className="text-sm text-gray-500">
-            Customize your tour operator website and publish it for your customers.
+            Customize your tour operator website with real-time preview and
+            booking functionality.
           </p>
         </div>
         <div className="flex gap-2">
@@ -117,8 +151,8 @@ const WebsiteBuilder: React.FC = () => {
             <ExternalLink className="mr-2 h-4 w-4" />
             Preview Live Site
           </Button>
-          <Button 
-            onClick={handlePublish} 
+          <Button
+            onClick={handlePublish}
             disabled={publishLoading}
             className="flex items-center"
           >
@@ -144,8 +178,8 @@ const WebsiteBuilder: React.FC = () => {
               <Check className="h-4 w-4 text-green-600" />
             </div>
             <span className="ml-2 text-sm text-green-800">
-              Your site is published at:{' '}
-              <a 
+              Your site is published at:{" "}
+              <a
                 href={`/${publishedUrl}`}
                 target="_blank"
                 rel="noreferrer"
@@ -153,40 +187,88 @@ const WebsiteBuilder: React.FC = () => {
               >
                 {window.location.origin}/{publishedUrl}
               </a>
+              {userData.websiteSettings.enableBooking && (
+                <span className="ml-2 inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                  <ShoppingCart className="h-3 w-3" />
+                  Booking Enabled
+                </span>
+              )}
             </span>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handlePreviewSite}
-          >
+          <Button variant="ghost" size="sm" onClick={handlePreviewSite}>
             Visit
           </Button>
         </div>
       )}
-      
-      <Tabs defaultValue="preview" onValueChange={(value) => setActiveTab(value)}>
-        <TabsList>
+
+      {/* Quick Actions Bar */}
+      <div className="bg-gray-50 p-4 rounded-lg border">
+        <h3 className="text-sm font-medium mb-3">Quick Actions</h3>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleQuickUpdate("primaryColor", "#9b87f5")}
+          >
+            Reset Brand Color
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              handleQuickUpdate(
+                "enableBooking",
+                !userData.websiteSettings.enableBooking
+              )
+            }
+          >
+            {userData.websiteSettings.enableBooking ? "Disable" : "Enable"}{" "}
+            Booking
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setActiveTab("booking")}
+          >
+            Configure Booking Flow
+          </Button>
+        </div>
+      </div>
+
+      <Tabs
+        defaultValue="preview"
+        value={activeTab}
+        onValueChange={setActiveTab}
+      >
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="preview">Preview</TabsTrigger>
           <TabsTrigger value="themes">Themes</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
+          <TabsTrigger value="booking">Booking Flow</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="preview">
-          <WebsitePreview itineraries={itineraries} />
+          <WebsitePreview key={previewKey} itineraries={itineraries} />
         </TabsContent>
-        
+
         <TabsContent value="themes">
           <WebsiteThemes />
         </TabsContent>
-        
+
         <TabsContent value="content">
           <WebsiteContent />
         </TabsContent>
-        
+
+        <TabsContent value="booking">
+          <BookingFlowBuilder />
+        </TabsContent>
+
         <TabsContent value="settings">
-          <WebsiteSettings itineraries={itineraries} setItineraries={setItineraries} />
+          <WebsiteSettings
+            itineraries={itineraries}
+            setItineraries={setItineraries}
+          />
         </TabsContent>
       </Tabs>
     </div>
