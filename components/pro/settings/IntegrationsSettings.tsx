@@ -11,14 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import {
-  Link2,
-  Calendar,
-  MessageSquare,
-  CreditCard,
-  Share2,
-  FileText,
-} from "lucide-react";
+import { Link2, Calendar, MessageSquare, Share2, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 interface IntegrationCardProps {
@@ -97,13 +90,6 @@ const IntegrationsSettings: React.FC = () => {
       title: "Google Calendar",
       description: "Sync your bookings with Google Calendar",
       icon: <Calendar className="h-5 w-5 text-blue-600" />,
-      connected: true,
-    },
-    {
-      id: "stripe",
-      title: "Stripe",
-      description: "Process payments and manage subscriptions",
-      icon: <CreditCard className="h-5 w-5 text-purple-600" />,
       connected: true,
     },
     {

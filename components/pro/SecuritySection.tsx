@@ -22,7 +22,7 @@ const SecuritySection: React.FC = () => {
           <div className="flex flex-col items-center text-center p-4">
             <CreditCard className="h-10 w-10 text-culturin-indigo mb-3" />
             <h4 className="font-medium">Secure Payments</h4>
-            <p className="text-sm text-gray-600 mt-1">Protected transactions via Stripe with fraud prevention</p>
+            <p className="text-sm text-gray-600 mt-1">Protected transactions via secure payment with fraud prevention</p>
           </div>
           <div className="flex flex-col items-center text-center p-4">
             <Lock className="h-10 w-10 text-culturin-indigo mb-3" />

@@ -19,6 +19,7 @@ import { blogPosts } from "@/data/blogPosts";
 import { faqItems } from "@/data/helpCenterData";
 import { caseStudies } from "@/data/caseStudiesData";
 import { jobApplications } from "@/data/careersData";
+import { testimonials } from "@/data/testimonialsData";
 
 const AdminDashboard = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -53,6 +54,12 @@ const AdminDashboard = () => {
       icon: BarChart3,
       color: "bg-blue-100 text-blue-600",
     },
+    {
+      title: "Testimonials",
+      value: testimonials.length.toString(),
+      icon: Users,
+      color: "bg-blue-100 text-blue-600",
+    },
   ];
 
   const quickActions = [
@@ -68,6 +75,13 @@ const AdminDashboard = () => {
       description: "View, edit, and manage existing blog posts",
       icon: Edit,
       link: "/admin/blog",
+      color: "bg-blue-600 hover:bg-blue-700",
+    },
+    {
+      title: "Manage Testimonials",
+      description: "Add, edit, and organize customer testimonials",
+      icon: Users,
+      link: "/admin/testimonials",
       color: "bg-blue-600 hover:bg-blue-700",
     },
     {
@@ -122,7 +136,7 @@ const AdminDashboard = () => {
         {/* Stats Section */}
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
               {stats.map((stat, index) => (
                 <Card
                   key={index}
@@ -199,30 +213,24 @@ const AdminDashboard = () => {
                     style={{ transitionDelay: `${400 + index * 50}ms` }}
                   >
                     <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                            {post.category}
-                          </span>
-                          <span className="text-sm text-gray-500">
-                            {post.date}
-                          </span>
-                        </div>
+                      <div>
                         <h3 className="text-lg font-semibold mb-2">
                           {post.title}
                         </h3>
-                        <p className="text-gray-600">{post.excerpt}</p>
+                        <p className="text-gray-600 mb-3">{post.excerpt}</p>
+                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                            {post.category}
+                          </span>
+                          <span>{post.date}</span>
+                        </div>
                       </div>
-                      <div className="flex gap-2 ml-4">
+                      <div className="flex gap-2">
                         <Button variant="outline" size="sm" asChild>
-                          <Link to={`/blog/${post.slug}`}>
-                            <Eye className="h-4 w-4" />
-                          </Link>
+                          <Link to={`/admin/blog/edit/${post.slug}`}>Edit</Link>
                         </Button>
                         <Button variant="outline" size="sm" asChild>
-                          <Link to={`/admin/blog/edit/${post.slug}`}>
-                            <Edit className="h-4 w-4" />
-                          </Link>
+                          <Link to={`/blog/${post.slug}`}>View</Link>
                         </Button>
                       </div>
                     </div>

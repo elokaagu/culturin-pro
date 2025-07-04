@@ -85,7 +85,7 @@ const FeaturesCatalogue = () => {
               <FeatureItem 
                 icon={<CreditCard className="h-5 w-5 text-culturin-indigo mt-1" />}
                 title="Payment Integrations"
-                description="Connect with Stripe/PayPal for secure financial transactions"
+                description="Connect with secure payment for secure financial transactions"
               />
               <FeatureItem 
                 icon={<Receipt className="h-5 w-5 text-culturin-indigo mt-1" />}

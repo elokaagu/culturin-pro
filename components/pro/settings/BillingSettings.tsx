@@ -1,337 +1,279 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Elements } from "@stripe/react-stripe-js";
-import { stripePromise } from "@/lib/stripe-client";
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/components/ui/use-toast";
 import {
   CreditCard,
   Download,
-  ExternalLink,
+  Calendar,
+  AlertCircle,
   CheckCircle,
-  Loader2,
+  XCircle,
 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
-import { SubscriptionManager } from "@/components/stripe/SubscriptionManager";
-import { useStripeBilling } from "@/hooks/useStripe";
-import { SUBSCRIPTION_PLANS, PlanType } from "@/lib/stripe";
 
-const BillingSettings: React.FC = () => {
-  const [showSubscriptionManager, setShowSubscriptionManager] = useState(false);
-  const [subscriptionData, setSubscriptionData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+const BillingSettings = () => {
+  const [currentPlan, setCurrentPlan] = useState("growth");
+  const [billingCycle, setBillingCycle] = useState("monthly");
+  const [planDialogOpen, setPlanDialogOpen] = useState(false);
+  const { toast } = useToast();
 
-  const { cancelSubscription } = useStripeBilling();
-
-  // Mock user data - in real app, this would come from auth context
-  const userData = {
-    email: "eloka.agu@icloud.com",
-    name: "Eloka Agu",
+  // Mock subscription data
+  const subscriptionData = {
+    id: "sub_1234567890",
+    status: "active",
+    currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    cancelAtPeriodEnd: false,
   };
 
-  useEffect(() => {
-    // Load subscription data
-    loadSubscriptionData();
-  }, []);
-
-  const loadSubscriptionData = async () => {
-    try {
-      setLoading(true);
-      // In a real app, you'd fetch this from your backend
-      // For now, we'll use mock data
-      setSubscriptionData({
-        subscription: {
-          id: "sub_mock",
-          status: "active",
-          planType: "growth" as PlanType,
-          currentPeriodEnd: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days from now
-          cancelAtPeriodEnd: false,
-        },
-        paymentMethods: [
-          {
-            id: "pm_mock",
-            type: "Visa",
-            last4: "4242",
-            expiry: "05/28",
-            isDefault: true,
-          },
-        ],
-        invoices: [
-          {
-            id: "inv-001",
-            date: "May 15, 2025",
-            amount: "$99.00",
-            status: "Paid",
-            downloadUrl: "#",
-          },
-          {
-            id: "inv-002",
-            date: "April 15, 2025",
-            amount: "$99.00",
-            status: "Paid",
-            downloadUrl: "#",
-          },
-        ],
-      });
-    } catch (error) {
-      console.error("Error loading subscription data:", error);
-      toast.error("Failed to load subscription data");
-    } finally {
-      setLoading(false);
-    }
+  const plans = {
+    starter: {
+      name: "Starter Plan",
+      price: 29,
+      features: [
+        "Basic Booking Tools",
+        "Up to 50 bookings/month",
+        "Email Support",
+        "Basic Analytics",
+        "Website Builder",
+      ],
+    },
+    growth: {
+      name: "Growth Plan",
+      price: 99,
+      features: [
+        "Advanced Booking Tools",
+        "Unlimited bookings",
+        "Full CRM functionality",
+        "Comprehensive Analytics",
+        "Website Builder",
+        "Team Management (up to 3 members)",
+        "Priority Support",
+      ],
+    },
+    pro: {
+      name: "Pro Plan",
+      price: 199,
+      features: [
+        "Everything in Growth",
+        "Unlimited team members",
+        "API access",
+        "Data exports",
+        "Multi-language support",
+        "Onboarding concierge",
+        "White-label options",
+      ],
+    },
   };
 
-  const handleUpgradePlan = () => {
-    setShowSubscriptionManager(true);
+  const handlePlanChange = async (newPlan: string) => {
+    // Billing functionality disabled
+    toast({
+      title: "Billing Disabled",
+      description:
+        "Billing functionality is temporarily disabled. Please contact support for plan changes.",
+      variant: "default",
+    });
+    setPlanDialogOpen(false);
   };
 
   const handleCancelSubscription = async () => {
-    if (!subscriptionData?.subscription?.id) {
-      toast.error("No active subscription found");
-      return;
-    }
-
-    try {
-      await cancelSubscription(subscriptionData.subscription.id, true);
-      await loadSubscriptionData(); // Refresh data
-    } catch (error) {
-      console.error("Error canceling subscription:", error);
-    }
+    // Billing functionality disabled
+    toast({
+      title: "Billing Disabled",
+      description:
+        "Billing functionality is temporarily disabled. Please contact support to cancel.",
+      variant: "default",
+    });
   };
-
-  const handleAddPaymentMethod = () => {
-    toast.info("Payment method management coming soon");
-  };
-
-  const handleDownloadInvoice = (invoiceId: string) => {
-    toast.info(`Downloading invoice ${invoiceId}`);
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
-  if (showSubscriptionManager) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Subscription Management</h2>
-          <Button
-            variant="outline"
-            onClick={() => setShowSubscriptionManager(false)}
-          >
-            Back to Billing
-          </Button>
-        </div>
-        <SubscriptionManager
-          userEmail={userData.email}
-          userName={userData.name}
-          currentPlan={subscriptionData?.subscription?.planType}
-        />
-      </div>
-    );
-  }
-
-  const currentPlan = subscriptionData?.subscription?.planType
-    ? SUBSCRIPTION_PLANS[subscriptionData.subscription.planType as PlanType]
-    : null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold">Billing & Subscription</h2>
-        <p className="text-gray-500">
-          Manage your subscription plan and payment methods.
+        <h2 className="text-2xl font-bold">Billing & Subscription</h2>
+        <p className="text-gray-600">
+          Manage your subscription and billing information
         </p>
       </div>
 
       {/* Current Plan */}
       <Card>
-        <CardHeader className="pb-3">
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>Current Plan</CardTitle>
-              <CardDescription>Your subscription details</CardDescription>
-            </div>
-            <Badge
-              variant="outline"
-              className="bg-blue-50 text-blue-700 border-blue-200"
-            >
-              {currentPlan?.name || "No Plan"}
-            </Badge>
-          </div>
+        <CardHeader>
+          <CardTitle>Current Plan</CardTitle>
         </CardHeader>
-        <CardContent>
-          {currentPlan ? (
-            <div className="grid gap-4">
-              <div className="flex justify-between items-baseline">
-                <div className="text-2xl font-semibold">
-                  ${currentPlan.price}
-                  <span className="text-sm text-gray-500">/month</span>
-                </div>
-                <div className="text-sm text-gray-500">
-                  Next billing on{" "}
-                  <span className="font-medium">
-                    {new Date(
-                      subscriptionData.subscription.currentPeriodEnd * 1000
-                    ).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">
+                {plans[currentPlan]?.name}
+              </h3>
+              <p className="text-gray-600">
+                ${plans[currentPlan]?.price}/
+                {billingCycle === "monthly" ? "month" : "year"}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge
+                variant="outline"
+                className="bg-green-50 text-green-700 border-green-200"
+              >
+                <CheckCircle className="h-3 w-3 mr-1" />
+                Active
+              </Badge>
+            </div>
+          </div>
 
-              <Separator className="my-2" />
+          <div className="text-sm text-gray-600">
+            <p>
+              Next billing date:{" "}
+              {subscriptionData.currentPeriodEnd.toLocaleDateString()}
+            </p>
+            {subscriptionData.cancelAtPeriodEnd && (
+              <p className="text-amber-600 mt-1">
+                <AlertCircle className="h-4 w-4 inline mr-1" />
+                Your subscription will be cancelled at the end of the current
+                period.
+              </p>
+            )}
+          </div>
 
-              <div>
-                <h4 className="font-medium mb-2">Plan Features</h4>
-                <ul className="grid gap-1">
-                  {currentPlan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      {feature}
-                    </li>
+          <div className="flex gap-2">
+            <Dialog open={planDialogOpen} onOpenChange={setPlanDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline">Change Plan</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                  <DialogTitle>Choose Your Plan</DialogTitle>
+                  <DialogDescription>
+                    Select the plan that best fits your needs. Billing
+                    functionality is currently disabled.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                  {Object.entries(plans).map(([key, plan]) => (
+                    <Card
+                      key={key}
+                      className={`cursor-pointer transition-colors ${
+                        currentPlan === key
+                          ? "border-blue-500 bg-blue-50"
+                          : "hover:border-gray-300"
+                      }`}
+                      onClick={() => handlePlanChange(key)}
+                    >
+                      <CardContent className="p-6">
+                        <div className="text-center mb-4">
+                          <h3 className="text-lg font-semibold">{plan.name}</h3>
+                          <div className="text-3xl font-bold text-blue-600">
+                            ${plan.price}
+                          </div>
+                          <p className="text-gray-600">per month</p>
+                        </div>
+                        <ul className="space-y-2">
+                          {plan.features.map((feature, index) => (
+                            <li
+                              key={index}
+                              className="flex items-center text-sm"
+                            >
+                              <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                        {currentPlan === key && (
+                          <Badge className="w-full mt-4 justify-center">
+                            Current Plan
+                          </Badge>
+                        )}
+                      </CardContent>
+                    </Card>
                   ))}
-                </ul>
-              </div>
+                </div>
+              </DialogContent>
+            </Dialog>
 
-              <div className="bg-blue-50 p-3 rounded-lg mt-2">
-                <h4 className="font-medium mb-1">Key Policies</h4>
-                <ul className="grid gap-1">
-                  <li className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    No commission on bookings
-                  </li>
-                  <li className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    Cancel anytime, no hidden fees
-                  </li>
-                </ul>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-500 mb-4">No active subscription</p>
-              <Button onClick={handleUpgradePlan}>Choose a Plan</Button>
-            </div>
-          )}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="text-red-600 border-red-200"
+                >
+                  Cancel Subscription
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Cancel Subscription</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Billing functionality is currently disabled. Please contact
+                    support to cancel your subscription.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Close</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleCancelSubscription}>
+                    Contact Support
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </CardContent>
-        {currentPlan && (
-          <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={handleCancelSubscription}>
-              Cancel Subscription
-            </Button>
-            <Button onClick={handleUpgradePlan}>
-              {subscriptionData?.subscription?.planType === "pro"
-                ? "Manage Plan"
-                : "Upgrade Plan"}
-            </Button>
-          </CardFooter>
-        )}
       </Card>
 
-      {/* Payment Methods */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-medium">Payment Methods</h3>
-          <Button variant="outline" size="sm" onClick={handleAddPaymentMethod}>
-            <CreditCard className="h-4 w-4 mr-2" />
-            Add Payment Method
-          </Button>
-        </div>
-
-        <div className="space-y-4">
-          {subscriptionData?.paymentMethods?.map((method: any) => (
-            <Card key={method.id}>
-              <CardContent className="p-4">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-4">
-                    <CreditCard className="h-6 w-6" />
-                    <div>
-                      <p className="font-medium">
-                        {method.type} •••• {method.last4}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Expires {method.expiry}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {method.isDefault && (
-                      <Badge variant="secondary">Default</Badge>
-                    )}
-                    <Button variant="ghost" size="sm">
-                      Edit
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+      {/* Billing Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Billing Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="text-center py-8 text-gray-500">
+            <CreditCard className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+            <p>Billing functionality is temporarily disabled</p>
+            <p className="text-sm">Contact support for billing inquiries</p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Billing History */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">Billing History</h3>
-
-        <div className="rounded-md border">
-          <div className="grid grid-cols-4 p-4 font-medium border-b">
-            <div>Invoice</div>
-            <div>Date</div>
-            <div>Amount</div>
-            <div className="text-right">Actions</div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Billing History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-gray-500">
+            <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+            <p>No billing history available</p>
+            <p className="text-sm">
+              Billing functionality is temporarily disabled
+            </p>
           </div>
-
-          {subscriptionData?.invoices?.map((invoice: any) => (
-            <div
-              key={invoice.id}
-              className="grid grid-cols-4 p-4 border-b last:border-0"
-            >
-              <div className="font-mono text-sm">{invoice.id}</div>
-              <div>{invoice.date}</div>
-              <div>{invoice.amount}</div>
-              <div className="text-right">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDownloadInvoice(invoice.id)}
-                >
-                  <Download className="h-4 w-4 mr-1" />
-                  <span className="sr-only sm:not-sr-only sm:inline">
-                    Download
-                  </span>
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex justify-between items-center">
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Download All Invoices
-          </Button>
-
-          <Button variant="outline" size="sm">
-            <ExternalLink className="h-4 w-4 mr-2" />
-            View Billing Portal
-          </Button>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
