@@ -17,7 +17,7 @@ import {
   Home,
   LogOut,
   ChevronDown,
-  DollarSign,
+  TrendingUp,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -49,7 +49,7 @@ const menuItems = [
     path: "/pro-dashboard/analytics",
     icon: ChartBar,
   },
-  { name: "Dynamic Pricing", path: "/pro-dashboard/pricing", icon: DollarSign },
+  { name: "Dynamic Pricing", path: "/pro-dashboard/pricing", icon: TrendingUp },
   { name: "Settings", path: "/pro-dashboard/settings", icon: Settings },
 ];
 

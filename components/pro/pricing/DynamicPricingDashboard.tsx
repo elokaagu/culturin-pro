@@ -79,13 +79,7 @@ const DynamicPricingDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-semibold">Dynamic Pricing</h2>
-          <p className="text-gray-500">
-            AI-powered pricing optimization based on market conditions
-          </p>
-        </div>
+      <div className="flex justify-end items-center">
         <div className="flex gap-2">
           <Button
             variant="outline"
@@ -115,19 +109,17 @@ const DynamicPricingDashboard: React.FC = () => {
           {/* Status Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-sm text-gray-500">Dynamic Pricing</p>
-                    <p className="text-lg font-semibold">
-                      {settings.enabled ? "Active" : "Inactive"}
+                    <p className="text-sm text-gray-500 font-medium">
+                      Dynamic Pricing
                     </p>
+                    <h3 className="text-2xl font-bold mt-1">
+                      {settings.enabled ? "Active" : "Inactive"}
+                    </h3>
                   </div>
-                  <div
-                    className={`p-2 rounded-full ${
-                      settings.enabled ? "bg-green-100" : "bg-gray-100"
-                    }`}
-                  >
+                  <div className="rounded-full bg-gray-100 p-2">
                     {settings.enabled ? (
                       <CheckCircle className="h-5 w-5 text-green-600" />
                     ) : (
@@ -139,15 +131,17 @@ const DynamicPricingDashboard: React.FC = () => {
             </Card>
 
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-sm text-gray-500">Recommendations</p>
-                    <p className="text-lg font-semibold">
-                      {recommendations.length}
+                    <p className="text-sm text-gray-500 font-medium">
+                      Recommendations
                     </p>
+                    <h3 className="text-2xl font-bold mt-1">
+                      {recommendations.length}
+                    </h3>
                   </div>
-                  <div className="p-2 rounded-full bg-blue-100">
+                  <div className="rounded-full bg-gray-100 p-2">
                     <Target className="h-5 w-5 text-blue-600" />
                   </div>
                 </div>
@@ -155,11 +149,13 @@ const DynamicPricingDashboard: React.FC = () => {
             </Card>
 
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-sm text-gray-500">Avg. Confidence</p>
-                    <p className="text-lg font-semibold">
+                    <p className="text-sm text-gray-500 font-medium">
+                      Avg. Confidence
+                    </p>
+                    <h3 className="text-2xl font-bold mt-1">
                       {recommendations.length > 0
                         ? Math.round(
                             (recommendations.reduce(
@@ -171,9 +167,9 @@ const DynamicPricingDashboard: React.FC = () => {
                           )
                         : 0}
                       %
-                    </p>
+                    </h3>
                   </div>
-                  <div className="p-2 rounded-full bg-purple-100">
+                  <div className="rounded-full bg-gray-100 p-2">
                     <Zap className="h-5 w-5 text-purple-600" />
                   </div>
                 </div>
@@ -181,11 +177,13 @@ const DynamicPricingDashboard: React.FC = () => {
             </Card>
 
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-sm text-gray-500">Market Score</p>
-                    <p className="text-lg font-semibold">
+                    <p className="text-sm text-gray-500 font-medium">
+                      Market Score
+                    </p>
+                    <h3 className="text-2xl font-bold mt-1">
                       {Math.round(
                         ((marketData.demand +
                           marketData.seasonality +
@@ -193,9 +191,9 @@ const DynamicPricingDashboard: React.FC = () => {
                           3) *
                           100
                       )}
-                    </p>
+                    </h3>
                   </div>
-                  <div className="p-2 rounded-full bg-orange-100">
+                  <div className="rounded-full bg-gray-100 p-2">
                     <Activity className="h-5 w-5 text-orange-600" />
                   </div>
                 </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import DynamicPricingDashboard from "../../../components/pro/pricing/DynamicPricingDashboard";
+import ProDashboardLayout from "../../../components/pro/ProDashboardLayout";
 
 export const metadata = {
   title: "Dynamic Pricing | Culturin Studio",
@@ -9,10 +10,11 @@ export const metadata = {
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <DynamicPricingDashboard />
-      </div>
-    </div>
+    <ProDashboardLayout
+      title="Dynamic Pricing"
+      subtitle="AI-powered pricing optimization based on market conditions"
+    >
+      <DynamicPricingDashboard />
+    </ProDashboardLayout>
   );
 }
