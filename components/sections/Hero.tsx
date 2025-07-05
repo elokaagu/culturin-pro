@@ -347,7 +347,7 @@ const Hero = () => {
             {/* App benefits/features */}
             <div className="mt-12 space-y-6 text-left">
               <h3 className="text-2xl font-bold text-gray-900">
-                Stop losing customers to competitors
+                <TranslatableText text="Stop losing customers to competitors" />
               </h3>
 
               <div className="space-y-5">
@@ -369,11 +369,10 @@ const Hero = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-lg">
-                      Diagnose broken funnels
+                      <TranslatableText text="Diagnose broken funnels" />
                     </h4>
                     <p className="text-gray-600 text-sm">
-                      See exactly where potential guests drop off in your
-                      booking flow
+                      <TranslatableText text="See exactly where potential guests drop off in your booking flow" />
                     </p>
                   </div>
                 </div>
@@ -420,10 +419,11 @@ const Hero = () => {
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg">Drive direct bookings</h4>
+                    <h4 className="font-bold text-lg">
+                      <TranslatableText text="Drive direct bookings" />
+                    </h4>
                     <p className="text-gray-600 text-sm">
-                      Cut out the middlemen and increase your profit margins by
-                      25%+
+                      <TranslatableText text="Cut out the middlemen and increase your profit margins by 25%+" />
                     </p>
                   </div>
                 </div>

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import LanguageSelector from "../LanguageSelector";
+import TranslatableText from "../TranslatableText";
 
 const NewFooter = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -36,14 +37,16 @@ const NewFooter = () => {
               }`}
               style={{ transitionDelay: "100ms" }}
             >
-              <h3 className="text-sm font-semibold uppercase mb-5">Products</h3>
+              <h3 className="text-sm font-semibold uppercase mb-5">
+                <TranslatableText text="Products" />
+              </h3>
               <ul className="space-y-3">
                 <li>
                   <Link
                     to="/product/booking-management"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    Direct Booking Engine
+                    <TranslatableText text="Direct Booking Engine" />
                   </Link>
                 </li>
                 <li>
@@ -51,7 +54,7 @@ const NewFooter = () => {
                     to="/product/crm"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    Guest CRM
+                    <TranslatableText text="Guest CRM" />
                   </Link>
                 </li>
                 <li>
@@ -59,7 +62,7 @@ const NewFooter = () => {
                     to="/product/marketing"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    Marketing Tools
+                    <TranslatableText text="Marketing Tools" />
                   </Link>
                 </li>
                 <li>
@@ -67,7 +70,7 @@ const NewFooter = () => {
                     to="/product/analytics"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    Analytics Dashboard
+                    <TranslatableText text="Analytics Dashboard" />
                   </Link>
                 </li>
                 <li>
@@ -78,7 +81,7 @@ const NewFooter = () => {
                     <span className="w-4 h-4 rounded-full bg-[#1A1A1A]/10 flex items-center justify-center text-xs">
                       →
                     </span>
-                    See What's New
+                    <TranslatableText text="See What's New" />
                   </Link>
                 </li>
               </ul>
@@ -94,7 +97,7 @@ const NewFooter = () => {
               style={{ transitionDelay: "200ms" }}
             >
               <h3 className="text-sm font-semibold uppercase mb-5">
-                Resources
+                <TranslatableText text="Resources" />
               </h3>
               <ul className="space-y-3">
                 <li>
@@ -102,7 +105,7 @@ const NewFooter = () => {
                     to="/blog"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    Blog
+                    <TranslatableText text="Blog" />
                   </Link>
                 </li>
                 <li>
@@ -110,7 +113,7 @@ const NewFooter = () => {
                     to="/how-it-works"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    How It Works
+                    <TranslatableText text="How it works" />
                   </Link>
                 </li>
                 <li>
@@ -118,7 +121,7 @@ const NewFooter = () => {
                     to="/pricing"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    Pricing
+                    <TranslatableText text="Pricing" />
                   </Link>
                 </li>
                 <li>
@@ -126,7 +129,7 @@ const NewFooter = () => {
                     to="/case-studies"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    Case Studies
+                    <TranslatableText text="Case Studies" />
                   </Link>
                 </li>
                 <li>
@@ -134,7 +137,7 @@ const NewFooter = () => {
                     to="/help-center"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    Help Center
+                    <TranslatableText text="Help Center" />
                   </Link>
                 </li>
               </ul>
@@ -149,14 +152,16 @@ const NewFooter = () => {
               }`}
               style={{ transitionDelay: "300ms" }}
             >
-              <h3 className="text-sm font-semibold uppercase mb-5">Company</h3>
+              <h3 className="text-sm font-semibold uppercase mb-5">
+                <TranslatableText text="Company" />
+              </h3>
               <ul className="space-y-3">
                 <li>
                   <Link
                     to="/our-story"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    About
+                    <TranslatableText text="About" />
                   </Link>
                 </li>
                 <li>
@@ -164,7 +169,7 @@ const NewFooter = () => {
                     to="/careers"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    Careers
+                    <TranslatableText text="Careers" />
                   </Link>
                 </li>
                 <li>
@@ -172,7 +177,7 @@ const NewFooter = () => {
                     to="/press"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    Press
+                    <TranslatableText text="Press" />
                   </Link>
                 </li>
                 <li>
@@ -180,7 +185,7 @@ const NewFooter = () => {
                     to="/culturin-pledge"
                     className="text-gray-600 hover:text-gray-900 transition-colors"
                   >
-                    Giving Pledge
+                    <TranslatableText text="Giving Pledge" />
                   </Link>
                 </li>
               </ul>
@@ -195,14 +200,16 @@ const NewFooter = () => {
               }`}
               style={{ transitionDelay: "400ms" }}
             >
-              <h3 className="text-sm font-semibold uppercase mb-5">Support</h3>
+              <h3 className="text-sm font-semibold uppercase mb-5">
+                <TranslatableText text="Support" />
+              </h3>
               <ul className="space-y-3">
                 <li>
                   <Link
                     to="/contact"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    Contact Us
+                    <TranslatableText text="Contact Us" />
                   </Link>
                 </li>
                 <li>
@@ -210,7 +217,7 @@ const NewFooter = () => {
                     to="/faqs"
                     className="hover:opacity-70 transition-opacity"
                   >
-                    FAQs
+                    <TranslatableText text="FAQs" />
                   </Link>
                 </li>
                 <li>
@@ -233,11 +240,13 @@ const NewFooter = () => {
               }`}
               style={{ transitionDelay: "500ms" }}
             >
-              <h3 className="text-sm font-semibold uppercase mb-5">Connect</h3>
+              <h3 className="text-sm font-semibold uppercase mb-5">
+                <TranslatableText text="Connect" />
+              </h3>
               <div className="space-y-3">
                 <div>
                   <p className="text-sm text-[#1A1A1A]/70 mb-3">
-                    Choose your language
+                    <TranslatableText text="Choose your language" />
                   </p>
                   <LanguageSelector variant="footer" />
                 </div>

@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Image from "@/components/ui/image";
+import TranslatableText from "./TranslatableText";
 
 interface HeaderProps {
   type: "traveler" | "operator" | "default";
@@ -84,7 +85,8 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                 <li>
                   <DropdownMenu>
                     <DropdownMenuTrigger className="flex items-center font-medium text-gray-800 hover:text-gray-600 transition-colors focus:outline-none">
-                      Product <ChevronDown className="ml-1 h-4 w-4" />
+                      <TranslatableText text="Product" />{" "}
+                      <ChevronDown className="ml-1 h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-64 bg-white shadow-lg rounded-md p-2 z-[9999]">
                       {productLinks.map((item, index) => (
@@ -94,9 +96,11 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                             className="flex items-start p-3 rounded-md hover:bg-gray-100"
                           >
                             <div className="flex flex-col">
-                              <span className="font-medium">{item.title}</span>
+                              <span className="font-medium">
+                                <TranslatableText text={item.title} />
+                              </span>
                               <span className="text-xs text-gray-500">
-                                {item.description}
+                                <TranslatableText text={item.description} />
                               </span>
                             </div>
                           </Link>
@@ -110,7 +114,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                     to="/pricing"
                     className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
                   >
-                    Pricing
+                    <TranslatableText text="Pricing" />
                   </Link>
                 </li>
                 <li>
@@ -118,13 +122,14 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                     to="/how-it-works"
                     className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
                   >
-                    How it works
+                    <TranslatableText text="How it works" />
                   </Link>
                 </li>
                 <li>
                   <DropdownMenu>
                     <DropdownMenuTrigger className="flex items-center font-medium text-gray-800 hover:text-gray-600 transition-colors focus:outline-none">
-                      Company <ChevronDown className="ml-1 h-4 w-4" />
+                      <TranslatableText text="Company" />{" "}
+                      <ChevronDown className="ml-1 h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2 z-[9999]">
                       <DropdownMenuItem asChild>
@@ -132,7 +137,9 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                           to="/our-story"
                           className="flex items-start p-3 rounded-md hover:bg-gray-100"
                         >
-                          <span className="font-medium">Our Story</span>
+                          <span className="font-medium">
+                            <TranslatableText text="Our Story" />
+                          </span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
@@ -140,7 +147,9 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                           to="/careers"
                           className="flex items-start p-3 rounded-md hover:bg-gray-100"
                         >
-                          <span className="font-medium">Careers</span>
+                          <span className="font-medium">
+                            <TranslatableText text="Careers" />
+                          </span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
@@ -148,7 +157,9 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                           to="/press"
                           className="flex items-start p-3 rounded-md hover:bg-gray-100"
                         >
-                          <span className="font-medium">Press</span>
+                          <span className="font-medium">
+                            <TranslatableText text="Press" />
+                          </span>
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -157,7 +168,8 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                 <li>
                   <DropdownMenu>
                     <DropdownMenuTrigger className="flex items-center font-medium text-gray-800 hover:text-gray-600 transition-colors focus:outline-none">
-                      Resources <ChevronDown className="ml-1 h-4 w-4" />
+                      <TranslatableText text="Resources" />{" "}
+                      <ChevronDown className="ml-1 h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2 z-[9999]">
                       <DropdownMenuItem asChild>
@@ -165,7 +177,9 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                           to="/blog"
                           className="flex items-start p-3 rounded-md hover:bg-gray-100"
                         >
-                          <span className="font-medium">Blog</span>
+                          <span className="font-medium">
+                            <TranslatableText text="Blog" />
+                          </span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
@@ -173,7 +187,9 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                           to="/help-center"
                           className="flex items-start p-3 rounded-md hover:bg-gray-100"
                         >
-                          <span className="font-medium">Help Center</span>
+                          <span className="font-medium">
+                            <TranslatableText text="Help Center" />
+                          </span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
@@ -181,7 +197,9 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                           to="/case-studies"
                           className="flex items-start p-3 rounded-md hover:bg-gray-100"
                         >
-                          <span className="font-medium">Case Studies</span>
+                          <span className="font-medium">
+                            <TranslatableText text="Case Studies" />
+                          </span>
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -257,14 +275,14 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                     to="/sign-in"
                     className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
                   >
-                    Login
+                    <TranslatableText text="Login" />
                   </Link>
 
                   <Button
                     className="bg-blue-600 hover:bg-blue-700 font-medium"
                     onClick={() => navigate("/demo")}
                   >
-                    Get a free demo
+                    <TranslatableText text="Get a free demo" />
                   </Button>
                 </>
               )}
