@@ -41,11 +41,11 @@ import {
   Trash2,
   Search,
   HelpCircle,
-  Settings,
   Eye,
   Save,
 } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import {
   faqItems,
   faqCategories,
@@ -56,7 +56,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 
 const HelpCenterManagement = () => {
-  const [faqs, setFaqs] = useState<FAQ[]>(faqItems);
+  const [faqsData, setFaqsData] = useState<FAQ[]>(faqItems);
   const [content, setContent] = useState<HelpCenterContent>(helpCenterContent);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -64,14 +64,17 @@ const HelpCenterManagement = () => {
   const [isAddingFaq, setIsAddingFaq] = useState(false);
   const [isEditingContent, setIsEditingContent] = useState(false);
 
+  // State for file upload
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+
   const [newFaq, setNewFaq] = useState<Partial<FAQ>>({
-    category: "getting-started",
+    category: "general",
     question: "",
     answer: "",
     isActive: true,
   });
 
-  const filteredFaqs = faqs.filter((faq) => {
+  const filteredFaqs = faqsData.filter((faq) => {
     const matchesSearch =
       faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
@@ -92,17 +95,17 @@ const HelpCenterManagement = () => {
 
     const faq: FAQ = {
       id: `faq-${Date.now()}`,
-      category: newFaq.category || "getting-started",
-      question: newFaq.question,
-      answer: newFaq.answer,
+      category: newFaq.category || "general",
+      question: newFaq.question || "",
+      answer: newFaq.answer || "",
+      isActive: newFaq.isActive || true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      isActive: newFaq.isActive || true,
     };
 
-    setFaqs([...faqs, faq]);
+    setFaqsData([...faqsData, faq]);
     setNewFaq({
-      category: "getting-started",
+      category: "general",
       question: "",
       answer: "",
       isActive: true,
@@ -122,8 +125,8 @@ const HelpCenterManagement = () => {
   const handleUpdateFaq = () => {
     if (!editingFaq) return;
 
-    setFaqs(
-      faqs.map((faq) =>
+    setFaqsData(
+      faqsData.map((faq) =>
         faq.id === editingFaq.id
           ? { ...editingFaq, updatedAt: new Date().toISOString() }
           : faq
@@ -138,7 +141,7 @@ const HelpCenterManagement = () => {
   };
 
   const handleDeleteFaq = (id: string) => {
-    setFaqs(faqs.filter((faq) => faq.id !== id));
+    setFaqsData(faqsData.filter((faq) => faq.id !== id));
     toast({
       title: "Success",
       description: "FAQ deleted successfully.",
@@ -146,8 +149,8 @@ const HelpCenterManagement = () => {
   };
 
   const handleToggleFaqStatus = (id: string) => {
-    setFaqs(
-      faqs.map((faq) =>
+    setFaqsData(
+      faqsData.map((faq) =>
         faq.id === id
           ? {
               ...faq,
@@ -160,7 +163,14 @@ const HelpCenterManagement = () => {
   };
 
   const handleSaveContent = () => {
+    // Handle hero image upload - in a real app, you'd upload to a server/storage
+    if (heroImageFile) {
+      const heroImageUrl = URL.createObjectURL(heroImageFile);
+      setContent((prev) => ({ ...prev, heroImage: heroImageUrl }));
+    }
+
     setIsEditingContent(false);
+    setHeroImageFile(null);
     toast({
       title: "Success",
       description: "Help Center content updated successfully.",
@@ -170,12 +180,12 @@ const HelpCenterManagement = () => {
   const stats = [
     {
       title: "Total FAQs",
-      value: faqs.length.toString(),
+      value: faqsData.length.toString(),
       color: "bg-blue-100 text-blue-600",
     },
     {
       title: "Active FAQs",
-      value: faqs.filter((faq) => faq.isActive).length.toString(),
+      value: faqsData.filter((faq) => faq.isActive).length.toString(),
       color: "bg-green-100 text-green-600",
     },
     {
@@ -184,16 +194,9 @@ const HelpCenterManagement = () => {
       color: "bg-purple-100 text-purple-600",
     },
     {
-      title: "Recent Updates",
-      value: faqs
-        .filter((faq) => {
-          const updatedDate = new Date(faq.updatedAt);
-          const sevenDaysAgo = new Date();
-          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-          return updatedDate > sevenDaysAgo;
-        })
-        .length.toString(),
-      color: "bg-orange-100 text-orange-600",
+      title: "Inactive FAQs",
+      value: faqsData.filter((faq) => !faq.isActive).length.toString(),
+      color: "bg-red-100 text-red-600",
     },
   ];
 
@@ -211,7 +214,7 @@ const HelpCenterManagement = () => {
                   Help Center Management
                 </h1>
                 <p className="text-lg md:text-xl text-gray-600 mb-8">
-                  Manage FAQs, support content, and help center information.
+                  Manage FAQs and help center content.
                 </p>
               </div>
               <div className="flex gap-3">
@@ -271,14 +274,14 @@ const HelpCenterManagement = () => {
                           <DialogHeader>
                             <DialogTitle>Add New FAQ</DialogTitle>
                             <DialogDescription>
-                              Create a new frequently asked question and answer.
+                              Create a new frequently asked question.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="space-y-4">
                             <div>
                               <Label htmlFor="category">Category</Label>
                               <Select
-                                value={newFaq.category}
+                                value={newFaq.category || "general"}
                                 onValueChange={(value) =>
                                   setNewFaq({ ...newFaq, category: value })
                                 }
@@ -299,7 +302,7 @@ const HelpCenterManagement = () => {
                               </Select>
                             </div>
                             <div>
-                              <Label htmlFor="question">Question</Label>
+                              <Label htmlFor="question">Question *</Label>
                               <Input
                                 id="question"
                                 value={newFaq.question || ""}
@@ -313,7 +316,7 @@ const HelpCenterManagement = () => {
                               />
                             </div>
                             <div>
-                              <Label htmlFor="answer">Answer</Label>
+                              <Label htmlFor="answer">Answer *</Label>
                               <Textarea
                                 id="answer"
                                 value={newFaq.answer || ""}
@@ -383,7 +386,7 @@ const HelpCenterManagement = () => {
                       </Select>
                     </div>
 
-                    {/* FAQ Table */}
+                    {/* FAQs Table */}
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -512,15 +515,32 @@ const HelpCenterManagement = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="heroImage">Hero Image URL</Label>
-                      <Input
-                        id="heroImage"
-                        value={content.heroImage}
-                        onChange={(e) =>
-                          setContent({ ...content, heroImage: e.target.value })
-                        }
-                        disabled={!isEditingContent}
-                      />
+                      <Label htmlFor="heroImage">Hero Background Image</Label>
+                      {isEditingContent ? (
+                        <ImageUploader
+                          onImageSelect={(file) => setHeroImageFile(file)}
+                          currentImageUrl={
+                            heroImageFile
+                              ? URL.createObjectURL(heroImageFile)
+                              : content.heroImage
+                          }
+                          className="mt-2"
+                        />
+                      ) : (
+                        <div className="mt-2 p-4 border rounded-lg">
+                          {content.heroImage ? (
+                            <img
+                              src={content.heroImage}
+                              alt="Hero background"
+                              className="w-full h-32 object-cover rounded"
+                            />
+                          ) : (
+                            <div className="w-full h-32 bg-gray-100 rounded flex items-center justify-center text-gray-500">
+                              No hero image set
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {isEditingContent && (

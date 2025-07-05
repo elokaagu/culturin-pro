@@ -47,6 +47,7 @@ import {
   Building,
 } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import {
   caseStudies,
   caseStudiesCategories,
@@ -65,6 +66,11 @@ const CaseStudiesManagement = () => {
   const [editingStudy, setEditingStudy] = useState<CaseStudy | null>(null);
   const [isAddingStudy, setIsAddingStudy] = useState(false);
   const [isEditingContent, setIsEditingContent] = useState(false);
+
+  // State for file uploads
+  const [newStudyImage, setNewStudyImage] = useState<File | null>(null);
+  const [editStudyImage, setEditStudyImage] = useState<File | null>(null);
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
 
   const [newStudy, setNewStudy] = useState<Partial<CaseStudy>>({
     category: "food-tours",
@@ -106,6 +112,13 @@ const CaseStudiesManagement = () => {
       return;
     }
 
+    // Handle image upload - in a real app, you'd upload to a server/storage
+    let imageUrl = "";
+    if (newStudyImage) {
+      // For demo purposes, create a local URL
+      imageUrl = URL.createObjectURL(newStudyImage);
+    }
+
     const study: CaseStudy = {
       id: `case-${Date.now()}`,
       title: newStudy.title || "",
@@ -122,7 +135,7 @@ const CaseStudiesManagement = () => {
         author: "",
         position: "",
       },
-      image: newStudy.image || "",
+      image: imageUrl,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       isActive: newStudy.isActive || true,
@@ -145,6 +158,7 @@ const CaseStudiesManagement = () => {
       isActive: true,
       featured: false,
     });
+    setNewStudyImage(null);
     setIsAddingStudy(false);
 
     toast({
@@ -155,19 +169,32 @@ const CaseStudiesManagement = () => {
 
   const handleEditStudy = (study: CaseStudy) => {
     setEditingStudy({ ...study });
+    setEditStudyImage(null);
   };
 
   const handleUpdateStudy = () => {
     if (!editingStudy) return;
 
+    // Handle image upload - in a real app, you'd upload to a server/storage
+    let imageUrl = editingStudy.image;
+    if (editStudyImage) {
+      // For demo purposes, create a local URL
+      imageUrl = URL.createObjectURL(editStudyImage);
+    }
+
     setStudies(
       studies.map((study) =>
         study.id === editingStudy.id
-          ? { ...editingStudy, updatedAt: new Date().toISOString() }
+          ? {
+              ...editingStudy,
+              image: imageUrl,
+              updatedAt: new Date().toISOString(),
+            }
           : study
       )
     );
     setEditingStudy(null);
+    setEditStudyImage(null);
 
     toast({
       title: "Success",
@@ -212,7 +239,14 @@ const CaseStudiesManagement = () => {
   };
 
   const handleSaveContent = () => {
+    // Handle hero image upload - in a real app, you'd upload to a server/storage
+    if (heroImageFile) {
+      const heroImageUrl = URL.createObjectURL(heroImageFile);
+      setContent((prev) => ({ ...prev, heroImage: heroImageUrl }));
+    }
+
     setIsEditingContent(false);
+    setHeroImageFile(null);
     toast({
       title: "Success",
       description: "Case Studies content updated successfully.",
@@ -415,17 +449,15 @@ const CaseStudiesManagement = () => {
                               />
                             </div>
                             <div>
-                              <Label htmlFor="image">Image URL</Label>
-                              <Input
-                                id="image"
-                                value={newStudy.image || ""}
-                                onChange={(e) =>
-                                  setNewStudy({
-                                    ...newStudy,
-                                    image: e.target.value,
-                                  })
+                              <Label htmlFor="image">Case Study Image</Label>
+                              <ImageUploader
+                                onImageSelect={(file) => setNewStudyImage(file)}
+                                currentImageUrl={
+                                  newStudyImage
+                                    ? URL.createObjectURL(newStudyImage)
+                                    : undefined
                                 }
-                                placeholder="Enter image URL"
+                                className="mt-2"
                               />
                             </div>
                             <div className="flex items-center space-x-4">
@@ -460,7 +492,10 @@ const CaseStudiesManagement = () => {
                           <DialogFooter>
                             <Button
                               variant="outline"
-                              onClick={() => setIsAddingStudy(false)}
+                              onClick={() => {
+                                setIsAddingStudy(false);
+                                setNewStudyImage(null);
+                              }}
                             >
                               Cancel
                             </Button>
@@ -653,15 +688,32 @@ const CaseStudiesManagement = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="heroImage">Hero Image URL</Label>
-                      <Input
-                        id="heroImage"
-                        value={content.heroImage}
-                        onChange={(e) =>
-                          setContent({ ...content, heroImage: e.target.value })
-                        }
-                        disabled={!isEditingContent}
-                      />
+                      <Label htmlFor="heroImage">Hero Background Image</Label>
+                      {isEditingContent ? (
+                        <ImageUploader
+                          onImageSelect={(file) => setHeroImageFile(file)}
+                          currentImageUrl={
+                            heroImageFile
+                              ? URL.createObjectURL(heroImageFile)
+                              : content.heroImage
+                          }
+                          className="mt-2"
+                        />
+                      ) : (
+                        <div className="mt-2 p-4 border rounded-lg">
+                          {content.heroImage ? (
+                            <img
+                              src={content.heroImage}
+                              alt="Hero background"
+                              className="w-full h-32 object-cover rounded"
+                            />
+                          ) : (
+                            <div className="w-full h-32 bg-gray-100 rounded flex items-center justify-center text-gray-500">
+                              No hero image set
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {isEditingContent && (
@@ -683,7 +735,10 @@ const CaseStudiesManagement = () => {
         {editingStudy && (
           <Dialog
             open={!!editingStudy}
-            onOpenChange={() => setEditingStudy(null)}
+            onOpenChange={() => {
+              setEditingStudy(null);
+              setEditStudyImage(null);
+            }}
           >
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
@@ -773,16 +828,15 @@ const CaseStudiesManagement = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="editImage">Image URL</Label>
-                  <Input
-                    id="editImage"
-                    value={editingStudy.image}
-                    onChange={(e) =>
-                      setEditingStudy({
-                        ...editingStudy,
-                        image: e.target.value,
-                      })
+                  <Label htmlFor="editImage">Case Study Image</Label>
+                  <ImageUploader
+                    onImageSelect={(file) => setEditStudyImage(file)}
+                    currentImageUrl={
+                      editStudyImage
+                        ? URL.createObjectURL(editStudyImage)
+                        : editingStudy.image
                     }
+                    className="mt-2"
                   />
                 </div>
                 <div className="flex items-center space-x-4">
@@ -809,7 +863,13 @@ const CaseStudiesManagement = () => {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setEditingStudy(null)}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEditingStudy(null);
+                    setEditStudyImage(null);
+                  }}
+                >
                   Cancel
                 </Button>
                 <Button onClick={handleUpdateStudy}>Update Case Study</Button>

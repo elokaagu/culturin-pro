@@ -1,18 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "../../../lib/navigation";
+import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -21,6 +16,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -31,17 +28,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
   Table,
   TableBody,
   TableCell,
@@ -49,435 +35,279 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "sonner";
-import { Plus, Edit, Trash2, Star, Eye, Search, Filter } from "lucide-react";
-import Header from "@/components/Header";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Search,
+  MessageSquare,
+  Star,
+  Eye,
+  Save,
+  Quote,
+} from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import {
   testimonials,
   testimonialCategories,
-  testimonialTypes,
   Testimonial,
 } from "@/data/testimonialsData";
+import { toast } from "@/hooks/use-toast";
+
+// Simple content interface for testimonials page
+interface TestimonialsContent {
+  heroTitle: string;
+  heroSubtitle: string;
+}
 
 const TestimonialsManagement = () => {
   const [testimonialsData, setTestimonialsData] =
     useState<Testimonial[]>(testimonials);
-  const [filteredTestimonials, setFilteredTestimonials] =
-    useState<Testimonial[]>(testimonials);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [filterType, setFilterType] = useState("all");
-  const [filterCategory, setFilterCategory] = useState("all");
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [content, setContent] = useState<TestimonialsContent>({
+    heroTitle: "What Our Community Says",
+    heroSubtitle:
+      "Real stories from tour operators and travelers who trust Culturin to create meaningful cultural experiences.",
+  });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedType, setSelectedType] = useState("all");
   const [editingTestimonial, setEditingTestimonial] =
     useState<Testimonial | null>(null);
+  const [isAddingTestimonial, setIsAddingTestimonial] = useState(false);
+  const [isEditingContent, setIsEditingContent] = useState(false);
+
+  // State for file uploads
+  const [newTestimonialImage, setNewTestimonialImage] = useState<File | null>(
+    null
+  );
+  const [editTestimonialImage, setEditTestimonialImage] = useState<File | null>(
+    null
+  );
+
   const [newTestimonial, setNewTestimonial] = useState<Partial<Testimonial>>({
+    type: "customer",
+    category: "Cultural Tours",
+    quote: "",
     name: "",
     company: "",
-    role: "",
     location: "",
-    quote: "",
     image: "",
-    category: "",
-    featured: false,
     rating: 5,
     status: "active",
-    type: "customer",
+    featured: false,
   });
 
-  // Filter testimonials based on search and filters
-  useEffect(() => {
-    let filtered = testimonialsData;
+  const testimonialTypes = ["customer", "operator", "partner", "general"];
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (testimonial) =>
-          testimonial.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          testimonial.company
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          testimonial.quote.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          testimonial.category.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Status filter
-    if (filterStatus !== "all") {
-      filtered = filtered.filter(
-        (testimonial) => testimonial.status === filterStatus
-      );
-    }
-
-    // Type filter
-    if (filterType !== "all") {
-      filtered = filtered.filter(
-        (testimonial) => testimonial.type === filterType
-      );
-    }
-
-    // Category filter
-    if (filterCategory !== "all") {
-      filtered = filtered.filter(
-        (testimonial) => testimonial.category === filterCategory
-      );
-    }
-
-    setFilteredTestimonials(filtered);
-  }, [testimonialsData, searchTerm, filterStatus, filterType, filterCategory]);
+  const filteredTestimonials = testimonialsData.filter((testimonial) => {
+    const matchesSearch =
+      testimonial.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      testimonial.quote.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (testimonial.company &&
+        testimonial.company.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesCategory =
+      selectedCategory === "all" || testimonial.category === selectedCategory;
+    const matchesType =
+      selectedType === "all" || testimonial.type === selectedType;
+    return matchesSearch && matchesCategory && matchesType;
+  });
 
   const handleAddTestimonial = () => {
-    if (
-      !newTestimonial.name ||
-      !newTestimonial.quote ||
-      !newTestimonial.category
-    ) {
-      toast.error("Please fill in all required fields");
+    if (!newTestimonial.quote || !newTestimonial.name) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
       return;
     }
 
+    // Handle image upload - in a real app, you'd upload to a server/storage
+    let imageUrl = "/placeholder-avatar.png";
+    if (newTestimonialImage) {
+      // For demo purposes, create a local URL
+      imageUrl = URL.createObjectURL(newTestimonialImage);
+    }
+
     const testimonial: Testimonial = {
-      id: Date.now().toString(),
-      name: newTestimonial.name!,
+      id: `testimonial-${Date.now()}`,
+      type: newTestimonial.type || "customer",
+      category: newTestimonial.category || "Cultural Tours",
+      quote: newTestimonial.quote || "",
+      name: newTestimonial.name || "",
       company: newTestimonial.company || "",
-      role: newTestimonial.role || "",
       location: newTestimonial.location || "",
-      quote: newTestimonial.quote!,
-      image: newTestimonial.image || "/placeholder-avatar.png",
-      category: newTestimonial.category!,
-      featured: newTestimonial.featured || false,
+      image: imageUrl,
       rating: newTestimonial.rating || 5,
       dateAdded: new Date().toISOString().split("T")[0],
-      status:
-        (newTestimonial.status as "active" | "inactive" | "pending") ||
-        "active",
-      type:
-        (newTestimonial.type as
-          | "customer"
-          | "operator"
-          | "partner"
-          | "general") || "customer",
+      status: newTestimonial.status || "active",
+      featured: newTestimonial.featured || false,
     };
 
-    setTestimonialsData([testimonial, ...testimonialsData]);
+    setTestimonialsData([...testimonialsData, testimonial]);
     setNewTestimonial({
+      type: "customer",
+      category: "Cultural Tours",
+      quote: "",
       name: "",
       company: "",
-      role: "",
       location: "",
-      quote: "",
       image: "",
-      category: "",
-      featured: false,
       rating: 5,
       status: "active",
-      type: "customer",
+      featured: false,
     });
-    setIsAddDialogOpen(false);
-    toast.success("Testimonial added successfully!");
+    setNewTestimonialImage(null);
+    setIsAddingTestimonial(false);
+
+    toast({
+      title: "Success",
+      description: "Testimonial added successfully.",
+    });
   };
 
-  const handleEditTestimonial = () => {
+  const handleEditTestimonial = (testimonial: Testimonial) => {
+    setEditingTestimonial({ ...testimonial });
+    setEditTestimonialImage(null);
+  };
+
+  const handleUpdateTestimonial = () => {
     if (!editingTestimonial) return;
+
+    // Handle image upload - in a real app, you'd upload to a server/storage
+    let imageUrl = editingTestimonial.image;
+    if (editTestimonialImage) {
+      // For demo purposes, create a local URL
+      imageUrl = URL.createObjectURL(editTestimonialImage);
+    }
 
     setTestimonialsData(
       testimonialsData.map((testimonial) =>
         testimonial.id === editingTestimonial.id
-          ? editingTestimonial
+          ? {
+              ...editingTestimonial,
+              image: imageUrl,
+            }
           : testimonial
       )
     );
-    setIsEditDialogOpen(false);
     setEditingTestimonial(null);
-    toast.success("Testimonial updated successfully!");
+    setEditTestimonialImage(null);
+
+    toast({
+      title: "Success",
+      description: "Testimonial updated successfully.",
+    });
   };
 
   const handleDeleteTestimonial = (id: string) => {
     setTestimonialsData(
       testimonialsData.filter((testimonial) => testimonial.id !== id)
     );
-    toast.success("Testimonial deleted successfully!");
+    toast({
+      title: "Success",
+      description: "Testimonial deleted successfully.",
+    });
+  };
+
+  const handleToggleTestimonialStatus = (id: string) => {
+    setTestimonialsData(
+      testimonialsData.map((testimonial) =>
+        testimonial.id === id
+          ? {
+              ...testimonial,
+              status:
+                testimonial.status === "active"
+                  ? "inactive"
+                  : ("active" as "active" | "inactive" | "pending"),
+            }
+          : testimonial
+      )
+    );
   };
 
   const handleToggleFeatured = (id: string) => {
     setTestimonialsData(
       testimonialsData.map((testimonial) =>
         testimonial.id === id
-          ? { ...testimonial, featured: !testimonial.featured }
-          : testimonial
-      )
-    );
-    toast.success("Featured status updated!");
-  };
-
-  const handleToggleStatus = (id: string) => {
-    setTestimonialsData(
-      testimonialsData.map((testimonial) =>
-        testimonial.id === id
           ? {
               ...testimonial,
-              status: testimonial.status === "active" ? "inactive" : "active",
+              featured: !testimonial.featured,
             }
           : testimonial
       )
     );
-    toast.success("Status updated!");
   };
 
-  const stats = {
-    total: testimonialsData.length,
-    active: testimonialsData.filter((t) => t.status === "active").length,
-    featured: testimonialsData.filter((t) => t.featured).length,
-    pending: testimonialsData.filter((t) => t.status === "pending").length,
+  const handleSaveContent = () => {
+    setIsEditingContent(false);
+    toast({
+      title: "Success",
+      description: "Testimonials content updated successfully.",
+    });
   };
+
+  const stats = [
+    {
+      title: "Total Testimonials",
+      value: testimonialsData.length.toString(),
+      color: "bg-blue-100 text-blue-600",
+    },
+    {
+      title: "Active Testimonials",
+      value: testimonialsData
+        .filter((testimonial) => testimonial.status === "active")
+        .length.toString(),
+      color: "bg-green-100 text-green-600",
+    },
+    {
+      title: "Featured Testimonials",
+      value: testimonialsData
+        .filter((testimonial) => testimonial.featured)
+        .length.toString(),
+      color: "bg-yellow-100 text-yellow-600",
+    },
+    {
+      title: "Average Rating",
+      value: (
+        testimonialsData.reduce(
+          (acc, testimonial) => acc + (testimonial.rating || 5),
+          0
+        ) / testimonialsData.length
+      ).toFixed(1),
+      color: "bg-purple-100 text-purple-600",
+    },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header type="operator" />
 
       <main className="flex-1 pt-24">
-        {/* Header Section */}
-        <section className="bg-white py-12 border-b">
+        {/* Hero Section */}
+        <section className="bg-white py-16">
           <div className="container mx-auto px-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            <div className="flex justify-between items-start">
+              <div className="max-w-4xl">
+                <h1 className="text-4xl md:text-5xl font-bold mb-6">
                   Testimonials Management
                 </h1>
-                <p className="text-gray-600">
-                  Manage customer testimonials and reviews across the platform
+                <p className="text-lg md:text-xl text-gray-600 mb-8">
+                  Manage customer testimonials and reviews.
                 </p>
               </div>
-              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Testimonial
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Add New Testimonial</DialogTitle>
-                    <DialogDescription>
-                      Create a new testimonial to showcase customer feedback
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="name">Name *</Label>
-                        <Input
-                          id="name"
-                          value={newTestimonial.name || ""}
-                          onChange={(e) =>
-                            setNewTestimonial({
-                              ...newTestimonial,
-                              name: e.target.value,
-                            })
-                          }
-                          placeholder="Customer name"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="company">Company</Label>
-                        <Input
-                          id="company"
-                          value={newTestimonial.company || ""}
-                          onChange={(e) =>
-                            setNewTestimonial({
-                              ...newTestimonial,
-                              company: e.target.value,
-                            })
-                          }
-                          placeholder="Company name"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="role">Role</Label>
-                        <Input
-                          id="role"
-                          value={newTestimonial.role || ""}
-                          onChange={(e) =>
-                            setNewTestimonial({
-                              ...newTestimonial,
-                              role: e.target.value,
-                            })
-                          }
-                          placeholder="Job title or role"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="location">Location</Label>
-                        <Input
-                          id="location"
-                          value={newTestimonial.location || ""}
-                          onChange={(e) =>
-                            setNewTestimonial({
-                              ...newTestimonial,
-                              location: e.target.value,
-                            })
-                          }
-                          placeholder="City, Country"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="quote">Testimonial Quote *</Label>
-                      <Textarea
-                        id="quote"
-                        value={newTestimonial.quote || ""}
-                        onChange={(e) =>
-                          setNewTestimonial({
-                            ...newTestimonial,
-                            quote: e.target.value,
-                          })
-                        }
-                        placeholder="Enter the testimonial text..."
-                        rows={4}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="image">Image URL</Label>
-                      <Input
-                        id="image"
-                        value={newTestimonial.image || ""}
-                        onChange={(e) =>
-                          setNewTestimonial({
-                            ...newTestimonial,
-                            image: e.target.value,
-                          })
-                        }
-                        placeholder="https://example.com/image.jpg"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="category">Category *</Label>
-                        <Select
-                          value={newTestimonial.category || ""}
-                          onValueChange={(value) =>
-                            setNewTestimonial({
-                              ...newTestimonial,
-                              category: value,
-                            })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {testimonialCategories.map((category) => (
-                              <SelectItem key={category} value={category}>
-                                {category}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="type">Type</Label>
-                        <Select
-                          value={newTestimonial.type || "customer"}
-                          onValueChange={(value) =>
-                            setNewTestimonial({
-                              ...newTestimonial,
-                              type: value as any,
-                            })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {testimonialTypes.map((type) => (
-                              <SelectItem key={type.value} value={type.value}>
-                                {type.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="rating">Rating</Label>
-                        <Select
-                          value={newTestimonial.rating?.toString() || "5"}
-                          onValueChange={(value) =>
-                            setNewTestimonial({
-                              ...newTestimonial,
-                              rating: parseInt(value),
-                            })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {[5, 4, 3, 2, 1].map((rating) => (
-                              <SelectItem
-                                key={rating}
-                                value={rating.toString()}
-                              >
-                                {rating} Star{rating !== 1 ? "s" : ""}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="status">Status</Label>
-                        <Select
-                          value={newTestimonial.status || "active"}
-                          onValueChange={(value) =>
-                            setNewTestimonial({
-                              ...newTestimonial,
-                              status: value as any,
-                            })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="inactive">Inactive</SelectItem>
-                            <SelectItem value="pending">Pending</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id="featured"
-                        checked={newTestimonial.featured || false}
-                        onCheckedChange={(checked) =>
-                          setNewTestimonial({
-                            ...newTestimonial,
-                            featured: checked,
-                          })
-                        }
-                      />
-                      <Label htmlFor="featured">Featured testimonial</Label>
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsAddDialogOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={handleAddTestimonial}>
-                      Add Testimonial
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              <div className="flex gap-3">
+                <Button asChild variant="outline">
+                  <Link to="/testimonials">
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Live
+                  </Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/admin">← Back to Admin</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </section>
@@ -485,307 +315,541 @@ const TestimonialsManagement = () => {
         {/* Stats Section */}
         <section className="py-8">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card>
-                <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {stats.map((stat, index) => (
+                <Card key={index} className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">
-                        Total Testimonials
-                      </p>
-                      <p className="text-3xl font-bold">{stats.total}</p>
+                      <p className="text-sm text-gray-600 mb-1">{stat.title}</p>
+                      <p className="text-3xl font-bold">{stat.value}</p>
                     </div>
-                    <div className="p-3 bg-blue-100 rounded-lg">
-                      <Star className="h-6 w-6 text-blue-600" />
+                    <div className={`p-3 rounded-lg ${stat.color}`}>
+                      <MessageSquare className="h-6 w-6" />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600">Active</p>
-                      <p className="text-3xl font-bold">{stats.active}</p>
-                    </div>
-                    <div className="p-3 bg-green-100 rounded-lg">
-                      <Eye className="h-6 w-6 text-green-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600">Featured</p>
-                      <p className="text-3xl font-bold">{stats.featured}</p>
-                    </div>
-                    <div className="p-3 bg-yellow-100 rounded-lg">
-                      <Star className="h-6 w-6 text-yellow-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600">Pending</p>
-                      <p className="text-3xl font-bold">{stats.pending}</p>
-                    </div>
-                    <div className="p-3 bg-orange-100 rounded-lg">
-                      <Filter className="h-6 w-6 text-orange-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                </Card>
+              ))}
             </div>
-          </div>
-        </section>
 
-        {/* Filters and Search */}
-        <section className="py-6">
-          <div className="container mx-auto px-4">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input
-                        placeholder="Search testimonials..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex gap-4">
-                    <Select
-                      value={filterStatus}
-                      onValueChange={setFilterStatus}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
-                        <SelectItem value="pending">Pending</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={filterType} onValueChange={setFilterType}>
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Types</SelectItem>
-                        {testimonialTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Select
-                      value={filterCategory}
-                      onValueChange={setFilterCategory}
-                    >
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Categories</SelectItem>
-                        {testimonialCategories.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
+            <Tabs defaultValue="testimonials" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="testimonials">
+                  Testimonials Management
+                </TabsTrigger>
+                <TabsTrigger value="content">Content Settings</TabsTrigger>
+              </TabsList>
 
-        {/* Testimonials Table */}
-        <section className="pb-12">
-          <div className="container mx-auto px-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>All Testimonials</CardTitle>
-                <CardDescription>
-                  Manage and organize customer testimonials
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Quote</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Rating</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Featured</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredTestimonials.map((testimonial) => (
-                        <TableRow key={testimonial.id}>
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
-                                <img
-                                  src={testimonial.image}
-                                  alt={testimonial.name}
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).src =
-                                      "/placeholder-avatar.png";
-                                  }}
+              <TabsContent value="testimonials" className="space-y-6">
+                {/* Testimonials Management */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <CardTitle>Manage Testimonials</CardTitle>
+                      <Dialog
+                        open={isAddingTestimonial}
+                        onOpenChange={setIsAddingTestimonial}
+                      >
+                        <DialogTrigger asChild>
+                          <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Testimonial
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Add New Testimonial</DialogTitle>
+                            <DialogDescription>
+                              Create a new customer testimonial.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div>
+                              <Label htmlFor="quote">Testimonial Quote *</Label>
+                              <Textarea
+                                id="quote"
+                                value={newTestimonial.quote || ""}
+                                onChange={(e) =>
+                                  setNewTestimonial({
+                                    ...newTestimonial,
+                                    quote: e.target.value,
+                                  })
+                                }
+                                placeholder="Enter the customer's testimonial"
+                                rows={4}
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="name">Customer Name *</Label>
+                                <Input
+                                  id="name"
+                                  value={newTestimonial.name || ""}
+                                  onChange={(e) =>
+                                    setNewTestimonial({
+                                      ...newTestimonial,
+                                      name: e.target.value,
+                                    })
+                                  }
+                                  placeholder="Enter customer name"
                                 />
                               </div>
                               <div>
-                                <p className="font-medium">
-                                  {testimonial.name}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  {testimonial.company &&
-                                    `${testimonial.company} • `}
-                                  {testimonial.location}
-                                </p>
+                                <Label htmlFor="company">Company</Label>
+                                <Input
+                                  id="company"
+                                  value={newTestimonial.company || ""}
+                                  onChange={(e) =>
+                                    setNewTestimonial({
+                                      ...newTestimonial,
+                                      company: e.target.value,
+                                    })
+                                  }
+                                  placeholder="Enter company name (optional)"
+                                />
                               </div>
                             </div>
-                          </TableCell>
-                          <TableCell className="max-w-xs">
-                            <p className="truncate">{testimonial.quote}</p>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="secondary">
-                              {testimonial.category}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{testimonial.type}</Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1">
-                              {Array.from({
-                                length: testimonial.rating || 5,
-                              }).map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                                />
-                              ))}
+                            <div>
+                              <Label htmlFor="location">Location</Label>
+                              <Input
+                                id="location"
+                                value={newTestimonial.location || ""}
+                                onChange={(e) =>
+                                  setNewTestimonial({
+                                    ...newTestimonial,
+                                    location: e.target.value,
+                                  })
+                                }
+                                placeholder="Enter customer location"
+                              />
                             </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                testimonial.status === "active"
-                                  ? "default"
-                                  : testimonial.status === "pending"
-                                  ? "secondary"
-                                  : "destructive"
-                              }
-                            >
-                              {testimonial.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Switch
-                              checked={testimonial.featured}
-                              onCheckedChange={() =>
-                                handleToggleFeatured(testimonial.id)
-                              }
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  setEditingTestimonial(testimonial);
-                                  setIsEditDialogOpen(true);
-                                }}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  handleToggleStatus(testimonial.id)
+                            <div>
+                              <Label htmlFor="image">Customer Photo</Label>
+                              <ImageUploader
+                                onImageSelect={(file) =>
+                                  setNewTestimonialImage(file)
+                                }
+                                currentImageUrl={
+                                  newTestimonialImage
+                                    ? URL.createObjectURL(newTestimonialImage)
+                                    : undefined
+                                }
+                                className="mt-2"
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="category">Category *</Label>
+                                <Select
+                                  value={newTestimonial.category || ""}
+                                  onValueChange={(value) =>
+                                    setNewTestimonial({
+                                      ...newTestimonial,
+                                      category: value,
+                                    })
+                                  }
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select category" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {testimonialCategories.map((category) => (
+                                      <SelectItem
+                                        key={category}
+                                        value={category}
+                                      >
+                                        {category}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label htmlFor="type">Type</Label>
+                                <Select
+                                  value={newTestimonial.type || "customer"}
+                                  onValueChange={(value) =>
+                                    setNewTestimonial({
+                                      ...newTestimonial,
+                                      type: value as
+                                        | "customer"
+                                        | "operator"
+                                        | "partner"
+                                        | "general",
+                                    })
+                                  }
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {testimonialTypes.map((type) => (
+                                      <SelectItem key={type} value={type}>
+                                        {type.charAt(0).toUpperCase() +
+                                          type.slice(1)}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            <div>
+                              <Label htmlFor="rating">Rating</Label>
+                              <Select
+                                value={newTestimonial.rating?.toString() || "5"}
+                                onValueChange={(value) =>
+                                  setNewTestimonial({
+                                    ...newTestimonial,
+                                    rating: parseInt(value),
+                                  })
                                 }
                               >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button variant="ghost" size="sm">
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Delete Testimonial
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Are you sure you want to delete this
-                                      testimonial? This action cannot be undone.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                      Cancel
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() =>
-                                        handleDeleteTestimonial(testimonial.id)
-                                      }
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {[1, 2, 3, 4, 5].map((rating) => (
+                                    <SelectItem
+                                      key={rating}
+                                      value={rating.toString()}
                                     >
-                                      Delete
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                                      {rating} Star{rating !== 1 ? "s" : ""}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
-                          </TableCell>
+                            <div className="flex items-center space-x-4">
+                              <div className="flex items-center space-x-2">
+                                <Switch
+                                  id="active"
+                                  checked={newTestimonial.status === "active"}
+                                  onCheckedChange={(checked) =>
+                                    setNewTestimonial({
+                                      ...newTestimonial,
+                                      status: checked ? "active" : "inactive",
+                                    })
+                                  }
+                                />
+                                <Label htmlFor="active">Active</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Switch
+                                  id="featured"
+                                  checked={newTestimonial.featured}
+                                  onCheckedChange={(checked) =>
+                                    setNewTestimonial({
+                                      ...newTestimonial,
+                                      featured: checked,
+                                    })
+                                  }
+                                />
+                                <Label htmlFor="featured">Featured</Label>
+                              </div>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setIsAddingTestimonial(false);
+                                setNewTestimonialImage(null);
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button onClick={handleAddTestimonial}>
+                              Add Testimonial
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {/* Filters */}
+                    <div className="flex gap-4 mb-6">
+                      <div className="flex-1">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <Input
+                            placeholder="Search testimonials..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                      </div>
+                      <Select
+                        value={selectedCategory}
+                        onValueChange={setSelectedCategory}
+                      >
+                        <SelectTrigger className="w-48">
+                          <SelectValue placeholder="All Categories" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Categories</SelectItem>
+                          {testimonialCategories.map((category) => (
+                            <SelectItem key={category} value={category}>
+                              {category}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select
+                        value={selectedType}
+                        onValueChange={setSelectedType}
+                      >
+                        <SelectTrigger className="w-32">
+                          <SelectValue placeholder="All Types" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Types</SelectItem>
+                          {testimonialTypes.map((type) => (
+                            <SelectItem key={type} value={type}>
+                              {type.charAt(0).toUpperCase() + type.slice(1)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Testimonials Table */}
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Customer</TableHead>
+                          <TableHead>Quote</TableHead>
+                          <TableHead>Category</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Rating</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Featured</TableHead>
+                          <TableHead>Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredTestimonials.map((testimonial) => (
+                          <TableRow key={testimonial.id}>
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+                                  <img
+                                    src={testimonial.image}
+                                    alt={testimonial.name}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).src =
+                                        "/placeholder-avatar.png";
+                                    }}
+                                  />
+                                </div>
+                                <div>
+                                  <p className="font-medium">
+                                    {testimonial.name}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    {testimonial.company &&
+                                      `${testimonial.company} • `}
+                                    {testimonial.location}
+                                  </p>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell className="max-w-xs">
+                              <p className="truncate">{testimonial.quote}</p>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="secondary">
+                                {testimonial.category}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">
+                                {testimonial.type}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center">
+                                {Array.from({
+                                  length: testimonial.rating || 5,
+                                }).map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                                  />
+                                ))}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center space-x-2">
+                                <Switch
+                                  checked={testimonial.status === "active"}
+                                  onCheckedChange={() =>
+                                    handleToggleTestimonialStatus(
+                                      testimonial.id
+                                    )
+                                  }
+                                />
+                                <span className="text-sm">
+                                  {testimonial.status === "active"
+                                    ? "Active"
+                                    : "Inactive"}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center space-x-2">
+                                <Switch
+                                  checked={testimonial.featured}
+                                  onCheckedChange={() =>
+                                    handleToggleFeatured(testimonial.id)
+                                  }
+                                />
+                                {testimonial.featured && (
+                                  <Star className="h-4 w-4 text-yellow-500" />
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleEditTestimonial(testimonial)
+                                  }
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleDeleteTestimonial(testimonial.id)
+                                  }
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+
+                    {filteredTestimonials.length === 0 && (
+                      <div className="text-center py-8">
+                        <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-500">
+                          No testimonials found matching your criteria
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="content" className="space-y-6">
+                {/* Content Settings */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <CardTitle>Testimonials Page Content</CardTitle>
+                      <Button
+                        onClick={() => setIsEditingContent(!isEditingContent)}
+                        variant={isEditingContent ? "outline" : "default"}
+                      >
+                        {isEditingContent ? (
+                          <>
+                            <Save className="h-4 w-4 mr-2" />
+                            Save Changes
+                          </>
+                        ) : (
+                          <>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit Content
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div>
+                      <Label htmlFor="heroTitle">Hero Title</Label>
+                      <Input
+                        id="heroTitle"
+                        value={content.heroTitle}
+                        onChange={(e) =>
+                          setContent({ ...content, heroTitle: e.target.value })
+                        }
+                        disabled={!isEditingContent}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="heroSubtitle">Hero Subtitle</Label>
+                      <Textarea
+                        id="heroSubtitle"
+                        value={content.heroSubtitle}
+                        onChange={(e) =>
+                          setContent({
+                            ...content,
+                            heroSubtitle: e.target.value,
+                          })
+                        }
+                        disabled={!isEditingContent}
+                        rows={3}
+                      />
+                    </div>
+
+                    {isEditingContent && (
+                      <div className="flex justify-end">
+                        <Button onClick={handleSaveContent}>
+                          <Save className="h-4 w-4 mr-2" />
+                          Save Content Changes
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
         </section>
 
-        {/* Edit Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Edit Testimonial</DialogTitle>
-              <DialogDescription>
-                Update testimonial information
-              </DialogDescription>
-            </DialogHeader>
-            {editingTestimonial && (
-              <div className="grid gap-4 py-4">
+        {/* Edit Testimonial Dialog */}
+        {editingTestimonial && (
+          <Dialog
+            open={!!editingTestimonial}
+            onOpenChange={() => {
+              setEditingTestimonial(null);
+              setEditTestimonialImage(null);
+            }}
+          >
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Edit Testimonial</DialogTitle>
+                <DialogDescription>
+                  Update the testimonial information.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="edit-quote">Testimonial Quote</Label>
+                  <Textarea
+                    id="edit-quote"
+                    value={editingTestimonial.quote}
+                    onChange={(e) =>
+                      setEditingTestimonial({
+                        ...editingTestimonial,
+                        quote: e.target.value,
+                      })
+                    }
+                    rows={4}
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="edit-name">Name</Label>
+                    <Label htmlFor="edit-name">Customer Name</Label>
                     <Input
                       id="edit-name"
                       value={editingTestimonial.name}
@@ -811,59 +875,29 @@ const TestimonialsManagement = () => {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="edit-role">Role</Label>
-                    <Input
-                      id="edit-role"
-                      value={editingTestimonial.role || ""}
-                      onChange={(e) =>
-                        setEditingTestimonial({
-                          ...editingTestimonial,
-                          role: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="edit-location">Location</Label>
-                    <Input
-                      id="edit-location"
-                      value={editingTestimonial.location || ""}
-                      onChange={(e) =>
-                        setEditingTestimonial({
-                          ...editingTestimonial,
-                          location: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
                 <div>
-                  <Label htmlFor="edit-quote">Quote</Label>
-                  <Textarea
-                    id="edit-quote"
-                    value={editingTestimonial.quote}
+                  <Label htmlFor="edit-location">Location</Label>
+                  <Input
+                    id="edit-location"
+                    value={editingTestimonial.location || ""}
                     onChange={(e) =>
                       setEditingTestimonial({
                         ...editingTestimonial,
-                        quote: e.target.value,
+                        location: e.target.value,
                       })
                     }
-                    rows={4}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="edit-image">Image URL</Label>
-                  <Input
-                    id="edit-image"
-                    value={editingTestimonial.image}
-                    onChange={(e) =>
-                      setEditingTestimonial({
-                        ...editingTestimonial,
-                        image: e.target.value,
-                      })
+                  <Label htmlFor="edit-image">Customer Photo</Label>
+                  <ImageUploader
+                    onImageSelect={(file) => setEditTestimonialImage(file)}
+                    currentImageUrl={
+                      editTestimonialImage
+                        ? URL.createObjectURL(editTestimonialImage)
+                        : editingTestimonial.image
                     }
+                    className="mt-2"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -897,7 +931,11 @@ const TestimonialsManagement = () => {
                       onValueChange={(value) =>
                         setEditingTestimonial({
                           ...editingTestimonial,
-                          type: value as any,
+                          type: value as
+                            | "customer"
+                            | "operator"
+                            | "partner"
+                            | "general",
                         })
                       }
                     >
@@ -906,88 +944,83 @@ const TestimonialsManagement = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {testimonialTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
+                          <SelectItem key={type} value={type}>
+                            {type.charAt(0).toUpperCase() + type.slice(1)}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="edit-rating">Rating</Label>
-                    <Select
-                      value={editingTestimonial.rating?.toString()}
-                      onValueChange={(value) =>
-                        setEditingTestimonial({
-                          ...editingTestimonial,
-                          rating: parseInt(value),
-                        })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[5, 4, 3, 2, 1].map((rating) => (
-                          <SelectItem key={rating} value={rating.toString()}>
-                            {rating} Star{rating !== 1 ? "s" : ""}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="edit-status">Status</Label>
-                    <Select
-                      value={editingTestimonial.status}
-                      onValueChange={(value) =>
-                        setEditingTestimonial({
-                          ...editingTestimonial,
-                          status: value as any,
-                        })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
-                        <SelectItem value="pending">Pending</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="edit-featured"
-                    checked={editingTestimonial.featured}
-                    onCheckedChange={(checked) =>
+                <div>
+                  <Label htmlFor="edit-rating">Rating</Label>
+                  <Select
+                    value={(editingTestimonial.rating || 5).toString()}
+                    onValueChange={(value) =>
                       setEditingTestimonial({
                         ...editingTestimonial,
-                        featured: checked,
+                        rating: parseInt(value),
                       })
                     }
-                  />
-                  <Label htmlFor="edit-featured">Featured testimonial</Label>
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[1, 2, 3, 4, 5].map((rating) => (
+                        <SelectItem key={rating} value={rating.toString()}>
+                          {rating} Star{rating !== 1 ? "s" : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="edit-active"
+                      checked={editingTestimonial.status === "active"}
+                      onCheckedChange={(checked) =>
+                        setEditingTestimonial({
+                          ...editingTestimonial,
+                          status: checked ? "active" : "inactive",
+                        })
+                      }
+                    />
+                    <Label htmlFor="edit-active">Active</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="edit-featured"
+                      checked={editingTestimonial.featured}
+                      onCheckedChange={(checked) =>
+                        setEditingTestimonial({
+                          ...editingTestimonial,
+                          featured: checked,
+                        })
+                      }
+                    />
+                    <Label htmlFor="edit-featured">Featured</Label>
+                  </div>
                 </div>
               </div>
-            )}
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsEditDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleEditTestimonial}>
-                Update Testimonial
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEditingTestimonial(null);
+                    setEditTestimonialImage(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleUpdateTestimonial}>
+                  Update Testimonial
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </main>
 
       <NewFooter />
