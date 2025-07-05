@@ -60,8 +60,8 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           size="sm"
           className={`flex items-center gap-2 min-w-[120px] ${
             isFooter
-              ? "bg-white/10 hover:bg-white/20 text-white border-white/20 hover:border-white/30"
-              : ""
+              ? "bg-gray-800 hover:bg-gray-700 text-white border-gray-600 hover:border-gray-500"
+              : "bg-gray-800 hover:bg-gray-700 text-white border-gray-600 hover:border-gray-500"
           }`}
           disabled={isTranslating || isChangingLanguage}
         >
