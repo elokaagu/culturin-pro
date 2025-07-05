@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import EditBlogPost from "../../../../../src/pages/admin/EditBlogPost";
 import ProtectedRoute from "../../../../../components/auth/ProtectedRoute";
-import { blogPosts } from "../../../../../data/blogPosts";
+import { getBlogPostBySlug } from "../../../../../lib/blog-service";
 
 interface EditBlogPostProps {
   params: {
@@ -10,13 +10,13 @@ interface EditBlogPostProps {
 }
 
 export async function generateStaticParams() {
-  return blogPosts.map((post) => ({
-    slug: post.slug,
-  }));
+  // Return empty array to disable static generation for now
+  // This allows the page to be generated at request time
+  return [];
 }
 
 export async function generateMetadata({ params }: EditBlogPostProps) {
-  const post = blogPosts.find((post) => post.slug === params.slug);
+  const post = await getBlogPostBySlug(params.slug);
 
   if (!post) {
     return {
@@ -30,8 +30,8 @@ export async function generateMetadata({ params }: EditBlogPostProps) {
   };
 }
 
-export default function EditBlogPostPage({ params }: EditBlogPostProps) {
-  const post = blogPosts.find((post) => post.slug === params.slug);
+export default async function EditBlogPostPage({ params }: EditBlogPostProps) {
+  const post = await getBlogPostBySlug(params.slug);
 
   if (!post) {
     notFound();

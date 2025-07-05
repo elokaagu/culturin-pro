@@ -11,18 +11,31 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Save, Eye } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
-import { blogPosts } from "@/data/blogPosts";
+import { getBlogPostBySlug } from "@/lib/blog-service";
+import type { Database } from "@/lib/supabase";
+
+type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 
 const EditBlogPost = () => {
   const params = useParams();
   const slug = params.slug as string;
   const [loading, setLoading] = useState(true);
-  const [post, setPost] = useState<any>(null);
+  const [post, setPost] = useState<BlogPost | null>(null);
 
   useEffect(() => {
-    const foundPost = blogPosts.find((p) => p.slug === slug);
-    setPost(foundPost);
-    setLoading(false);
+    const loadPost = async () => {
+      try {
+        const foundPost = await getBlogPostBySlug(slug);
+        setPost(foundPost);
+      } catch (error) {
+        console.error("Error loading blog post:", error);
+        setPost(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPost();
   }, [slug]);
 
   if (loading) {
@@ -71,7 +84,30 @@ const EditBlogPost = () => {
               </Link>
 
               <h1 className="text-4xl font-bold mb-4">Edit: {post.title}</h1>
-              <p className="text-gray-600">Edit functionality coming soon...</p>
+              <p className="text-gray-600 mb-4">
+                Edit functionality coming soon...
+              </p>
+
+              {/* Show post details for debugging */}
+              <div className="bg-gray-100 p-4 rounded-lg mb-4">
+                <h3 className="font-semibold mb-2">Post Details:</h3>
+                <p>
+                  <strong>ID:</strong> {post.id}
+                </p>
+                <p>
+                  <strong>Slug:</strong> {post.slug}
+                </p>
+                <p>
+                  <strong>Category:</strong> {post.category}
+                </p>
+                <p>
+                  <strong>Created:</strong>{" "}
+                  {new Date(post.created_at).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>Published:</strong> {post.published ? "Yes" : "No"}
+                </p>
+              </div>
             </div>
           </div>
         </section>
