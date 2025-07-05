@@ -61,6 +61,25 @@ const detectLanguageFromURL = (): string => {
   return "en";
 };
 
+// Helper function to get locale from cookie
+const getLocaleFromCookie = (): string => {
+  if (typeof document === "undefined") return "en";
+
+  const cookies = document.cookie.split(";");
+  const localeCookie = cookies.find((cookie) =>
+    cookie.trim().startsWith("NEXT_LOCALE=")
+  );
+
+  if (localeCookie) {
+    const locale = localeCookie.split("=")[1];
+    return availableLanguages.some((lang) => lang.code === locale)
+      ? locale
+      : "en";
+  }
+
+  return "en";
+};
+
 // Mock translation data - in production, this would come from a translation API
 const mockTranslations: Record<string, Record<string, string>> = {
   "Welcome to Culturin": {
@@ -220,8 +239,16 @@ export const TranslationProvider: React.FC<{ children: ReactNode }> = ({
         (lang) => lang.code === urlLangCode
       );
 
+      // If no URL language, try cookie
       if (!detectedLanguage) {
-        // Fallback to saved language preference
+        const cookieLangCode = getLocaleFromCookie();
+        detectedLanguage = availableLanguages.find(
+          (lang) => lang.code === cookieLangCode
+        );
+      }
+
+      // If still no language, try localStorage
+      if (!detectedLanguage) {
         const savedLanguage = localStorage.getItem("culturin_language");
         if (savedLanguage) {
           detectedLanguage = availableLanguages.find(
@@ -230,8 +257,8 @@ export const TranslationProvider: React.FC<{ children: ReactNode }> = ({
         }
       }
 
+      // Final fallback to browser language
       if (!detectedLanguage) {
-        // Final fallback to browser language
         const browserLang = navigator.language.split("-")[0];
         detectedLanguage = availableLanguages.find(
           (lang) => lang.code === browserLang

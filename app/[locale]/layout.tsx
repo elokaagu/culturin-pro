@@ -1,0 +1,41 @@
+import React from "react";
+import "../globals.css";
+import { Toaster } from "../../components/ui/toaster";
+import { AuthProvider } from "../../src/components/auth/AuthProvider";
+import { UserDataProvider } from "../../src/contexts/UserDataContext";
+import { TranslationProvider } from "../../src/contexts/TranslationContext";
+import { PricingProvider } from "../../src/contexts/PricingContext";
+import PageTransition from "../../components/PageTransition";
+
+export const metadata = {
+  title: "Culturin Studio",
+  description:
+    "Professional tour operator platform for creating and managing cultural experiences",
+};
+
+export default function LocaleLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { locale: string };
+}) {
+  const { locale } = params;
+
+  return (
+    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
+      <body>
+        <AuthProvider>
+          <UserDataProvider>
+            <TranslationProvider>
+              <PricingProvider>
+                <PageTransition>{children}</PageTransition>
+              </PricingProvider>
+            </TranslationProvider>
+          </UserDataProvider>
+        </AuthProvider>
+        <Toaster />
+      </body>
+    </html>
+  );
+}
