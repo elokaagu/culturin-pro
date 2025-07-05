@@ -135,9 +135,9 @@ const AdminDashboard = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header type="operator" />
 
-      <main className="flex-1 pt-24">
+      <main className="flex-1 pt-20">
         {/* Header Section */}
-        <section className="bg-white py-16">
+        <section className="bg-white py-12">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl">
               <div className="flex justify-between items-start mb-8">
@@ -153,7 +153,7 @@ const AdminDashboard = () => {
               </div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {stats.map((stat, index) => (
                   <Card
                     key={index}
@@ -185,11 +185,11 @@ const AdminDashboard = () => {
         </section>
 
         {/* Quick Actions */}
-        <section className="py-16">
+        <section className="py-8">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl">
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold mb-6">Quick Actions</h2>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {quickActions.map((action, index) => (
                     <Card
@@ -224,7 +224,7 @@ const AdminDashboard = () => {
 
               {/* Recent Blog Posts */}
               <div>
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Recent Blog Posts</h2>
                   <Button asChild>
                     <Link to="/admin/blog">View All Posts</Link>
