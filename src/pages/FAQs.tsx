@@ -104,19 +104,51 @@ const FAQs = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("general");
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState(
+    faqItems.filter((item) => item.category === "general")
+  );
 
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true,
   });
 
-  const filteredFAQs = searchQuery
-    ? faqItems.filter(
-        (item) =>
-          item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.answer.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : faqItems.filter((item) => item.category === activeCategory);
+  // Debounced search with smooth transition
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setIsSearching(true);
+
+    // Simulate search delay for smooth animation
+    setTimeout(() => {
+      const filtered = query
+        ? faqItems.filter(
+            (item) =>
+              item.question.toLowerCase().includes(query.toLowerCase()) ||
+              item.answer.toLowerCase().includes(query.toLowerCase())
+          )
+        : faqItems.filter((item) => item.category === activeCategory);
+
+      setSearchResults(filtered);
+      setIsSearching(false);
+    }, 300);
+  };
+
+  // Handle category change with animation
+  const handleCategoryChange = (category: string) => {
+    if (category === activeCategory) return;
+
+    setIsSearching(true);
+    setActiveCategory(category);
+
+    setTimeout(() => {
+      const filtered = faqItems.filter((item) => item.category === category);
+      setSearchResults(filtered);
+      setIsSearching(false);
+    }, 200);
+  };
+
+  const filteredFAQs = searchResults;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -150,12 +182,38 @@ const FAQs = () => {
                     type="text"
                     placeholder="Search for answers..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-6 bg-white/95 text-gray-900 rounded-lg focus:ring-2 focus:ring-white/50 text-lg"
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="w-full pl-12 pr-4 py-6 bg-white/95 text-gray-900 rounded-lg focus:ring-2 focus:ring-white/50 text-lg transition-all duration-300 focus:shadow-lg"
                   />
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center">
-                    <Search className="h-5 w-5 text-gray-500" />
+                    <Search
+                      className={`h-5 w-5 transition-colors duration-300 ${
+                        isSearching
+                          ? "text-blue-500 animate-pulse"
+                          : "text-gray-500"
+                      }`}
+                    />
                   </div>
+                  {searchQuery && (
+                    <button
+                      onClick={() => handleSearch("")}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -169,15 +227,21 @@ const FAQs = () => {
             {!searchQuery && (
               <div className="mb-12 overflow-x-auto whitespace-nowrap">
                 <div className="flex space-x-2 md:space-x-6 justify-center">
-                  {faqCategories.map((category) => (
+                  {faqCategories.map((category, index) => (
                     <button
                       key={category.id}
-                      onClick={() => setActiveCategory(category.id)}
-                      className={`px-5 py-3 rounded-lg transition-all text-sm md:text-base font-medium ${
+                      onClick={() => handleCategoryChange(category.id)}
+                      className={`px-5 py-3 rounded-lg transition-all duration-300 text-sm md:text-base font-medium transform hover:scale-105 ${
                         activeCategory === category.id
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          ? "bg-blue-600 text-white shadow-lg"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700 hover:shadow-md"
                       }`}
+                      style={{
+                        animationDelay: `${index * 100}ms`,
+                        animation: inView
+                          ? "fadeInUp 0.6s ease-out forwards"
+                          : "none",
+                      }}
                     >
                       {category.name}
                     </button>
@@ -188,17 +252,21 @@ const FAQs = () => {
 
             {/* Search Results Label */}
             {searchQuery && (
-              <div className="mb-8 text-center">
-                <h2 className="text-xl font-semibold">
+              <div className="mb-8 text-center transform transition-all duration-500 ease-out">
+                <h2 className="text-xl font-semibold animate-fade-in">
                   Search results for "{searchQuery}"
                 </h2>
-                <p className="text-gray-600 mt-2">
+                <p
+                  className="text-gray-600 mt-2 animate-fade-in"
+                  style={{ animationDelay: "100ms" }}
+                >
                   {filteredFAQs.length} results found
                 </p>
                 <Button
                   variant="outline"
-                  className="mt-4"
-                  onClick={() => setSearchQuery("")}
+                  className="mt-4 transition-all duration-300 hover:scale-105 animate-fade-in"
+                  style={{ animationDelay: "200ms" }}
+                  onClick={() => handleSearch("")}
                 >
                   Clear search
                 </Button>
@@ -207,31 +275,42 @@ const FAQs = () => {
 
             {/* FAQ List */}
             <div
-              className={`transition-opacity duration-500 ${
-                inView ? "opacity-100" : "opacity-0"
+              className={`transition-all duration-700 ease-out ${
+                inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
             >
               <div className="max-w-3xl mx-auto">
-                {filteredFAQs.length > 0 ? (
+                {isSearching ? (
+                  <div className="text-center py-16">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Searching...</p>
+                  </div>
+                ) : filteredFAQs.length > 0 ? (
                   <Accordion type="single" collapsible className="w-full">
                     {filteredFAQs.map((faq, index) => (
                       <AccordionItem
-                        key={index}
+                        key={`${activeCategory}-${index}`}
                         value={`item-${index}`}
-                        className="border-b border-gray-200"
+                        className="border-b border-gray-200 opacity-0 animate-fade-in-up"
+                        style={{
+                          animationDelay: `${index * 100}ms`,
+                          animationFillMode: "forwards",
+                        }}
                       >
-                        <AccordionTrigger className="text-lg md:text-xl text-left hover:no-underline hover:text-blue-600 py-6">
+                        <AccordionTrigger className="text-lg md:text-xl text-left hover:no-underline hover:text-blue-600 py-6 transition-all duration-300 hover:bg-blue-50 rounded-lg px-4 -mx-4">
                           {faq.question}
                         </AccordionTrigger>
-                        <AccordionContent className="text-gray-600 text-base pb-6">
-                          <p className="leading-relaxed">{faq.answer}</p>
+                        <AccordionContent className="text-gray-600 text-base pb-6 px-4 -mx-4">
+                          <div className="bg-gray-50 rounded-lg p-4 mt-2">
+                            <p className="leading-relaxed">{faq.answer}</p>
+                          </div>
                         </AccordionContent>
                       </AccordionItem>
                     ))}
                   </Accordion>
                 ) : (
-                  <div className="text-center py-16">
-                    <HelpCircle className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                  <div className="text-center py-16 animate-fade-in">
+                    <HelpCircle className="w-16 h-16 mx-auto text-gray-300 mb-4 animate-bounce" />
                     <h3 className="text-2xl font-medium mb-2">
                       No results found
                     </h3>
