@@ -65,7 +65,7 @@ const ProSidebar: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-64 bg-white h-screen border-r border-gray-200 flex flex-col fixed left-0 top-0 font-sans">
+    <div className="w-64 bg-white h-full border-r border-gray-200 flex flex-col fixed left-0 top-0 bottom-0 font-sans">
       {/* Logo & Header */}
       <div className="p-4 border-b border-gray-100">
         <button
