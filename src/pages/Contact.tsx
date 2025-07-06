@@ -70,7 +70,7 @@ const Contact = () => {
     <div className="flex flex-col min-h-screen">
       <Header type="traveler" />
 
-      <main className="flex-grow pt-24 md:pt-32">
+      <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative bg-blue-600 text-white py-16 md:py-20 overflow-hidden">
           <div className="absolute inset-0 z-0">

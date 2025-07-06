@@ -122,7 +122,7 @@ const FAQs = () => {
     <div className="min-h-screen flex flex-col">
       <Header type="traveler" />
 
-      <main className="flex-1 pt-24">
+      <main className="flex-1">
         {/* Hero Section */}
         <section className="relative bg-blue-600 text-white py-20 overflow-hidden">
           <div className="absolute inset-0 z-0">
