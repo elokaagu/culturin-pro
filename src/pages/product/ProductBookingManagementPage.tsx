@@ -118,10 +118,14 @@ const ProductBookingManagementPage = () => {
                   size="lg"
                   className="bg-blue-600 hover:bg-blue-700 text-white px-8"
                 >
-                  <Link to="/demo">Get Started</Link>
+                  <Link to="/demo" className="text-white">
+                    Get Started
+                  </Link>
                 </Button>
                 <Button variant="outline" size="lg">
-                  <Link to="/product/booking">Watch Demo</Link>
+                  <Link to="/product/booking" className="text-gray-900">
+                    Watch Demo
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -274,14 +278,16 @@ const ProductBookingManagementPage = () => {
                   size="lg"
                   className="bg-white text-blue-600 hover:bg-gray-100"
                 >
-                  <Link to="/demo">Schedule a Demo</Link>
+                  <Link to="/demo" className="text-blue-600">
+                    Schedule a Demo
+                  </Link>
                 </Button>
                 <Button
                   variant="outline"
                   size="lg"
                   className="text-white border-white hover:bg-blue-700 hover:text-white"
                 >
-                  <Link to="/pricing" className="text-white">
+                  <Link to="/pricing" className="text-white hover:text-white">
                     View Pricing
                   </Link>
                 </Button>
@@ -357,12 +363,14 @@ const ProductBookingManagementPage = () => {
           </p>
           <div className="flex justify-center gap-4">
             <Button className="bg-blue-600 hover:bg-blue-700">
-              <Link to="/sign-in" className="flex items-center">
+              <Link to="/sign-in" className="flex items-center text-white">
                 Get Started <ChevronRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button variant="outline">
-              <Link to="/contact">Contact Sales</Link>
+              <Link to="/contact" className="text-gray-900">
+                Contact Sales
+              </Link>
             </Button>
           </div>
         </div>
