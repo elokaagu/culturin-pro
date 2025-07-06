@@ -43,14 +43,70 @@ const ProductMarketingPage = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("description");
   const [toneValue, setToneValue] = useState<number>(50);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [generatedContent, setGeneratedContent] = useState<string>("");
+
+  // Form state for tour description
+  const [formData, setFormData] = useState({
+    title: "",
+    culturalElements: "",
+    location: "",
+    duration: "",
+    writingStyle: "engaging",
+  });
 
   useEffect(() => {
     setAnimateItems(true);
   }, []);
 
-  const handleGenerateContent = (type: string) => {
-    console.log(`Generating content for: ${type}`);
-    // In a real implementation, this would call an AI service
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleGenerateContent = async (type: string) => {
+    if (type === "description") {
+      // Validate required fields
+      if (!formData.title || !formData.culturalElements || !formData.location) {
+        alert(
+          "Please fill in the Experience Title, Cultural Elements, and Location fields."
+        );
+        return;
+      }
+
+      setIsGenerating(true);
+      setGeneratedContent("");
+
+      try {
+        const response = await fetch("/api/generate-description", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to generate description");
+        }
+
+        setGeneratedContent(data.description);
+      } catch (error) {
+        console.error("Error generating description:", error);
+        setGeneratedContent(
+          "Sorry, there was an error generating the description. Please try again."
+        );
+      } finally {
+        setIsGenerating(false);
+      }
+    } else {
+      // For other content types, use the existing placeholder logic
+      console.log(`Generating content for: ${type}`);
+    }
   };
 
   return (
@@ -162,33 +218,65 @@ const ProductMarketingPage = () => {
                         <label className="text-sm font-medium">
                           Experience Title
                         </label>
-                        <Input placeholder="Traditional Cooking Class in Barcelona" />
+                        <Input
+                          placeholder="Traditional Cooking Class in Barcelona"
+                          value={formData.title}
+                          onChange={(e) =>
+                            handleInputChange("title", e.target.value)
+                          }
+                        />
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium">
                           Key Cultural Elements
                         </label>
-                        <Textarea placeholder="Traditional recipes, local ingredients, family cooking traditions..." />
+                        <Textarea
+                          placeholder="Traditional recipes, local ingredients, family cooking traditions..."
+                          value={formData.culturalElements}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "culturalElements",
+                              e.target.value
+                            )
+                          }
+                        />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <label className="text-sm font-medium">
                             Location
                           </label>
-                          <Input placeholder="Barcelona, Spain" />
+                          <Input
+                            placeholder="Barcelona, Spain"
+                            value={formData.location}
+                            onChange={(e) =>
+                              handleInputChange("location", e.target.value)
+                            }
+                          />
                         </div>
                         <div className="space-y-2">
                           <label className="text-sm font-medium">
                             Duration
                           </label>
-                          <Input placeholder="3 hours" />
+                          <Input
+                            placeholder="3 hours"
+                            value={formData.duration}
+                            onChange={(e) =>
+                              handleInputChange("duration", e.target.value)
+                            }
+                          />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium">
                           Writing Style
                         </label>
-                        <Select defaultValue="engaging">
+                        <Select
+                          value={formData.writingStyle}
+                          onValueChange={(value) =>
+                            handleInputChange("writingStyle", value)
+                          }
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select style" />
                           </SelectTrigger>
@@ -216,29 +304,46 @@ const ProductMarketingPage = () => {
                       <Button variant="outline">See Example</Button>
                       <Button
                         onClick={() => handleGenerateContent("description")}
+                        disabled={isGenerating}
                       >
-                        Generate Description
+                        {isGenerating
+                          ? "Generating..."
+                          : "Generate Description"}
                       </Button>
                     </CardFooter>
                   </Card>
                   <div className="mt-6 bg-gray-50 border rounded-lg p-6">
-                    <h4 className="font-medium mb-3">Sample Output</h4>
-                    <p className="text-gray-700">
-                      <em>
-                        "Immerse yourself in Barcelona's rich culinary heritage
-                        with our intimate Traditional Cooking Class. Over three
-                        engaging hours, you'll work alongside local chefs who
-                        share family recipes passed down through generations.
-                        Discover the stories behind each dish as you prepare
-                        authentic Catalan cuisine using market-fresh
-                        ingredients. This hands-on experience goes beyond
-                        cooking—it's a cultural journey through taste,
-                        tradition, and community that will transform how you
-                        understand Spanish gastronomy. Perfect for food
-                        enthusiasts seeking authentic connections with
-                        Barcelona's culinary soul."
-                      </em>
-                    </p>
+                    <h4 className="font-medium mb-3">
+                      {generatedContent
+                        ? "Generated Description"
+                        : "Sample Output"}
+                    </h4>
+                    {isGenerating ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <p className="text-gray-600">
+                          Generating your description...
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-gray-700">
+                        <em>
+                          {generatedContent ||
+                            `"Immerse yourself in Barcelona's rich culinary heritage
+                            with our intimate Traditional Cooking Class. Over three
+                            engaging hours, you'll work alongside local chefs who
+                            share family recipes passed down through generations.
+                            Discover the stories behind each dish as you prepare
+                            authentic Catalan cuisine using market-fresh
+                            ingredients. This hands-on experience goes beyond
+                            cooking—it's a cultural journey through taste,
+                            tradition, and community that will transform how you
+                            understand Spanish gastronomy. Perfect for food
+                            enthusiasts seeking authentic connections with
+                            Barcelona's culinary soul."`}
+                        </em>
+                      </p>
+                    )}
                   </div>
                 </TabsContent>
 
