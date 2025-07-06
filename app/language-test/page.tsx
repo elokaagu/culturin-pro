@@ -36,6 +36,7 @@ const testTexts = [
 
 const availableLanguages = [
   { code: "en", name: "English", flag: "🇺🇸" },
+  { code: "en-GB", name: "British English", flag: "🇬🇧" },
   { code: "es", name: "Español", flag: "🇪🇸" },
   { code: "fr", name: "Français", flag: "🇫🇷" },
   { code: "de", name: "Deutsch", flag: "🇩🇪" },
@@ -73,7 +74,7 @@ export default function LanguageTestPage() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              🌍 <TranslatableText text="15 Languages" />
+              🌍 <TranslatableText text="16 Languages" />
             </CardTitle>
             <CardDescription>
               All supported languages in the Culturin platform
@@ -200,7 +201,7 @@ export default function LanguageTestPage() {
                   <span className="text-lg">🌍</span>
                   <div>
                     <div className="font-medium">
-                      <TranslatableText text="15 Languages" />
+                      <TranslatableText text="16 Languages" />
                     </div>
                     <div className="text-sm text-gray-600">
                       <TranslatableText text="Auto-translate your content" />

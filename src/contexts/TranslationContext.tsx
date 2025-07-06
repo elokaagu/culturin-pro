@@ -27,6 +27,7 @@ export interface TranslationContextType {
 
 const availableLanguages: Language[] = [
   { code: "en", name: "English", flag: "🇺🇸" },
+  { code: "en-GB", name: "British English", flag: "🇬🇧" },
   { code: "es", name: "Español", flag: "🇪🇸" },
   { code: "fr", name: "Français", flag: "🇫🇷" },
   { code: "de", name: "Deutsch", flag: "🇩🇪" },
@@ -48,7 +49,7 @@ const detectLanguageFromURL = (): string => {
   if (typeof window === "undefined") return "en";
 
   const pathname = window.location.pathname;
-  const langMatch = pathname.match(/^\/([a-z]{2})(?:\/|$)/);
+  const langMatch = pathname.match(/^\/([a-z]{2}(?:-[A-Z]{2})?)(?:\/|$)/);
 
   if (langMatch) {
     const langCode = langMatch[1];
@@ -83,6 +84,7 @@ const getLocaleFromCookie = (): string => {
 // Mock translation data - in production, this would come from a translation API
 const mockTranslations: Record<string, Record<string, string>> = {
   "Welcome to Culturin": {
+    "en-GB": "Welcome to Culturin",
     es: "Bienvenido a Culturin",
     fr: "Bienvenue chez Culturin",
     de: "Willkommen bei Culturin",
@@ -99,6 +101,8 @@ const mockTranslations: Record<string, Record<string, string>> = {
     tr: "Culturin'e Hoş Geldiniz",
   },
   "Own your bookings. Tell richer stories. Grow your cultural tour brand.": {
+    "en-GB":
+      "Own your bookings. Tell richer stories. Grow your cultural tour brand.",
     es: "Controla tus reservas. Cuenta historias más ricas. Haz crecer tu marca de tours culturales.",
     fr: "Maîtrisez vos réservations. Racontez des histoires plus riches. Développez votre marque de tours culturels.",
     de: "Behalten Sie Ihre Buchungen. Erzählen Sie reichere Geschichten. Lassen Sie Ihre Kulturtour-Marke wachsen.",
@@ -116,6 +120,8 @@ const mockTranslations: Record<string, Record<string, string>> = {
   },
   "Get more direct bookings, build guest loyalty, and craft unforgettable cultural journeys — without using five different tools.":
     {
+      "en-GB":
+        "Get more direct bookings, build guest loyalty, and craft unforgettable cultural journeys — without using five different tools.",
       es: "Obtén más reservas directas, construye lealtad de huéspedes y crea viajes culturales inolvidables, sin usar cinco herramientas diferentes.",
       fr: "Obtenez plus de réservations directes, fidélisez vos clients et créez des voyages culturels inoubliables, sans utiliser cinq outils différents.",
       de: "Erhalten Sie mehr Direktbuchungen, bauen Sie Gästeloyalität auf und gestalten Sie unvergessliche kulturelle Reisen - ohne fünf verschiedene Tools zu verwenden.",
@@ -132,6 +138,7 @@ const mockTranslations: Record<string, Record<string, string>> = {
       tr: "Daha fazla doğrudan rezervasyon alın, misafir sadakati oluşturun ve unutulmaz kültürel yolculuklar yaratın - beş farklı araç kullanmadan.",
     },
   "Authentic cultural experiences": {
+    "en-GB": "Authentic cultural experiences",
     es: "Experiencias culturales auténticas",
     fr: "Expériences culturelles authentiques",
     de: "Authentische kulturelle Erfahrungen",
@@ -148,6 +155,7 @@ const mockTranslations: Record<string, Record<string, string>> = {
     tr: "Otantik kültürel deneyimler",
   },
   "Book Now": {
+    "en-GB": "Book Now",
     es: "Reservar Ahora",
     fr: "Réserver Maintenant",
     de: "Jetzt Buchen",
@@ -196,22 +204,24 @@ const mockTranslations: Record<string, Record<string, string>> = {
     tr: "Süre",
   },
   "15 Languages": {
-    es: "15 Idiomas",
-    fr: "15 Langues",
-    de: "15 Sprachen",
-    it: "15 Lingue",
-    pt: "15 Idiomas",
-    zh: "15种语言",
-    ja: "15言語",
-    ko: "15개 언어",
-    ar: "15 لغة",
-    hi: "15 भाषाएं",
-    ru: "15 языков",
-    th: "15 ภาษา",
-    vi: "15 ngôn ngữ",
-    tr: "15 Dil",
+    "en-GB": "16 Languages",
+    es: "16 Idiomas",
+    fr: "16 Langues",
+    de: "16 Sprachen",
+    it: "16 Lingue",
+    pt: "16 Idiomas",
+    zh: "16种语言",
+    ja: "16言語",
+    ko: "16개 언어",
+    ar: "16 لغة",
+    hi: "16 भाषाएं",
+    ru: "16 языков",
+    th: "16 ภาษา",
+    vi: "16 ngôn ngữ",
+    tr: "16 Dil",
   },
   "Auto translate your content": {
+    "en-GB": "Auto translate your content",
     es: "Traduce automáticamente tu contenido",
     fr: "Traduisez automatiquement votre contenu",
     de: "Übersetzen Sie Ihre Inhalte automatisch",
@@ -244,6 +254,7 @@ const mockTranslations: Record<string, Record<string, string>> = {
     tr: "Akıllı Fiyatlandırma",
   },
   "AI powered price optimization": {
+    "en-GB": "AI powered price optimisation",
     es: "Optimización de precios impulsada por IA",
     fr: "Optimisation des prix alimentée par l'IA",
     de: "KI-gestützte Preisoptimierung",
@@ -260,6 +271,7 @@ const mockTranslations: Record<string, Record<string, string>> = {
     tr: "AI destekli fiyat optimizasyonu",
   },
   "Market Analysis": {
+    "en-GB": "Market Analysis",
     es: "Análisis de Mercado",
     fr: "Analyse de Marché",
     de: "Marktanalyse",
@@ -356,6 +368,7 @@ const mockTranslations: Record<string, Record<string, string>> = {
     tr: "Benzersiz turlar ve etkinlikler keşfedin",
   },
   "Language Test Page": {
+    "en-GB": "Language Test Page",
     es: "Página de Prueba de Idiomas",
     fr: "Page de Test de Langue",
     de: "Sprachtestseite",
@@ -373,6 +386,7 @@ const mockTranslations: Record<string, Record<string, string>> = {
   },
   // Navigation and Header translations
   Product: {
+    "en-GB": "Product",
     es: "Producto",
     fr: "Produit",
     de: "Produkt",
@@ -871,6 +885,7 @@ const mockTranslations: Record<string, Record<string, string>> = {
     tr: "Komisyonsuz rezervasyon sistemimizle rezervasyon alın",
   },
   "Grow your audience": {
+    "en-GB": "Grow your audience",
     es: "Haz crecer tu audiencia",
     fr: "Développez votre audience",
     de: "Vergrößern Sie Ihr Publikum",
@@ -968,6 +983,7 @@ const mockTranslations: Record<string, Record<string, string>> = {
     tr: "Bağlan",
   },
   "Choose your language": {
+    "en-GB": "Choose your language",
     es: "Elige tu idioma",
     fr: "Choisissez votre langue",
     de: "Wählen Sie Ihre Sprache",
@@ -1523,6 +1539,7 @@ const mockTranslations: Record<string, Record<string, string>> = {
     tr: "Culturin'i farklı kılan şey",
   },
   "Culture at the Center": {
+    "en-GB": "Culture at the Centre",
     es: "Cultura en el Centro",
     fr: "Culture au Centre",
     de: "Kultur im Mittelpunkt",
