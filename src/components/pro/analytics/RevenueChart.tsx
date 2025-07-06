@@ -1,24 +1,42 @@
-
-import React from 'react';
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
 
 // Sample data - in a real app, this would come from an API
 const data = [
-  { month: 'Jan', revenue: 2400, bookings: 24 },
-  { month: 'Feb', revenue: 1398, bookings: 13 },
-  { month: 'Mar', revenue: 9800, bookings: 98 },
-  { month: 'Apr', revenue: 3908, bookings: 39 },
-  { month: 'May', revenue: 4800, bookings: 48 },
-  { month: 'Jun', revenue: 3800, bookings: 38 },
-  { month: 'Jul', revenue: 4300, bookings: 43 },
-  { month: 'Aug', revenue: 8200, bookings: 82 },
-  { month: 'Sep', revenue: 9100, bookings: 91 },
-  { month: 'Oct', revenue: 7300, bookings: 73 },
-  { month: 'Nov', revenue: 5600, bookings: 56 },
-  { month: 'Dec', revenue: 6800, bookings: 68 },
+  { month: "Jan", revenue: 2400, bookings: 24 },
+  { month: "Feb", revenue: 1398, bookings: 13 },
+  { month: "Mar", revenue: 9800, bookings: 98 },
+  { month: "Apr", revenue: 3908, bookings: 39 },
+  { month: "May", revenue: 4800, bookings: 48 },
+  { month: "Jun", revenue: 3800, bookings: 38 },
+  { month: "Jul", revenue: 4300, bookings: 43 },
+  { month: "Aug", revenue: 8200, bookings: 82 },
+  { month: "Sep", revenue: 9100, bookings: 91 },
+  { month: "Oct", revenue: 7300, bookings: 73 },
+  { month: "Nov", revenue: 5600, bookings: 56 },
+  { month: "Dec", revenue: 6800, bookings: 68 },
 ];
 
 const RevenueChart: React.FC = () => {
@@ -37,7 +55,7 @@ const RevenueChart: React.FC = () => {
           </SelectContent>
         </Select>
       </CardHeader>
-      <CardContent className="pl-2">
+      <CardContent className="p-0">
         <ChartContainer
           config={{
             revenue: {
@@ -47,29 +65,29 @@ const RevenueChart: React.FC = () => {
             bookings: {
               label: "Bookings",
               color: "#4B56D2",
-            }
+            },
           }}
-          className="h-[350px]"
+          className="h-[500px] w-full"
         >
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={data}
               margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 25,
+                top: 30,
+                right: 40,
+                left: 40,
+                bottom: 30,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis 
-                dataKey="month" 
+              <XAxis
+                dataKey="month"
                 axisLine={false}
                 tickLine={false}
                 tick={{ fontSize: 12 }}
                 dy={10}
               />
-              <YAxis 
+              <YAxis
                 yAxisId="left"
                 axisLine={false}
                 tickLine={false}
@@ -77,7 +95,7 @@ const RevenueChart: React.FC = () => {
                 tickFormatter={(value) => `$${value}`}
                 dx={-10}
               />
-              <YAxis 
+              <YAxis
                 yAxisId="right"
                 orientation="right"
                 axisLine={false}
@@ -85,27 +103,25 @@ const RevenueChart: React.FC = () => {
                 tick={{ fontSize: 12 }}
                 dx={10}
               />
-              <ChartTooltip 
-                content={<ChartTooltipContent />} 
-              />
+              <ChartTooltip content={<ChartTooltipContent />} />
               <Legend />
-              <Line 
+              <Line
                 yAxisId="left"
-                type="monotone" 
-                dataKey="revenue" 
-                name="Revenue" 
-                stroke="#222" 
+                type="monotone"
+                dataKey="revenue"
+                name="Revenue"
+                stroke="#222"
                 strokeWidth={2}
                 dot={{ r: 3 }}
                 activeDot={{ r: 6 }}
               />
-              <Line 
+              <Line
                 yAxisId="right"
-                type="monotone" 
-                dataKey="bookings" 
-                name="Bookings" 
-                stroke="#4B56D2" 
-                strokeWidth={2} 
+                type="monotone"
+                dataKey="bookings"
+                name="Bookings"
+                stroke="#4B56D2"
+                strokeWidth={2}
                 dot={{ r: 3 }}
                 activeDot={{ r: 6 }}
               />
