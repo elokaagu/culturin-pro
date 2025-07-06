@@ -154,18 +154,18 @@ const GuestsTable = ({ guests, onViewGuest }) => {
         </Button>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50">
-              <TableHead className="font-semibold">Guest</TableHead>
-              <TableHead className="font-semibold">Contact</TableHead>
-              <TableHead className="font-semibold">Status</TableHead>
-              <TableHead className="font-semibold">Loyalty Tier</TableHead>
-              <TableHead className="font-semibold">Last Activity</TableHead>
-              <TableHead className="font-semibold">Performance</TableHead>
-              <TableHead className="font-semibold">Loyalty Points</TableHead>
-              <TableHead className="font-semibold">Actions</TableHead>
+              <TableHead className="font-medium">Guest</TableHead>
+              <TableHead className="font-medium">Contact</TableHead>
+              <TableHead className="font-medium">Status</TableHead>
+              <TableHead className="font-medium">Loyalty Tier</TableHead>
+              <TableHead className="font-medium">Last Activity</TableHead>
+              <TableHead className="font-medium">Performance</TableHead>
+              <TableHead className="font-medium">Loyalty Points</TableHead>
+              <TableHead className="font-medium">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -365,7 +365,7 @@ const GuestDetails = ({ guest, onBack }) => {
         </div>
       </div>
 
-      <Card className="border-gray-200">
+      <Card>
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-start gap-4">
@@ -443,9 +443,9 @@ const GuestDetails = ({ guest, onBack }) => {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-gray-200">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Guest Preferences & Tags</CardTitle>
+            <CardTitle>Guest Preferences & Tags</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -485,9 +485,9 @@ const GuestDetails = ({ guest, onBack }) => {
           </CardContent>
         </Card>
 
-        <Card className="border-gray-200">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Performance Metrics</CardTitle>
+            <CardTitle>Performance Metrics</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {guest.npsScore && (
@@ -542,9 +542,9 @@ const GuestDetails = ({ guest, onBack }) => {
         </Card>
       </div>
 
-      <Card className="border-gray-200">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Guest Notes</CardTitle>
+          <CardTitle>Guest Notes</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <textarea
@@ -562,9 +562,9 @@ const GuestDetails = ({ guest, onBack }) => {
         </CardContent>
       </Card>
 
-      <Card className="border-gray-200">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Travel History</CardTitle>
+          <CardTitle>Travel History</CardTitle>
         </CardHeader>
         <CardContent>
           {guest.bookings > 0 ? (
@@ -638,9 +638,9 @@ const GuestDetails = ({ guest, onBack }) => {
         </CardContent>
       </Card>
 
-      <Card className="border-gray-200">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Quick Actions</CardTitle>
+          <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
@@ -707,15 +707,11 @@ const ProCRMPage = () => {
   );
 
   return (
-    <ProDashboardLayout>
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Guest CRM</h1>
-          <p className="mt-1 text-gray-600">
-            Connect every journey to the next
-          </p>
-        </div>
-
+    <ProDashboardLayout
+      title="Guest CRM"
+      subtitle="Connect every journey to the next"
+    >
+      <div className="space-y-6">
         {selectedGuest ? (
           <GuestDetails guest={selectedGuest} onBack={handleBackToList} />
         ) : (
@@ -737,118 +733,94 @@ const ProCRMPage = () => {
 
             <TabsContent value="overview" className="space-y-6">
               {/* Key Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card className="border-gray-200">
-                  <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">
-                          Total Guests
-                        </p>
-                        <p className="text-3xl font-bold text-gray-900">
-                          {totalGuests}
-                        </p>
-                        <p className="text-sm text-green-600 flex items-center mt-1">
+                        <p className="text-sm text-gray-600">Total Guests</p>
+                        <p className="text-2xl font-bold">{totalGuests}</p>
+                        <p className="text-xs text-green-600 flex items-center mt-1">
                           <ArrowUpRight className="h-3 w-3 mr-1" />
                           +12% this month
                         </p>
                       </div>
-                      <div className="p-3 bg-blue-100 rounded-full">
-                        <Users className="h-6 w-6 text-blue-600" />
-                      </div>
+                      <Users className="h-8 w-8 text-blue-600" />
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="border-gray-200">
-                  <CardContent className="p-6">
+                <Card>
+                  <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">
-                          Active Guests
-                        </p>
-                        <p className="text-3xl font-bold text-gray-900">
-                          {activeGuests}
-                        </p>
-                        <p className="text-sm text-green-600 flex items-center mt-1">
+                        <p className="text-sm text-gray-600">Active Guests</p>
+                        <p className="text-2xl font-bold">{activeGuests}</p>
+                        <p className="text-xs text-green-600 flex items-center mt-1">
                           <ArrowUpRight className="h-3 w-3 mr-1" />
                           +8% this month
                         </p>
                       </div>
-                      <div className="p-3 bg-green-100 rounded-full">
-                        <TrendingUp className="h-6 w-6 text-green-600" />
-                      </div>
+                      <TrendingUp className="h-8 w-8 text-green-600" />
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="border-gray-200">
-                  <CardContent className="p-6">
+                <Card>
+                  <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">
-                          VIP Guests
-                        </p>
-                        <p className="text-3xl font-bold text-gray-900">
-                          {vipGuests}
-                        </p>
-                        <p className="text-sm text-purple-600">
+                        <p className="text-sm text-gray-600">VIP Guests</p>
+                        <p className="text-2xl font-bold">{vipGuests}</p>
+                        <p className="text-xs text-purple-600">
                           High value segment
                         </p>
                       </div>
-                      <div className="p-3 bg-purple-100 rounded-full">
-                        <Crown className="h-6 w-6 text-purple-600" />
-                      </div>
+                      <Crown className="h-8 w-8 text-purple-600" />
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="border-gray-200">
-                  <CardContent className="p-6">
+                <Card>
+                  <CardContent className="pt-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">
-                          Avg NPS Score
-                        </p>
-                        <p className="text-3xl font-bold text-gray-900">
-                          {avgNPS}
-                        </p>
-                        <p className="text-sm text-green-600">
+                        <p className="text-sm text-gray-600">Avg NPS Score</p>
+                        <p className="text-2xl font-bold">{avgNPS}</p>
+                        <p className="text-xs text-green-600">
                           Excellent rating
                         </p>
                       </div>
-                      <div className="p-3 bg-yellow-100 rounded-full">
-                        <Star className="h-6 w-6 text-yellow-600" />
-                      </div>
+                      <Star className="h-8 w-8 text-yellow-600" />
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Quick Actions */}
-              <Card className="border-gray-200">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Quick Actions</CardTitle>
+                  <CardTitle>Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Button
                       variant="outline"
-                      className="h-auto p-4 flex flex-col items-center gap-2 border-blue-200 hover:bg-blue-50"
+                      className="h-auto p-6 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
                     >
                       <Mail className="h-8 w-8 text-blue-600" />
                       <span className="font-medium">Create Email Campaign</span>
                     </Button>
                     <Button
                       variant="outline"
-                      className="h-auto p-4 flex flex-col items-center gap-2 border-purple-200 hover:bg-purple-50"
+                      className="h-auto p-6 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
                     >
                       <Target className="h-8 w-8 text-purple-600" />
                       <span className="font-medium">Create Guest Segment</span>
                     </Button>
                     <Button
                       variant="outline"
-                      className="h-auto p-4 flex flex-col items-center gap-2 border-green-200 hover:bg-green-50"
+                      className="h-auto p-6 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
                     >
                       <Gift className="h-8 w-8 text-green-600" />
                       <span className="font-medium">Manage Rewards</span>
@@ -858,11 +830,9 @@ const ProCRMPage = () => {
               </Card>
 
               {/* Recent Guest Activity */}
-              <Card className="border-gray-200">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">
-                    Recent Guest Activity
-                  </CardTitle>
+                  <CardTitle>Recent Guest Activity</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -926,9 +896,9 @@ const ProCRMPage = () => {
             </TabsContent>
 
             <TabsContent value="all-guests" className="space-y-6">
-              <Card className="border-gray-200">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">All Guests</CardTitle>
+                  <CardTitle>All Guests</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <GuestsTable guests={guests} onViewGuest={handleViewGuest} />
@@ -949,11 +919,11 @@ const ProCRMPage = () => {
             </TabsContent>
 
             <TabsContent value="analytics" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="border-gray-200">
-                  <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card>
+                  <CardContent className="pt-6">
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-gray-900">
+                      <div className="text-2xl font-bold text-gray-900">
                         87%
                       </div>
                       <p className="text-sm text-gray-600 mt-1">
@@ -963,10 +933,10 @@ const ProCRMPage = () => {
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="border-gray-200">
-                  <CardContent className="p-6">
+                <Card>
+                  <CardContent className="pt-6">
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-gray-900">
+                      <div className="text-2xl font-bold text-gray-900">
                         34%
                       </div>
                       <p className="text-sm text-gray-600 mt-1">
@@ -976,10 +946,10 @@ const ProCRMPage = () => {
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="border-gray-200">
-                  <CardContent className="p-6">
+                <Card>
+                  <CardContent className="pt-6">
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-gray-900">
+                      <div className="text-2xl font-bold text-gray-900">
                         $127
                       </div>
                       <p className="text-sm text-gray-600 mt-1">
