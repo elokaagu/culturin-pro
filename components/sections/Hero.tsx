@@ -1,7 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import { Link } from "../../lib/navigation";
 import { ArrowRight } from "lucide-react";
 import {
   Carousel,
@@ -18,7 +16,6 @@ const Hero = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
   const [isHovering, setIsHovering] = useState<boolean>(false);
   const [showTooltip, setShowTooltip] = useState<number | null>(null);
-  const [tourName, setTourName] = useState<string>("");
 
   useEffect(() => {
     // Trigger animations on component mount (page load)
@@ -241,46 +238,23 @@ const Hero = () => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-medium">
-                  <TranslatableText text="Find out why bookings drop off — and what to fix." />
+                  <TranslatableText text="Get a personalized audit of your booking funnel." />
                 </h3>
               </div>
 
               <div className="space-y-2 mb-4">
-                <label
-                  htmlFor="tourName"
-                  className="text-sm text-gray-600 text-left block"
-                >
-                  Experience Name
-                </label>
-                <Input
-                  id="tourName"
-                  value={tourName}
-                  onChange={(e) => setTourName(e.target.value)}
-                  placeholder="e.g. Marrakech Walking Tour"
-                  className="h-14 border-gray-200 text-base mb-3"
-                />
                 <Button
-                  className="h-14 w-full px-6 flex items-center justify-center gap-2 text-base whitespace-nowrap transition-all duration-200 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white group disabled:opacity-50"
-                  disabled={!tourName.trim()}
-                  asChild={tourName.trim().length > 0}
+                  className="h-14 w-full px-6 flex items-center justify-center gap-2 text-base whitespace-nowrap transition-all duration-200 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white group"
+                  asChild
                 >
-                  {tourName.trim().length > 0 ? (
-                    <Link
-                      to={`/analytics-scan?tour=${encodeURIComponent(
-                        tourName.trim()
-                      )}`}
-                    >
-                      <span className="font-bold">Scan My Tour</span>
-                      <span className="font-normal">for Growth Leaks</span>
-                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  ) : (
-                    <div>
-                      <span className="font-bold">Scan My Tour</span>
-                      <span className="font-normal">for Growth Leaks</span>
-                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  )}
+                  <a
+                    href="https://calendly.com/culturin/free-audit"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="font-bold">Book a Free Audit</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </a>
                 </Button>
               </div>
 

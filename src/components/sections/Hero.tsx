@@ -241,31 +241,23 @@ const Hero = () => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-medium">
-                  Find out why bookings drop off — and what to fix.
+                  Get a personalized audit of your booking funnel.
                 </h3>
               </div>
 
               <div className="space-y-2 mb-4">
-                <label
-                  htmlFor="tourName"
-                  className="text-sm text-gray-600 text-left block"
-                >
-                  Experience Name
-                </label>
-                <Input
-                  id="tourName"
-                  placeholder="e.g. Marrakech Walking Tour"
-                  className="h-14 border-gray-200 text-base mb-3"
-                />
                 <Button
                   className="h-14 w-full px-6 flex items-center justify-center gap-2 text-base whitespace-nowrap transition-all duration-200 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white group"
                   asChild
                 >
-                  <Link to="/analytics-scan">
-                    <span className="font-bold">Scan My Tour</span>
-                    <span className="font-normal">for Growth Leaks</span>
+                  <a
+                    href="https://calendly.com/culturin/free-audit"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="font-bold">Book a Free Audit</span>
                     <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  </a>
                 </Button>
               </div>
 
