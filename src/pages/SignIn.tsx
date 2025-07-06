@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, LogIn, AlertCircle } from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
+import TranslatableText from "../../components/TranslatableText";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -37,7 +38,9 @@ const SignIn = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">
+            <TranslatableText text="Loading..." />
+          </p>
         </div>
       </div>
     );
