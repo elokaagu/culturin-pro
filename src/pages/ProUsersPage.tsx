@@ -307,11 +307,11 @@ const ProUsersPage: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-100 text-green-800";
+        return "bg-blue-100 text-blue-800";
       case "inactive":
         return "bg-gray-100 text-gray-800";
       case "pending":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -322,9 +322,9 @@ const ProUsersPage: React.FC = () => {
       case "operator":
         return "bg-blue-100 text-blue-800";
       case "traveler":
-        return "bg-purple-100 text-purple-800";
+        return "bg-blue-100 text-blue-800";
       case "admin":
-        return "bg-red-100 text-red-800";
+        return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -374,7 +374,7 @@ const ProUsersPage: React.FC = () => {
                   <p className="text-sm text-gray-600">Active Users</p>
                   <p className="text-2xl font-bold">{activeUsers}</p>
                 </div>
-                <UserCheck className="h-8 w-8 text-green-600" />
+                <UserCheck className="h-8 w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
@@ -386,7 +386,7 @@ const ProUsersPage: React.FC = () => {
                   <p className="text-sm text-gray-600">Operators</p>
                   <p className="text-2xl font-bold">{operators}</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-purple-600" />
+                <TrendingUp className="h-8 w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
@@ -398,7 +398,7 @@ const ProUsersPage: React.FC = () => {
                   <p className="text-sm text-gray-600">Travelers</p>
                   <p className="text-2xl font-bold">{travelers}</p>
                 </div>
-                <Users className="h-8 w-8 text-orange-600" />
+                <Users className="h-8 w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
