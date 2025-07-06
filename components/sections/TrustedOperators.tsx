@@ -19,6 +19,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/components/ui/carousel";
+import TranslatableText from "../TranslatableText";
 
 interface TestimonialCardProps {
   name: string;
@@ -194,7 +195,7 @@ const TrustedOperators = () => {
           <div className="bg-gray-50 px-4 py-1.5 rounded-full flex items-center gap-2">
             <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
             <span className="text-sm font-medium">
-              Rated 4.9/5 across 297 reviews
+              <TranslatableText text="Rated 4.9/5 across 297 reviews" />
             </span>
           </div>
         </div>
@@ -203,30 +204,30 @@ const TrustedOperators = () => {
           <div className="flex items-center justify-center mb-3">
             <Users className="h-6 w-6 text-black mr-2" />
             <h2 className="text-3xl font-medium">
-              Trusted by thousands of tour operators
+              <TranslatableText text="Trusted by thousands of tour operators" />
             </h2>
           </div>
           <div className="flex items-center justify-center gap-2 mb-4">
             <Globe className="h-4 w-4 text-blue-600" />
             <p className="text-gray-600">
-              Used in 38+ countries by cultural experience hosts worldwide
+              <TranslatableText text="Used in 38+ countries by cultural experience hosts worldwide" />
             </p>
           </div>
           <div className="flex flex-wrap gap-2 justify-center">
             <Badge variant="outline" className="bg-gray-50">
-              Food Tours
+              <TranslatableText text="Food Tours" />
             </Badge>
             <Badge variant="outline" className="bg-gray-50">
-              Cultural Walks
+              <TranslatableText text="Cultural Walks" />
             </Badge>
             <Badge variant="outline" className="bg-gray-50">
-              Heritage Guides
+              <TranslatableText text="Heritage Guides" />
             </Badge>
             <Badge variant="outline" className="bg-gray-50">
-              Art Experiences
+              <TranslatableText text="Art Experiences" />
             </Badge>
             <Badge variant="outline" className="bg-gray-50">
-              Local Immersions
+              <TranslatableText text="Local Immersions" />
             </Badge>
           </div>
         </div>
@@ -268,17 +269,19 @@ const TrustedOperators = () => {
         {/* CTA section below testimonials */}
         <div className="mt-12 text-center">
           <h3 className="text-xl font-medium mb-4">
-            Want to grow your tours like Maria and Aisha?
+            <TranslatableText text="Want to grow your tours like Maria and Aisha?" />
           </h3>
           <Button
             size="lg"
             className="bg-blue-600 hover:bg-blue-700 text-white px-8"
             asChild
           >
-            <Link to="/demo">Book a Demo</Link>
+            <Link to="/demo">
+              <TranslatableText text="Book a Demo" />
+            </Link>
           </Button>
           <p className="text-sm text-gray-500 mt-3">
-            No credit card required. Free 14-day trial.
+            <TranslatableText text="No credit card required. Free 14-day trial." />
           </p>
         </div>
       </div>

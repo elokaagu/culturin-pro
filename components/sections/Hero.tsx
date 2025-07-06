@@ -59,9 +59,9 @@ const Hero = () => {
         {/* Rating badge */}
         <div className="mb-10">
           <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm bg-blue-50 text-blue-800 font-medium">
-            #1 Top-Rated Cultural Experience Platform{" "}
+            <TranslatableText text="#1 Top-Rated Cultural Experience Platform" />{" "}
             <span className="font-semibold text-blue-600 ml-1">4.8 ★</span>{" "}
-            across 279 reviews
+            <TranslatableText text="across 279 reviews" />
           </span>
         </div>
 
@@ -241,7 +241,7 @@ const Hero = () => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-medium">
-                  Find out why bookings drop off — and what to fix.
+                  <TranslatableText text="Find out why bookings drop off — and what to fix." />
                 </h3>
               </div>
 

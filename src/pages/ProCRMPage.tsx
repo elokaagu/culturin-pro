@@ -300,7 +300,7 @@ const GuestsTable = ({ guests, onViewGuest }) => {
 
 const GuestDetails = ({ guest, onBack }) => {
   const [notes, setNotes] = useState(
-    "Aisha is one of our most valued guests. She particularly enjoys art-focused experiences and has referred several friends to our tours. Always provides detailed feedback that helps us improve."
+    "Aisha is one of our most valued guests. She particularly enjoys art focused experiences and has referred several friends to our tours. Always provides detailed feedback that helps us improve."
   );
   const { toast } = useToast();
 

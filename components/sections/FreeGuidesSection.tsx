@@ -8,6 +8,7 @@ import { Link } from "../../lib/navigation";
 import { getBlogPosts } from "@/lib/blog-service";
 import type { Database } from "@/lib/supabase";
 import Image from "@/components/ui/image";
+import TranslatableText from "../TranslatableText";
 
 type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 
@@ -97,11 +98,10 @@ const FreeGuidesSection = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-              See our free guides on growing your tour business
+              <TranslatableText text="See our free guides on growing your tour business" />
             </h2>
             <p className="text-gray-600 max-w-2xl">
-              Expert advice and actionable strategies to help cultural tour
-              operators thrive in today's market
+              <TranslatableText text="Expert advice and actionable strategies to help cultural tour operators thrive in today's market" />
             </p>
           </div>
           <div className="mt-4 md:mt-0">
@@ -111,7 +111,7 @@ const FreeGuidesSection = () => {
               className="border-gray-300 text-gray-700 flex items-center gap-1"
             >
               <Link to="/blog">
-                Read the blog
+                <TranslatableText text="Read the blog" />
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>

@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { QuoteIcon } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import Image from "@/components/ui/image";
+import TranslatableText from "../TranslatableText";
 
 const TestimonialSection = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -45,8 +46,7 @@ const TestimonialSection = () => {
                     <QuoteIcon className="w-12 h-12 text-white flex-shrink-0 mr-4 opacity-80" />
                   </div>
                   <div className="text-3xl md:text-4xl lg:text-5xl text-white font-serif mb-8 leading-tight tracking-tight text-shadow-lg">
-                    Culturin isn't just about travel — it's about meaning. I've
-                    never felt this seen on a trip before.
+                    <TranslatableText text="Culturin isn't just about travel — it's about meaning. I've never felt this seen on a trip" />
                   </div>
                   <div className="flex items-center">
                     <div className="w-12 h-12 rounded-full bg-[#403E43] overflow-hidden mr-4 shadow-md border-2 border-white/30">
