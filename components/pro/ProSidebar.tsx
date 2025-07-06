@@ -91,15 +91,15 @@ const ProSidebar: React.FC = () => {
           onClick={() => navigate("/")}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         >
-          <div className="h-14">
+          <div className="h-16">
             {" "}
-            {/* Increased from h-12 to h-14 */}
+            {/* Increased from h-14 to h-16 */}
             <Image
               src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png"
               alt="Culturin"
               className="h-full cursor-pointer"
-              width={160} /* Increased from 140 to 160 */
-              height={56} /* Increased from 48 to 56 */
+              width={180} /* Increased from 160 to 180 */
+              height={64} /* Increased from 56 to 64 */
             />
           </div>
         </button>
