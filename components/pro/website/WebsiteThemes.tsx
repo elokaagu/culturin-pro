@@ -47,6 +47,7 @@ const themes = [
 
 const WebsiteThemes: React.FC = () => {
   const { userData, updateWebsiteSettings } = useUserData();
+  const [applyingTheme, setApplyingTheme] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<number>(() => {
     // Get theme from UserDataContext first, then fallback to localStorage
     const currentTheme = userData.websiteSettings.theme;
@@ -101,18 +102,40 @@ const WebsiteThemes: React.FC = () => {
     });
   };
 
-  const handleApplyTheme = () => {
+  const handleApplyTheme = async () => {
     const theme = themes.find((t) => t.id === selectedTheme);
     if (theme) {
+      setApplyingTheme(true);
       const themeName = theme.name.toLowerCase();
 
-      // Update both localStorage and UserDataContext
-      localStorage.setItem("selectedWebsiteTheme", themeName);
-      updateWebsiteSettings({ theme: themeName });
+      try {
+        // Update both localStorage and UserDataContext
+        localStorage.setItem("selectedWebsiteTheme", themeName);
+        updateWebsiteSettings({ theme: themeName });
 
-      toast.success(`"${theme.name}" theme applied successfully`, {
-        description: "Your website preview will update with the new theme",
-      });
+        // Simulate a brief delay for better UX
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Trigger a custom event to notify other components
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("themeChanged", {
+              detail: { theme: themeName },
+            })
+          );
+        }
+
+        toast.success(`"${theme.name}" theme applied successfully`, {
+          description:
+            "Your website preview will update with the new theme. Switch to Preview tab to see changes.",
+        });
+      } catch (error) {
+        toast.error("Failed to apply theme", {
+          description: "Please try again.",
+        });
+      } finally {
+        setApplyingTheme(false);
+      }
     }
   };
 
@@ -159,8 +182,22 @@ const WebsiteThemes: React.FC = () => {
         ))}
       </div>
 
-      <div className="pt-4">
-        <Button onClick={handleApplyTheme}>Apply Theme</Button>
+      <div className="pt-4 flex gap-3 items-center">
+        <Button
+          onClick={handleApplyTheme}
+          disabled={applyingTheme}
+          className="flex items-center gap-2"
+        >
+          {applyingTheme && (
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          )}
+          {applyingTheme ? "Applying Theme..." : "Apply Theme"}
+        </Button>
+        {selectedTheme && (
+          <span className="text-sm text-gray-500">
+            Selected: {themes.find((t) => t.id === selectedTheme)?.name}
+          </span>
+        )}
       </div>
     </div>
   );
