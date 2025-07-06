@@ -1,5 +1,5 @@
 import React from "react";
-import TranslatableText from "../components/TranslatableText";
+import TranslatableText from "../../components/TranslatableText";
 
 const Press = () => {
   return (
