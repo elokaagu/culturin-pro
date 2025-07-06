@@ -206,9 +206,9 @@ const GuestsTable = ({ guests, onViewGuest }) => {
                     }
                     className={
                       guest.status === "VIP"
-                        ? "bg-purple-100 text-purple-800 border-purple-200"
+                        ? "bg-blue-100 text-blue-800 border-blue-200"
                         : guest.status === "Active"
-                        ? "bg-green-100 text-green-800 border-green-200"
+                        ? "bg-blue-100 text-blue-800 border-blue-200"
                         : "bg-gray-100 text-gray-800 border-gray-200"
                     }
                   >
@@ -218,16 +218,16 @@ const GuestsTable = ({ guests, onViewGuest }) => {
                 <TableCell>
                   <div className="flex items-center gap-2">
                     {guest.loyaltyTier === "ambassador" && (
-                      <Crown className="h-4 w-4 text-purple-600" />
+                      <Crown className="h-4 w-4 text-blue-600" />
                     )}
                     {guest.loyaltyTier === "gold" && (
-                      <Star className="h-4 w-4 text-yellow-600" />
+                      <Star className="h-4 w-4 text-blue-600" />
                     )}
                     {guest.loyaltyTier === "silver" && (
-                      <Target className="h-4 w-4 text-gray-600" />
+                      <Target className="h-4 w-4 text-blue-600" />
                     )}
                     {guest.loyaltyTier === "bronze" && (
-                      <Users className="h-4 w-4 text-amber-600" />
+                      <Users className="h-4 w-4 text-blue-600" />
                     )}
                     <span className="text-sm font-medium capitalize">
                       {guest.loyaltyTier}
@@ -254,7 +254,7 @@ const GuestsTable = ({ guests, onViewGuest }) => {
                         </div>
                       )}
                     </div>
-                    <div className="text-sm font-medium text-green-600">
+                    <div className="text-sm font-medium text-blue-600">
                       {guest.totalSpent}
                     </div>
                   </div>
@@ -314,30 +314,30 @@ const GuestDetails = ({ guest, onBack }) => {
   const getTierIcon = (tier) => {
     switch (tier) {
       case "ambassador":
-        return <Crown className="h-4 w-4 text-purple-600" />;
+        return <Crown className="h-4 w-4 text-blue-600" />;
       case "gold":
-        return <Star className="h-4 w-4 text-yellow-600" />;
+        return <Star className="h-4 w-4 text-blue-600" />;
       case "silver":
-        return <Target className="h-4 w-4 text-gray-600" />;
+        return <Target className="h-4 w-4 text-blue-600" />;
       case "bronze":
-        return <Users className="h-4 w-4 text-amber-600" />;
+        return <Users className="h-4 w-4 text-blue-600" />;
       default:
-        return <Users className="h-4 w-4 text-gray-600" />;
+        return <Users className="h-4 w-4 text-blue-600" />;
     }
   };
 
   const getTierColor = (tier) => {
     switch (tier) {
       case "ambassador":
-        return "bg-purple-100 text-purple-800 border-purple-200";
+        return "bg-blue-100 text-blue-800 border-blue-200";
       case "gold":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+        return "bg-blue-100 text-blue-800 border-blue-200";
       case "silver":
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-blue-100 text-blue-800 border-blue-200";
       case "bronze":
-        return "bg-amber-100 text-amber-800 border-amber-200";
+        return "bg-blue-100 text-blue-800 border-blue-200";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-blue-100 text-blue-800 border-blue-200";
     }
   };
 
@@ -387,9 +387,9 @@ const GuestDetails = ({ guest, onBack }) => {
                     variant="outline"
                     className={
                       guest.status === "VIP"
-                        ? "bg-purple-100 text-purple-800 border-purple-200"
+                        ? "bg-blue-100 text-blue-800 border-blue-200"
                         : guest.status === "Active"
-                        ? "bg-green-100 text-green-800 border-green-200"
+                        ? "bg-blue-100 text-blue-800 border-blue-200"
                         : "bg-gray-100 text-gray-800 border-gray-200"
                     }
                   >
@@ -420,20 +420,20 @@ const GuestDetails = ({ guest, onBack }) => {
               </div>
               <div className="text-sm text-gray-600 mt-1">Total Bookings</div>
             </div>
-            <div className="bg-green-50 rounded-xl p-4 text-center border border-green-100">
-              <div className="text-2xl font-bold text-green-600">
+            <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
+              <div className="text-2xl font-bold text-blue-600">
                 {guest.totalSpent}
               </div>
               <div className="text-sm text-gray-600 mt-1">Total Spent</div>
             </div>
-            <div className="bg-purple-50 rounded-xl p-4 text-center border border-purple-100">
-              <div className="text-2xl font-bold text-purple-600">
+            <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
+              <div className="text-2xl font-bold text-blue-600">
                 {guest.loyaltyPoints}
               </div>
               <div className="text-sm text-gray-600 mt-1">Loyalty Points</div>
             </div>
-            <div className="bg-amber-50 rounded-xl p-4 text-center border border-amber-100">
-              <div className="text-2xl font-bold text-amber-600">
+            <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
+              <div className="text-2xl font-bold text-blue-600">
                 {guest.referrals || 0}
               </div>
               <div className="text-sm text-gray-600 mt-1">Referrals Made</div>
@@ -533,7 +533,7 @@ const GuestDetails = ({ guest, onBack }) => {
               </span>
               <Badge
                 variant="outline"
-                className="bg-green-50 text-green-700 border-green-200"
+                className="bg-blue-50 text-blue-700 border-blue-200"
               >
                 High
               </Badge>
@@ -584,7 +584,7 @@ const GuestDetails = ({ guest, onBack }) => {
                     <TableCell className="font-medium">2023-06-15</TableCell>
                     <TableCell>Cultural Heritage Tour</TableCell>
                     <TableCell>2</TableCell>
-                    <TableCell className="font-medium text-green-600">
+                    <TableCell className="font-medium text-blue-600">
                       $250
                     </TableCell>
                     <TableCell>
@@ -607,7 +607,7 @@ const GuestDetails = ({ guest, onBack }) => {
                       <TableCell className="font-medium">2023-08-22</TableCell>
                       <TableCell>Local Cuisine Experience</TableCell>
                       <TableCell>2</TableCell>
-                      <TableCell className="font-medium text-green-600">
+                      <TableCell className="font-medium text-blue-600">
                         $180
                       </TableCell>
                       <TableCell>
@@ -653,14 +653,14 @@ const GuestDetails = ({ guest, onBack }) => {
             </Button>
             <Button
               variant="outline"
-              className="border-green-200 text-green-600 hover:bg-green-50"
+              className="border-blue-200 text-blue-600 hover:bg-blue-50"
             >
               <Gift className="h-4 w-4 mr-2" />
               Send Loyalty Offer
             </Button>
             <Button
               variant="outline"
-              className="border-purple-200 text-purple-600 hover:bg-purple-50"
+              className="border-blue-200 text-blue-600 hover:bg-blue-50"
             >
               <Calendar className="h-4 w-4 mr-2" />
               Schedule Follow-up
@@ -668,7 +668,7 @@ const GuestDetails = ({ guest, onBack }) => {
             {guest.loyaltyTier !== "ambassador" && (
               <Button
                 variant="outline"
-                className="border-amber-200 text-amber-600 hover:bg-amber-50"
+                className="border-blue-200 text-blue-600 hover:bg-blue-50"
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Upgrade Tier
@@ -740,7 +740,7 @@ const ProCRMPage = () => {
                       <div>
                         <p className="text-sm text-gray-600">Total Guests</p>
                         <p className="text-2xl font-bold">{totalGuests}</p>
-                        <p className="text-xs text-green-600 flex items-center mt-1">
+                        <p className="text-xs text-blue-600 flex items-center mt-1">
                           <ArrowUpRight className="h-3 w-3 mr-1" />
                           +12% this month
                         </p>
@@ -756,12 +756,12 @@ const ProCRMPage = () => {
                       <div>
                         <p className="text-sm text-gray-600">Active Guests</p>
                         <p className="text-2xl font-bold">{activeGuests}</p>
-                        <p className="text-xs text-green-600 flex items-center mt-1">
+                        <p className="text-xs text-blue-600 flex items-center mt-1">
                           <ArrowUpRight className="h-3 w-3 mr-1" />
                           +8% this month
                         </p>
                       </div>
-                      <TrendingUp className="h-8 w-8 text-green-600" />
+                      <TrendingUp className="h-8 w-8 text-blue-600" />
                     </div>
                   </CardContent>
                 </Card>
@@ -772,11 +772,11 @@ const ProCRMPage = () => {
                       <div>
                         <p className="text-sm text-gray-600">VIP Guests</p>
                         <p className="text-2xl font-bold">{vipGuests}</p>
-                        <p className="text-xs text-purple-600">
+                        <p className="text-xs text-blue-600">
                           High value segment
                         </p>
                       </div>
-                      <Crown className="h-8 w-8 text-purple-600" />
+                      <Crown className="h-8 w-8 text-blue-600" />
                     </div>
                   </CardContent>
                 </Card>
@@ -787,11 +787,11 @@ const ProCRMPage = () => {
                       <div>
                         <p className="text-sm text-gray-600">Avg NPS Score</p>
                         <p className="text-2xl font-bold">{avgNPS}</p>
-                        <p className="text-xs text-green-600">
+                        <p className="text-xs text-blue-600">
                           Excellent rating
                         </p>
                       </div>
-                      <Star className="h-8 w-8 text-yellow-600" />
+                      <Star className="h-8 w-8 text-blue-600" />
                     </div>
                   </CardContent>
                 </Card>
@@ -815,14 +815,14 @@ const ProCRMPage = () => {
                       variant="outline"
                       className="h-auto p-6 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
                     >
-                      <Target className="h-8 w-8 text-purple-600" />
+                      <Target className="h-8 w-8 text-blue-600" />
                       <span className="font-medium">Create Guest Segment</span>
                     </Button>
                     <Button
                       variant="outline"
                       className="h-auto p-6 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
                     >
-                      <Gift className="h-8 w-8 text-green-600" />
+                      <Gift className="h-8 w-8 text-blue-600" />
                       <span className="font-medium">Manage Rewards</span>
                     </Button>
                   </div>
@@ -836,10 +836,10 @@ const ProCRMPage = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-100">
+                    <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-100">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                          <Star className="h-5 w-5 text-green-600" />
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Star className="h-5 w-5 text-blue-600" />
                         </div>
                         <div>
                           <div className="font-medium text-gray-900">
@@ -850,7 +850,7 @@ const ProCRMPage = () => {
                           </div>
                         </div>
                       </div>
-                      <Badge className="bg-green-100 text-green-800 border-green-200">
+                      <Badge className="bg-blue-100 text-blue-800 border-blue-200">
                         New Review
                       </Badge>
                     </div>
@@ -874,10 +874,10 @@ const ProCRMPage = () => {
                       </Badge>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg border border-purple-100">
+                    <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-100">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                          <Heart className="h-5 w-5 text-purple-600" />
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Heart className="h-5 w-5 text-blue-600" />
                         </div>
                         <div>
                           <div className="font-medium text-gray-900">
@@ -886,7 +886,7 @@ const ProCRMPage = () => {
                           <div className="text-sm text-gray-600">1 day ago</div>
                         </div>
                       </div>
-                      <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                      <Badge className="bg-blue-100 text-blue-800 border-blue-200">
                         Referral
                       </Badge>
                     </div>

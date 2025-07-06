@@ -47,9 +47,9 @@ const DemoPage = () => {
     <div className="min-h-screen flex flex-col">
       <Header type="operator" />
 
-      <main className="flex-1 pt-24">
+      <main className="flex-1 pt-16">
         {/* Hero Section */}
-        <section className="bg-white py-16 md:py-24">
+        <section className="bg-white py-8 md:py-12">
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">

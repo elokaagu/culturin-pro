@@ -285,11 +285,11 @@ const ProductBookingManagementPage = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="text-white border-white hover:bg-white hover:text-blue-600 hover:border-white"
+                  className="text-black border-white hover:bg-white hover:text-blue-600 hover:border-white"
                 >
                   <Link
                     to="/pricing"
-                    className="text-white hover:text-blue-600"
+                    className="text-black hover:text-blue-600"
                   >
                     View Pricing
                   </Link>
