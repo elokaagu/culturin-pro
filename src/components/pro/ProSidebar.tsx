@@ -33,7 +33,7 @@ const menuItems = [
   { name: "Marketing", path: "/pro-dashboard/marketing", icon: Megaphone },
   { name: "Website", path: "/pro-dashboard/website", icon: Globe },
   {
-    name: "Central Intelligence",
+    name: "Analytics",
     path: "/pro-dashboard/analytics",
     icon: ChartBar,
   },
