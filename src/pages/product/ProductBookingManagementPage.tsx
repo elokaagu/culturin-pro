@@ -289,7 +289,7 @@ const ProductBookingManagementPage = () => {
                 >
                   <Link
                     to="/pricing"
-                    className="text-black hover:text-blue-600"
+                    className="text-black hover:text-blue-600 font-medium !text-black"
                   >
                     View Pricing
                   </Link>
