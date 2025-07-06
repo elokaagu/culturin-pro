@@ -336,37 +336,30 @@ const ProUsersPage: React.FC = () => {
   const travelers = users.filter((user) => user.role === "traveler").length;
 
   return (
-    <ProDashboardLayout>
+    <ProDashboardLayout
+      title="Users"
+      subtitle="Manage and view all users on the Culturin platform"
+    >
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-2xl font-medium">Users</h1>
-            <p className="mt-1 text-gray-600 text-sm">
-              Manage and view all users on the Culturin platform
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-            <Button size="sm">
-              <UserPlus className="h-4 w-4 mr-2" />
-              Invite User
-            </Button>
-          </div>
+        {/* Header Actions */}
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+          <Button size="sm">
+            <UserPlus className="h-4 w-4 mr-2" />
+            Invite User
+          </Button>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Total Users
-                  </p>
+                  <p className="text-sm text-gray-600">Total Users</p>
                   <p className="text-2xl font-bold">{totalUsers}</p>
                 </div>
                 <Users className="h-8 w-8 text-blue-600" />
@@ -375,12 +368,10 @@ const ProUsersPage: React.FC = () => {
           </Card>
 
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Active Users
-                  </p>
+                  <p className="text-sm text-gray-600">Active Users</p>
                   <p className="text-2xl font-bold">{activeUsers}</p>
                 </div>
                 <UserCheck className="h-8 w-8 text-green-600" />
@@ -389,10 +380,10 @@ const ProUsersPage: React.FC = () => {
           </Card>
 
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Operators</p>
+                  <p className="text-sm text-gray-600">Operators</p>
                   <p className="text-2xl font-bold">{operators}</p>
                 </div>
                 <TrendingUp className="h-8 w-8 text-purple-600" />
@@ -401,10 +392,10 @@ const ProUsersPage: React.FC = () => {
           </Card>
 
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Travelers</p>
+                  <p className="text-sm text-gray-600">Travelers</p>
                   <p className="text-2xl font-bold">{travelers}</p>
                 </div>
                 <Users className="h-8 w-8 text-orange-600" />
@@ -416,7 +407,7 @@ const ProUsersPage: React.FC = () => {
         {/* Filters and User Directory */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">User Directory</CardTitle>
+            <CardTitle>User Directory</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -456,22 +447,22 @@ const ProUsersPage: React.FC = () => {
             </div>
 
             {/* Users Table */}
-            <div className="rounded-md border">
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Joined</TableHead>
-                    <TableHead>Activity</TableHead>
-                    <TableHead>Actions</TableHead>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="font-medium">User</TableHead>
+                    <TableHead className="font-medium">Role</TableHead>
+                    <TableHead className="font-medium">Status</TableHead>
+                    <TableHead className="font-medium">Location</TableHead>
+                    <TableHead className="font-medium">Joined</TableHead>
+                    <TableHead className="font-medium">Activity</TableHead>
+                    <TableHead className="font-medium">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredUsers.map((user) => (
-                    <TableRow key={user.id}>
+                    <TableRow key={user.id} className="hover:bg-gray-50">
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
