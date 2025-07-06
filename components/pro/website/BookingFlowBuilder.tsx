@@ -44,18 +44,51 @@ const BookingFlowBuilder: React.FC = () => {
   const bookingSettings = userData.websiteSettings.bookingSettings;
 
   const handleSettingUpdate = (key: string, value: any) => {
-    updateWebsiteSettings({
-      bookingSettings: {
-        ...bookingSettings,
-        [key]: value,
-      },
-    });
-    toast.success("Booking setting updated");
+    try {
+      updateWebsiteSettings({
+        bookingSettings: {
+          ...bookingSettings,
+          [key]: value,
+        },
+      });
+      toast.success("Booking setting updated", {
+        description: `${key} has been updated successfully`,
+      });
+    } catch (error) {
+      toast.error("Failed to update booking setting", {
+        description: "Please try again",
+      });
+    }
   };
 
   const handleToggleBooking = (enabled: boolean) => {
-    updateWebsiteSettings({ enableBooking: enabled });
-    toast.success(enabled ? "Booking enabled" : "Booking disabled");
+    try {
+      updateWebsiteSettings({ enableBooking: enabled });
+      toast.success(enabled ? "Booking enabled" : "Booking disabled", {
+        description: enabled
+          ? "Customers can now book your experiences online"
+          : "Online booking has been disabled",
+      });
+    } catch (error) {
+      toast.error("Failed to toggle booking", {
+        description: "Please try again",
+      });
+    }
+  };
+
+  const handlePreviewToggle = () => {
+    try {
+      setPreviewMode(!previewMode);
+      toast.success(previewMode ? "Preview hidden" : "Preview shown", {
+        description: previewMode
+          ? "Booking flow preview has been hidden"
+          : "Booking flow preview is now visible",
+      });
+    } catch (error) {
+      toast.error("Failed to toggle preview", {
+        description: "Please try again",
+      });
+    }
   };
 
   const currencies = [
@@ -153,7 +186,7 @@ const BookingFlowBuilder: React.FC = () => {
         <div className="flex gap-2">
           <Button
             variant={previewMode ? "default" : "outline"}
-            onClick={() => setPreviewMode(!previewMode)}
+            onClick={handlePreviewToggle}
           >
             <Eye className="h-4 w-4 mr-2" />
             {previewMode ? "Hide Preview" : "Show Preview"}

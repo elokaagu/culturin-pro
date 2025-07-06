@@ -31,63 +31,118 @@ const WebsiteContent: React.FC = () => {
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    // Check if file is an image
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file", {
+        description: "Only image files are supported",
+      });
+      return;
+    }
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size too large", {
+        description: "Please upload an image smaller than 5MB",
+      });
+      return;
+    }
+
+    try {
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
         setHeaderImage(imageUrl);
         handleQuickSave("headerImage", imageUrl);
+        toast.success("Image uploaded successfully");
+      };
+      reader.onerror = () => {
+        toast.error("Failed to read image file", {
+          description: "Please try again with a different image",
+        });
       };
       reader.readAsDataURL(file);
+    } catch (error) {
+      toast.error("Failed to upload image", {
+        description: "Please try again",
+      });
     }
   };
 
   const handleRemoveImage = () => {
-    setHeaderImage(null);
-    handleQuickSave("headerImage", null);
+    try {
+      setHeaderImage(null);
+      handleQuickSave("headerImage", null);
+      toast.success("Header image removed");
+    } catch (error) {
+      toast.error("Failed to remove image", {
+        description: "Please try again",
+      });
+    }
   };
 
   const handleQuickSave = (field: string, value: any) => {
-    updateWebsiteSettings({ [field]: value });
-    toast.success(`${field} updated`, {
-      description: "Changes will appear in your website preview",
-    });
+    try {
+      updateWebsiteSettings({ [field]: value });
+      toast.success(`${field} updated`, {
+        description: "Changes will appear in your website preview",
+      });
+    } catch (error) {
+      toast.error("Failed to save changes", {
+        description: "Please try again",
+      });
+    }
   };
 
   const handleSave = () => {
-    const updates = {
-      companyName,
-      tagline,
-      description,
-      primaryColor,
-      headerImage,
-    };
+    try {
+      const updates = {
+        companyName,
+        tagline,
+        description,
+        primaryColor,
+        headerImage,
+      };
 
-    updateWebsiteSettings(updates);
+      updateWebsiteSettings(updates);
 
-    toast.success("Website content saved", {
-      description: "All changes have been applied to your website",
-    });
+      toast.success("Website content saved", {
+        description: "All changes have been applied to your website",
+      });
+    } catch (error) {
+      toast.error("Failed to save content", {
+        description: "Please try again",
+      });
+    }
   };
 
   const handleReset = () => {
-    const defaultSettings = {
-      companyName: userData.businessName,
-      tagline: `Authentic cultural experiences curated by ${userData.businessName}`,
-      description: userData.bio,
-      primaryColor: "#9b87f5",
-      headerImage: null,
-    };
+    try {
+      const defaultSettings = {
+        companyName: userData.businessName || "Your Business Name",
+        tagline: `Authentic cultural experiences curated by ${
+          userData.businessName || "Your Business"
+        }`,
+        description: userData.bio || "Add your business description here",
+        primaryColor: "#9b87f5",
+        headerImage: null,
+      };
 
-    setCompanyName(defaultSettings.companyName);
-    setTagline(defaultSettings.tagline);
-    setDescription(defaultSettings.description);
-    setPrimaryColor(defaultSettings.primaryColor);
-    setHeaderImage(defaultSettings.headerImage);
+      setCompanyName(defaultSettings.companyName);
+      setTagline(defaultSettings.tagline);
+      setDescription(defaultSettings.description);
+      setPrimaryColor(defaultSettings.primaryColor);
+      setHeaderImage(defaultSettings.headerImage);
 
-    updateWebsiteSettings(defaultSettings);
+      updateWebsiteSettings(defaultSettings);
 
-    toast.success("Content reset to defaults");
+      toast.success("Content reset to defaults");
+    } catch (error) {
+      toast.error("Failed to reset content", {
+        description: "Please try again",
+      });
+    }
   };
 
   return (

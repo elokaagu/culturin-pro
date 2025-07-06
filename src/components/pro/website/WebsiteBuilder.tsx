@@ -7,13 +7,21 @@ import WebsiteContent from "./WebsiteContent";
 import WebsiteSettings from "./WebsiteSettings";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Globe, ExternalLink, Check, Loader2 } from "lucide-react";
+import {
+  Globe,
+  ExternalLink,
+  Check,
+  Loader2,
+  RefreshCw,
+  Eye,
+} from "lucide-react";
 import { useNavigate } from "../../../../lib/navigation";
 import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
 import { safeLocalStorage } from "../../../../lib/localStorage";
 
 const WebsiteBuilder: React.FC = () => {
   const [publishLoading, setPublishLoading] = useState(false);
+  const [refreshLoading, setRefreshLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
   const [publishedUrl, setPublishedUrl] = useState("tour/demo");
   const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
@@ -34,6 +42,11 @@ const WebsiteBuilder: React.FC = () => {
       } catch (e) {
         console.error("Error parsing itineraries:", e);
         setItineraries(sampleItineraries);
+        // Save sample data as fallback
+        safeLocalStorage.setItem(
+          "culturinItineraries",
+          JSON.stringify(sampleItineraries)
+        );
       }
     } else {
       setItineraries(sampleItineraries);
@@ -44,16 +57,50 @@ const WebsiteBuilder: React.FC = () => {
     }
   }, []);
 
-  const handlePublish = () => {
+  // Listen for website settings changes
+  useEffect(() => {
+    const handleSettingsChange = (event: CustomEvent) => {
+      // Update itineraries if they changed
+      if (event.detail?.filteredItineraries) {
+        setItineraries(event.detail.filteredItineraries);
+      }
+      toast.success("Preview updated", {
+        description: "Website preview reflects your latest settings",
+      });
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener(
+        "websiteSettingsChanged",
+        handleSettingsChange as EventListener
+      );
+      return () => {
+        window.removeEventListener(
+          "websiteSettingsChanged",
+          handleSettingsChange as EventListener
+        );
+      };
+    }
+  }, []);
+
+  const handleSettingsChange = () => {
+    // Trigger immediate preview refresh when settings change
+    toast.success("Settings updated", {
+      description: "Preview will refresh automatically",
+    });
+  };
+
+  const handlePublish = async () => {
     setPublishLoading(true);
 
-    // Generate a unique slug for the website
-    const slug = `demo-${Date.now().toString(36)}`;
-    const newPublishedUrl = `tour/${slug}`;
+    try {
+      // Generate a unique slug for the website
+      const slug = `demo-${Date.now().toString(36)}`;
+      const newPublishedUrl = `tour/${slug}`;
 
-    // Simulate publishing process - in a real app, this would save to a backend
-    setTimeout(() => {
-      setPublishLoading(false);
+      // Simulate publishing process - in a real app, this would save to a backend
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       setPublishedUrl(newPublishedUrl);
 
       // Save the published URL to localStorage
@@ -91,26 +138,61 @@ const WebsiteBuilder: React.FC = () => {
       toast.success("Website published successfully!", {
         description: "Your changes are now live.",
       });
-    }, 1500);
+    } catch (error) {
+      toast.error("Failed to publish website", {
+        description: "Please try again or contact support",
+      });
+    } finally {
+      setPublishLoading(false);
+    }
   };
 
   const handlePreviewSite = () => {
-    if (typeof window !== "undefined") {
-      window.open(`/${publishedUrl}`, "_blank");
+    try {
+      if (typeof window !== "undefined") {
+        window.open(`/${publishedUrl}`, "_blank", "noopener,noreferrer");
+      }
+    } catch (error) {
+      toast.error("Failed to open preview", {
+        description: "Please check your browser settings",
+      });
     }
   };
 
-  const handleReloadPreview = () => {
-    // Trigger a refresh for the preview
-    const storedItineraries = safeLocalStorage.getItem("culturinItineraries");
-    if (storedItineraries) {
-      try {
-        setItineraries(JSON.parse(storedItineraries));
-      } catch (e) {
-        console.error("Error parsing itineraries:", e);
+  const handleReloadPreview = async () => {
+    setRefreshLoading(true);
+
+    try {
+      // Trigger a refresh for the preview
+      const storedItineraries = safeLocalStorage.getItem("culturinItineraries");
+      if (storedItineraries) {
+        try {
+          const parsedItineraries = JSON.parse(storedItineraries);
+          setItineraries(parsedItineraries);
+        } catch (e) {
+          console.error("Error parsing itineraries:", e);
+          toast.error("Error loading itineraries", {
+            description: "Using default data",
+          });
+        }
       }
+
+      // Simulate refresh delay for better UX
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      toast.success("Preview refreshed with latest changes");
+    } catch (error) {
+      toast.error("Failed to refresh preview", {
+        description: "Please try again",
+      });
+    } finally {
+      setRefreshLoading(false);
     }
-    toast.success("Preview refreshed");
+  };
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    toast.success(`Switched to ${value} tab`);
   };
 
   return (
@@ -127,9 +209,14 @@ const WebsiteBuilder: React.FC = () => {
           <Button
             variant="outline"
             onClick={handleReloadPreview}
+            disabled={refreshLoading}
             className="flex items-center"
           >
-            <Loader2 className="mr-2 h-4 w-4" />
+            {refreshLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
             Refresh Preview
           </Button>
           <Button
@@ -172,7 +259,7 @@ const WebsiteBuilder: React.FC = () => {
                 href={`/${publishedUrl}`}
                 target="_blank"
                 rel="noreferrer"
-                className="font-medium underline"
+                className="font-medium underline hover:text-green-900"
               >
                 {typeof window !== "undefined"
                   ? window.location.origin
@@ -182,6 +269,7 @@ const WebsiteBuilder: React.FC = () => {
             </span>
           </div>
           <Button variant="ghost" size="sm" onClick={handlePreviewSite}>
+            <Eye className="h-4 w-4 mr-1" />
             Visit
           </Button>
         </div>
@@ -189,7 +277,8 @@ const WebsiteBuilder: React.FC = () => {
 
       <Tabs
         defaultValue="preview"
-        onValueChange={(value) => setActiveTab(value)}
+        value={activeTab}
+        onValueChange={handleTabChange}
       >
         <TabsList>
           <TabsTrigger value="preview">Preview</TabsTrigger>
@@ -214,6 +303,7 @@ const WebsiteBuilder: React.FC = () => {
           <WebsiteSettings
             itineraries={itineraries}
             setItineraries={setItineraries}
+            onSettingsChange={handleSettingsChange}
           />
         </TabsContent>
       </Tabs>

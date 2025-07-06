@@ -19,13 +19,17 @@ import { useUserData } from "../../../src/contexts/UserDataContext";
 
 interface WebsitePreviewProps {
   itineraries?: ItineraryType[];
+  refreshKey?: number; // Add refresh key prop
 }
 
 const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   itineraries = [],
+  refreshKey: externalRefreshKey,
 }) => {
   const [viewMode, setViewMode] = useState("desktop");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [currentItineraries, setCurrentItineraries] =
+    useState<ItineraryType[]>(itineraries);
   const { userData } = useUserData();
 
   // Get website settings from UserDataContext for real-time updates
@@ -39,6 +43,18 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     theme,
   } = websiteSettings;
 
+  // Update internal refresh key when external key changes
+  useEffect(() => {
+    if (externalRefreshKey !== undefined) {
+      setRefreshKey(externalRefreshKey);
+    }
+  }, [externalRefreshKey]);
+
+  // Update itineraries when prop changes
+  useEffect(() => {
+    setCurrentItineraries(itineraries);
+  }, [itineraries]);
+
   // Listen for theme changes
   useEffect(() => {
     const handleThemeChange = (event: CustomEvent) => {
@@ -48,15 +64,34 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
       });
     };
 
+    const handleSettingsChange = (event: CustomEvent) => {
+      setRefreshKey((prev) => prev + 1);
+      // Update itineraries if they changed
+      if (event.detail?.filteredItineraries) {
+        setCurrentItineraries(event.detail.filteredItineraries);
+      }
+      toast.success("Preview updated with new settings", {
+        description: "Itinerary selection has been updated",
+      });
+    };
+
     if (typeof window !== "undefined") {
       window.addEventListener(
         "themeChanged",
         handleThemeChange as EventListener
       );
+      window.addEventListener(
+        "websiteSettingsChanged",
+        handleSettingsChange as EventListener
+      );
       return () => {
         window.removeEventListener(
           "themeChanged",
           handleThemeChange as EventListener
+        );
+        window.removeEventListener(
+          "websiteSettingsChanged",
+          handleSettingsChange as EventListener
         );
       };
     }
@@ -228,7 +263,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                       viewMode === "mobile" ? "grid-cols-1" : "grid-cols-3"
                     )}
                   >
-                    {itineraries.slice(0, 3).map((item, index) => (
+                    {currentItineraries.slice(0, 3).map((item, index) => (
                       <div
                         key={item.id || index}
                         className={cn(
@@ -248,7 +283,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                         </div>
                       </div>
                     ))}
-                    {itineraries.length === 0 && (
+                    {currentItineraries.length === 0 && (
                       <>
                         <div
                           className={cn("h-32", themeStyles.cardClass)}

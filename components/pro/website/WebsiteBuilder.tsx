@@ -15,6 +15,10 @@ import {
   Check,
   Loader2,
   ShoppingCart,
+  RefreshCw,
+  Palette,
+  Settings,
+  Eye,
 } from "lucide-react";
 import { useNavigate } from "../../../lib/navigation";
 import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
@@ -22,6 +26,7 @@ import { useUserData } from "../../../src/contexts/UserDataContext";
 
 const WebsiteBuilder: React.FC = () => {
   const [publishLoading, setPublishLoading] = useState(false);
+  const [refreshLoading, setRefreshLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
   const [publishedUrl, setPublishedUrl] = useState(() => {
     const storedUrl = localStorage.getItem("publishedWebsiteUrl");
@@ -41,6 +46,11 @@ const WebsiteBuilder: React.FC = () => {
       } catch (e) {
         console.error("Error parsing itineraries:", e);
         setItineraries(sampleItineraries);
+        // Save sample data as fallback
+        localStorage.setItem(
+          "culturinItineraries",
+          JSON.stringify(sampleItineraries)
+        );
       }
     } else {
       setItineraries(sampleItineraries);
@@ -56,18 +66,58 @@ const WebsiteBuilder: React.FC = () => {
     setPreviewKey((prev) => prev + 1);
   }, [userData.websiteSettings]);
 
-  const handlePublish = () => {
+  // Listen for website settings changes
+  useEffect(() => {
+    const handleSettingsChange = (event: CustomEvent) => {
+      setPreviewKey((prev) => prev + 1);
+      // Update itineraries if they changed
+      if (event.detail?.filteredItineraries) {
+        setItineraries(event.detail.filteredItineraries);
+      }
+      toast.success("Preview updated", {
+        description: "Website preview reflects your latest settings",
+      });
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener(
+        "websiteSettingsChanged",
+        handleSettingsChange as EventListener
+      );
+      return () => {
+        window.removeEventListener(
+          "websiteSettingsChanged",
+          handleSettingsChange as EventListener
+        );
+      };
+    }
+  }, []);
+
+  const handleSettingsChange = () => {
+    // Trigger immediate preview refresh when settings change
+    setPreviewKey((prev) => prev + 1);
+  };
+
+  const handlePublish = async () => {
+    if (!userData.businessName) {
+      toast.error("Please complete your business profile first", {
+        description: "Add your business name in the settings",
+      });
+      return;
+    }
+
     setPublishLoading(true);
 
-    // Generate a unique slug for the website
-    const slug = `${userData.businessName
-      .toLowerCase()
-      .replace(/\s+/g, "-")}-${Date.now().toString(36)}`;
-    const newPublishedUrl = `tour/${slug}`;
+    try {
+      // Generate a unique slug for the website
+      const slug = `${userData.businessName
+        .toLowerCase()
+        .replace(/\s+/g, "-")}-${Date.now().toString(36)}`;
+      const newPublishedUrl = `tour/${slug}`;
 
-    // Simulate publishing process - in a real app, this would save to a backend
-    setTimeout(() => {
-      setPublishLoading(false);
+      // Simulate publishing process - in a real app, this would save to a backend
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       setPublishedUrl(newPublishedUrl);
 
       // Save the published URL to localStorage
@@ -98,30 +148,92 @@ const WebsiteBuilder: React.FC = () => {
         description:
           "Your changes are now live with the latest booking settings.",
       });
-    }, 1500);
+    } catch (error) {
+      toast.error("Failed to publish website", {
+        description: "Please try again or contact support",
+      });
+    } finally {
+      setPublishLoading(false);
+    }
   };
 
   const handlePreviewSite = () => {
-    window.open(`/${publishedUrl}`, "_blank");
+    try {
+      if (typeof window !== "undefined") {
+        window.open(`/${publishedUrl}`, "_blank", "noopener,noreferrer");
+      }
+    } catch (error) {
+      toast.error("Failed to open preview", {
+        description: "Please check your browser settings",
+      });
+    }
   };
 
-  const handleReloadPreview = () => {
-    // Trigger a refresh for the preview
-    const storedItineraries = localStorage.getItem("culturinItineraries");
-    if (storedItineraries) {
-      try {
-        setItineraries(JSON.parse(storedItineraries));
-      } catch (e) {
-        console.error("Error parsing itineraries:", e);
+  const handleReloadPreview = async () => {
+    setRefreshLoading(true);
+
+    try {
+      // Trigger a refresh for the preview
+      const storedItineraries = localStorage.getItem("culturinItineraries");
+      if (storedItineraries) {
+        try {
+          const parsedItineraries = JSON.parse(storedItineraries);
+          setItineraries(parsedItineraries);
+        } catch (e) {
+          console.error("Error parsing itineraries:", e);
+          toast.error("Error loading itineraries", {
+            description: "Using default data",
+          });
+        }
       }
+
+      // Simulate refresh delay for better UX
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      setPreviewKey((prev) => prev + 1);
+      toast.success("Preview refreshed with latest changes");
+    } catch (error) {
+      toast.error("Failed to refresh preview", {
+        description: "Please try again",
+      });
+    } finally {
+      setRefreshLoading(false);
     }
-    setPreviewKey((prev) => prev + 1);
-    toast.success("Preview refreshed with latest changes");
   };
 
   const handleQuickUpdate = (field: string, value: any) => {
-    updateWebsiteSettings({ [field]: value });
-    toast.success("Website updated - changes will appear in preview");
+    try {
+      updateWebsiteSettings({ [field]: value });
+      toast.success("Website updated - changes will appear in preview");
+    } catch (error) {
+      toast.error("Failed to update website", {
+        description: "Please try again",
+      });
+    }
+  };
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    toast.success(`Switched to ${value} tab`);
+  };
+
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case "resetColor":
+        handleQuickUpdate("primaryColor", "#9b87f5");
+        break;
+      case "toggleBooking":
+        handleQuickUpdate(
+          "enableBooking",
+          !userData.websiteSettings.enableBooking
+        );
+        break;
+      case "configureBooking":
+        setActiveTab("booking");
+        break;
+      default:
+        toast.error("Unknown action");
+    }
   };
 
   return (
@@ -138,9 +250,14 @@ const WebsiteBuilder: React.FC = () => {
           <Button
             variant="outline"
             onClick={handleReloadPreview}
+            disabled={refreshLoading}
             className="flex items-center"
           >
-            <Loader2 className="mr-2 h-4 w-4" />
+            {refreshLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
             Refresh Preview
           </Button>
           <Button
@@ -183,9 +300,10 @@ const WebsiteBuilder: React.FC = () => {
                 href={`/${publishedUrl}`}
                 target="_blank"
                 rel="noreferrer"
-                className="font-medium underline"
+                className="font-medium underline hover:text-green-900"
               >
-                {window.location.origin}/{publishedUrl}
+                {typeof window !== "undefined" ? window.location.origin : ""}/
+                {publishedUrl}
               </a>
               {userData.websiteSettings.enableBooking && (
                 <span className="ml-2 inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
@@ -196,6 +314,7 @@ const WebsiteBuilder: React.FC = () => {
             </span>
           </div>
           <Button variant="ghost" size="sm" onClick={handlePreviewSite}>
+            <Eye className="h-4 w-4 mr-1" />
             Visit
           </Button>
         </div>
@@ -208,28 +327,29 @@ const WebsiteBuilder: React.FC = () => {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => handleQuickUpdate("primaryColor", "#9b87f5")}
+            onClick={() => handleQuickAction("resetColor")}
+            className="flex items-center gap-2"
           >
+            <Palette className="h-4 w-4" />
             Reset Brand Color
           </Button>
           <Button
             size="sm"
             variant="outline"
-            onClick={() =>
-              handleQuickUpdate(
-                "enableBooking",
-                !userData.websiteSettings.enableBooking
-              )
-            }
+            onClick={() => handleQuickAction("toggleBooking")}
+            className="flex items-center gap-2"
           >
+            <ShoppingCart className="h-4 w-4" />
             {userData.websiteSettings.enableBooking ? "Disable" : "Enable"}{" "}
             Booking
           </Button>
           <Button
             size="sm"
             variant="outline"
-            onClick={() => setActiveTab("booking")}
+            onClick={() => handleQuickAction("configureBooking")}
+            className="flex items-center gap-2"
           >
+            <Settings className="h-4 w-4" />
             Configure Booking Flow
           </Button>
         </div>
@@ -238,7 +358,7 @@ const WebsiteBuilder: React.FC = () => {
       <Tabs
         defaultValue="preview"
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={handleTabChange}
       >
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="preview">Preview</TabsTrigger>
@@ -249,7 +369,11 @@ const WebsiteBuilder: React.FC = () => {
         </TabsList>
 
         <TabsContent value="preview">
-          <WebsitePreview key={previewKey} itineraries={itineraries} />
+          <WebsitePreview
+            key={previewKey}
+            itineraries={itineraries}
+            refreshKey={previewKey}
+          />
         </TabsContent>
 
         <TabsContent value="themes">
@@ -268,6 +392,7 @@ const WebsiteBuilder: React.FC = () => {
           <WebsiteSettings
             itineraries={itineraries}
             setItineraries={setItineraries}
+            onSettingsChange={handleSettingsChange}
           />
         </TabsContent>
       </Tabs>

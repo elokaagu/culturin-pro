@@ -11,11 +11,13 @@ import Image from "@/components/ui/image";
 interface WebsiteSettingsProps {
   itineraries: ItineraryType[];
   setItineraries: React.Dispatch<React.SetStateAction<ItineraryType[]>>;
+  onSettingsChange?: () => void; // Add callback for settings changes
 }
 
 const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
   itineraries,
   setItineraries,
+  onSettingsChange,
 }) => {
   const [selectedItineraries, setSelectedItineraries] = useState<string[]>(
     itineraries.map((it) => it.id)
@@ -28,6 +30,15 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
       } else {
         return [...prev, id];
       }
+    });
+
+    // Trigger preview update immediately
+    if (onSettingsChange) {
+      onSettingsChange();
+    }
+
+    toast.success("Selection updated", {
+      description: "Preview will update automatically",
     });
   };
 
@@ -42,8 +53,25 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
       JSON.stringify(filteredItineraries)
     );
 
-    toast.success("Website settings saved", {
-      description: "Your changes will be applied when you publish your website",
+    // Trigger preview update after save
+    if (onSettingsChange) {
+      onSettingsChange();
+    }
+
+    // Dispatch custom event for preview refresh
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("websiteSettingsChanged", {
+          detail: {
+            selectedItineraries,
+            filteredItineraries,
+          },
+        })
+      );
+    }
+
+    toast.success("Website settings saved successfully", {
+      description: `${selectedItineraries.length} itineraries will be displayed on your website. Preview updated automatically.`,
     });
   };
 
