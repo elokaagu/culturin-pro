@@ -64,14 +64,14 @@ const DynamicPricingDashboard: React.FC = () => {
   };
 
   const getFactorColor = (impact: number) => {
-    if (impact > 0.2) return "text-green-600 bg-green-50";
-    if (impact < -0.2) return "text-red-600 bg-red-50";
+    if (impact > 0.2) return "text-blue-600 bg-blue-50";
+    if (impact < -0.2) return "text-blue-600 bg-blue-50";
     return "text-gray-600 bg-gray-50";
   };
 
   const getFactorIcon = (impact: number) => {
     if (impact > 0.2) return <TrendingUp className="h-4 w-4" />;
-    if (impact < -0.2) return <TrendingDown className="h-4 w-4" />;
+    if (impact < -0.2) return <TrendingUp className="h-4 w-4" />;
     return <Activity className="h-4 w-4" />;
   };
 
@@ -121,7 +121,7 @@ const DynamicPricingDashboard: React.FC = () => {
                   </div>
                   <div className="rounded-full bg-gray-100 p-2">
                     {settings.enabled ? (
-                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <CheckCircle className="h-5 w-5 text-blue-600" />
                     ) : (
                       <AlertTriangle className="h-5 w-5 text-gray-600" />
                     )}
@@ -170,7 +170,7 @@ const DynamicPricingDashboard: React.FC = () => {
                     </h3>
                   </div>
                   <div className="rounded-full bg-gray-100 p-2">
-                    <Zap className="h-5 w-5 text-purple-600" />
+                    <Zap className="h-5 w-5 text-blue-600" />
                   </div>
                 </div>
               </CardContent>
@@ -194,7 +194,7 @@ const DynamicPricingDashboard: React.FC = () => {
                     </h3>
                   </div>
                   <div className="rounded-full bg-gray-100 p-2">
-                    <Activity className="h-5 w-5 text-orange-600" />
+                    <Activity className="h-5 w-5 text-blue-600" />
                   </div>
                 </div>
               </CardContent>
@@ -223,16 +223,16 @@ const DynamicPricingDashboard: React.FC = () => {
                       <div
                         className={`p-2 rounded-full ${
                           trend.trend === "increasing"
-                            ? "bg-green-100"
+                            ? "bg-blue-100"
                             : trend.trend === "decreasing"
-                            ? "bg-red-100"
+                            ? "bg-blue-100"
                             : "bg-gray-100"
                         }`}
                       >
                         {trend.trend === "increasing" ? (
-                          <TrendingUp className="h-4 w-4 text-green-600" />
+                          <TrendingUp className="h-4 w-4 text-blue-600" />
                         ) : trend.trend === "decreasing" ? (
-                          <TrendingDown className="h-4 w-4 text-red-600" />
+                          <TrendingUp className="h-4 w-4 text-blue-600" />
                         ) : (
                           <Activity className="h-4 w-4 text-gray-600" />
                         )}
@@ -306,9 +306,9 @@ const DynamicPricingDashboard: React.FC = () => {
                           ${rec.recommendedPrice}
                         </p>
                       </div>
-                      <div className="text-center p-3 bg-green-50 rounded">
+                      <div className="text-center p-3 bg-blue-50 rounded">
                         <p className="text-sm text-gray-500">Confidence</p>
-                        <p className="text-lg font-semibold text-green-600">
+                        <p className="text-lg font-semibold text-blue-600">
                           {Math.round(rec.confidence * 100)}%
                         </p>
                       </div>
