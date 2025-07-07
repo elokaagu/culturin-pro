@@ -436,389 +436,256 @@ const ProductMarketingPage = () => {
           </div>
         </section>
 
-        {/* AI Content Toolkit Section */}
-        <section
-          ref={toolkitRef}
-          className="bg-gradient-to-b from-blue-50 to-white py-24"
-        >
+        {/* How It Works Section */}
+        <section className="py-24 bg-white">
           <div className="container mx-auto px-4">
-            <div
-              className={`max-w-4xl mx-auto mb-16 text-center transition-all duration-1000 ${
-                toolkitInView
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              }`}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                AI Powered Marketing Toolkit
+            <div className="max-w-3xl mx-auto text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                How It Works
               </h2>
               <p className="text-lg text-gray-600">
-                Create professional marketing content in minutes with our AI
-                tools designed specifically for cultural experience operators.
+                Get started with our marketing tools in just a few simple steps.
               </p>
             </div>
 
-            <div
-              className={`max-w-5xl mx-auto transition-all duration-1000 delay-200 ${
-                toolkitInView
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              }`}
-            >
-              <Tabs
-                defaultValue={activeTab}
-                onValueChange={setActiveTab}
-                className="w-full"
-              >
-                <TabsList className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-8">
-                  <TabsTrigger
-                    value="description"
-                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
-                  >
-                    <FileText className="h-4 w-4" /> Description
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="blog"
-                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
-                  >
-                    <FileText className="h-4 w-4" /> Blog
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="social"
-                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
-                  >
-                    <Instagram className="h-4 w-4" /> Social
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="visual"
-                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
-                  >
-                    <Image className="h-4 w-4" /> Visual
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="seo"
-                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
-                  >
-                    <Search className="h-4 w-4" /> SEO
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="calendar"
-                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
-                  >
-                    <Calendar className="h-4 w-4" /> Calendar
-                  </TabsTrigger>
-                </TabsList>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="text-center group">
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-colors">
+                  <span className="text-2xl font-bold text-orange-600">1</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-3">
+                  Set Up Your Profile
+                </h3>
+                <p className="text-gray-600">
+                  Tell us about your cultural experiences and target audience.
+                </p>
+              </div>
 
-                <TabsContent value="description" className="space-y-6">
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-orange-600" />
-                        AI Experience Description Generator
-                      </CardTitle>
-                      <CardDescription>
-                        Create compelling descriptions that capture the essence
-                        of your cultural experiences
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-sm font-medium mb-2">
-                              Experience Title *
-                            </label>
-                            <Input
-                              placeholder="e.g., Traditional Pottery Workshop"
-                              value={formData.title}
-                              onChange={(e) =>
-                                handleInputChange("title", e.target.value)
-                              }
-                              className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium mb-2">
-                              Cultural Elements *
-                            </label>
-                            <Textarea
-                              placeholder="e.g., Traditional techniques, local artisans, historical significance"
-                              value={formData.culturalElements}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  "culturalElements",
-                                  e.target.value
-                                )
-                              }
-                              className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium mb-2">
-                              Location *
-                            </label>
-                            <Input
-                              placeholder="e.g., Kyoto, Japan"
-                              value={formData.location}
-                              onChange={(e) =>
-                                handleInputChange("location", e.target.value)
-                              }
-                              className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-sm font-medium mb-2">
-                              Duration
-                            </label>
-                            <Select
-                              value={formData.duration}
-                              onValueChange={(value) =>
-                                handleInputChange("duration", value)
-                              }
-                            >
-                              <SelectTrigger className="transition-all duration-300 focus:ring-2 focus:ring-orange-500">
-                                <SelectValue placeholder="Select duration" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="1-2 hours">
-                                  1-2 hours
-                                </SelectItem>
-                                <SelectItem value="Half day">
-                                  Half day
-                                </SelectItem>
-                                <SelectItem value="Full day">
-                                  Full day
-                                </SelectItem>
-                                <SelectItem value="Multi-day">
-                                  Multi-day
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium mb-2">
-                              Writing Style
-                            </label>
-                            <Select
-                              value={formData.writingStyle}
-                              onValueChange={(value) =>
-                                handleInputChange("writingStyle", value)
-                              }
-                            >
-                              <SelectTrigger className="transition-all duration-300 focus:ring-2 focus:ring-orange-500">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="engaging">
-                                  Engaging & Friendly
-                                </SelectItem>
-                                <SelectItem value="professional">
-                                  Professional
-                                </SelectItem>
-                                <SelectItem value="storytelling">
-                                  Storytelling
-                                </SelectItem>
-                                <SelectItem value="informative">
-                                  Informative
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium mb-2">
-                              Tone:{" "}
-                              {toneValue < 30
-                                ? "Formal"
-                                : toneValue > 70
-                                ? "Casual"
-                                : "Balanced"}
-                            </label>
-                            <Slider
-                              value={[toneValue]}
-                              onValueChange={(value) => setToneValue(value[0])}
-                              max={100}
-                              step={1}
-                              className="transition-all duration-300"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        onClick={() => handleGenerateContent("description")}
-                        disabled={isGenerating}
-                        className="w-full bg-orange-600 hover:bg-orange-700 transition-all duration-300 hover:scale-105"
-                      >
-                        {isGenerating ? (
-                          <>
-                            <Zap className="mr-2 h-4 w-4 animate-spin" />
-                            Generating...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="mr-2 h-4 w-4" />
-                            Generate Description
-                          </>
-                        )}
-                      </Button>
-                      {generatedContent && (
-                        <div className="mt-6 p-4 bg-gray-50 rounded-lg border transition-all duration-300 hover:shadow-md">
-                          <h4 className="font-medium mb-2">
-                            Generated Description:
-                          </h4>
-                          <p className="text-gray-700 leading-relaxed">
-                            {generatedContent}
-                          </p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+              <div className="text-center group">
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-colors">
+                  <span className="text-2xl font-bold text-orange-600">2</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-3">Create Content</h3>
+                <p className="text-gray-600">
+                  Use our AI tools to generate compelling descriptions and
+                  marketing copy.
+                </p>
+              </div>
 
-                {/* Other tab contents would go here... */}
-                <TabsContent value="blog">
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-blue-600" />
-                        Blog Post Generator
-                      </CardTitle>
-                      <CardDescription>
-                        Create engaging blog posts about your cultural
-                        experiences
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <FileText className="h-8 w-8 text-blue-600" />
-                        </div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          Blog Content Generator
-                        </h3>
-                        <p className="text-gray-600 mb-4">
-                          Coming soon - AI-powered blog post creation
-                        </p>
-                        <Badge variant="secondary">In Development</Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+              <div className="text-center group">
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-colors">
+                  <span className="text-2xl font-bold text-orange-600">3</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-3">
+                  Launch & Optimize
+                </h3>
+                <p className="text-gray-600">
+                  Publish your campaigns and track performance with detailed
+                  analytics.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-                {/* Add other tab contents similarly... */}
-                <TabsContent value="social">
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Instagram className="h-5 w-5 text-pink-600" />
-                        Social Media Content
-                      </CardTitle>
-                      <CardDescription>
-                        Generate social media posts for your experiences
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <Instagram className="h-8 w-8 text-pink-600" />
-                        </div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          Social Media Toolkit
-                        </h3>
-                        <p className="text-gray-600 mb-4">
-                          Coming soon - Social media content creation
-                        </p>
-                        <Badge variant="secondary">In Development</Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+        {/* Testimonials Section */}
+        <section className="py-24 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                What Our Customers Say
+              </h2>
+              <p className="text-lg text-gray-600">
+                See how cultural experience providers are growing their
+                businesses with our marketing tools.
+              </p>
+            </div>
 
-                <TabsContent value="visual">
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Image className="h-5 w-5 text-green-600" />
-                        Visual Content Creator
-                      </CardTitle>
-                      <CardDescription>
-                        Create stunning visuals for your marketing campaigns
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <Image className="h-8 w-8 text-green-600" />
-                        </div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          Visual Content Tools
-                        </h3>
-                        <p className="text-gray-600 mb-4">
-                          Coming soon - AI-powered visual content
-                        </p>
-                        <Badge variant="secondary">In Development</Badge>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {[
+                {
+                  name: "Maria Rodriguez",
+                  role: "Food Tour Operator",
+                  location: "Barcelona, Spain",
+                  content:
+                    "Our bookings increased by 40% after using Culturin's marketing tools. The AI content generator saves us hours every week.",
+                  rating: 5,
+                },
+                {
+                  name: "Kenji Tanaka",
+                  role: "Cultural Workshop Leader",
+                  location: "Kyoto, Japan",
+                  content:
+                    "The SEO optimization features helped us reach travelers who are genuinely interested in authentic cultural experiences.",
+                  rating: 5,
+                },
+                {
+                  name: "Sofia Andersson",
+                  role: "Heritage Tour Guide",
+                  location: "Stockholm, Sweden",
+                  content:
+                    "Social media management became so much easier. We can now focus on creating amazing experiences instead of marketing.",
+                  rating: 5,
+                },
+              ].map((testimonial, index) => (
+                <Card
+                  key={index}
+                  className="bg-white border-0 shadow-lg hover:shadow-xl transition-shadow duration-300"
+                >
+                  <CardContent className="p-6">
+                    <div className="flex mb-4">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="h-5 w-5 text-yellow-400 fill-current"
+                        />
+                      ))}
+                    </div>
+                    <p className="text-gray-600 mb-4 italic">
+                      "{testimonial.content}"
+                    </p>
+                    <div>
+                      <div className="font-semibold text-gray-900">
+                        {testimonial.name}
                       </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+                      <div className="text-sm text-gray-500">
+                        {testimonial.role}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {testimonial.location}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
 
-                <TabsContent value="seo">
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Search className="h-5 w-5 text-indigo-600" />
-                        SEO Optimizer
-                      </CardTitle>
-                      <CardDescription>
-                        Optimize your content for search engines
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <Search className="h-8 w-8 text-indigo-600" />
-                        </div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          SEO Tools
-                        </h3>
-                        <p className="text-gray-600 mb-4">
-                          Coming soon - Advanced SEO optimization
-                        </p>
-                        <Badge variant="secondary">In Development</Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+        {/* Simple AI Demo Section */}
+        <section className="py-24 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                  Try Our AI Content Generator
+                </h2>
+                <p className="text-lg text-gray-600">
+                  See how our AI can help you create compelling marketing
+                  content in seconds.
+                </p>
+              </div>
 
-                <TabsContent value="calendar">
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Calendar className="h-5 w-5 text-purple-600" />
-                        Content Calendar
-                      </CardTitle>
-                      <CardDescription>
-                        Plan and schedule your marketing content
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <Calendar className="h-8 w-8 text-purple-600" />
-                        </div>
-                        <h3 className="text-lg font-semibold mb-2">
-                          Content Calendar
-                        </h3>
-                        <p className="text-gray-600 mb-4">
-                          Coming soon - Marketing calendar planning
-                        </p>
-                        <Badge variant="secondary">In Development</Badge>
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-orange-600" />
+                    AI Experience Description Generator
+                  </CardTitle>
+                  <CardDescription>
+                    Create compelling descriptions that capture the essence of
+                    your cultural experiences
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          Experience Title *
+                        </label>
+                        <Input
+                          placeholder="e.g., Traditional Pottery Workshop"
+                          value={formData.title}
+                          onChange={(e) =>
+                            handleInputChange("title", e.target.value)
+                          }
+                          className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
+                        />
                       </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          Cultural Elements *
+                        </label>
+                        <Textarea
+                          placeholder="e.g., Traditional techniques, local artisans, historical significance"
+                          value={formData.culturalElements}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "culturalElements",
+                              e.target.value
+                            )
+                          }
+                          className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          Location *
+                        </label>
+                        <Input
+                          placeholder="e.g., Kyoto, Japan"
+                          value={formData.location}
+                          onChange={(e) =>
+                            handleInputChange("location", e.target.value)
+                          }
+                          className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          Duration
+                        </label>
+                        <Select
+                          value={formData.duration}
+                          onValueChange={(value) =>
+                            handleInputChange("duration", value)
+                          }
+                        >
+                          <SelectTrigger className="transition-all duration-300 focus:ring-2 focus:ring-orange-500">
+                            <SelectValue placeholder="Select duration" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="1-2 hours">1-2 hours</SelectItem>
+                            <SelectItem value="Half day">Half day</SelectItem>
+                            <SelectItem value="Full day">Full day</SelectItem>
+                            <SelectItem value="Multi-day">Multi-day</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => handleGenerateContent("description")}
+                    disabled={isGenerating}
+                    className="w-full bg-orange-600 hover:bg-orange-700 transition-all duration-300 hover:scale-105"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Zap className="mr-2 h-4 w-4 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Generate Description
+                      </>
+                    )}
+                  </Button>
+                  {generatedContent && (
+                    <div className="mt-6 p-4 bg-gray-50 rounded-lg border transition-all duration-300 hover:shadow-md">
+                      <h4 className="font-medium mb-2">
+                        Generated Description:
+                      </h4>
+                      <p className="text-gray-700 leading-relaxed">
+                        {generatedContent}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           </div>
         </section>
@@ -864,11 +731,11 @@ const ProductMarketingPage = () => {
                 <div className="mt-6 flex justify-center space-x-8 text-orange-100">
                   <div className="flex items-center">
                     <Sparkles className="h-5 w-5 mr-2" />
-                    <span>AI-powered tools</span>
+                    <span>AI powered tools</span>
                   </div>
                   <div className="flex items-center">
                     <Star className="h-5 w-5 mr-2" />
-                    <span>14-day free trial</span>
+                    <span>14 day free trial</span>
                   </div>
                 </div>
               </div>
