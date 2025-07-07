@@ -259,7 +259,7 @@ const ProductMarketingPage = () => {
     <div className="min-h-screen flex flex-col">
       <Header type="operator" />
 
-      <main className="flex-1 pt-16">
+      <main className="flex-1">
         {/* Hero Section */}
         <section
           ref={heroRef}
@@ -275,7 +275,7 @@ const ProductMarketingPage = () => {
                 }`}
               >
                 <div className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-6 animate-pulse">
-                  🚀 AI Powered Marketing Suite
+                  AI Powered Marketing Suite
                 </div>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-blue-600 bg-clip-text text-transparent">
                   Market your cultural experiences effectively
