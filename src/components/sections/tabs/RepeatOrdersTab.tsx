@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { ArrowRight, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,11 +13,11 @@ const RepeatOrdersTab = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div>
           <h3 className="text-2xl font-medium mb-2 text-gray-500">
-            Turn one-time guests into lifelong fans.
+            Create lasting cultural ambassadors.
           </h3>
           <h2 className="text-3xl font-medium mb-6">
-            Stay connected after the tour with tools that build trust and repeat
-            bookings.
+            Build genuine relationships that connect travelers to your community
+            long after their visit ends.
           </h2>
 
           <ul className="space-y-3 text-gray-700 mb-8">
@@ -26,7 +26,7 @@ const RepeatOrdersTab = () => {
                 ✓
               </span>
               <span>
-                <strong>Guest profiles with preferences & history</strong>
+                <strong>Cultural journey tracking & growth</strong>
               </span>
             </li>
             <li className="flex items-start">
@@ -34,7 +34,7 @@ const RepeatOrdersTab = () => {
                 ✓
               </span>
               <span>
-                <strong>Loyalty & referral programs</strong>
+                <strong>Community impact recognition</strong>
               </span>
             </li>
             <li className="flex items-start">
@@ -42,7 +42,7 @@ const RepeatOrdersTab = () => {
                 ✓
               </span>
               <span>
-                <strong>Journey-triggered automations</strong>
+                <strong>Meaningful follow-up connections</strong>
               </span>
             </li>
           </ul>
@@ -52,21 +52,23 @@ const RepeatOrdersTab = () => {
             onClick={() => navigate("/demo")}
           >
             <Mail className="h-4 w-4" />
-            Explore Guest CRM tools
+            See relationship-building tools
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
         <div className="relative">
           <Image
             src="https://images.unsplash.com/photo-1576267423445-b2e0074d68a4"
-            alt="Cultural tour guide connecting with returning customers"
+            alt="Cultural guide maintaining long-term relationships with community-minded travelers"
             className="rounded-lg shadow-lg object-cover h-full"
             aspectRatio="video"
           />
 
           {/* Repeat Customer Graph */}
           <div className="absolute bottom-4 right-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-md">
-            <p className="text-sm font-medium mb-2">Guest Return Rate</p>
+            <p className="text-sm font-medium mb-2">
+              Cultural Ambassador Growth
+            </p>
             <div className="flex items-center gap-2">
               <div className="w-full bg-gray-200 h-4 rounded-full">
                 <div
@@ -77,7 +79,7 @@ const RepeatOrdersTab = () => {
               <span className="text-amber-800 font-bold">+68%</span>
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              Operators using Culturin see 3.4× more repeat bookings
+              Travelers become lasting advocates for local culture
             </p>
           </div>
         </div>

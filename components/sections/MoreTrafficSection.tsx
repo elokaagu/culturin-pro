@@ -31,7 +31,7 @@ const MoreTrafficSection = () => {
           }`}
         >
           <h2 className="text-4xl md:text-5xl font-medium text-gray-900 mb-6">
-            <TranslatableText text="Grow your bookings, deepen guest loyalty, and build a cultural brand that scales" />
+            <TranslatableText text="Amplify your cultural impact, connect with authentic travelers, and build a sustainable tourism brand" />
           </h2>
         </div>
 
@@ -39,19 +39,19 @@ const MoreTrafficSection = () => {
           <TabsList className="flex space-x-6 md:space-x-8 mb-8 border-b border-gray-200 w-full overflow-x-auto pb-0">
             <TabsTrigger value="googleTraffic">
               <span className="text-gray-400 mr-2">1</span>{" "}
-              <TranslatableText text="Show Up Higher on Google" />
+              <TranslatableText text="Connect with Cultural Seekers" />
             </TabsTrigger>
             <TabsTrigger value="onlineSales">
               <span className="text-gray-400 mr-2">2</span>{" "}
-              <TranslatableText text="Turn Visitors Into Bookers" />
+              <TranslatableText text="Create Meaningful Connections" />
             </TabsTrigger>
             <TabsTrigger value="repeatOrders">
               <span className="text-gray-400 mr-2">3</span>{" "}
-              <TranslatableText text="Get Guests to Come Back" />
+              <TranslatableText text="Build Lasting Relationships" />
             </TabsTrigger>
             <TabsTrigger value="appDownloads">
               <span className="text-gray-400 mr-2">4</span>{" "}
-              <TranslatableText text="Build Your Digital Footprint" />
+              <TranslatableText text="Share Your Cultural Story" />
             </TabsTrigger>
           </TabsList>
 
