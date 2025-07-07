@@ -803,11 +803,11 @@ const ProductMarketingPage = () => {
                     See how Culturin can transform your business
                   </p>
                   <Button
-                    className="bg-white text-black hover:bg-gray-100 transition-all duration-300 group px-6 py-3 text-base"
+                    className="bg-white text-black hover:bg-gray-100 transition-all duration-300 group px-4 py-2 text-sm"
                     asChild
                   >
                     <Link to="/demo">
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </Button>
                 </div>
@@ -818,11 +818,11 @@ const ProductMarketingPage = () => {
                   </p>
                   <Button
                     variant="outline"
-                    className="transition-all duration-300 hover:bg-gray-100 group px-6 py-3 text-base"
+                    className="transition-all duration-300 hover:bg-gray-100 group px-4 py-2 text-sm"
                     asChild
                   >
                     <Link to="/how-it-works">
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </Button>
                 </div>
