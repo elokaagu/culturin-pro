@@ -73,7 +73,7 @@ const ProductBookingManagementPage = () => {
         "Easily view, organize, and manage all your bookings in one centralized dashboard. Filter by date, status, or experience type.",
       icon: <Calendar className="h-8 w-8 text-blue-600" />,
       benefits: ["Centralized dashboard", "Smart filtering", "Quick actions"],
-      color: "from-blue-500 to-cyan-500",
+      color: "from-blue-500 to-blue-600",
     },
     {
       title: "Guest Management",
@@ -81,7 +81,7 @@ const ProductBookingManagementPage = () => {
         "Access comprehensive guest profiles, view booking history, and manage customer information with ease.",
       icon: <Users className="h-8 w-8 text-blue-600" />,
       benefits: ["Complete profiles", "Booking history", "Custom notes"],
-      color: "from-purple-500 to-pink-500",
+      color: "from-blue-500 to-blue-600",
     },
     {
       title: "Calendar Integration",
@@ -93,7 +93,7 @@ const ProductBookingManagementPage = () => {
         "Smart reminders",
         "Conflict prevention",
       ],
-      color: "from-green-500 to-emerald-500",
+      color: "from-blue-500 to-blue-600",
     },
     {
       title: "Financial Tracking",
@@ -101,7 +101,7 @@ const ProductBookingManagementPage = () => {
         "Monitor revenue, track payments, and export financial reports for your business records.",
       icon: <BarChart4 className="h-8 w-8 text-blue-600" />,
       benefits: ["Revenue tracking", "Payment monitoring", "Financial reports"],
-      color: "from-orange-500 to-red-500",
+      color: "from-blue-500 to-blue-600",
     },
     {
       title: "Automated Notifications",
@@ -113,7 +113,7 @@ const ProductBookingManagementPage = () => {
         "Smart reminders",
         "Follow up sequences",
       ],
-      color: "from-indigo-500 to-purple-500",
+      color: "from-blue-500 to-blue-600",
     },
     {
       title: "Secure Payment Processing",
@@ -121,7 +121,7 @@ const ProductBookingManagementPage = () => {
         "Process payments securely and efficiently, with support for multiple payment methods and currencies.",
       icon: <CreditCard className="h-8 w-8 text-blue-600" />,
       benefits: ["Secure processing", "Multiple methods", "Global currencies"],
-      color: "from-teal-500 to-cyan-500",
+      color: "from-blue-500 to-blue-600",
     },
   ];
 
@@ -166,7 +166,7 @@ const ProductBookingManagementPage = () => {
               }`}
             >
               <div className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium animate-pulse">
-                🚀 Booking Management Solution
+                Booking Management Solution
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                 Manage your bookings{" "}
@@ -241,13 +241,13 @@ const ProductBookingManagementPage = () => {
               {
                 value: "98%",
                 label: "Customer Satisfaction",
-                icon: <Star className="h-6 w-6 text-yellow-500" />,
+                icon: <Star className="h-6 w-6 text-blue-500" />,
                 delay: "delay-100",
               },
               {
                 value: "75%",
                 label: "Admin Time Saved",
-                icon: <Clock className="h-6 w-6 text-green-500" />,
+                icon: <Clock className="h-6 w-6 text-blue-500" />,
                 delay: "delay-200",
               },
               {
@@ -259,7 +259,7 @@ const ProductBookingManagementPage = () => {
               {
                 value: "24/7",
                 label: "Available Support",
-                icon: <Shield className="h-6 w-6 text-purple-500" />,
+                icon: <Shield className="h-6 w-6 text-blue-500" />,
                 delay: "delay-400",
               },
             ].map((stat, index) => (
