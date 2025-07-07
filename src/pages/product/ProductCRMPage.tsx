@@ -172,11 +172,11 @@ const ProductCRMPage = () => {
     <div className="min-h-screen flex flex-col">
       <Header type="operator" />
 
-      <main className="flex-1 pt-24">
+      <main className="flex-1">
         {/* Hero Section */}
         <section
           ref={heroRef}
-          className="bg-gradient-to-br from-purple-50 via-white to-pink-50 py-24 overflow-hidden"
+          className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-24 overflow-hidden"
         >
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-12">
@@ -187,10 +187,10 @@ const ProductCRMPage = () => {
                     : "opacity-0 -translate-x-12"
                 }`}
               >
-                <div className="inline-block px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-6 animate-pulse">
-                  💎 Advanced CRM Platform
+                <div className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-6 animate-pulse">
+                  Advanced CRM Platform
                 </div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-blue-600 bg-clip-text text-transparent">
                   Build lasting relationships with your guests
                 </h1>
                 <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
@@ -200,20 +200,20 @@ const ProductCRMPage = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button
-                    className="bg-purple-600 hover:bg-purple-700 text-white text-lg py-6 px-8 rounded-xl h-auto group transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 px-8 rounded-xl h-auto group transition-all duration-300 hover:scale-105 hover:shadow-lg"
                     asChild
                   >
                     <Link to="/demo">
-                      See CRM in Action
+                      Request a demo
                       <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </Button>
                   <Button
                     variant="outline"
-                    className="bg-white border border-gray-300 text-gray-800 text-lg py-6 px-8 rounded-xl h-auto hover:border-purple-300 hover:shadow-md transition-all duration-300"
+                    className="bg-white border border-gray-300 text-gray-800 text-lg py-6 px-8 rounded-xl h-auto hover:border-blue-300 hover:shadow-md transition-all duration-300"
                     asChild
                   >
-                    <Link to="/sign-in">Start Free Trial</Link>
+                    <Link to="/sign-in">Learn more</Link>
                   </Button>
                 </div>
               </div>
@@ -225,12 +225,12 @@ const ProductCRMPage = () => {
                 }`}
               >
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-2xl blur-xl"></div>
-                  <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-8 aspect-video flex items-center justify-center relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-400/20 animate-pulse"></div>
-                    <Users className="w-32 h-32 text-purple-600 relative z-10 group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-indigo-400/20 rounded-2xl blur-xl"></div>
+                  <div className="bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl p-8 aspect-video flex items-center justify-center relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-indigo-400/20 animate-pulse"></div>
+                    <Users className="w-32 h-32 text-blue-600 relative z-10 group-hover:scale-110 transition-transform duration-500" />
                     <div className="absolute top-4 right-4 bg-green-500 w-3 h-3 rounded-full animate-ping"></div>
-                    <div className="absolute bottom-4 left-4 text-xs text-purple-600 font-medium">
+                    <div className="absolute bottom-4 left-4 text-xs text-blue-600 font-medium">
                       Guest Activity
                     </div>
                   </div>
@@ -260,7 +260,7 @@ const ProductCRMPage = () => {
                   <div className="flex justify-center mb-2 group-hover:scale-110 transition-transform">
                     {stat.icon}
                   </div>
-                  <div className="text-3xl md:text-4xl font-bold text-purple-600 mb-2">
+                  <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">
                     {stat.value}
                   </div>
                   <div className="text-gray-600 text-sm">{stat.label}</div>
@@ -314,7 +314,7 @@ const ProductCRMPage = () => {
                         {feature.icon}
                       </div>
                     </div>
-                    <h3 className="text-xl font-semibold mb-3 group-hover:text-purple-600 transition-colors">
+                    <h3 className="text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors">
                       {feature.title}
                     </h3>
                     <p className="text-gray-600 mb-4 leading-relaxed">
@@ -326,7 +326,7 @@ const ProductCRMPage = () => {
                           key={benefitIndex}
                           className="flex items-center text-sm text-gray-500"
                         >
-                          <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                           {benefit}
                         </div>
                       ))}
@@ -338,7 +338,7 @@ const ProductCRMPage = () => {
                           : "translate-y-2"
                       }`}
                     >
-                      <div className="text-purple-600 text-sm font-medium flex items-center">
+                      <div className="text-blue-600 text-sm font-medium flex items-center">
                         <Zap className="mr-2 h-4 w-4" />
                         Explore feature
                       </div>
@@ -382,8 +382,8 @@ const ProductCRMPage = () => {
                     key={index}
                     className={`p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                       activeDemo === index
-                        ? "border-purple-500 bg-purple-50 shadow-lg scale-105"
-                        : "border-gray-200 bg-white hover:border-purple-300 hover:shadow-md"
+                        ? "border-blue-500 bg-blue-50 shadow-lg scale-105"
+                        : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-md"
                     }`}
                     onClick={() => setActiveDemo(index)}
                   >
@@ -402,8 +402,8 @@ const ProductCRMPage = () => {
                 ))}
               </div>
               <div className="relative">
-                <div className="bg-gradient-to-br from-gray-100 to-purple-100 rounded-2xl p-8 aspect-video flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-400/10 to-pink-400/10 animate-pulse"></div>
+                <div className="bg-gradient-to-br from-gray-100 to-blue-100 rounded-2xl p-8 aspect-video flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-indigo-400/10 animate-pulse"></div>
                   <div className="text-center relative z-10">
                     <div
                       className={`w-24 h-24 rounded-full ${demoFeatures[activeDemo].color} flex items-center justify-center mb-4 mx-auto animate-bounce`}
@@ -427,7 +427,7 @@ const ProductCRMPage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-24 bg-gradient-to-r from-purple-600 to-pink-600 overflow-hidden">
+        <section className="py-24 bg-gradient-to-r from-blue-600 to-indigo-600 overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <div
@@ -440,31 +440,31 @@ const ProductCRMPage = () => {
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
                   Ready to build stronger guest relationships?
                 </h2>
-                <p className="text-xl text-purple-100 mb-8 leading-relaxed">
+                <p className="text-xl text-blue-100 mb-8 leading-relaxed">
                   Join thousands of cultural experience providers who are
                   creating lasting connections with their guests.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
                     size="lg"
-                    className="bg-white text-purple-600 hover:bg-gray-100 group transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    className="bg-white text-blue-600 hover:bg-gray-100 group transition-all duration-300 hover:scale-105 hover:shadow-lg px-4 py-2 text-sm"
                     asChild
                   >
                     <Link to="/demo">
                       Start Free Trial
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </Button>
                   <Button
                     variant="outline"
                     size="lg"
-                    className="text-white border-white hover:bg-white hover:text-purple-600 transition-all duration-300"
+                    className="text-white border-white hover:bg-white hover:text-blue-600 transition-all duration-300 px-4 py-2 text-sm"
                     asChild
                   >
                     <Link to="/contact">Contact Sales</Link>
                   </Button>
                 </div>
-                <div className="mt-6 flex justify-center space-x-8 text-purple-100">
+                <div className="mt-6 flex justify-center space-x-8 text-blue-100">
                   <div className="flex items-center">
                     <Star className="h-5 w-5 mr-2" />
                     <span>14-day free trial</span>
