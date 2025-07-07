@@ -438,67 +438,40 @@ const ProductBookingManagementPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section
-        ref={ctaRef}
-        className="py-16 md:py-24 bg-blue-600 overflow-hidden"
-      >
+      <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div
-              className={`transition-all duration-1000 ease-out ${
-                ctaInView
-                  ? "opacity-100 translate-x-0"
-                  : "opacity-0 -translate-x-8"
-              }`}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Ready to transform your booking process?
-              </h2>
-              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-                Join thousands of cultural experience providers who have
-                streamlined their operations with our booking management system.
-              </p>
-              <div className="flex flex-wrap gap-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-black text-white p-8 rounded-lg hover:shadow-xl transition-shadow duration-300">
+                <h3 className="text-2xl font-bold mb-4">Get a free demo</h3>
+                <p className="text-gray-300 mb-6">
+                  See how Culturin can transform your business
+                </p>
                 <Button
-                  size="lg"
-                  className="bg-white text-blue-600 hover:bg-gray-100 group transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  className="bg-white text-black hover:bg-gray-100 transition-all duration-300 group px-4 py-2 text-sm"
+                  asChild
                 >
-                  <Link to="/demo" className="text-blue-600 flex items-center">
-                    Schedule a Demo
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="text-white border-white hover:bg-white hover:text-blue-600 hover:border-white transition-all duration-300"
-                >
-                  <Link
-                    to="/pricing"
-                    className="text-white hover:text-blue-600 font-medium"
-                  >
-                    View Pricing
+                  <Link to="/demo">
+                    Request a demo
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
               </div>
-            </div>
-            <div
-              className={`transition-all duration-1000 ease-out delay-200 ${
-                ctaInView
-                  ? "opacity-100 translate-x-0"
-                  : "opacity-0 translate-x-8"
-              }`}
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-white/10 rounded-2xl blur-xl"></div>
-                <Image
-                  src="/lovable-uploads/1b4ba777-0a40-4904-98a9-11b727de21a6.png"
-                  alt="Cultural tour operator using booking management dashboard on tablet"
-                  className="w-full h-auto rounded-2xl shadow-2xl relative z-10 hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium animate-bounce z-20">
-                  Live Demo Available
-                </div>
+              <div className="bg-gray-50 p-8 rounded-lg hover:shadow-xl transition-shadow duration-300">
+                <h3 className="text-2xl font-bold mb-4">See how it works</h3>
+                <p className="text-gray-600 mb-6">
+                  Explore our platform features and benefits
+                </p>
+                <Button
+                  variant="outline"
+                  className="transition-all duration-300 hover:bg-gray-100 group px-4 py-2 text-sm"
+                  asChild
+                >
+                  <Link to="/how-it-works">
+                    Learn more
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
