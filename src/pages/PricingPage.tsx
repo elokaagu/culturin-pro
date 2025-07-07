@@ -26,7 +26,7 @@ const PricingPage = () => {
               One simple price.
             </h1>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Month-to-month. No long-term contracts. No cancellation fees. Just
+              Month to month. No long term contracts. No cancellation fees. Just
               pay a flat rate to get everything on the Culturin platform.
             </p>
           </div>
@@ -125,7 +125,7 @@ const PricingPage = () => {
                   </div>
                   <p className="text-gray-700">
                     Our pricing is month to month. We don't believe in locking
-                    you into long-term contracts. We believe in earning your
+                    you into long term contracts. We believe in earning your
                     business every month.
                   </p>
                 </div>
@@ -249,7 +249,7 @@ const PricingPage = () => {
                     Analytics Dashboard
                   </h3>
                   <p className="text-gray-600">
-                    Track performance with real-time data and actionable
+                    Track performance with real time data and actionable
                     insights.
                   </p>
                 </div>
@@ -317,7 +317,7 @@ const PricingPage = () => {
                       How long are your contracts?
                     </AccordionTrigger>
                     <AccordionContent>
-                      We offer month-to-month pricing with no long-term
+                      We offer month to month pricing with no long term
                       contracts. You can cancel anytime with no penalties or
                       hidden fees.
                     </AccordionContent>
@@ -328,7 +328,7 @@ const PricingPage = () => {
                       How long does it take to get started?
                     </AccordionTrigger>
                     <AccordionContent>
-                      Most operators are up and running within 24-48 hours. Our
+                      Most operators are up and running within 24-48 hours. our
                       onboarding team will help you set up your account, import
                       your existing tours, and configure your booking system.
                     </AccordionContent>

@@ -1,12 +1,35 @@
-
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
-  Calendar, Users, BarChart3, Megaphone, Globe, UsersRound,
-  TrendingUp, Activity, ImagePlus, CreditCard, Receipt, MessageSquare,
-  UserCircle, Tag, MessageCircle, Star, Ticket, Search, Share2, CheckSquare,
-  Info, LineChart
+  Calendar,
+  Users,
+  BarChart3,
+  Megaphone,
+  Globe,
+  UsersRound,
+  TrendingUp,
+  Activity,
+  ImagePlus,
+  CreditCard,
+  Receipt,
+  MessageSquare,
+  UserCircle,
+  Tag,
+  MessageCircle,
+  Star,
+  Ticket,
+  Search,
+  Share2,
+  CheckSquare,
+  Info,
+  LineChart,
 } from "lucide-react";
 
 const FeaturesCatalogue = () => {
@@ -14,7 +37,10 @@ const FeaturesCatalogue = () => {
     <Card>
       <CardHeader>
         <CardTitle>Explore All Features</CardTitle>
-        <CardDescription>Discover the full suite of professional tools available to elevate your cultural hosting business</CardDescription>
+        <CardDescription>
+          Discover the full suite of professional tools available to elevate
+          your cultural hosting business
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="dashboard">
@@ -26,52 +52,64 @@ const FeaturesCatalogue = () => {
             <TabsTrigger value="marketing">Marketing</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="dashboard" className="space-y-4">
             <h4 className="font-medium text-lg">Performance at a Glance</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FeatureItem 
-                icon={<BarChart3 className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <BarChart3 className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Performance Metrics"
                 description="Track booking rate, customer satisfaction, and profile completion scores"
               />
-              <FeatureItem 
-                icon={<TrendingUp className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <TrendingUp className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Revenue Insights"
                 description="Analyze daily, weekly, monthly earnings with customizable date ranges"
               />
-              <FeatureItem 
-                icon={<Activity className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <Activity className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Experience Health"
                 description="Visual indicators for drafts, published listings, and underperforming tours"
               />
-              <FeatureItem 
+              <FeatureItem
                 icon={<Info className="h-5 w-5 text-culturin-indigo mt-1" />}
                 title="Industry Benchmarks"
                 description="See how your performance compares to similar cultural experiences"
               />
             </div>
           </TabsContent>
-          
+
           <TabsContent value="builder" className="space-y-4">
-            <h4 className="font-medium text-lg">Advanced Experience Creation</h4>
+            <h4 className="font-medium text-lg">
+              Advanced Experience Creation
+            </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FeatureItem 
-                icon={<Calendar className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <Calendar className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Drag-and-Drop Interface"
                 description="Create multi-day itineraries with simple visual tools"
               />
-              <FeatureItem 
+              <FeatureItem
                 icon={<Users className="h-5 w-5 text-culturin-indigo mt-1" />}
                 title="Capacity Controls"
                 description="Set group sizes, availability windows, and pricing tiers"
               />
-              <FeatureItem 
-                icon={<ImagePlus className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <ImagePlus className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Media Management"
                 description="Add photos, videos, and testimonials with optimization tools"
               />
-              <FeatureItem 
+              <FeatureItem
                 icon={<Star className="h-5 w-5 text-culturin-indigo mt-1" />}
                 title="Smart Suggestions"
                 description="Get AI recommendations for improving visibility based on similar listings"
@@ -80,25 +118,33 @@ const FeaturesCatalogue = () => {
           </TabsContent>
 
           <TabsContent value="bookings" className="space-y-4">
-            <h4 className="font-medium text-lg">Seamless Booking and Payments</h4>
+            <h4 className="font-medium text-lg">
+              Seamless Booking and Payments
+            </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FeatureItem 
-                icon={<CreditCard className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <CreditCard className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Payment Integrations"
                 description="Connect with secure payment for secure financial transactions"
               />
-              <FeatureItem 
+              <FeatureItem
                 icon={<Receipt className="h-5 w-5 text-culturin-indigo mt-1" />}
                 title="Financial Reports"
                 description="Payout tracking and detailed financial statements"
               />
-              <FeatureItem 
-                icon={<Calendar className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <Calendar className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Integrated Calendar"
                 description="Booking calendar syncable with Google/Apple Calendar"
               />
-              <FeatureItem 
-                icon={<MessageSquare className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <MessageSquare className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Group Booking Tools"
                 description="Manage group bookings with chat and payment splitting"
               />
@@ -106,27 +152,33 @@ const FeaturesCatalogue = () => {
           </TabsContent>
 
           <TabsContent value="crm" className="space-y-4">
-            <h4 className="font-medium text-lg">Guest Relationship Management</h4>
+            <h4 className="font-medium text-lg">
+              Guest Relationship Management
+            </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FeatureItem 
-                icon={<UserCircle className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <UserCircle className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Guest Profiles"
                 description="Track past bookings, reviews, preferences for personalization"
               />
-              <FeatureItem 
+              <FeatureItem
                 icon={<Tag className="h-5 w-5 text-culturin-indigo mt-1" />}
                 title="Auto-Tagging"
                 description="Automatically categorize guests (e.g. food lover, cultural explorer)"
               />
-              <FeatureItem 
-                icon={<MessageCircle className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <MessageCircle className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Direct Messaging"
                 description="Communicate with guests before and after experiences"
               />
-              <FeatureItem 
+              <FeatureItem
                 icon={<Star className="h-5 w-5 text-culturin-indigo mt-1" />}
                 title="Review Management"
-                description="Request reviews and send auto-follow-up templates"
+                description="Request reviews and send auto follow up templates"
               />
             </div>
           </TabsContent>
@@ -134,25 +186,27 @@ const FeaturesCatalogue = () => {
           <TabsContent value="marketing" className="space-y-4">
             <h4 className="font-medium text-lg">Promotional Tools</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FeatureItem 
+              <FeatureItem
                 icon={<Ticket className="h-5 w-5 text-culturin-indigo mt-1" />}
                 title="Promo Code Generator"
                 description="Create and track promotional codes for special offers"
               />
-              <FeatureItem 
-                icon={<Megaphone className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <Megaphone className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Email & SMS Broadcasts"
                 description="Send targeted marketing messages to past and potential guests"
               />
-              <FeatureItem 
+              <FeatureItem
                 icon={<Search className="h-5 w-5 text-culturin-indigo mt-1" />}
                 title="SEO Tools"
                 description="Optimize your listings with SEO checklist and recommendations"
               />
-              <FeatureItem 
+              <FeatureItem
                 icon={<Share2 className="h-5 w-5 text-culturin-indigo mt-1" />}
                 title="Referral System"
-                description="Built-in referral program to encourage word-of-mouth growth"
+                description="Built-in referral program to encourage word of mouth growth"
               />
             </div>
           </TabsContent>
@@ -160,23 +214,31 @@ const FeaturesCatalogue = () => {
           <TabsContent value="team" className="space-y-4">
             <h4 className="font-medium text-lg">Team Collaboration</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FeatureItem 
-                icon={<UsersRound className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <UsersRound className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Role Management"
                 description="Add team members with role-based permissions"
               />
-              <FeatureItem 
-                icon={<CheckSquare className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <CheckSquare className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Task Assignment"
                 description="Assign tasks per experience with simple tracking"
               />
-              <FeatureItem 
-                icon={<CreditCard className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <CreditCard className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Team Training"
                 description="In-app tutorials and onboarding for new team members"
               />
-              <FeatureItem 
-                icon={<LineChart className="h-5 w-5 text-culturin-indigo mt-1" />}
+              <FeatureItem
+                icon={
+                  <LineChart className="h-5 w-5 text-culturin-indigo mt-1" />
+                }
                 title="Performance Tracking"
                 description="Monitor individual team member performance and contribution"
               />
@@ -194,7 +256,11 @@ interface FeatureItemProps {
   description: string;
 }
 
-const FeatureItem: React.FC<FeatureItemProps> = ({ icon, title, description }) => (
+const FeatureItem: React.FC<FeatureItemProps> = ({
+  icon,
+  title,
+  description,
+}) => (
   <div className="flex gap-3">
     {icon}
     <div>

@@ -67,7 +67,7 @@ const BigBrandsTechSection = () => {
               <div className="flex items-start gap-2">
                 <CheckCircle className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
                 <p className="text-gray-700">
-                  <TranslatableText text="Automated marketing tools – Emails, follow-ups, and retargeting that run while you sleep" />
+                  <TranslatableText text="Automated marketing tools – Emails, follow ups, and retargeting that run while you sleep" />
                 </p>
               </div>
             </div>

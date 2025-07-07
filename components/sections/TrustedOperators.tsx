@@ -159,7 +159,7 @@ const TrustedOperators = () => {
       name: "Alejandro Fuentes",
       company: "Lima Heritage Tours",
       quote:
-        "Customer retention improved by 40% after implementing the automated follow-up emails and personalized recommendations.",
+        "Customer retention improved by 40% after implementing the automated follow up emails and personalized recommendations.",
       image:
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",
       category: "Heritage Tours",

@@ -270,11 +270,11 @@ const DemoPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
               {[
-                "All-in-one platform designed specifically for cultural experiences",
-                "Commission-free direct bookings save you thousands",
+                "All in one platform designed specifically for cultural experiences",
+                "Commission free direct bookings save you thousands",
                 "Built-in marketing tools to reach more travelers",
                 "Advanced CRM to build guest relationships",
-                "Data-driven insights to grow your business",
+                "Data driven insights to grow your business",
                 "Dedicated support from our team of experts",
               ].map((feature, index) => (
                 <div key={index} className="flex items-start">

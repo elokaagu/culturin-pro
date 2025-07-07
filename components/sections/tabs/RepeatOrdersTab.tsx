@@ -41,7 +41,7 @@ const RepeatOrdersTab = () => {
                 ✓
               </span>
               <span>
-                <strong>Meaningful follow-up connections</strong>
+                <strong>Meaningful follow up connections</strong>
               </span>
             </li>
           </ul>
@@ -51,14 +51,14 @@ const RepeatOrdersTab = () => {
             onClick={() => navigate("/demo")}
           >
             <Mail className="h-4 w-4" />
-            See relationship-building tools
+            See relationship building tools
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
         <div className="relative">
           <Image
             src="https://images.unsplash.com/photo-1576267423445-b2e0074d68a4"
-            alt="Cultural guide maintaining long-term relationships with community-minded travelers"
+            alt="Cultural guide maintaining long term relationships with community minded travelers"
             className="rounded-lg shadow-lg object-cover h-full"
             aspectRatio="video"
           />

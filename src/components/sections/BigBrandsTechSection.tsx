@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useInView } from "react-intersection-observer";
@@ -71,7 +71,7 @@ const BigBrandsTechSection = () => {
               <div className="flex items-start gap-2">
                 <CheckCircle className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
                 <p className="text-gray-700">
-                  Automated marketing tools – Emails, follow-ups, and
+                  Automated marketing tools – Emails, follow ups, and
                   retargeting that run while you sleep
                 </p>
               </div>
@@ -120,7 +120,12 @@ const BigBrandsTechSection = () => {
 
                       {/* App content - using a cultural tour image instead of food */}
                       <div className="relative h-[65%]">
-                        <Image src="https://images.unsplash.com/photo-1516939884455-1445c8652f83?q=80&w=1000&auto=format&fit=crop" alt="Cultural tour guide showing experience" className="w-full h-full object-cover" fill />
+                        <Image
+                          src="https://images.unsplash.com/photo-1516939884455-1445c8652f83?q=80&w=1000&auto=format&fit=crop"
+                          alt="Cultural tour guide showing experience"
+                          className="w-full h-full object-cover"
+                          fill
+                        />
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
                           <div className="flex justify-between items-center">
                             <div>

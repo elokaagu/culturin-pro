@@ -42,7 +42,7 @@ const CulturinPro = () => {
           Welcome to Culturin Pro
         </h1>
         <p className="text-lg text-gray-600 mb-8">
-          Your all-in-one platform for creating, managing, and growing your
+          Your all in one platform for creating, managing, and growing your
           cultural tourism business.
         </p>
         <Button

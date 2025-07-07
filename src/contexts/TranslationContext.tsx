@@ -1393,10 +1393,13 @@ const mockTranslations: Record<string, Record<string, string>> = {
     },
   "Automated marketing tools – Emails, follow ups, and retargeting that run while you sleep":
     {
-      es: "Herramientas de marketing automatizadas – Emails, seguimientos y retargeting que funcionan mientras duermes",
-      fr: "Outils de marketing automatisés – Emails, suivis et reciblage qui fonctionnent pendant que vous dormez",
-      de: "Automatisierte Marketing-Tools – E-Mails, Follow-ups und Retargeting, die laufen, während Sie schlafen",
-      it: "Strumenti di marketing automatizzati – Email, follow-up e retargeting che funzionano mentre dormi",
+      en: "Automated marketing tools – Emails, follow ups, and retargeting that run while you sleep",
+      "en-GB":
+        "Automated marketing tools – Emails, follow ups, and retargeting that run whilst you sleep",
+      es: "Herramientas de marketing automatizadas – Correos electrónicos, seguimientos y retargeting que funcionan mientras duermes",
+      fr: "Outils marketing automatisés – E-mails, suivis et reciblage qui fonctionnent pendant que vous dormez",
+      de: "Automatisierte Marketing Tools – E Mails, Follow ups und Retargeting, die laufen, während Sie schlafen",
+      it: "Strumenti di marketing automatizzati – Email, follow up e retargeting che funzionano mentre dormi",
       pt: "Ferramentas de marketing automatizadas – Emails, acompanhamentos e retargeting que funcionam enquanto você dorme",
       zh: "自动化营销工具 – 在您睡觉时运行的电子邮件、跟进和重新定位",
       ja: "自動化マーケティングツール – 眠っている間に動作するメール、フォローアップ、リターゲティング",

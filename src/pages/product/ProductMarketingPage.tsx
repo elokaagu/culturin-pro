@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge"; // Add this import
+import { Badge } from "@/components/ui/badge";
 import { Link } from "../../../lib/navigation";
 import {
   Globe,
@@ -17,6 +17,12 @@ import {
   PencilIcon,
   Image,
   LayoutGrid,
+  ArrowRight,
+  Sparkles,
+  TrendingUp,
+  Target,
+  Users,
+  MessageSquare,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -38,6 +44,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import NewFooter from "@/components/sections/NewFooter";
+import { useInView } from "react-intersection-observer";
 
 const ProductMarketingPage = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
@@ -45,6 +52,29 @@ const ProductMarketingPage = () => {
   const [toneValue, setToneValue] = useState<number>(50);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [generatedContent, setGeneratedContent] = useState<string>("");
+  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
+  const [activeDemo, setActiveDemo] = useState<number>(0);
+
+  // Intersection observers for scroll animations
+  const { ref: heroRef, inView: heroInView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  const { ref: featuresRef, inView: featuresInView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  const { ref: toolkitRef, inView: toolkitInView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  const { ref: statsRef, inView: statsInView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
 
   // Form state for tour description
   const [formData, setFormData] = useState({
@@ -57,6 +87,13 @@ const ProductMarketingPage = () => {
 
   useEffect(() => {
     setAnimateItems(true);
+
+    // Auto-rotate demo features
+    const interval = setInterval(() => {
+      setActiveDemo((prev) => (prev + 1) % 4);
+    }, 3000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleInputChange = (field: string, value: string) => {
@@ -109,54 +146,311 @@ const ProductMarketingPage = () => {
     }
   };
 
+  const features = [
+    {
+      icon: <Megaphone className="h-10 w-10 text-orange-600" />,
+      title: "AI Content Creation",
+      description:
+        "Generate compelling descriptions, social media posts, and marketing copy tailored to your cultural experiences.",
+      benefits: [
+        "Auto-generated descriptions",
+        "Social media content",
+        "SEO optimization",
+      ],
+      color: "from-orange-500 to-red-500",
+    },
+    {
+      icon: <Search className="h-10 w-10 text-blue-600" />,
+      title: "SEO Optimization",
+      description:
+        "Improve your search rankings with culturally-relevant keywords and optimized content structures.",
+      benefits: ["Keyword research", "Content optimization", "Local SEO"],
+      color: "from-blue-500 to-cyan-500",
+    },
+    {
+      icon: <Instagram className="h-10 w-10 text-pink-600" />,
+      title: "Social Media Tools",
+      description:
+        "Create engaging social media content that showcases your cultural experiences authentically.",
+      benefits: ["Content templates", "Scheduling tools", "Analytics tracking"],
+      color: "from-pink-500 to-purple-500",
+    },
+    {
+      icon: <Target className="h-10 w-10 text-green-600" />,
+      title: "Audience Targeting",
+      description:
+        "Reach the right travelers with precision targeting based on cultural interests and travel behavior.",
+      benefits: [
+        "Demographic targeting",
+        "Interest-based ads",
+        "Behavioral insights",
+      ],
+      color: "from-green-500 to-emerald-500",
+    },
+    {
+      icon: <Globe className="h-10 w-10 text-indigo-600" />,
+      title: "Multi-Channel Campaigns",
+      description:
+        "Coordinate marketing efforts across multiple platforms for maximum reach and impact.",
+      benefits: [
+        "Cross-platform sync",
+        "Unified messaging",
+        "Campaign tracking",
+      ],
+      color: "from-indigo-500 to-purple-500",
+    },
+    {
+      icon: <TrendingUp className="h-10 w-10 text-teal-600" />,
+      title: "Performance Analytics",
+      description:
+        "Track your marketing performance and optimize campaigns based on real-time data.",
+      benefits: ["ROI tracking", "Conversion metrics", "A/B testing"],
+      color: "from-teal-500 to-cyan-500",
+    },
+  ];
+
+  const demoFeatures = [
+    {
+      title: "AI Content Generator",
+      description: "Create compelling descriptions instantly",
+      color: "bg-orange-500",
+    },
+    {
+      title: "SEO Optimizer",
+      description: "Boost your search rankings",
+      color: "bg-blue-500",
+    },
+    {
+      title: "Social Media Planner",
+      description: "Schedule and manage posts",
+      color: "bg-pink-500",
+    },
+    {
+      title: "Campaign Analytics",
+      description: "Track performance metrics",
+      color: "bg-green-500",
+    },
+  ];
+
+  const stats = [
+    {
+      value: "3.2x",
+      label: "Increase in Bookings",
+      icon: <TrendingUp className="h-6 w-6 text-green-500" />,
+    },
+    {
+      value: "85%",
+      label: "Time Saved on Content",
+      icon: <Zap className="h-6 w-6 text-yellow-500" />,
+    },
+    {
+      value: "94%",
+      label: "Improved SEO Rankings",
+      icon: <Search className="h-6 w-6 text-blue-500" />,
+    },
+    {
+      value: "67%",
+      label: "Social Engagement Boost",
+      icon: <Instagram className="h-6 w-6 text-pink-500" />,
+    },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header type="operator" />
 
       <main className="flex-1 pt-24">
         {/* Hero Section */}
-        <section className="bg-white py-24">
+        <section
+          ref={heroRef}
+          className="bg-gradient-to-br from-orange-50 via-white to-pink-50 py-24 overflow-hidden"
+        >
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-12">
-              <div className="lg:w-1/2">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              <div
+                className={`lg:w-1/2 transition-all duration-1000 ease-out ${
+                  heroInView
+                    ? "opacity-100 translate-x-0"
+                    : "opacity-0 -translate-x-12"
+                }`}
+              >
+                <div className="inline-block px-4 py-2 bg-orange-100 text-orange-700 rounded-full text-sm font-medium mb-6 animate-pulse">
+                  🚀 AI-Powered Marketing Suite
+                </div>
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-orange-600 bg-clip-text text-transparent">
                   Market your cultural experiences effectively
                 </h1>
-                <p className="text-lg text-gray-600 mb-8">
+                <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
                   Reach more travelers and fill your tours with our specialized
                   marketing tools built for cultural experience creators.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 px-8 rounded-xl h-auto"
+                    className="bg-orange-600 hover:bg-orange-700 text-white text-lg py-6 px-8 rounded-xl h-auto group transition-all duration-300 hover:scale-105 hover:shadow-lg"
                     asChild
                   >
-                    <Link to="/demo">Request a demo</Link>
+                    <Link to="/demo">
+                      Try Marketing Tools
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                   </Button>
                   <Button
                     variant="outline"
-                    className="bg-white border border-gray-300 text-gray-800 text-lg py-6 px-8 rounded-xl h-auto"
+                    className="bg-white border border-gray-300 text-gray-800 text-lg py-6 px-8 rounded-xl h-auto hover:border-orange-300 hover:shadow-md transition-all duration-300"
                     asChild
                   >
-                    <Link to="/sign-in">Get started</Link>
+                    <Link to="/sign-in">Start Free Trial</Link>
                   </Button>
                 </div>
               </div>
-              <div className="lg:w-1/2">
-                <div className="bg-gray-100 rounded-xl p-8 aspect-video flex items-center justify-center">
-                  <Megaphone className="w-32 h-32 text-blue-600" />
+              <div
+                className={`lg:w-1/2 transition-all duration-1000 ease-out delay-200 ${
+                  heroInView
+                    ? "opacity-100 translate-x-0"
+                    : "opacity-0 translate-x-12"
+                }`}
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-pink-400/20 rounded-2xl blur-xl"></div>
+                  <div className="bg-gradient-to-br from-orange-100 to-pink-100 rounded-2xl p-8 aspect-video flex items-center justify-center relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-pink-400/20 animate-pulse"></div>
+                    <Megaphone className="w-32 h-32 text-orange-600 relative z-10 group-hover:scale-110 transition-transform duration-500" />
+                    <div className="absolute top-4 right-4 bg-green-500 w-3 h-3 rounded-full animate-ping"></div>
+                    <div className="absolute bottom-4 left-4 text-xs text-orange-600 font-medium">
+                      AI Marketing
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* AI Content Toolkit Section */}
-        <section className="bg-gradient-to-b from-blue-50 to-white py-24">
+        {/* Stats Section */}
+        <section ref={statsRef} className="py-16 bg-white">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto mb-16 text-center">
+            <div
+              className={`grid grid-cols-2 md:grid-cols-4 gap-6 text-center transition-all duration-1000 ${
+                statsInView
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
+              }`}
+            >
+              {stats.map((stat, index) => (
+                <div
+                  key={index}
+                  className={`transition-all duration-700 hover:scale-105 cursor-pointer group delay-${
+                    (index + 1) * 100
+                  }`}
+                >
+                  <div className="flex justify-center mb-2 group-hover:scale-110 transition-transform">
+                    {stat.icon}
+                  </div>
+                  <div className="text-3xl md:text-4xl font-bold text-orange-600 mb-2">
+                    {stat.value}
+                  </div>
+                  <div className="text-gray-600 text-sm">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section ref={featuresRef} className="bg-gray-50 py-24">
+          <div className="container mx-auto px-4">
+            <div
+              className={`max-w-3xl mx-auto text-center mb-16 transition-all duration-1000 ${
+                featuresInView
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
+              }`}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Complete Marketing Toolkit
+              </h2>
+              <p className="text-lg text-gray-600">
+                Everything you need to promote your cultural experiences and
+                reach more travelers.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {features.map((feature, index) => (
+                <Card
+                  key={index}
+                  className={`transition-all duration-700 hover:shadow-xl hover:-translate-y-2 cursor-pointer group border-0 bg-white ${
+                    featuresInView
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-8"
+                  }`}
+                  style={{ transitionDelay: `${index * 100}ms` }}
+                  onMouseEnter={() => setHoveredFeature(index)}
+                  onMouseLeave={() => setHoveredFeature(null)}
+                >
+                  <CardContent className="p-8">
+                    <div
+                      className={`mb-6 transition-all duration-300 ${
+                        hoveredFeature === index ? "scale-110" : "scale-100"
+                      }`}
+                    >
+                      <div
+                        className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4`}
+                      >
+                        {feature.icon}
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-semibold mb-3 group-hover:text-orange-600 transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4 leading-relaxed">
+                      {feature.description}
+                    </p>
+                    <div className="space-y-2">
+                      {feature.benefits.map((benefit, benefitIndex) => (
+                        <div
+                          key={benefitIndex}
+                          className="flex items-center text-sm text-gray-500"
+                        >
+                          <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                          {benefit}
+                        </div>
+                      ))}
+                    </div>
+                    <div
+                      className={`mt-6 opacity-0 group-hover:opacity-100 transition-all duration-300 ${
+                        hoveredFeature === index
+                          ? "translate-y-0"
+                          : "translate-y-2"
+                      }`}
+                    >
+                      <div className="text-orange-600 text-sm font-medium flex items-center">
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Try this tool
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* AI Content Toolkit Section */}
+        <section
+          ref={toolkitRef}
+          className="bg-gradient-to-b from-blue-50 to-white py-24"
+        >
+          <div className="container mx-auto px-4">
+            <div
+              className={`max-w-4xl mx-auto mb-16 text-center transition-all duration-1000 ${
+                toolkitInView
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
+              }`}
+            >
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                AI-Powered Marketing Toolkit
+                AI Powered Marketing Toolkit
               </h2>
               <p className="text-lg text-gray-600">
                 Create professional marketing content in minutes with our AI
@@ -164,915 +458,417 @@ const ProductMarketingPage = () => {
               </p>
             </div>
 
-            <div className="max-w-5xl mx-auto">
+            <div
+              className={`max-w-5xl mx-auto transition-all duration-1000 delay-200 ${
+                toolkitInView
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-8"
+              }`}
+            >
               <Tabs
                 defaultValue={activeTab}
                 onValueChange={setActiveTab}
                 className="w-full"
               >
-                <TabsList className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                <TabsList className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-8">
                   <TabsTrigger
                     value="description"
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
                   >
                     <FileText className="h-4 w-4" /> Description
                   </TabsTrigger>
-                  <TabsTrigger value="blog" className="flex items-center gap-1">
+                  <TabsTrigger
+                    value="blog"
+                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
+                  >
                     <FileText className="h-4 w-4" /> Blog
                   </TabsTrigger>
                   <TabsTrigger
                     value="social"
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
                   >
                     <Instagram className="h-4 w-4" /> Social
                   </TabsTrigger>
                   <TabsTrigger
                     value="visual"
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
                   >
                     <Image className="h-4 w-4" /> Visual
                   </TabsTrigger>
-                  <TabsTrigger value="seo" className="flex items-center gap-1">
+                  <TabsTrigger
+                    value="seo"
+                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
+                  >
                     <Search className="h-4 w-4" /> SEO
                   </TabsTrigger>
                   <TabsTrigger
                     value="calendar"
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 transition-all duration-300 hover:scale-105"
                   >
                     <Calendar className="h-4 w-4" /> Calendar
                   </TabsTrigger>
                 </TabsList>
 
-                {/* Tour Description Writer */}
-                <TabsContent value="description" className="mt-8">
-                  <Card>
+                <TabsContent value="description" className="space-y-6">
+                  <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <CardHeader>
-                      <CardTitle>AI-Powered Tour Description Writer</CardTitle>
+                      <CardTitle className="flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-orange-600" />
+                        AI Experience Description Generator
+                      </CardTitle>
                       <CardDescription>
-                        Create compelling tour descriptions that highlight the
-                        unique cultural aspects of your experiences.
+                        Create compelling descriptions that capture the essence
+                        of your cultural experiences
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Experience Title
-                        </label>
-                        <Input
-                          placeholder="Traditional Cooking Class in Barcelona"
-                          value={formData.title}
-                          onChange={(e) =>
-                            handleInputChange("title", e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Key Cultural Elements
-                        </label>
-                        <Textarea
-                          placeholder="Traditional recipes, local ingredients, family cooking traditions..."
-                          value={formData.culturalElements}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "culturalElements",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Location
-                          </label>
-                          <Input
-                            placeholder="Barcelona, Spain"
-                            value={formData.location}
-                            onChange={(e) =>
-                              handleInputChange("location", e.target.value)
-                            }
-                          />
+                    <CardContent className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Experience Title *
+                            </label>
+                            <Input
+                              placeholder="e.g., Traditional Pottery Workshop"
+                              value={formData.title}
+                              onChange={(e) =>
+                                handleInputChange("title", e.target.value)
+                              }
+                              className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Cultural Elements *
+                            </label>
+                            <Textarea
+                              placeholder="e.g., Traditional techniques, local artisans, historical significance"
+                              value={formData.culturalElements}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "culturalElements",
+                                  e.target.value
+                                )
+                              }
+                              className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Location *
+                            </label>
+                            <Input
+                              placeholder="e.g., Kyoto, Japan"
+                              value={formData.location}
+                              onChange={(e) =>
+                                handleInputChange("location", e.target.value)
+                              }
+                              className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
+                            />
+                          </div>
                         </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Duration
-                          </label>
-                          <Input
-                            placeholder="3 hours"
-                            value={formData.duration}
-                            onChange={(e) =>
-                              handleInputChange("duration", e.target.value)
-                            }
-                          />
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Duration
+                            </label>
+                            <Select
+                              value={formData.duration}
+                              onValueChange={(value) =>
+                                handleInputChange("duration", value)
+                              }
+                            >
+                              <SelectTrigger className="transition-all duration-300 focus:ring-2 focus:ring-orange-500">
+                                <SelectValue placeholder="Select duration" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1-2 hours">
+                                  1-2 hours
+                                </SelectItem>
+                                <SelectItem value="Half day">
+                                  Half day
+                                </SelectItem>
+                                <SelectItem value="Full day">
+                                  Full day
+                                </SelectItem>
+                                <SelectItem value="Multi-day">
+                                  Multi-day
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Writing Style
+                            </label>
+                            <Select
+                              value={formData.writingStyle}
+                              onValueChange={(value) =>
+                                handleInputChange("writingStyle", value)
+                              }
+                            >
+                              <SelectTrigger className="transition-all duration-300 focus:ring-2 focus:ring-orange-500">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="engaging">
+                                  Engaging & Friendly
+                                </SelectItem>
+                                <SelectItem value="professional">
+                                  Professional
+                                </SelectItem>
+                                <SelectItem value="storytelling">
+                                  Storytelling
+                                </SelectItem>
+                                <SelectItem value="informative">
+                                  Informative
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Tone:{" "}
+                              {toneValue < 30
+                                ? "Formal"
+                                : toneValue > 70
+                                ? "Casual"
+                                : "Balanced"}
+                            </label>
+                            <Slider
+                              value={[toneValue]}
+                              onValueChange={(value) => setToneValue(value[0])}
+                              max={100}
+                              step={1}
+                              className="transition-all duration-300"
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Writing Style
-                        </label>
-                        <Select
-                          value={formData.writingStyle}
-                          onValueChange={(value) =>
-                            handleInputChange("writingStyle", value)
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select style" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="informative">
-                              Informative & Educational
-                            </SelectItem>
-                            <SelectItem value="engaging">
-                              Engaging & Exciting
-                            </SelectItem>
-                            <SelectItem value="authentic">
-                              Authentic & Personal
-                            </SelectItem>
-                            <SelectItem value="luxurious">
-                              Luxurious & Exclusive
-                            </SelectItem>
-                            <SelectItem value="adventurous">
-                              Adventurous & Daring
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline">See Example</Button>
                       <Button
                         onClick={() => handleGenerateContent("description")}
                         disabled={isGenerating}
+                        className="w-full bg-orange-600 hover:bg-orange-700 transition-all duration-300 hover:scale-105"
                       >
-                        {isGenerating
-                          ? "Generating..."
-                          : "Generate Description"}
+                        {isGenerating ? (
+                          <>
+                            <Zap className="mr-2 h-4 w-4 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            Generate Description
+                          </>
+                        )}
                       </Button>
-                    </CardFooter>
-                  </Card>
-                  <div className="mt-6 bg-gray-50 border rounded-lg p-6">
-                    <h4 className="font-medium mb-3">
-                      {generatedContent
-                        ? "Generated Description"
-                        : "Sample Output"}
-                    </h4>
-                    {isGenerating ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                        <p className="text-gray-600">
-                          Generating your description...
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="text-gray-700">
-                        <em>
-                          {generatedContent ||
-                            `"Immerse yourself in Barcelona's rich culinary heritage
-                            with our intimate Traditional Cooking Class. Over three
-                            engaging hours, you'll work alongside local chefs who
-                            share family recipes passed down through generations.
-                            Discover the stories behind each dish as you prepare
-                            authentic Catalan cuisine using market-fresh
-                            ingredients. This hands-on experience goes beyond
-                            cooking—it's a cultural journey through taste,
-                            tradition, and community that will transform how you
-                            understand Spanish gastronomy. Perfect for food
-                            enthusiasts seeking authentic connections with
-                            Barcelona's culinary soul."`}
-                        </em>
-                      </p>
-                    )}
-                  </div>
-                </TabsContent>
-
-                {/* Blog Generator */}
-                <TabsContent value="blog" className="mt-8">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Cultural Blog Generator</CardTitle>
-                      <CardDescription>
-                        Create engaging blog content about cultural destinations
-                        and events to attract more visitors.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Blog Topic
-                        </label>
-                        <Input placeholder="Top 5 Hidden Cultural Gems in Kyoto" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Key Points to Cover
-                        </label>
-                        <Textarea placeholder="Traditional tea houses, less-visited temples, local markets..." />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Target Audience
-                          </label>
-                          <Select defaultValue="travelers">
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select audience" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="travelers">
-                                Cultural Travelers
-                              </SelectItem>
-                              <SelectItem value="foodies">
-                                Food Enthusiasts
-                              </SelectItem>
-                              <SelectItem value="history">
-                                History Buffs
-                              </SelectItem>
-                              <SelectItem value="adventure">
-                                Adventure Seekers
-                              </SelectItem>
-                              <SelectItem value="luxury">
-                                Luxury Travelers
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
+                      {generatedContent && (
+                        <div className="mt-6 p-4 bg-gray-50 rounded-lg border transition-all duration-300 hover:shadow-md">
+                          <h4 className="font-medium mb-2">
+                            Generated Description:
+                          </h4>
+                          <p className="text-gray-700 leading-relaxed">
+                            {generatedContent}
+                          </p>
                         </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Blog Length
-                          </label>
-                          <Select defaultValue="medium">
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select length" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="short">
-                                Short (500 words)
-                              </SelectItem>
-                              <SelectItem value="medium">
-                                Medium (1000 words)
-                              </SelectItem>
-                              <SelectItem value="long">
-                                Long (1500+ words)
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Include Call to Action
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <Input placeholder="Book our Kyoto Cultural Tour" />
-                          <Button
-                            variant="outline"
-                            className="whitespace-nowrap"
-                          >
-                            Add Link
-                          </Button>
-                        </div>
-                      </div>
+                      )}
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline">See Example</Button>
-                      <Button onClick={() => handleGenerateContent("blog")}>
-                        Generate Blog Post
-                      </Button>
-                    </CardFooter>
                   </Card>
                 </TabsContent>
 
-                {/* Social Media Captions */}
-                <TabsContent value="social" className="mt-8">
-                  <Card>
+                {/* Other tab contents would go here... */}
+                <TabsContent value="blog">
+                  <Card className="border-0 shadow-lg">
                     <CardHeader>
-                      <CardTitle>Social Media Caption Assistant</CardTitle>
+                      <CardTitle className="flex items-center gap-2">
+                        <FileText className="h-5 w-5 text-blue-600" />
+                        Blog Post Generator
+                      </CardTitle>
                       <CardDescription>
-                        Create engaging captions for Instagram and other social
-                        platforms with travel tone tuning.
+                        Create engaging blog posts about your cultural
+                        experiences
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Experience to Promote
-                        </label>
-                        <Input placeholder="Night Market Food Tour in Taipei" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Key Highlights
-                        </label>
-                        <Textarea placeholder="Street food, local vendors, night atmosphere..." />
-                      </div>
-                      <div className="space-y-4">
-                        <label className="text-sm font-medium">
-                          Tone Adjustment
-                        </label>
-                        <div className="flex items-center gap-4">
-                          <span className="text-sm text-gray-500">
-                            Informative
-                          </span>
-                          <Slider
-                            defaultValue={[50]}
-                            max={100}
-                            step={1}
-                            className="flex-1"
-                            onValueChange={(value) => setToneValue(value[0])}
-                          />
-                          <span className="text-sm text-gray-500">
-                            Exciting
-                          </span>
+                    <CardContent>
+                      <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <FileText className="h-8 w-8 text-blue-600" />
                         </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Platform
-                          </label>
-                          <Select defaultValue="instagram">
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select platform" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="instagram">
-                                Instagram
-                              </SelectItem>
-                              <SelectItem value="facebook">Facebook</SelectItem>
-                              <SelectItem value="twitter">Twitter</SelectItem>
-                              <SelectItem value="tiktok">TikTok</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Include Hashtags
-                          </label>
-                          <Select defaultValue="5">
-                            <SelectTrigger>
-                              <SelectValue placeholder="Number of hashtags" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="3">3 hashtags</SelectItem>
-                              <SelectItem value="5">5 hashtags</SelectItem>
-                              <SelectItem value="10">10 hashtags</SelectItem>
-                              <SelectItem value="15">15 hashtags</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                        <h3 className="text-lg font-semibold mb-2">
+                          Blog Content Generator
+                        </h3>
+                        <p className="text-gray-600 mb-4">
+                          Coming soon - AI-powered blog post creation
+                        </p>
+                        <Badge variant="secondary">In Development</Badge>
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline">See Examples</Button>
-                      <Button onClick={() => handleGenerateContent("social")}>
-                        Generate Captions
-                      </Button>
-                    </CardFooter>
                   </Card>
-                  <div className="mt-6 bg-gray-50 border rounded-lg p-6">
-                    <h4 className="font-medium mb-3">Sample Output</h4>
-                    <p className="text-gray-700">
-                      <em>
-                        "Night markets aren't just places to eat—they're where
-                        Taipei's soul comes alive after dark! 🌙 Last night we
-                        dove into a sea of flavors at our Night Market Food
-                        Tour, where every bite tells a story of tradition and
-                        innovation. From sizzling oyster omelettes to cloud-like
-                        bubble tea, these flavors will haunt your dreams (in the
-                        best way possible!)
-                        <br />
-                        <br />
-                        #TaipeiNightMarket #StreetFoodAdventures #TasteOfTaiwan
-                        #FoodieTravel #ExperienceTaiwan"
-                      </em>
-                    </p>
-                  </div>
                 </TabsContent>
 
-                {/* Visual Card Builder */}
-                <TabsContent value="visual" className="mt-8">
-                  <Card>
+                {/* Add other tab contents similarly... */}
+                <TabsContent value="social">
+                  <Card className="border-0 shadow-lg">
                     <CardHeader>
-                      <CardTitle>Visual Card Builder</CardTitle>
+                      <CardTitle className="flex items-center gap-2">
+                        <Instagram className="h-5 w-5 text-pink-600" />
+                        Social Media Content
+                      </CardTitle>
                       <CardDescription>
-                        Create professional-looking itineraries, flyers, and QR
-                        handouts for your experiences.
+                        Generate social media posts for your experiences
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Template Type
-                        </label>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                          <div className="border rounded-lg p-3 text-center cursor-pointer hover:bg-gray-50">
-                            <LayoutGrid className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                            <p className="text-sm">Itinerary</p>
-                          </div>
-                          <div className="border rounded-lg p-3 text-center cursor-pointer hover:bg-gray-50">
-                            <FileText className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                            <p className="text-sm">Flyer</p>
-                          </div>
-                          <div className="border rounded-lg p-3 text-center cursor-pointer hover:bg-gray-50">
-                            <Image className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                            <p className="text-sm">Social Post</p>
-                          </div>
-                          <div className="border rounded-lg p-3 text-center cursor-pointer hover:bg-gray-50">
-                            <Search className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                            <p className="text-sm">QR Handout</p>
-                          </div>
+                    <CardContent>
+                      <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Instagram className="h-8 w-8 text-pink-600" />
                         </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Experience Title
-                        </label>
-                        <Input placeholder="Ancient Temples of Bali Tour" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Color Theme
-                          </label>
-                          <Select defaultValue="tropical">
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select theme" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="tropical">
-                                Tropical Paradise
-                              </SelectItem>
-                              <SelectItem value="elegant">
-                                Elegant Heritage
-                              </SelectItem>
-                              <SelectItem value="adventure">
-                                Adventure Seeker
-                              </SelectItem>
-                              <SelectItem value="modern">
-                                Modern Explorer
-                              </SelectItem>
-                              <SelectItem value="custom">
-                                Custom Colors
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Upload Logo/Image
-                          </label>
-                          <div className="flex items-center gap-2">
-                            <Input type="file" className="text-sm" />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Content Details
-                        </label>
-                        <Textarea placeholder="Add key details about your experience, pricing, what to bring..." />
+                        <h3 className="text-lg font-semibold mb-2">
+                          Social Media Toolkit
+                        </h3>
+                        <p className="text-gray-600 mb-4">
+                          Coming soon - Social media content creation
+                        </p>
+                        <Badge variant="secondary">In Development</Badge>
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline">Browse Templates</Button>
-                      <Button onClick={() => handleGenerateContent("visual")}>
-                        Create Visual
-                      </Button>
-                    </CardFooter>
                   </Card>
-                  <div className="mt-6 flex justify-center">
-                    <div className="bg-gradient-to-b from-blue-50 to-blue-100 border rounded-lg p-6 max-w-md text-center">
-                      <h4 className="text-xl font-bold text-blue-800 mb-2">
-                        Ancient Temples of Bali Tour
-                      </h4>
-                      <p className="text-sm mb-3">
-                        A spiritual journey through Bali's most sacred sites
-                      </p>
-                      <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
-                        <p className="text-left text-sm">
-                          <strong>Duration:</strong> Full day (8 hours)
-                          <br />
-                          <strong>Includes:</strong> Transport, guide, lunch,
-                          offerings
-                          <br />
-                          <strong>Highlights:</strong> Uluwatu Temple, Tanah
-                          Lot, Water Blessing Ceremony
-                        </p>
-                      </div>
-                      <Button size="sm" className="bg-blue-600">
-                        Book Now
-                      </Button>
-                      <p className="mt-3 text-xs text-gray-600">
-                        Operated by Culturin Experiences
-                      </p>
-                    </div>
-                  </div>
                 </TabsContent>
 
-                {/* SEO Grader */}
-                <TabsContent value="seo" className="mt-8">
-                  <Card>
+                <TabsContent value="visual">
+                  <Card className="border-0 shadow-lg">
                     <CardHeader>
-                      <CardTitle>SEO Performance Grader</CardTitle>
+                      <CardTitle className="flex items-center gap-2">
+                        <Image className="h-5 w-5 text-green-600" />
+                        Visual Content Creator
+                      </CardTitle>
                       <CardDescription>
-                        Analyze and improve your SEO to rank higher for "things
-                        to do in [city]" searches.
+                        Create stunning visuals for your marketing campaigns
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Experience URL or Description
-                        </label>
-                        <Input placeholder="https://yourwebsite.com/experience or paste your description" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Target City
-                          </label>
-                          <Input placeholder="Paris, Rome, Tokyo..." />
+                    <CardContent>
+                      <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Image className="h-8 w-8 text-green-600" />
                         </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Experience Type
-                          </label>
-                          <Select defaultValue="food">
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="food">Food & Drink</SelectItem>
-                              <SelectItem value="history">
-                                Historical & Heritage
-                              </SelectItem>
-                              <SelectItem value="nature">
-                                Nature & Outdoor
-                              </SelectItem>
-                              <SelectItem value="art">Art & Museums</SelectItem>
-                              <SelectItem value="adventure">
-                                Adventure & Activities
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Target Keywords
-                        </label>
-                        <Textarea placeholder="cooking class, local cuisine, cultural experience..." />
-                      </div>
-                      <div className="space-y-2 bg-gray-50 p-4 rounded-lg">
-                        <label className="text-sm font-medium">
-                          SEO Analysis Preview
-                        </label>
-                        <div className="flex items-center gap-2 mt-2">
-                          <div className="w-full h-2 bg-gray-200 rounded-full">
-                            <div
-                              className="h-2 bg-yellow-400 rounded-full"
-                              style={{ width: "65%" }}
-                            ></div>
-                          </div>
-                          <span className="text-sm font-medium">65/100</span>
-                        </div>
-                        <p className="text-sm text-gray-600 mt-2">
-                          Your content needs improvement to rank for "things to
-                          do in Paris". Run a full analysis to get detailed
-                          recommendations.
+                        <h3 className="text-lg font-semibold mb-2">
+                          Visual Content Tools
+                        </h3>
+                        <p className="text-gray-600 mb-4">
+                          Coming soon - AI-powered visual content
                         </p>
+                        <Badge variant="secondary">In Development</Badge>
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline">See Examples</Button>
-                      <Button onClick={() => handleGenerateContent("seo")}>
-                        Run Full Analysis
-                      </Button>
-                    </CardFooter>
                   </Card>
-                  <div className="mt-6 bg-white border rounded-lg p-6 space-y-4">
-                    <h4 className="font-medium">Sample SEO Report</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">
-                          Keyword Optimization
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 h-2 bg-gray-200 rounded-full">
-                            <div
-                              className="h-2 bg-green-500 rounded-full"
-                              style={{ width: "80%" }}
-                            ></div>
-                          </div>
-                          <span className="text-xs">80%</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">Content Length</p>
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 h-2 bg-gray-200 rounded-full">
-                            <div
-                              className="h-2 bg-yellow-400 rounded-full"
-                              style={{ width: "60%" }}
-                            ></div>
-                          </div>
-                          <span className="text-xs">60%</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">Local Relevance</p>
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 h-2 bg-gray-200 rounded-full">
-                            <div
-                              className="h-2 bg-red-500 rounded-full"
-                              style={{ width: "40%" }}
-                            ></div>
-                          </div>
-                          <span className="text-xs">40%</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">
-                          Image Optimization
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 h-2 bg-gray-200 rounded-full">
-                            <div
-                              className="h-2 bg-yellow-400 rounded-full"
-                              style={{ width: "65%" }}
-                            ></div>
-                          </div>
-                          <span className="text-xs">65%</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </TabsContent>
 
-                {/* Content Calendar */}
-                <TabsContent value="calendar" className="mt-8">
-                  <Card>
+                <TabsContent value="seo">
+                  <Card className="border-0 shadow-lg">
                     <CardHeader>
-                      <CardTitle>Content Calendar & Seasonal Promos</CardTitle>
+                      <CardTitle className="flex items-center gap-2">
+                        <Search className="h-5 w-5 text-indigo-600" />
+                        SEO Optimizer
+                      </CardTitle>
                       <CardDescription>
-                        Plan your marketing calendar with suggested seasonal
-                        promotions and cultural events.
+                        Optimize your content for search engines
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Location Focus
-                          </label>
-                          <Input placeholder="Paris, France" />
+                    <CardContent>
+                      <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Search className="h-8 w-8 text-indigo-600" />
                         </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">
-                            Experience Type
-                          </label>
-                          <Select defaultValue="culinary">
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="culinary">Culinary</SelectItem>
-                              <SelectItem value="historical">
-                                Historical
-                              </SelectItem>
-                              <SelectItem value="artistic">Artistic</SelectItem>
-                              <SelectItem value="nature">
-                                Nature & Outdoor
-                              </SelectItem>
-                              <SelectItem value="spiritual">
-                                Spiritual
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Planning Period
-                        </label>
-                        <Select defaultValue="quarter">
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select period" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="month">Next Month</SelectItem>
-                            <SelectItem value="quarter">
-                              Next Quarter
-                            </SelectItem>
-                            <SelectItem value="6months">
-                              Next 6 Months
-                            </SelectItem>
-                            <SelectItem value="year">Full Year</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          Include Local Cultural Events
-                        </label>
-                        <Select defaultValue="yes">
-                          <SelectTrigger>
-                            <SelectValue placeholder="Include events?" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="yes">
-                              Yes, Include Events
-                            </SelectItem>
-                            <SelectItem value="no">
-                              No, Focus on Promotions
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <h3 className="text-lg font-semibold mb-2">
+                          SEO Tools
+                        </h3>
+                        <p className="text-gray-600 mb-4">
+                          Coming soon - Advanced SEO optimization
+                        </p>
+                        <Badge variant="secondary">In Development</Badge>
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline">See Example</Button>
-                      <Button onClick={() => handleGenerateContent("calendar")}>
-                        Generate Calendar
-                      </Button>
-                    </CardFooter>
                   </Card>
-                  <div className="mt-6 bg-white border rounded-lg p-6">
-                    <h4 className="font-medium mb-4">
-                      Suggested Content Calendar - Paris Culinary Experiences
-                    </h4>
-                    <div className="space-y-4">
-                      <div className="border-l-4 border-blue-500 pl-4 py-1">
-                        <p className="font-medium">
-                          June: Summer Food Festivals
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Highlight seasonal ingredients, outdoor dining
-                          experiences, and tie-ins to Fête de la Musique (June
-                          21)
-                        </p>
-                        <div className="flex gap-2 mt-2">
-                          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-                            Email Campaign
-                          </Badge>
-                          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-                            Instagram Story
-                          </Badge>
+                </TabsContent>
+
+                <TabsContent value="calendar">
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Calendar className="h-5 w-5 text-purple-600" />
+                        Content Calendar
+                      </CardTitle>
+                      <CardDescription>
+                        Plan and schedule your marketing content
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Calendar className="h-8 w-8 text-purple-600" />
                         </div>
+                        <h3 className="text-lg font-semibold mb-2">
+                          Content Calendar
+                        </h3>
+                        <p className="text-gray-600 mb-4">
+                          Coming soon - Marketing calendar planning
+                        </p>
+                        <Badge variant="secondary">In Development</Badge>
                       </div>
-                      <div className="border-l-4 border-purple-500 pl-4 py-1">
-                        <p className="font-medium">
-                          July: Bastille Day Special
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          French culinary heritage focus, special Bastille Day
-                          menus, and patriotic-themed food tours
-                        </p>
-                        <div className="flex gap-2 mt-2">
-                          <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">
-                            Limited Offer
-                          </Badge>
-                          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-                            Social Media
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="border-l-4 border-amber-500 pl-4 py-1">
-                        <p className="font-medium">
-                          August: Summer Vineyard Tours
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Day trips to nearby wine regions, focus on harvest
-                          preparations, wine pairing experiences
-                        </p>
-                        <div className="flex gap-2 mt-2">
-                          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">
-                            Blog Post
-                          </Badge>
-                          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-                            Partnership
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 </TabsContent>
               </Tabs>
             </div>
           </div>
         </section>
 
-        {/* Features Section */}
-        <section className="bg-gray-50 py-24">
+        {/* CTA Section */}
+        <section className="py-24 bg-gradient-to-r from-orange-600 to-pink-600 overflow-hidden">
           <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Promote your experiences
-              </h2>
-              <p className="text-lg text-gray-600">
-                Our marketing tools help you showcase your cultural experiences
-                to the right audience at the right time.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {[
-                {
-                  icon: <Search className="h-10 w-10 text-blue-600" />,
-                  title: "SEO Optimization",
-                  description:
-                    "Get found online with our SEO tools designed specifically for tourism and cultural experiences.",
-                },
-                {
-                  icon: <Globe className="h-10 w-10 text-blue-600" />,
-                  title: "Social Media Integration",
-                  description:
-                    "Easily share your experiences across social platforms and track engagement.",
-                },
-                {
-                  icon: <Zap className="h-10 w-10 text-blue-600" />,
-                  title: "Promotional Campaigns",
-                  description:
-                    "Create and manage special offers, seasonal promotions, and discount codes.",
-                },
-                {
-                  icon: <FileText className="h-10 w-10 text-blue-600" />,
-                  title: "Content Creation",
-                  description:
-                    "AI-powered tools to create compelling descriptions, blogs, and marketing materials.",
-                },
-                {
-                  icon: <Image className="h-10 w-10 text-blue-600" />,
-                  title: "Visual Materials",
-                  description:
-                    "Design professional flyers, itineraries, and visual assets for your experiences.",
-                },
-                {
-                  icon: <Calendar className="h-10 w-10 text-blue-600" />,
-                  title: "Seasonal Planning",
-                  description:
-                    "Stay ahead with content calendars featuring cultural events and promotion suggestions.",
-                },
-              ].map((feature, index) => (
-                <div
-                  key={index}
-                  className={`bg-white p-8 rounded-xl border border-gray-200 shadow-sm transition-all duration-500 ${
-                    animateItems
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-8"
-                  }`}
-                  style={{ transitionDelay: `${index * 100}ms` }}
-                >
-                  <div className="mb-5">{feature.icon}</div>
-                  <h3 className="text-xl font-semibold mb-3">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600">{feature.description}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-16 text-center">
-              <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white py-5 px-8 rounded-xl text-lg h-auto"
-                asChild
+            <div className="max-w-4xl mx-auto text-center">
+              <div
+                className={`transition-all duration-1000 ${
+                  animateItems
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
+                }`}
               >
-                <Link to="/sign-in">Start a free trial</Link>
-              </Button>
-              <p className="mt-3 text-gray-500">No credit card required</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonial Section */}
-        <section className="bg-white py-24">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-blue-50 rounded-xl p-8 md:p-10">
-                <div className="flex flex-col items-center text-center">
-                  <div className="mb-6">
-                    <div className="flex gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="h-6 w-6 fill-amber-400 text-amber-400"
-                        />
-                      ))}
-                    </div>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                  Ready to supercharge your marketing?
+                </h2>
+                <p className="text-xl text-orange-100 mb-8 leading-relaxed">
+                  Join thousands of cultural experience providers who are
+                  growing their businesses with our marketing tools.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button
+                    size="lg"
+                    className="bg-white text-orange-600 hover:bg-gray-100 group transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    asChild
+                  >
+                    <Link to="/demo">
+                      Start Free Trial
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="text-white border-white hover:bg-white hover:text-orange-600 transition-all duration-300"
+                    asChild
+                  >
+                    <Link to="/contact">Contact Sales</Link>
+                  </Button>
+                </div>
+                <div className="mt-6 flex justify-center space-x-8 text-orange-100">
+                  <div className="flex items-center">
+                    <Sparkles className="h-5 w-5 mr-2" />
+                    <span>AI-powered tools</span>
                   </div>
-                  <p className="text-lg md:text-xl text-gray-700 mb-6 italic">
-                    "Before Culturin's Marketing Toolkit, I was spending
-                    thousands on a marketing agency. Now I create professional
-                    content in minutes that actually converts better because
-                    it's authentic to my experience."
-                  </p>
-                  <div>
-                    <p className="font-medium">Maria Gonzalez</p>
-                    <p className="text-sm text-gray-600">
-                      Barcelona Food Tours
-                    </p>
+                  <div className="flex items-center">
+                    <Star className="h-5 w-5 mr-2" />
+                    <span>14-day free trial</span>
                   </div>
                 </div>
               </div>

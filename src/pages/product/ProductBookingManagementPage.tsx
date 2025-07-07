@@ -12,13 +12,50 @@ import {
   CheckCircle2,
   BarChart4,
   CreditCard,
+  ArrowRight,
+  Star,
+  Clock,
+  Shield,
+  Zap,
+  TrendingUp,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "../../../lib/navigation";
 import Image from "@/components/ui/image";
+import { useInView } from "react-intersection-observer";
 
 const ProductBookingManagementPage = () => {
   const [animateItems, setAnimateItems] = useState<boolean>(false);
+  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
+  const [hoveredTestimonial, setHoveredTestimonial] = useState<number | null>(
+    null
+  );
+
+  // Intersection observers for scroll animations
+  const { ref: heroRef, inView: heroInView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  const { ref: statsRef, inView: statsInView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  const { ref: featuresRef, inView: featuresInView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  const { ref: testimonialsRef, inView: testimonialsInView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
+
+  const { ref: ctaRef, inView: ctaInView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
 
   useEffect(() => {
     // Trigger animations after component mount
@@ -35,36 +72,56 @@ const ProductBookingManagementPage = () => {
       description:
         "Easily view, organize, and manage all your bookings in one centralized dashboard. Filter by date, status, or experience type.",
       icon: <Calendar className="h-8 w-8 text-blue-600" />,
+      benefits: ["Centralized dashboard", "Smart filtering", "Quick actions"],
+      color: "from-blue-500 to-cyan-500",
     },
     {
       title: "Guest Management",
       description:
         "Access comprehensive guest profiles, view booking history, and manage customer information with ease.",
       icon: <Users className="h-8 w-8 text-blue-600" />,
+      benefits: ["Complete profiles", "Booking history", "Custom notes"],
+      color: "from-purple-500 to-pink-500",
     },
     {
       title: "Calendar Integration",
       description:
         "Sync with your favorite calendar apps to stay on top of your schedule. Set reminders and avoid double bookings.",
       icon: <CalendarIcon className="h-8 w-8 text-blue-600" />,
+      benefits: [
+        "Multi-calendar sync",
+        "Smart reminders",
+        "Conflict prevention",
+      ],
+      color: "from-green-500 to-emerald-500",
     },
     {
       title: "Financial Tracking",
       description:
         "Monitor revenue, track payments, and export financial reports for your business records.",
       icon: <BarChart4 className="h-8 w-8 text-blue-600" />,
+      benefits: ["Revenue tracking", "Payment monitoring", "Financial reports"],
+      color: "from-orange-500 to-red-500",
     },
     {
       title: "Automated Notifications",
       description:
         "Send automatic booking confirmations, reminders, and follow ups to enhance guest communication.",
       icon: <CheckCircle2 className="h-8 w-8 text-blue-600" />,
+      benefits: [
+        "Auto confirmations",
+        "Smart reminders",
+        "Follow up sequences",
+      ],
+      color: "from-indigo-500 to-purple-500",
     },
     {
       title: "Secure Payment Processing",
       description:
         "Process payments securely and efficiently, with support for multiple payment methods and currencies.",
       icon: <CreditCard className="h-8 w-8 text-blue-600" />,
+      benefits: ["Secure processing", "Multiple methods", "Global currencies"],
+      color: "from-teal-500 to-cyan-500",
     },
   ];
 
@@ -76,6 +133,8 @@ const ProductBookingManagementPage = () => {
       name: "Maria Gonzalez",
       role: "Culinary Tour Guide, Mexico City",
       image: "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
+      rating: 5,
+      metric: "70% less admin time",
     },
     {
       quote:
@@ -83,6 +142,8 @@ const ProductBookingManagementPage = () => {
       name: "Ahmed Hassan",
       role: "Heritage Tour Operator, Marrakech",
       image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
+      rating: 5,
+      metric: "95% attendance rate",
     },
   ];
 
@@ -91,24 +152,29 @@ const ProductBookingManagementPage = () => {
       <Header type="operator" />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 md:pt-40 md:pb-24 bg-gradient-to-br from-blue-50 to-indigo-50">
+      <section
+        ref={heroRef}
+        className="pt-32 pb-16 md:pt-40 md:pb-24 bg-gradient-to-br from-blue-50 via-white to-indigo-50 overflow-hidden"
+      >
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div
-              className={`space-y-6 ${
-                animateItems
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              } transition-all duration-700 ease-out`}
+              className={`space-y-6 transition-all duration-1000 ease-out ${
+                heroInView
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 -translate-x-12"
+              }`}
             >
-              <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                Booking Management Solution
+              <div className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium animate-pulse">
+                🚀 Booking Management Solution
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                 Manage your bookings{" "}
-                <span className="text-blue-600">effortlessly</span>
+                <span className="text-blue-600 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  effortlessly
+                </span>
               </h1>
-              <p className="text-lg md:text-xl text-gray-600 max-w-xl">
+              <p className="text-lg md:text-xl text-gray-600 max-w-xl leading-relaxed">
                 Streamline your booking process, reduce administrative work, and
                 deliver exceptional guest experiences with our comprehensive
                 booking management system.
@@ -116,13 +182,18 @@ const ProductBookingManagementPage = () => {
               <div className="flex flex-wrap gap-4 pt-4">
                 <Button
                   size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 group transition-all duration-300 hover:scale-105 hover:shadow-lg"
                 >
-                  <Link to="/demo" className="text-white">
+                  <Link to="/demo" className="text-white flex items-center">
                     Get Started
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-                <Button variant="outline" size="lg">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                >
                   <Link to="/product/booking" className="text-gray-900">
                     Watch Demo
                   </Link>
@@ -130,98 +201,95 @@ const ProductBookingManagementPage = () => {
               </div>
             </div>
             <div
-              className={`relative ${
-                animateItems
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              } transition-all duration-700 delay-300 ease-out`}
+              className={`transition-all duration-1000 ease-out delay-200 ${
+                heroInView
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 translate-x-12"
+              }`}
             >
-              <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
-                <div className="px-6 py-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-2xl blur-xl"></div>
+                <Image
+                  src="/lovable-uploads/88dfd739-180c-4ca4-8bfd-08396d3464c9.png"
+                  alt="Booking management dashboard showing calendar, guest details, and revenue tracking"
+                  className="w-full h-auto rounded-2xl shadow-2xl relative z-10 hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-4 right-4 bg-green-500 w-4 h-4 rounded-full animate-ping z-20"></div>
+                <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 z-20">
+                  <div className="text-sm font-medium text-gray-900">
+                    Live Bookings
                   </div>
-                  <span className="text-sm text-gray-500">
-                    Booking Dashboard
-                  </span>
-                </div>
-                <div>
-                  <Image
-                    src="/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png"
-                    alt="Booking Management Dashboard"
-                    className="w-full h-auto object-cover"
-                  />
+                  <div className="text-xs text-gray-600">Real time updates</div>
                 </div>
               </div>
-              <div className="absolute -top-6 -right-6 w-24 h-24 bg-yellow-200 rounded-full -z-10"></div>
-              <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-blue-200 rounded-full -z-10"></div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white">
+      <section ref={statsRef} className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div
-              className={`${
-                animateItems
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              } transition-all duration-700 delay-100 ease-out`}
-            >
-              <div className="text-3xl md:text-4xl font-bold text-blue-600">
-                98%
+          <div
+            className={`grid grid-cols-2 md:grid-cols-4 gap-6 text-center transition-all duration-1000 ${
+              statsInView
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
+            {[
+              {
+                value: "98%",
+                label: "Customer Satisfaction",
+                icon: <Star className="h-6 w-6 text-yellow-500" />,
+                delay: "delay-100",
+              },
+              {
+                value: "75%",
+                label: "Admin Time Saved",
+                icon: <Clock className="h-6 w-6 text-green-500" />,
+                delay: "delay-200",
+              },
+              {
+                value: "50%",
+                label: "Increase in Bookings",
+                icon: <TrendingUp className="h-6 w-6 text-blue-500" />,
+                delay: "delay-300",
+              },
+              {
+                value: "24/7",
+                label: "Available Support",
+                icon: <Shield className="h-6 w-6 text-purple-500" />,
+                delay: "delay-400",
+              },
+            ].map((stat, index) => (
+              <div
+                key={index}
+                className={`${stat.delay} transition-all duration-700 hover:scale-105 cursor-pointer group`}
+              >
+                <div className="flex justify-center mb-2 group-hover:scale-110 transition-transform">
+                  {stat.icon}
+                </div>
+                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">
+                  {stat.value}
+                </div>
+                <div className="text-gray-600 text-sm">{stat.label}</div>
               </div>
-              <div className="text-gray-600 mt-2">Customer Satisfaction</div>
-            </div>
-            <div
-              className={`${
-                animateItems
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              } transition-all duration-700 delay-200 ease-out`}
-            >
-              <div className="text-3xl md:text-4xl font-bold text-blue-600">
-                75%
-              </div>
-              <div className="text-gray-600 mt-2">Admin Time Saved</div>
-            </div>
-            <div
-              className={`${
-                animateItems
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              } transition-all duration-700 delay-300 ease-out`}
-            >
-              <div className="text-3xl md:text-4xl font-bold text-blue-600">
-                50%
-              </div>
-              <div className="text-gray-600 mt-2">Increase in Bookings</div>
-            </div>
-            <div
-              className={`${
-                animateItems
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              } transition-all duration-700 delay-400 ease-out`}
-            >
-              <div className="text-3xl md:text-4xl font-bold text-blue-600">
-                24/7
-              </div>
-              <div className="text-gray-600 mt-2">Available Support</div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-16 md:py-24 bg-gray-50">
+      <section ref={featuresRef} className="py-16 md:py-24 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div
+            className={`text-center max-w-3xl mx-auto mb-16 transition-all duration-1000 ${
+              featuresInView
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               Everything you need to manage bookings
             </h2>
@@ -235,19 +303,133 @@ const ProductBookingManagementPage = () => {
             {features.map((feature, index) => (
               <Card
                 key={index}
-                className={`border border-gray-100 hover:shadow-md transition-all duration-300 ${
-                  animateItems
+                className={`transition-all duration-700 hover:shadow-xl hover:-translate-y-2 cursor-pointer group border-0 bg-white ${
+                  featuresInView
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-8"
                 }`}
-                style={{ transitionDelay: `${index * 100 + 100}ms` }}
+                style={{ transitionDelay: `${index * 100}ms` }}
+                onMouseEnter={() => setHoveredFeature(index)}
+                onMouseLeave={() => setHoveredFeature(null)}
               >
-                <CardContent className="p-6">
-                  <div className="p-3 bg-blue-50 rounded-lg inline-block mb-4">
-                    {feature.icon}
+                <CardContent className="p-8">
+                  <div
+                    className={`mb-6 transition-all duration-300 ${
+                      hoveredFeature === index ? "scale-110" : "scale-100"
+                    }`}
+                  >
+                    <div
+                      className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4`}
+                    >
+                      {feature.icon}
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <h3 className="text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 leading-relaxed">
+                    {feature.description}
+                  </p>
+                  <div className="space-y-2">
+                    {feature.benefits.map((benefit, benefitIndex) => (
+                      <div
+                        key={benefitIndex}
+                        className="flex items-center text-sm text-gray-500"
+                      >
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                        {benefit}
+                      </div>
+                    ))}
+                  </div>
+                  <div
+                    className={`mt-6 opacity-0 group-hover:opacity-100 transition-all duration-300 ${
+                      hoveredFeature === index
+                        ? "translate-y-0"
+                        : "translate-y-2"
+                    }`}
+                  >
+                    <div className="text-blue-600 text-sm font-medium flex items-center">
+                      <Zap className="mr-2 h-4 w-4" />
+                      Explore feature
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section ref={testimonialsRef} className="py-16 md:py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div
+            className={`text-center max-w-3xl mx-auto mb-16 transition-all duration-1000 ${
+              testimonialsInView
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Trusted by cultural experience creators worldwide
+            </h2>
+            <p className="text-lg text-gray-600">
+              See how our booking management system is transforming businesses
+              like yours.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <Card
+                key={index}
+                className={`transition-all duration-700 hover:shadow-xl hover:-translate-y-1 cursor-pointer group border-0 bg-gradient-to-br from-gray-50 to-white ${
+                  testimonialsInView
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
+                }`}
+                style={{ transitionDelay: `${index * 200}ms` }}
+                onMouseEnter={() => setHoveredTestimonial(index)}
+                onMouseLeave={() => setHoveredTestimonial(null)}
+              >
+                <CardContent className="p-8">
+                  <div className="flex items-center mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-5 w-5 text-yellow-400 fill-current"
+                      />
+                    ))}
+                  </div>
+                  <blockquote className="text-lg text-gray-700 mb-6 italic leading-relaxed">
+                    "{testimonial.quote}"
+                  </blockquote>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Image
+                        src={testimonial.image}
+                        alt={testimonial.name}
+                        className={`w-12 h-12 rounded-full mr-4 transition-transform duration-300 ${
+                          hoveredTestimonial === index
+                            ? "scale-110"
+                            : "scale-100"
+                        }`}
+                      />
+                      <div>
+                        <div className="font-semibold text-gray-900">
+                          {testimonial.name}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {testimonial.role}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-blue-600">
+                        {testimonial.metric}
+                      </div>
+                      <div className="text-xs text-gray-500">improvement</div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -256,40 +438,44 @@ const ProductBookingManagementPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-blue-600">
+      <section
+        ref={ctaRef}
+        className="py-16 md:py-24 bg-blue-600 overflow-hidden"
+      >
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div
-              className={`${
-                animateItems
+              className={`transition-all duration-1000 ease-out ${
+                ctaInView
                   ? "opacity-100 translate-x-0"
                   : "opacity-0 -translate-x-8"
-              } transition-all duration-700 delay-200 ease-out`}
+              }`}
             >
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
                 Ready to transform your booking process?
               </h2>
-              <p className="text-xl text-blue-100 mb-8">
+              <p className="text-xl text-blue-100 mb-8 leading-relaxed">
                 Join thousands of cultural experience providers who have
                 streamlined their operations with our booking management system.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button
                   size="lg"
-                  className="bg-white text-blue-600 hover:bg-gray-100"
+                  className="bg-white text-blue-600 hover:bg-gray-100 group transition-all duration-300 hover:scale-105 hover:shadow-lg"
                 >
-                  <Link to="/demo" className="text-blue-600">
+                  <Link to="/demo" className="text-blue-600 flex items-center">
                     Schedule a Demo
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="text-black border-white hover:bg-white hover:text-blue-600 hover:border-white"
+                  className="text-white border-white hover:bg-white hover:text-blue-600 hover:border-white transition-all duration-300"
                 >
                   <Link
                     to="/pricing"
-                    className="text-black hover:text-blue-600 font-medium !text-black"
+                    className="text-white hover:text-blue-600 font-medium"
                   >
                     View Pricing
                   </Link>
@@ -297,64 +483,29 @@ const ProductBookingManagementPage = () => {
               </div>
             </div>
             <div
-              className={`${
-                animateItems
+              className={`transition-all duration-1000 ease-out delay-200 ${
+                ctaInView
                   ? "opacity-100 translate-x-0"
                   : "opacity-0 translate-x-8"
-              } transition-all duration-700 delay-400 ease-out`}
+              }`}
             >
-              <div className="bg-white p-1 rounded-xl shadow-xl">
+              <div className="relative">
+                <div className="absolute inset-0 bg-white/10 rounded-2xl blur-xl"></div>
                 <Image
-                  src="/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png"
-                  alt="Booking Management App"
-                  className="w-full h-auto rounded-lg"
+                  src="/lovable-uploads/1b4ba777-0a40-4904-98a9-11b727de21a6.png"
+                  alt="Cultural tour operator using booking management dashboard on tablet"
+                  className="w-full h-auto rounded-2xl shadow-2xl relative z-10 hover:scale-105 transition-transform duration-500"
                 />
+                <div className="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium animate-bounce z-20">
+                  Live Demo Available
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-            What our customers say
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div
-                key={index}
-                className={`bg-gray-50 p-8 rounded-xl ${
-                  animateItems
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-8"
-                } transition-all duration-700`}
-                style={{ transitionDelay: `${index * 200 + 200}ms` }}
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden">
-                    <Image
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h4 className="font-bold">{testimonial.name}</h4>
-                    <p className="text-sm text-gray-600">{testimonial.role}</p>
-                  </div>
-                </div>
-                <p className="text-gray-700 italic">
-                  &ldquo;{testimonial.quote}&rdquo;
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
+      {/* Final CTA Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">
@@ -365,12 +516,16 @@ const ProductBookingManagementPage = () => {
             your booking process today.
           </p>
           <div className="flex justify-center gap-4">
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-blue-600 hover:bg-blue-700 group transition-all duration-300 hover:scale-105">
               <Link to="/sign-in" className="flex items-center text-white">
-                Get Started <ChevronRight className="ml-2 h-4 w-4" />
+                Get Started
+                <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              className="hover:border-blue-300 hover:shadow-md transition-all duration-300"
+            >
               <Link to="/contact" className="text-gray-900">
                 Contact Sales
               </Link>

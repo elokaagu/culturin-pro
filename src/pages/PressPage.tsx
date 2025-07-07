@@ -30,7 +30,7 @@ const PressPage = () => {
       title: "Culturin Launches Pro Platform for Tour Operators",
       date: "January 15, 2025",
       excerpt:
-        "New suite of tools helps cultural tour operators create, manage and grow their businesses with commission-free bookings.",
+        "New suite of tools helps cultural tour operators create, manage and grow their businesses with commission free bookings.",
     },
     {
       id: "culturin-unesco-partnership",

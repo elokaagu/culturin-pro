@@ -26,7 +26,7 @@ const OnlineSalesTab = () => {
                 ✓
               </span>
               <span>
-                <strong>Community-conscious group sizing</strong>
+                <strong>Community conscious group sizing</strong>
               </span>
             </li>
             <li className="flex items-start">
@@ -42,7 +42,7 @@ const OnlineSalesTab = () => {
                 ✓
               </span>
               <span>
-                <strong>Thoughtful traveler pre-engagement</strong>
+                <strong>Thoughtful traveler pre engagement</strong>
               </span>
             </li>
           </ul>
@@ -63,31 +63,6 @@ const OnlineSalesTab = () => {
             className="rounded-lg shadow-lg object-cover h-full"
             aspectRatio="video"
           />
-
-          {/* Conversion Rate Comparison */}
-          <div className="absolute bottom-4 right-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-md">
-            <p className="text-sm font-medium text-center mb-2">
-              Meaningful Engagement Quality
-            </p>
-            <div className="flex items-end justify-between h-16">
-              <div className="w-[45%] bg-gray-200 h-6 relative">
-                <div className="absolute -top-5 left-0 text-xs">
-                  Mass Tourism
-                </div>
-                <div className="absolute -bottom-5 w-full text-center text-xs">
-                  2.1%
-                </div>
-              </div>
-              <div className="w-[45%] bg-green-500 h-14 relative">
-                <div className="absolute -top-5 left-0 text-xs">
-                  Cultural Focus
-                </div>
-                <div className="absolute -bottom-5 w-full text-center text-xs font-bold">
-                  8.7%
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </Card>
