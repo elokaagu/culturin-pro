@@ -70,7 +70,7 @@ const ProductCRMPage = () => {
         "Preference tracking",
         "Review integration",
       ],
-      color: "from-blue-500 to-cyan-500",
+      color: "from-blue-500 to-blue-600",
     },
     {
       icon: <Award className="h-10 w-10 text-blue-600" />,
@@ -78,7 +78,7 @@ const ProductCRMPage = () => {
       description:
         "Reward repeat guests with trip credits, special invites, and exclusive experiences.",
       benefits: ["Points & rewards", "Tier management", "Exclusive access"],
-      color: "from-purple-500 to-pink-500",
+      color: "from-blue-500 to-blue-600",
     },
     {
       icon: <Heart className="h-10 w-10 text-blue-600" />,
@@ -86,7 +86,7 @@ const ProductCRMPage = () => {
       description:
         "Turn guests into advocates with incentives for return visits and friend referrals.",
       benefits: ["Referral tracking", "Reward automation", "Social sharing"],
-      color: "from-red-500 to-orange-500",
+      color: "from-blue-500 to-blue-600",
     },
     {
       icon: <Calendar className="h-10 w-10 text-blue-600" />,
@@ -98,7 +98,7 @@ const ProductCRMPage = () => {
         "Personalized messages",
         "Event-based campaigns",
       ],
-      color: "from-green-500 to-emerald-500",
+      color: "from-blue-500 to-blue-600",
     },
     {
       icon: <MessageSquare className="h-10 w-10 text-blue-600" />,
@@ -106,7 +106,7 @@ const ProductCRMPage = () => {
       description:
         "Centralized messaging system for all guest interactions and follow-ups.",
       benefits: ["Unified inbox", "Template library", "Response tracking"],
-      color: "from-indigo-500 to-purple-500",
+      color: "from-blue-500 to-blue-600",
     },
     {
       icon: <Target className="h-10 w-10 text-blue-600" />,
@@ -118,7 +118,7 @@ const ProductCRMPage = () => {
         "Behavioral triggers",
         "Campaign automation",
       ],
-      color: "from-teal-500 to-cyan-500",
+      color: "from-blue-500 to-blue-600",
     },
   ];
 
@@ -131,17 +131,17 @@ const ProductCRMPage = () => {
     {
       title: "Loyalty Rewards",
       description: "Automated point system and rewards",
-      color: "bg-purple-500",
+      color: "bg-blue-500",
     },
     {
       title: "Referral Tracking",
       description: "Monitor and reward referrals",
-      color: "bg-green-500",
+      color: "bg-blue-500",
     },
     {
       title: "Smart Automation",
       description: "Triggered campaigns and follow-ups",
-      color: "bg-orange-500",
+      color: "bg-blue-500",
     },
   ];
 
@@ -149,12 +149,12 @@ const ProductCRMPage = () => {
     {
       value: "94%",
       label: "Guest Retention Rate",
-      icon: <Heart className="h-6 w-6 text-red-500" />,
+      icon: <Heart className="h-6 w-6 text-blue-500" />,
     },
     {
       value: "3.2x",
       label: "Referral Increase",
-      icon: <TrendingUp className="h-6 w-6 text-green-500" />,
+      icon: <TrendingUp className="h-6 w-6 text-blue-500" />,
     },
     {
       value: "87%",
@@ -164,7 +164,7 @@ const ProductCRMPage = () => {
     {
       value: "45%",
       label: "Revenue Growth",
-      icon: <Star className="h-6 w-6 text-yellow-500" />,
+      icon: <Star className="h-6 w-6 text-blue-500" />,
     },
   ];
 
