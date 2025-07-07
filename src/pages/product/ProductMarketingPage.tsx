@@ -403,7 +403,7 @@ const ProductMarketingPage = () => {
                   <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-orange-600" />
+                        <Sparkles className="h-5 w-5 text-blue-600" />
                         AI-Powered Tour Description Writer
                       </CardTitle>
                       <CardDescription>
@@ -424,7 +424,7 @@ const ProductMarketingPage = () => {
                               onChange={(e) =>
                                 handleInputChange("title", e.target.value)
                               }
-                              className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
+                              className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
                             />
                           </div>
                           <div>
@@ -440,7 +440,7 @@ const ProductMarketingPage = () => {
                                   e.target.value
                                 )
                               }
-                              className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
+                              className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
                               rows={4}
                             />
                           </div>
@@ -456,7 +456,7 @@ const ProductMarketingPage = () => {
                               onChange={(e) =>
                                 handleInputChange("location", e.target.value)
                               }
-                              className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
+                              className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
                             />
                           </div>
                           <div>
@@ -469,7 +469,7 @@ const ProductMarketingPage = () => {
                               onChange={(e) =>
                                 handleInputChange("duration", e.target.value)
                               }
-                              className="transition-all duration-300 focus:ring-2 focus:ring-orange-500"
+                              className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
                             />
                           </div>
                           <div>
@@ -482,7 +482,7 @@ const ProductMarketingPage = () => {
                                 handleInputChange("writingStyle", value)
                               }
                             >
-                              <SelectTrigger className="transition-all duration-300 focus:ring-2 focus:ring-orange-500">
+                              <SelectTrigger className="transition-all duration-300 focus:ring-2 focus:ring-blue-500">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -506,7 +506,7 @@ const ProductMarketingPage = () => {
                       <Button
                         onClick={() => handleGenerateContent("description")}
                         disabled={isGenerating}
-                        className="w-full bg-orange-600 hover:bg-orange-700 transition-all duration-300 hover:scale-105"
+                        className="w-full bg-blue-600 hover:bg-blue-700 transition-all duration-300 hover:scale-105"
                       >
                         {isGenerating ? (
                           <>
@@ -803,11 +803,11 @@ const ProductMarketingPage = () => {
                     See how Culturin can transform your business
                   </p>
                   <Button
-                    className="bg-white text-black hover:bg-gray-100 transition-all duration-300 group"
+                    className="bg-white text-black hover:bg-gray-100 transition-all duration-300 group px-6 py-3 text-base"
                     asChild
                   >
                     <Link to="/demo">
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </Button>
                 </div>
@@ -818,11 +818,11 @@ const ProductMarketingPage = () => {
                   </p>
                   <Button
                     variant="outline"
-                    className="transition-all duration-300 hover:bg-gray-100 group"
+                    className="transition-all duration-300 hover:bg-gray-100 group px-6 py-3 text-base"
                     asChild
                   >
                     <Link to="/how-it-works">
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </Button>
                 </div>
