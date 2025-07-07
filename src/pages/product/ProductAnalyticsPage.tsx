@@ -234,26 +234,46 @@ const ProductAnalyticsPage = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
 
-            <div
-              className={`mt-16 text-center transition-all duration-1000 delay-500 ${
-                featuresInView
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              }`}
-            >
-              <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white py-6 px-8 rounded-xl text-lg h-auto group hover:scale-105 transition-all duration-300 hover:shadow-lg"
-                asChild
-              >
-                <Link to="/sign-in">
-                  Start a free trial
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-              <p className="mt-4 text-gray-500 animate-pulse">
-                No credit card required • 14-day free trial
-              </p>
+        {/* CTA Section */}
+        <section className="py-24 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="bg-black text-white p-8 rounded-lg hover:shadow-xl transition-shadow duration-300">
+                  <h3 className="text-2xl font-bold mb-4">Get a free demo</h3>
+                  <p className="text-gray-300 mb-6">
+                    See how Culturin can transform your business
+                  </p>
+                  <Button
+                    className="bg-white text-black hover:bg-gray-100 transition-all duration-300 group px-4 py-2 text-sm"
+                    asChild
+                  >
+                    <Link to="/demo">
+                      Request a demo
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                </div>
+                <div className="bg-gray-50 p-8 rounded-lg hover:shadow-xl transition-shadow duration-300">
+                  <h3 className="text-2xl font-bold mb-4">See how it works</h3>
+                  <p className="text-gray-600 mb-6">
+                    Explore our platform features and benefits
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="transition-all duration-300 hover:bg-gray-100 group px-4 py-2 text-sm"
+                    asChild
+                  >
+                    <Link to="/how-it-works">
+                      Learn more
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </section>
