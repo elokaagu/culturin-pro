@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "./supabase";
 import type { Database } from "./supabase";
 
 type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
@@ -7,18 +7,8 @@ type BlogPostUpdate = Database["public"]["Tables"]["blog_posts"]["Update"];
 
 // Check if Supabase is configured
 const isSupabaseConfigured = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  return !!(supabaseUrl && supabaseAnonKey);
+  return !!supabase;
 };
-
-// Create Supabase client only if configured
-const supabase = isSupabaseConfigured()
-  ? createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
-  : null;
 
 // Fallback data for when Supabase is not configured (build time)
 const getFallbackBlogPosts = (): BlogPost[] => {
