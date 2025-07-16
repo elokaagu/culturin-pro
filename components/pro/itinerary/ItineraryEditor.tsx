@@ -15,6 +15,7 @@ import ItineraryPreview from "@/components/pro/itinerary/ItineraryPreview";
 import AIContentAssistant from "@/components/pro/itinerary/AIContentAssistant";
 import { ItineraryType } from "@/data/itineraryData";
 import Image from "@/components/ui/image";
+import { useRouter } from "next/navigation";
 
 interface ItineraryEditorProps {
   showEditor: boolean;
@@ -34,6 +35,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   onItinerarySave,
 }) => {
   const { toast } = useToast();
+  const router = useRouter();
   const [itinerary, setItinerary] = useState<ItineraryType | null>(
     selectedItinerary
   );
@@ -231,15 +233,12 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full mt-2 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10"
-                  asChild
+                  className="w-full mt-2 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10 transition-all duration-300"
+                  onClick={() =>
+                    router.push(`/product/booking-preview/${itinerary.id}`)
+                  }
                 >
-                  <Link
-                    to={`/product/booking-preview/${itinerary.id}`}
-                    target="_blank"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-1" /> Preview Booking
-                  </Link>
+                  <ExternalLink className="h-4 w-4 mr-1" /> Preview Booking
                 </Button>
               </div>
             </div>
