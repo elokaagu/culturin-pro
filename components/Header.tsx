@@ -215,16 +215,22 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
                   >
-                    {user.avatar ? (
+                    {user.user_metadata?.avatar_url ? (
                       <img
-                        src={user.avatar}
-                        alt={user.name}
+                        src={user.user_metadata.avatar_url}
+                        alt={
+                          user.user_metadata?.full_name || user.email || "User"
+                        }
                         className="w-8 h-8 rounded-full"
                       />
                     ) : (
                       <User className="w-6 h-6" />
                     )}
-                    <span className="font-medium">{user.name}</span>
+                    <span className="font-medium">
+                      {user.user_metadata?.full_name ||
+                        user.email?.split("@")[0] ||
+                        "User"}
+                    </span>
                     <ChevronDown className="w-4 h-4" />
                   </button>
 
@@ -232,7 +238,9 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                     <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-2 z-50">
                       <div className="px-3 py-2 border-b border-gray-100">
                         <div className="text-sm font-medium text-gray-800">
-                          {user.name}
+                          {user.user_metadata?.full_name ||
+                            user.email?.split("@")[0] ||
+                            "User"}
                         </div>
                         <div className="text-xs text-gray-500">
                           {user.email}
@@ -410,7 +418,9 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                   <div className="space-y-2">
                     <div className="py-2">
                       <div className="text-sm font-medium text-gray-800">
-                        {user.name}
+                        {user.user_metadata?.full_name ||
+                          user.email?.split("@")[0] ||
+                          "User"}
                       </div>
                       <div className="text-xs text-gray-500">{user.email}</div>
                     </div>
