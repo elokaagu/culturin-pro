@@ -7,11 +7,26 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, LogIn, AlertCircle } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  LogIn,
+  AlertCircle,
+  Mail,
+  Lock,
+  ArrowLeft,
+} from "lucide-react";
 import NewFooter from "@/components/sections/NewFooter";
 import TranslatableText from "../../components/TranslatableText";
+import Link from "next/link";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -64,7 +79,13 @@ const SignIn = () => {
     setError("");
 
     try {
-      await login(email, password);
+      const { error } = await login(email, password);
+
+      if (error) {
+        setError(
+          error.message || "Invalid email or password. Please try again."
+        );
+      }
       // Navigation will be handled by the useEffect above
     } catch (err: any) {
       setError(
@@ -76,18 +97,31 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-culturin-indigo/10 to-white">
       <Header type="operator" />
 
       <main className="flex-1 pt-24 flex items-center justify-center px-4">
-        <div className="w-full max-w-md">
-          <Card className="p-8">
-            <div className="text-center mb-8">
-              <LogIn className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold mb-2">Welcome Back</h1>
-              <p className="text-gray-600">Sign in to access Culturin Studio</p>
+        <Card className="w-full max-w-md shadow-xl">
+          <CardHeader className="text-center">
+            <div className="flex items-center justify-center mb-4">
+              <Link
+                href="/"
+                className="flex items-center text-culturin-indigo hover:text-culturin-indigo/80 transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Home
+              </Link>
             </div>
+            <LogIn className="h-12 w-12 text-culturin-indigo mx-auto mb-4" />
+            <CardTitle className="text-2xl font-bold text-gray-900">
+              Welcome Back
+            </CardTitle>
+            <CardDescription className="text-gray-600">
+              Sign in to access Culturin Studio
+            </CardDescription>
+          </CardHeader>
 
+          <CardContent>
             {error && (
               <Alert className="mb-6 border-red-200 bg-red-50">
                 <AlertCircle className="h-4 w-4 text-red-600" />
@@ -97,34 +131,39 @@ const SignIn = () => {
               </Alert>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  required
-                  className="mt-1"
-                />
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="pl-10"
+                    required
+                  />
+                </div>
               </div>
 
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <div className="relative mt-1">
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
+                    className="pl-10 pr-10"
                     required
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
@@ -138,7 +177,7 @@ const SignIn = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90 text-white py-3"
                 disabled={loading}
               >
                 {loading ? (
@@ -152,17 +191,28 @@ const SignIn = () => {
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
+            <div className="mt-6 text-center space-y-4">
               <p className="text-sm text-gray-600">
-                Demo credentials:
-                <br />
-                Email: demo@culturin.com, Password: demo123
-                <br />
-                Or use: eloka.agu@icloud.com, Password: Honour18!!
+                Don't have an account?{" "}
+                <Link
+                  href="/sign-up"
+                  className="text-culturin-indigo hover:text-culturin-indigo/80 font-medium"
+                >
+                  Sign up
+                </Link>
               </p>
+
+              <div className="text-xs text-gray-500">
+                <Link
+                  href="/forgot-password"
+                  className="text-culturin-indigo hover:text-culturin-indigo/80"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
             </div>
-          </Card>
-        </div>
+          </CardContent>
+        </Card>
       </main>
 
       <NewFooter />

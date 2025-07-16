@@ -1,23 +1,24 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  role?: "admin" | "user";
-}
+import { useAuth as useSupabaseAuth } from "@/hooks/useSupabase";
+import { supabase } from "@/lib/supabase";
+import type { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
   isLoggedIn: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (
+    email: string,
+    password: string,
+    metadata?: any
+  ) => Promise<{ error: any }>;
+  logout: () => Promise<{ error: any }>;
   hasStudioAccess: boolean;
   isAdmin: boolean;
   isLoading: boolean;
+  resetPassword: (email: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,11 +31,13 @@ export const useAuth = () => {
       return {
         user: null,
         isLoggedIn: false,
-        login: async () => {},
-        logout: () => {},
+        login: async () => ({ error: null }),
+        signUp: async () => ({ error: null }),
+        logout: async () => ({ error: null }),
         hasStudioAccess: false,
         isAdmin: false,
         isLoading: true,
+        resetPassword: async () => ({ error: null }),
       };
     }
     throw new Error("useAuth must be used within an AuthProvider");
@@ -47,101 +50,70 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, session, loading, signIn, signUp, signOut } = useSupabaseAuth();
   const [hasStudioAccess, setHasStudioAccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in from localStorage
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("culturin_user");
-      const studioAccess = localStorage.getItem("culturinProAccess");
+    // Check user permissions when user changes
+    if (user) {
+      checkUserPermissions(user);
+    } else {
+      setHasStudioAccess(false);
+      setIsAdmin(false);
+    }
+  }, [user]);
 
-      if (storedUser) {
-        try {
-          const userData = JSON.parse(storedUser);
-          setUser(userData);
-          setIsLoggedIn(true);
-          setHasStudioAccess(studioAccess === "true");
-        } catch (error) {
-          // Clean up invalid data
-          localStorage.removeItem("culturin_user");
-          localStorage.removeItem("culturinProAccess");
-        }
+  const checkUserPermissions = async (user: User) => {
+    try {
+      // Check if user has a profile with admin or studio access
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        console.error("Error fetching user profile:", error);
       }
-      setIsLoading(false);
-    }
-  }, []);
 
-  const login = async (email: string, password: string): Promise<void> => {
-    // Validate credentials
-    const validCredentials = [
-      {
-        email: "eloka.agu@icloud.com",
-        password: "Honour18!!",
-        name: "Eloka Agu",
-        role: "admin" as const,
-      },
-      {
-        email: "demo@culturin.com",
-        password: "demo123",
-        name: "Demo User",
-        role: "user" as const,
-      },
-    ];
-
-    const validUser = validCredentials.find(
-      (cred) => cred.email === email && cred.password === password
-    );
-
-    if (!validUser) {
-      throw new Error(
-        "Invalid email or password. Please check your credentials and try again."
+      // For now, grant studio access to all authenticated users
+      // You can modify this logic based on your requirements
+      setHasStudioAccess(true);
+      setIsAdmin(
+        profile?.role === "admin" || user.email === "eloka.agu@icloud.com"
       );
-    }
-
-    const userData: User = {
-      id: validUser.email === "eloka.agu@icloud.com" ? "1" : "2",
-      name: validUser.name,
-      email: validUser.email,
-      role: validUser.role,
-      avatar:
-        validUser.email === "eloka.agu@icloud.com"
-          ? "/eloka-agu-headshot.png"
-          : undefined,
-    };
-
-    setUser(userData);
-    setIsLoggedIn(true);
-    setHasStudioAccess(true);
-
-    // Store user data and grant studio access
-    if (typeof window !== "undefined") {
-      localStorage.setItem("culturin_user", JSON.stringify(userData));
-      localStorage.setItem("culturinProAccess", "true");
+    } catch (error) {
+      console.error("Error checking user permissions:", error);
+      // Default to granting studio access
+      setHasStudioAccess(true);
+      setIsAdmin(false);
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setIsLoggedIn(false);
-    setHasStudioAccess(false);
+  const login = async (email: string, password: string) => {
+    return await signIn(email, password);
+  };
 
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("culturin_user");
-      localStorage.removeItem("culturinProAccess");
-    }
+  const logout = async () => {
+    return await signOut();
+  };
+
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    return { error };
   };
 
   const value: AuthContextType = {
     user,
-    isLoggedIn,
+    isLoggedIn: !!user,
     login,
+    signUp,
     logout,
     hasStudioAccess,
-    isAdmin: user?.role === "admin",
-    isLoading,
+    isAdmin,
+    isLoading: loading,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
