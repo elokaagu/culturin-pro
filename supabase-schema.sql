@@ -16,13 +16,13 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for profiles
-CREATE POLICY IF NOT EXISTS "Users can view their own profile" ON public.profiles
+CREATE POLICY "Users can view their own profile" ON public.profiles
   FOR SELECT USING (auth.uid() = id);
 
-CREATE POLICY IF NOT EXISTS "Users can update their own profile" ON public.profiles
+CREATE POLICY "Users can update their own profile" ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY IF NOT EXISTS "Users can insert their own profile" ON public.profiles
+CREATE POLICY "Users can insert their own profile" ON public.profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- Function to handle new user signup
@@ -81,10 +81,10 @@ CREATE TABLE IF NOT EXISTS public.tours (
 ALTER TABLE public.tours ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for tours
-CREATE POLICY IF NOT EXISTS "Tours are viewable by everyone" ON public.tours
+CREATE POLICY "Tours are viewable by everyone" ON public.tours
   FOR SELECT USING (status = 'active');
 
-CREATE POLICY IF NOT EXISTS "Operators can manage their own tours" ON public.tours
+CREATE POLICY "Operators can manage their own tours" ON public.tours
   FOR ALL USING (auth.uid() = operator_id);
 
 -- Create bookings table (if not exists)
@@ -109,13 +109,13 @@ CREATE TABLE IF NOT EXISTS public.bookings (
 ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for bookings
-CREATE POLICY IF NOT EXISTS "Users can view their own bookings" ON public.bookings
+CREATE POLICY "Users can view their own bookings" ON public.bookings
   FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Users can create their own bookings" ON public.bookings
+CREATE POLICY "Users can create their own bookings" ON public.bookings
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Operators can view bookings for their tours" ON public.bookings
+CREATE POLICY "Operators can view bookings for their tours" ON public.bookings
   FOR SELECT USING (
     EXISTS (
       SELECT 1 FROM public.tours 
@@ -150,10 +150,10 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
 ALTER TABLE public.blog_posts ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for blog_posts
-CREATE POLICY IF NOT EXISTS "Blog posts are viewable by everyone when published" ON public.blog_posts
+CREATE POLICY "Blog posts are viewable by everyone when published" ON public.blog_posts
   FOR SELECT USING (published = true);
 
-CREATE POLICY IF NOT EXISTS "Authors can manage their own blog posts" ON public.blog_posts
+CREATE POLICY "Authors can manage their own blog posts" ON public.blog_posts
   FOR ALL USING (auth.uid() = author_id);
 
 -- Create storage buckets
@@ -164,13 +164,13 @@ INSERT INTO storage.buckets (id, name, public) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Create storage policies
-CREATE POLICY IF NOT EXISTS "Blog Images Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'blog-images');
-CREATE POLICY IF NOT EXISTS "Tour Images Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'tour-images');
-CREATE POLICY IF NOT EXISTS "Avatars Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
+CREATE POLICY "Blog Images Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'blog-images');
+CREATE POLICY "Tour Images Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'tour-images');
+CREATE POLICY "Avatars Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
 
-CREATE POLICY IF NOT EXISTS "Authenticated users can upload" ON storage.objects FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-CREATE POLICY IF NOT EXISTS "Users can update their own uploads" ON storage.objects FOR UPDATE USING (auth.uid()::text = (storage.foldername(name))[1]);
-CREATE POLICY IF NOT EXISTS "Users can delete their own uploads" ON storage.objects FOR DELETE USING (auth.uid()::text = (storage.foldername(name))[1]);
+CREATE POLICY "Authenticated users can upload" ON storage.objects FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Users can update their own uploads" ON storage.objects FOR UPDATE USING (auth.uid()::text = (storage.foldername(name))[1]);
+CREATE POLICY "Users can delete their own uploads" ON storage.objects FOR DELETE USING (auth.uid()::text = (storage.foldername(name))[1]);
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_tours_operator_id ON public.tours(operator_id);
