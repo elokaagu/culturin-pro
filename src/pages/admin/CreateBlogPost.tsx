@@ -135,7 +135,10 @@ const CreateBlogPost = () => {
         content: formData.content.filter((p) => p.trim() !== ""),
         category: formData.category,
         author_id: user.id,
-        author_name: user.name,
+        author_name:
+          user.user_metadata?.full_name ||
+          user.email?.split("@")[0] ||
+          "Anonymous",
         author_email: user.email,
         featured_image: formData.featured_image,
         published: formData.published,
