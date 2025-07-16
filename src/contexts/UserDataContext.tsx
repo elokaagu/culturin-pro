@@ -152,7 +152,10 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
             setUserData((prev) => ({
               ...prev,
               email: user.email,
-              businessName: user.name + "'s Tours",
+              businessName:
+                (user.user_metadata?.full_name ||
+                  user.email?.split("@")[0] ||
+                  "User") + "'s Tours",
             }));
           }
         }
