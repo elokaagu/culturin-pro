@@ -62,8 +62,10 @@ const ProSidebar: React.FC = () => {
 
   useEffect(() => {
     // Use authenticated user's name if available, otherwise fallback to localStorage
-    if (user?.name) {
-      setUserName(user.name);
+    if (user?.user_metadata?.full_name) {
+      setUserName(user.user_metadata.full_name);
+    } else if (user?.email) {
+      setUserName(user.email.split("@")[0]);
     } else {
       const storedUserName = localStorage.getItem("userName");
       if (storedUserName) {
