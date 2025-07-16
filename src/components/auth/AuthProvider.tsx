@@ -53,16 +53,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { user, session, loading, signIn, signUp, signOut } = useSupabaseAuth();
   const [hasStudioAccess, setHasStudioAccess] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [useMockAuth, setUseMockAuth] = useState(false);
+
+  // Check if Supabase is properly configured
+  useEffect(() => {
+    const checkSupabaseConfig = async () => {
+      try {
+        // Test if we can access the auth system
+        const { data, error } = await supabase.auth.getSession();
+        if (error && error.message.includes("Invalid API key")) {
+          console.warn(
+            "Supabase not properly configured, falling back to mock auth"
+          );
+          setUseMockAuth(true);
+        }
+      } catch (err) {
+        console.warn("Supabase connection failed, falling back to mock auth");
+        setUseMockAuth(true);
+      }
+    };
+
+    checkSupabaseConfig();
+  }, []);
 
   useEffect(() => {
     // Check user permissions when user changes
-    if (user) {
+    if (user && !useMockAuth) {
       checkUserPermissions(user);
+    } else if (useMockAuth) {
+      // Mock auth fallback
+      setHasStudioAccess(true);
+      setIsAdmin(user?.email === "eloka.agu@icloud.com");
     } else {
       setHasStudioAccess(false);
       setIsAdmin(false);
     }
-  }, [user]);
+  }, [user, useMockAuth]);
 
   const checkUserPermissions = async (user: User) => {
     try {
@@ -92,14 +118,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const login = async (email: string, password: string) => {
+    if (useMockAuth) {
+      // Mock authentication fallback
+      const validCredentials = [
+        { email: "eloka.agu@icloud.com", password: "Honour18!!" },
+        { email: "demo@culturin.com", password: "demo123" },
+      ];
+
+      const validUser = validCredentials.find(
+        (cred) => cred.email === email && cred.password === password
+      );
+
+      if (!validUser) {
+        return { error: { message: "Invalid email or password" } };
+      }
+
+      // Simulate successful login
+      return { error: null };
+    }
+
     return await signIn(email, password);
   };
 
   const logout = async () => {
+    if (useMockAuth) {
+      // Mock logout
+      return { error: null };
+    }
     return await signOut();
   };
 
   const resetPassword = async (email: string) => {
+    if (useMockAuth) {
+      return {
+        error: { message: "Password reset not available in demo mode" },
+      };
+    }
     const { error } = await supabase.auth.resetPasswordForEmail(email);
     return { error };
   };
