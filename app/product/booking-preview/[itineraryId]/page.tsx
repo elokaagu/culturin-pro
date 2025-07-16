@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import BookingWidget from "@/components/pro/website/BookingWidget";
 import { sampleItineraries } from "@/data/itineraryData";
