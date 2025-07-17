@@ -1,7 +1,18 @@
--- Create profiles table
-CREATE TABLE IF NOT EXISTS public.profiles (
+-- Drop existing tables if they exist (for clean slate)
+DROP TABLE IF EXISTS public.blog_posts CASCADE;
+DROP TABLE IF EXISTS public.bookings CASCADE;
+DROP TABLE IF EXISTS public.tours CASCADE;
+DROP TABLE IF EXISTS public.users CASCADE;
+
+-- Drop existing functions and triggers
+DROP FUNCTION IF EXISTS public.handle_new_user() CASCADE;
+
+-- Create users table
+CREATE TABLE IF NOT EXISTS public.users (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT UNIQUE,
+  first_name TEXT,
+  last_name TEXT,
   full_name TEXT,
   avatar_url TEXT,
   website TEXT,
@@ -12,24 +23,29 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Enable RLS on profiles
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+-- Enable RLS on users
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
--- Create policies for profiles
-CREATE POLICY "Users can view their own profile" ON public.profiles
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.users;
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.users;
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.users;
+
+-- Create policies for users
+CREATE POLICY "Users can view their own user data" ON public.users
   FOR SELECT USING (auth.uid() = id);
 
-CREATE POLICY "Users can update their own profile" ON public.profiles
+CREATE POLICY "Users can update their own user data" ON public.users
   FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY "Users can insert their own profile" ON public.profiles
+CREATE POLICY "Users can insert their own user data" ON public.users
   FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- Function to handle new user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, full_name, role, studio_access)
+  INSERT INTO public.users (id, email, full_name, role, studio_access)
   VALUES (
     NEW.id,
     NEW.email,
@@ -47,13 +63,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger to automatically create profile on signup
+-- Trigger to automatically create user profile on signup
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- Create tours table (if not exists)
+-- Create tours table
 CREATE TABLE IF NOT EXISTS public.tours (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -62,7 +78,7 @@ CREATE TABLE IF NOT EXISTS public.tours (
   price DECIMAL(10,2),
   duration TEXT,
   location TEXT,
-  operator_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  operator_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
   image_url TEXT,
   category TEXT,
   max_participants INTEGER,
@@ -80,6 +96,10 @@ CREATE TABLE IF NOT EXISTS public.tours (
 -- Enable RLS on tours
 ALTER TABLE public.tours ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Tours are viewable by everyone" ON public.tours;
+DROP POLICY IF EXISTS "Operators can manage their own tours" ON public.tours;
+
 -- Create policies for tours
 CREATE POLICY "Tours are viewable by everyone" ON public.tours
   FOR SELECT USING (status = 'active');
@@ -87,7 +107,7 @@ CREATE POLICY "Tours are viewable by everyone" ON public.tours
 CREATE POLICY "Operators can manage their own tours" ON public.tours
   FOR ALL USING (auth.uid() = operator_id);
 
--- Create bookings table (if not exists)
+-- Create bookings table
 CREATE TABLE IF NOT EXISTS public.bookings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -108,6 +128,11 @@ CREATE TABLE IF NOT EXISTS public.bookings (
 -- Enable RLS on bookings
 ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view their own bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Users can create their own bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Operators can view bookings for their tours" ON public.bookings;
+
 -- Create policies for bookings
 CREATE POLICY "Users can view their own bookings" ON public.bookings
   FOR SELECT USING (auth.uid() = user_id);
@@ -124,7 +149,7 @@ CREATE POLICY "Operators can view bookings for their tours" ON public.bookings
     )
   );
 
--- Create blog_posts table (if not exists)
+-- Create blog_posts table
 CREATE TABLE IF NOT EXISTS public.blog_posts (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -149,6 +174,10 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
 -- Enable RLS on blog_posts
 ALTER TABLE public.blog_posts ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Blog posts are viewable by everyone when published" ON public.blog_posts;
+DROP POLICY IF EXISTS "Authors can manage their own blog posts" ON public.blog_posts;
+
 -- Create policies for blog_posts
 CREATE POLICY "Blog posts are viewable by everyone when published" ON public.blog_posts
   FOR SELECT USING (published = true);
@@ -162,6 +191,14 @@ INSERT INTO storage.buckets (id, name, public) VALUES
   ('tour-images', 'tour-images', true),
   ('avatars', 'avatars', true)
 ON CONFLICT (id) DO NOTHING;
+
+-- Drop existing storage policies if they exist
+DROP POLICY IF EXISTS "Blog Images Public Access" ON storage.objects;
+DROP POLICY IF EXISTS "Tour Images Public Access" ON storage.objects;
+DROP POLICY IF EXISTS "Avatars Public Access" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can upload" ON storage.objects;
+DROP POLICY IF EXISTS "Users can update their own uploads" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete their own uploads" ON storage.objects;
 
 -- Create storage policies
 CREATE POLICY "Blog Images Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'blog-images');

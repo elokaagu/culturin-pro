@@ -66,21 +66,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkUserPermissions = async (user: User) => {
     try {
-      // Check if user has a profile with admin or studio access
-      const { data: profile, error } = await supabase
-        .from("profiles")
+      // Check if user has a user record with admin or studio access
+      const { data: userData, error } = await supabase
+        .from("users")
         .select("*")
         .eq("id", user.id)
         .single();
 
       if (error && error.code !== "PGRST116") {
-        console.error("Error fetching user profile:", error);
+        console.error("Error fetching user data:", error);
       }
 
       // For now, grant studio access to all authenticated users
       setHasStudioAccess(true);
       setIsAdmin(
-        profile?.role === "admin" || user.email === "eloka.agu@icloud.com"
+        userData?.role === "admin" || user.email === "eloka.agu@icloud.com"
       );
     } catch (error) {
       console.error("Error checking user permissions:", error);
