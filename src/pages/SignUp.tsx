@@ -22,7 +22,8 @@ export default function SignUp() {
     email: "",
     password: "",
     confirmPassword: "",
-    fullName: "",
+    firstName: "",
+    lastName: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -46,7 +47,8 @@ export default function SignUp() {
       !formData.email ||
       !formData.password ||
       !formData.confirmPassword ||
-      !formData.fullName
+      !formData.firstName ||
+      !formData.lastName
     ) {
       setError("All fields are required");
       return false;
@@ -81,7 +83,7 @@ export default function SignUp() {
 
     try {
       const { error } = await signUp(formData.email, formData.password, {
-        full_name: formData.fullName,
+        full_name: `${formData.firstName} ${formData.lastName}`.trim(),
       });
 
       if (error) {
@@ -137,20 +139,38 @@ export default function SignUp() {
               </Alert>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  className="pl-10"
-                  required
-                />
+            <div className="flex space-x-2">
+              <div className="space-y-2 w-1/2">
+                <Label htmlFor="firstName">First Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    placeholder="First name"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2 w-1/2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    placeholder="Last name"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="pl-10"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
