@@ -4,7 +4,7 @@ import { Toaster } from "../../components/ui/toaster";
 import { AuthProvider } from "../../src/components/auth/AuthProvider";
 import { UserDataProvider } from "../../src/contexts/UserDataContext";
 import { TranslationProvider } from "../../src/contexts/TranslationContext";
-import { PricingProvider } from "../../src/contexts/PricingContext";
+
 import PageTransition from "../../components/PageTransition";
 
 export const metadata = {
@@ -28,9 +28,7 @@ export default function LocaleLayout({
         <AuthProvider>
           <UserDataProvider>
             <TranslationProvider>
-              <PricingProvider>
-                <PageTransition>{children}</PageTransition>
-              </PricingProvider>
+              <PageTransition>{children}</PageTransition>
             </TranslationProvider>
           </UserDataProvider>
         </AuthProvider>
