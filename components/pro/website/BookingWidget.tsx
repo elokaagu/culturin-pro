@@ -106,90 +106,28 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
     { code: "BRL", name: "Brazilian Real", rate: 5.2, symbol: "R$" },
   ];
 
-  // Enhanced dynamic pricing calculation
-  const calculateDynamicPrice = useCallback(() => {
+  // Simple price calculation
+  const calculatePrice = useCallback(() => {
     const basePrice = tour.price || tour.days * 50;
-    let finalPrice = basePrice;
-
-    if (!selectedDate) return finalPrice;
-
-    // Get days in advance
-    const selectedDateObj = new Date(selectedDate);
-    const today = new Date();
-    const daysInAdvance = Math.ceil(
-      (selectedDateObj.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
-
-    // Apply group discount (5+ people get 15% off)
-    if (guestCount >= 5) {
-      finalPrice *= 0.85;
-    }
-
-    // Apply early bird discount (30+ days advance gets 10% off)
-    if (daysInAdvance >= 30) {
-      finalPrice *= 0.9;
-    }
-
-    // Apply last minute pricing (7 days or less gets 20% increase)
-    if (daysInAdvance <= 7 && daysInAdvance > 0) {
-      finalPrice *= 1.2;
-    }
-
-    // Apply seasonal pricing (simplified - peak season in summer months)
-    const month = selectedDateObj.getMonth();
-    if (month >= 5 && month <= 7) {
-      // June, July, August
-      finalPrice *= 1.25;
-    }
 
     // Apply currency conversion
     const currencyRate =
       supportedCurrencies.find((c) => c.code === selectedCurrency)?.rate || 1;
-    finalPrice *= currencyRate;
+    const finalPrice = basePrice * currencyRate;
 
     return Math.round(finalPrice * 100) / 100;
-  }, [
-    tour.price,
-    tour.days,
-    selectedDate,
-    guestCount,
-    selectedCurrency,
-    supportedCurrencies,
-  ]);
+  }, [tour.price, tour.days, selectedCurrency, supportedCurrencies]);
 
   const getCurrencySymbol = (code: string) => {
     return supportedCurrencies.find((c) => c.code === code)?.symbol || "$";
   };
 
-  const getAppliedDiscounts = useCallback(() => {
-    const discounts = [];
-    if (guestCount >= 5) discounts.push("Group Discount (15% off)");
-
-    if (selectedDate) {
-      const selectedDateObj = new Date(selectedDate);
-      const today = new Date();
-      const daysInAdvance = Math.ceil(
-        (selectedDateObj.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-      );
-
-      if (daysInAdvance >= 30) discounts.push("Early Bird (10% off)");
-      if (daysInAdvance <= 7 && daysInAdvance > 0)
-        discounts.push("Last Minute (+20%)");
-
-      const month = selectedDateObj.getMonth();
-      if (month >= 5 && month <= 7) discounts.push("Peak Season (+25%)");
-    }
-
-    return discounts;
-  }, [selectedDate, guestCount]);
-
   const basePrice = tour.price || tour.days * 50;
-  const totalPrice = calculateDynamicPrice() * guestCount;
+  const totalPrice = calculatePrice() * guestCount;
   const serviceFee =
     5 *
     (supportedCurrencies.find((c) => c.code === selectedCurrency)?.rate || 1);
   const finalTotal = totalPrice + serviceFee;
-  const appliedDiscounts = getAppliedDiscounts();
 
   // Format date for display
   const formatDate = (dateStr: string) => {
@@ -421,20 +359,6 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
             <span>Hosted by {companyName}</span>
           </div>
         </div>
-        {appliedDiscounts.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {appliedDiscounts.map((discount, index) => (
-              <Badge
-                key={index}
-                variant="outline"
-                className="bg-green-50 text-green-700"
-              >
-                <TrendingUp className="h-3 w-3 mr-1" />
-                {discount}
-              </Badge>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Booking Progress */}
@@ -695,25 +619,12 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                       <span>{selectedCurrency}</span>
                     </div>
 
-                    {appliedDiscounts.length > 0 && (
-                      <div className="border-t pt-3 mt-3">
-                        <p className="text-sm font-medium text-green-700 mb-2">
-                          Applied Pricing:
-                        </p>
-                        {appliedDiscounts.map((discount, index) => (
-                          <p key={index} className="text-xs text-green-600">
-                            • {discount}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-
                     <div className="border-t pt-3 mt-3">
                       <div className="flex justify-between font-medium">
                         <span>Price per person:</span>
                         <span>
                           {getCurrencySymbol(selectedCurrency)}
-                          {calculateDynamicPrice().toFixed(2)}
+                          {calculatePrice().toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between font-bold text-lg mt-2">
@@ -861,25 +772,12 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                       <span>{guestCount}</span>
                     </div>
 
-                    {appliedDiscounts.length > 0 && (
-                      <div className="border-t pt-3 mt-3">
-                        <p className="text-sm font-medium text-green-700 mb-2">
-                          Applied Pricing:
-                        </p>
-                        {appliedDiscounts.map((discount, index) => (
-                          <p key={index} className="text-xs text-green-600">
-                            • {discount}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-
                     <div className="border-t pt-3 mt-3">
                       <div className="flex justify-between">
                         <span>
                           Experience ({guestCount} ×{" "}
                           {getCurrencySymbol(selectedCurrency)}
-                          {calculateDynamicPrice().toFixed(2)}):
+                          {calculatePrice().toFixed(2)}):
                         </span>
                         <span>
                           {getCurrencySymbol(selectedCurrency)}

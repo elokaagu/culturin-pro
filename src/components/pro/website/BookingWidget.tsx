@@ -1,16 +1,22 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react';
-import { ItineraryType } from '@/data/itineraryData';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, Clock, CreditCard, Users, Check, Globe, TrendingUp } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import { ItineraryType } from "@/data/itineraryData";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar, Clock, CreditCard, Users, Check, Globe } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface BookingWidgetProps {
   tour: ItineraryType;
@@ -25,114 +31,72 @@ interface CurrencyRate {
   symbol: string;
 }
 
-const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, companyName }) => {
+const BookingWidget: React.FC<BookingWidgetProps> = ({
+  tour,
+  primaryColor,
+  companyName,
+}) => {
   const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [guestCount, setGuestCount] = useState(2);
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const [selectedCurrency, setSelectedCurrency] = useState("USD");
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    specialRequests: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    specialRequests: "",
   });
 
   const availableDates = [
-    '2025-05-20',
-    '2025-05-21',
-    '2025-05-22',
-    '2025-05-23',
-    '2025-05-24'
+    "2025-05-20",
+    "2025-05-21",
+    "2025-05-22",
+    "2025-05-23",
+    "2025-05-24",
   ];
 
-  const availableTimes = ['9:00 AM', '11:30 AM', '2:00 PM', '4:30 PM'];
+  const availableTimes = ["9:00 AM", "11:30 AM", "2:00 PM", "4:30 PM"];
 
   const supportedCurrencies: CurrencyRate[] = [
-    { code: 'USD', name: 'US Dollar', rate: 1.0, symbol: '$' },
-    { code: 'EUR', name: 'Euro', rate: 0.85, symbol: '€' },
-    { code: 'GBP', name: 'British Pound', rate: 0.73, symbol: '£' },
-    { code: 'JPY', name: 'Japanese Yen', rate: 110.0, symbol: '¥' },
-    { code: 'CAD', name: 'Canadian Dollar', rate: 1.25, symbol: 'C$' },
-    { code: 'AUD', name: 'Australian Dollar', rate: 1.35, symbol: 'A$' },
-    { code: 'MXN', name: 'Mexican Peso', rate: 20.0, symbol: '$' },
-    { code: 'BRL', name: 'Brazilian Real', rate: 5.2, symbol: 'R$' }
+    { code: "USD", name: "US Dollar", rate: 1.0, symbol: "$" },
+    { code: "EUR", name: "Euro", rate: 0.85, symbol: "€" },
+    { code: "GBP", name: "British Pound", rate: 0.73, symbol: "£" },
+    { code: "JPY", name: "Japanese Yen", rate: 110.0, symbol: "¥" },
+    { code: "CAD", name: "Canadian Dollar", rate: 1.25, symbol: "C$" },
+    { code: "AUD", name: "Australian Dollar", rate: 1.35, symbol: "A$" },
+    { code: "MXN", name: "Mexican Peso", rate: 20.0, symbol: "$" },
+    { code: "BRL", name: "Brazilian Real", rate: 5.2, symbol: "R$" },
   ];
 
-  // Dynamic pricing calculation
-  const calculateDynamicPrice = () => {
+  // Simple price calculation
+  const calculatePrice = () => {
     const basePrice = tour.days * 50;
-    let finalPrice = basePrice;
-    
-    // Get days in advance
-    const selectedDateObj = selectedDate ? new Date(selectedDate) : new Date();
-    const today = new Date();
-    const daysInAdvance = Math.ceil((selectedDateObj.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
-    // Apply group discount (5+ people get 15% off)
-    if (guestCount >= 5) {
-      finalPrice *= 0.85;
-    }
-    
-    // Apply early bird discount (30+ days advance gets 10% off)
-    if (daysInAdvance >= 30) {
-      finalPrice *= 0.90;
-    }
-    
-    // Apply last minute pricing (7 days or less gets 20% increase)
-    if (daysInAdvance <= 7 && daysInAdvance > 0) {
-      finalPrice *= 1.20;
-    }
-    
-    // Apply seasonal pricing (simplified - peak season in summer months)
-    const month = selectedDateObj.getMonth();
-    if (month >= 5 && month <= 7) { // June, July, August
-      finalPrice *= 1.25;
-    }
-    
+
     // Apply currency conversion
-    const currencyRate = supportedCurrencies.find(c => c.code === selectedCurrency)?.rate || 1;
-    finalPrice *= currencyRate;
-    
+    const currencyRate =
+      supportedCurrencies.find((c) => c.code === selectedCurrency)?.rate || 1;
+    const finalPrice = basePrice * currencyRate;
+
     return Math.round(finalPrice * 100) / 100;
   };
 
   const getCurrencySymbol = (code: string) => {
-    return supportedCurrencies.find(c => c.code === code)?.symbol || '$';
-  };
-
-  const getAppliedDiscounts = () => {
-    const discounts = [];
-    if (guestCount >= 5) discounts.push('Group Discount (15% off)');
-    
-    if (selectedDate) {
-      const selectedDateObj = new Date(selectedDate);
-      const today = new Date();
-      const daysInAdvance = Math.ceil((selectedDateObj.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      
-      if (daysInAdvance >= 30) discounts.push('Early Bird (10% off)');
-      if (daysInAdvance <= 7 && daysInAdvance > 0) discounts.push('Last Minute (+20%)');
-      
-      const month = selectedDateObj.getMonth();
-      if (month >= 5 && month <= 7) discounts.push('Peak Season (+25%)');
-    }
-    
-    return discounts;
+    return supportedCurrencies.find((c) => c.code === code)?.symbol || "$";
   };
 
   const basePrice = tour.days * 50;
-  const totalPrice = calculateDynamicPrice() * guestCount;
-  const appliedDiscounts = getAppliedDiscounts();
+  const totalPrice = calculatePrice() * guestCount;
 
   // Format date for display
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      month: 'long', 
-      day: 'numeric', 
-      year: 'numeric' 
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
@@ -161,7 +125,7 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -171,8 +135,8 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
   };
 
   const handleCompleteBooking = () => {
-    toast.success('Booking Confirmed!', {
-      description: 'Your experience has been booked successfully.'
+    toast.success("Booking Confirmed!", {
+      description: "Your experience has been booked successfully.",
     });
     setTimeout(() => {
       setStep(5);
@@ -205,18 +169,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-3">{tour.title}</h1>
         <p className="text-gray-600">
-          {tour.days} {tour.days === 1 ? 'day' : 'days'} experience • Hosted by {companyName}
+          {tour.days} {tour.days === 1 ? "day" : "days"} experience • Hosted by{" "}
+          {companyName}
         </p>
-        {appliedDiscounts.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {appliedDiscounts.map((discount, index) => (
-              <Badge key={index} variant="outline" className="bg-green-50 text-green-700">
-                <TrendingUp className="h-3 w-3 mr-1" />
-                {discount}
-              </Badge>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Booking Progress */}
@@ -224,17 +179,17 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
         <div className="mb-8">
           <div className="flex items-center">
             {[
-              { num: 1, label: 'Date' },
-              { num: 2, label: 'Time' },
-              { num: 3, label: 'Details' },
-              { num: 4, label: 'Payment' }
+              { num: 1, label: "Date" },
+              { num: 2, label: "Time" },
+              { num: 3, label: "Details" },
+              { num: 4, label: "Payment" },
             ].map((s) => (
               <div key={s.num} className="flex flex-1 items-center">
                 <div
                   className={`flex items-center justify-center w-8 h-8 rounded-full ${
                     step >= s.num
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-500'
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-500"
                   }`}
                 >
                   {step > s.num ? (
@@ -245,7 +200,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
                 </div>
                 <span
                   className={`ml-2 text-sm hidden sm:inline ${
-                    step >= s.num ? 'text-blue-600 font-medium' : 'text-gray-500'
+                    step >= s.num
+                      ? "text-blue-600 font-medium"
+                      : "text-gray-500"
                   }`}
                 >
                   {s.label}
@@ -253,7 +210,7 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
                 {s.num < 4 && (
                   <div
                     className={`flex-1 h-0.5 mx-2 ${
-                      step > s.num ? 'bg-blue-600' : 'bg-gray-200'
+                      step > s.num ? "bg-blue-600" : "bg-gray-200"
                     }`}
                   ></div>
                 )}
@@ -272,7 +229,7 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
               <Card
                 key={date}
                 className={`cursor-pointer hover:shadow-md transition-all ${
-                  selectedDate === date ? 'border-2 border-blue-600' : ''
+                  selectedDate === date ? "border-2 border-blue-600" : ""
                 }`}
                 onClick={() => handleDateSelect(date)}
               >
@@ -304,7 +261,7 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
               <Card
                 key={time}
                 className={`cursor-pointer hover:shadow-md transition-all ${
-                  selectedTime === time ? 'border-2 border-blue-600' : ''
+                  selectedTime === time ? "border-2 border-blue-600" : ""
                 }`}
                 onClick={() => handleTimeSelect(time)}
               >
@@ -390,7 +347,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => guestCount > 1 && setGuestCount(guestCount - 1)}
+                      onClick={() =>
+                        guestCount > 1 && setGuestCount(guestCount - 1)
+                      }
                       className="px-3"
                     >
                       -
@@ -407,7 +366,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => guestCount < 10 && setGuestCount(guestCount + 1)}
+                      onClick={() =>
+                        guestCount < 10 && setGuestCount(guestCount + 1)
+                      }
                       className="px-3"
                     >
                       +
@@ -427,8 +388,8 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
                   />
                 </div>
 
-                <Button 
-                  onClick={handleSubmitForm} 
+                <Button
+                  onClick={handleSubmitForm}
                   style={{ backgroundColor: primaryColor }}
                   className="w-full md:w-auto"
                 >
@@ -445,7 +406,8 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
                     <div>
                       <p className="font-medium">{tour.title}</p>
                       <p className="text-sm text-gray-600">
-                        {tour.days} {tour.days === 1 ? 'day' : 'days'} experience
+                        {tour.days} {tour.days === 1 ? "day" : "days"}{" "}
+                        experience
                       </p>
                     </div>
                     <div className="flex justify-between">
@@ -464,24 +426,21 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
                       <span className="font-medium">Currency:</span>
                       <span>{selectedCurrency}</span>
                     </div>
-                    
-                    {appliedDiscounts.length > 0 && (
-                      <div className="border-t pt-3 mt-3">
-                        <p className="text-sm font-medium text-green-700 mb-2">Applied Pricing:</p>
-                        {appliedDiscounts.map((discount, index) => (
-                          <p key={index} className="text-xs text-green-600">• {discount}</p>
-                        ))}
-                      </div>
-                    )}
-                    
+
                     <div className="border-t pt-3 mt-3">
                       <div className="flex justify-between font-medium">
                         <span>Price per person:</span>
-                        <span>{getCurrencySymbol(selectedCurrency)}{calculateDynamicPrice().toFixed(2)}</span>
+                        <span>
+                          {getCurrencySymbol(selectedCurrency)}
+                          {calculatePrice().toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex justify-between font-bold text-lg mt-2">
                         <span>Total:</span>
-                        <span>{getCurrencySymbol(selectedCurrency)}{totalPrice.toFixed(2)}</span>
+                        <span>
+                          {getCurrencySymbol(selectedCurrency)}
+                          {totalPrice.toFixed(2)}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -498,7 +457,8 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
           <div className="mb-6">
             <h2 className="text-2xl font-semibold mb-2">Payment</h2>
             <p className="text-gray-600">
-              {formatDate(selectedDate || '')} • {selectedTime} • {guestCount} guests
+              {formatDate(selectedDate || "")} • {selectedTime} • {guestCount}{" "}
+              guests
             </p>
           </div>
 
@@ -554,12 +514,13 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
                     <div>
                       <p className="font-medium">{tour.title}</p>
                       <p className="text-sm text-gray-600">
-                        {tour.days} {tour.days === 1 ? 'day' : 'days'} experience
+                        {tour.days} {tour.days === 1 ? "day" : "days"}{" "}
+                        experience
                       </p>
                     </div>
                     <div className="flex justify-between">
                       <span className="font-medium">Date:</span>
-                      <span>{formatDate(selectedDate || '')}</span>
+                      <span>{formatDate(selectedDate || "")}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="font-medium">Time:</span>
@@ -572,22 +533,18 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
                       </div>
                       <span>{guestCount}</span>
                     </div>
-                    
-                    {appliedDiscounts.length > 0 && (
-                      <div className="border-t pt-3 mt-3">
-                        <p className="text-sm font-medium text-green-700 mb-2">Applied Pricing:</p>
-                        {appliedDiscounts.map((discount, index) => (
-                          <p key={index} className="text-xs text-green-600">• {discount}</p>
-                        ))}
-                      </div>
-                    )}
-                    
+
                     <div className="border-t pt-3 mt-3">
                       <div className="flex justify-between">
                         <span>
-                          Experience ({guestCount} × {getCurrencySymbol(selectedCurrency)}{calculateDynamicPrice().toFixed(2)}):
+                          Experience ({guestCount} ×{" "}
+                          {getCurrencySymbol(selectedCurrency)}
+                          {calculatePrice().toFixed(2)}):
                         </span>
-                        <span>{getCurrencySymbol(selectedCurrency)}{totalPrice.toFixed(2)}</span>
+                        <span>
+                          {getCurrencySymbol(selectedCurrency)}
+                          {totalPrice.toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex justify-between mt-2">
                         <span>Service Fee:</span>
@@ -595,7 +552,16 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
                       </div>
                       <div className="flex justify-between font-bold text-lg mt-3 pt-2 border-t">
                         <span>Total:</span>
-                        <span>{getCurrencySymbol(selectedCurrency)}{(totalPrice + (5 * supportedCurrencies.find(c => c.code === selectedCurrency)?.rate!)).toFixed(2)}</span>
+                        <span>
+                          {getCurrencySymbol(selectedCurrency)}
+                          {(
+                            totalPrice +
+                            5 *
+                              supportedCurrencies.find(
+                                (c) => c.code === selectedCurrency
+                              )?.rate!
+                          ).toFixed(2)}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -613,14 +579,11 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
             className="w-16 h-16 mx-auto flex items-center justify-center mb-6 rounded-full"
             style={{ backgroundColor: `${primaryColor}20` }}
           >
-            <Check
-              className="h-8 w-8"
-              style={{ color: primaryColor }}
-            />
+            <Check className="h-8 w-8" style={{ color: primaryColor }} />
           </div>
           <h1 className="text-3xl font-bold mb-4">Booking Confirmed!</h1>
           <p className="text-xl text-gray-600 mb-6">
-            Thank you for your booking. We've sent confirmation details to{' '}
+            Thank you for your booking. We've sent confirmation details to{" "}
             {formData.email}.
           </p>
           <div className="bg-gray-50 p-6 rounded-lg mb-8">
@@ -648,7 +611,16 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({ tour, primaryColor, compa
               </div>
               <div>
                 <p className="text-gray-500">Total Paid</p>
-                <p className="font-medium">{getCurrencySymbol(selectedCurrency)}{(totalPrice + (5 * supportedCurrencies.find(c => c.code === selectedCurrency)?.rate!)).toFixed(2)}</p>
+                <p className="font-medium">
+                  {getCurrencySymbol(selectedCurrency)}
+                  {(
+                    totalPrice +
+                    5 *
+                      supportedCurrencies.find(
+                        (c) => c.code === selectedCurrency
+                      )?.rate!
+                  ).toFixed(2)}
+                </p>
               </div>
               <div>
                 <p className="text-gray-500">Currency</p>

@@ -166,7 +166,7 @@ export const resourcesData = [
   {
     id: "r4",
     title: "Pricing Calculator",
-    description: "Calculate costs and set dynamic pricing for your experiences",
+    description: "Calculate costs and set pricing for your experiences",
     icon: "Calculator",
     actionUrl: "#pricing",
   },
