@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 // Import our modular components
-import FeatureHighlights from "./pro/FeatureHighlights";
 import SecuritySection from "./pro/SecuritySection";
 
 const CulturinPro = () => {
@@ -57,8 +56,7 @@ const CulturinPro = () => {
       </div>
 
       {/* Main sections - simplified */}
-      <FeatureHighlights />
-      <SecuritySection />
+      {/* <SecuritySection /> */}
     </div>
   );
 };
