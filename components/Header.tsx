@@ -227,7 +227,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                       <User className="w-6 h-6" />
                     )}
                     <span className="font-medium">
-                      {user.user_metadata?.full_name ||
+                      {user.user_metadata?.full_name?.split(" ")[0] ||
                         user.email?.split("@")[0] ||
                         "User"}
                     </span>
@@ -238,7 +238,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                     <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-2 z-50">
                       <div className="px-3 py-2 border-b border-gray-100">
                         <div className="text-sm font-medium text-gray-800">
-                          {user.user_metadata?.full_name ||
+                          {user.user_metadata?.full_name?.split(" ")[0] ||
                             user.email?.split("@")[0] ||
                             "User"}
                         </div>
@@ -418,7 +418,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                   <div className="space-y-2">
                     <div className="py-2">
                       <div className="text-sm font-medium text-gray-800">
-                        {user.user_metadata?.full_name ||
+                        {user.user_metadata?.full_name?.split(" ")[0] ||
                           user.email?.split("@")[0] ||
                           "User"}
                       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ProtectedRoute } from "@/src/components/auth/ProtectedRoute";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
