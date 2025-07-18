@@ -280,17 +280,12 @@ export const Header = ({ type = "default" }: HeaderProps) => {
               ) : (
                 <>
                   <Link
-                    to="/studio"
+                    to="/sign-in"
                     className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
                   >
-                    Studio
+                    <TranslatableText text="Login" />
                   </Link>
-                  <Link
-                    to="/admin"
-                    className="font-medium text-gray-800 hover:text-gray-600 transition-colors"
-                  >
-                    Admin
-                  </Link>
+
                   <Button
                     className="bg-blue-600 hover:bg-blue-700 font-medium"
                     onClick={() => navigate("/demo")}
@@ -459,18 +454,11 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                 ) : (
                   <>
                     <Link
-                      to="/studio"
+                      to="/sign-in"
                       className="block py-2 font-medium text-gray-800"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Studio
-                    </Link>
-                    <Link
-                      to="/admin"
-                      className="block py-2 font-medium text-gray-800"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Admin
+                      Login
                     </Link>
                     <Button
                       className="w-full bg-blue-600 hover:bg-blue-700 text-sm mt-2"

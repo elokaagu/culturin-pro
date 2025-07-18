@@ -216,5 +216,9 @@ function StudioContent() {
 }
 
 export default function StudioPage() {
-  return <StudioContent />;
+  return (
+    <ProtectedRoute requireStudioAccess={true}>
+      <StudioContent />
+    </ProtectedRoute>
+  );
 }

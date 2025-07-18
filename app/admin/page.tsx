@@ -8,5 +8,9 @@ export const metadata = {
 };
 
 export default function Admin() {
-  return <AdminDashboard />;
+  return (
+    <ProtectedRoute requireSuperAdmin>
+      <AdminDashboard />
+    </ProtectedRoute>
+  );
 }
