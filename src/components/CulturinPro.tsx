@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 // Import our modular components
-import FeatureHighlights from "./pro/FeatureHighlights";
-import SecuritySection from "./pro/SecuritySection";
+// Remove FeatureHighlights and SecuritySection imports
+// import FeatureHighlights from "./pro/FeatureHighlights";
+// import SecuritySection from "./pro/SecuritySection";
 
 const CulturinPro = () => {
   const navigate = useNavigate();
@@ -57,10 +58,7 @@ const CulturinPro = () => {
           Trusted by 1,000+ cultural experience creators worldwide
         </p>
       </div>
-
-      {/* Main sections - simplified */}
-      {/* <FeatureHighlights /> */}
-      {/* <SecuritySection /> */}
+      {/* Main sections removed */}
     </div>
   );
 };
