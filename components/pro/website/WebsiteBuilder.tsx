@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WebsitePreview from "./WebsitePreview";
 import WebsiteThemes from "./WebsiteThemes";
@@ -19,10 +19,27 @@ import {
   Palette,
   Settings,
   Eye,
+  Zap,
+  Save,
+  History,
+  Undo,
+  Redo,
 } from "lucide-react";
 import { useNavigate } from "../../../lib/navigation";
 import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
 import { useUserData } from "../../../src/contexts/UserDataContext";
+
+// History management for undo/redo functionality
+interface HistoryState {
+  websiteSettings: any;
+  itineraries: ItineraryType[];
+  timestamp: number;
+}
+
+interface HistoryInput {
+  websiteSettings: any;
+  itineraries: ItineraryType[];
+}
 
 const WebsiteBuilder: React.FC = () => {
   const [publishLoading, setPublishLoading] = useState(false);
@@ -34,23 +51,41 @@ const WebsiteBuilder: React.FC = () => {
   });
   const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
   const [previewKey, setPreviewKey] = useState(0);
-  const navigate = useNavigate();
-  const { userData, updateWebsiteSettings } = useUserData();
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+  // History management
+  const [history, setHistory] = useState<HistoryState[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [isUndoRedoAction, setIsUndoRedoAction] = useState(false);
+
+  const navigate = useNavigate();
+  const { userData, updateWebsiteSettings, saveUserData } = useUserData();
+
+  // Initialize data
   useEffect(() => {
     // Get itineraries from localStorage or use sample data
     const storedItineraries = localStorage.getItem("culturinItineraries");
     if (storedItineraries) {
       try {
-        setItineraries(JSON.parse(storedItineraries));
+        const parsedItineraries = JSON.parse(storedItineraries);
+        setItineraries(parsedItineraries);
+        addToHistory({
+          websiteSettings: userData.websiteSettings,
+          itineraries: parsedItineraries,
+        });
       } catch (e) {
         console.error("Error parsing itineraries:", e);
         setItineraries(sampleItineraries);
-        // Save sample data as fallback
         localStorage.setItem(
           "culturinItineraries",
           JSON.stringify(sampleItineraries)
         );
+        addToHistory({
+          websiteSettings: userData.websiteSettings,
+          itineraries: sampleItineraries,
+        });
       }
     } else {
       setItineraries(sampleItineraries);
@@ -58,13 +93,30 @@ const WebsiteBuilder: React.FC = () => {
         "culturinItineraries",
         JSON.stringify(sampleItineraries)
       );
+      addToHistory({
+        websiteSettings: userData.websiteSettings,
+        itineraries: sampleItineraries,
+      });
     }
   }, []);
 
   // Auto-refresh preview when user data changes
   useEffect(() => {
-    setPreviewKey((prev) => prev + 1);
-  }, [userData.websiteSettings]);
+    if (!isUndoRedoAction) {
+      setPreviewKey((prev) => prev + 1);
+      setHasUnsavedChanges(true);
+
+      // Auto-save if enabled
+      if (autoSaveEnabled) {
+        const timeoutId = setTimeout(() => {
+          handleAutoSave();
+        }, 2000); // Auto-save after 2 seconds of inactivity
+
+        return () => clearTimeout(timeoutId);
+      }
+    }
+    setIsUndoRedoAction(false);
+  }, [userData.websiteSettings, autoSaveEnabled]);
 
   // Listen for website settings changes
   useEffect(() => {
@@ -73,9 +125,21 @@ const WebsiteBuilder: React.FC = () => {
       // Update itineraries if they changed
       if (event.detail?.filteredItineraries) {
         setItineraries(event.detail.filteredItineraries);
+        addToHistory({
+          websiteSettings: userData.websiteSettings,
+          itineraries: event.detail.filteredItineraries,
+        });
       }
       toast.success("Preview updated", {
         description: "Website preview reflects your latest settings",
+      });
+    };
+
+    const handleThemeChange = (event: CustomEvent) => {
+      setPreviewKey((prev) => prev + 1);
+      addToHistory({ websiteSettings: userData.websiteSettings, itineraries });
+      toast.success("Theme applied", {
+        description: `Applied "${event.detail.theme}" theme to preview`,
       });
     };
 
@@ -84,19 +148,113 @@ const WebsiteBuilder: React.FC = () => {
         "websiteSettingsChanged",
         handleSettingsChange as EventListener
       );
+      window.addEventListener(
+        "themeChanged",
+        handleThemeChange as EventListener
+      );
       return () => {
         window.removeEventListener(
           "websiteSettingsChanged",
           handleSettingsChange as EventListener
         );
+        window.removeEventListener(
+          "themeChanged",
+          handleThemeChange as EventListener
+        );
       };
     }
-  }, []);
+  }, [userData.websiteSettings, itineraries]);
 
-  const handleSettingsChange = () => {
+  // History management functions
+  const addToHistory = useCallback(
+    (state: HistoryInput) => {
+      if (isUndoRedoAction) return;
+
+      setHistory((prev) => {
+        const newHistory = prev.slice(0, historyIndex + 1);
+        newHistory.push({
+          ...state,
+          timestamp: Date.now(),
+        });
+        // Keep only last 20 states
+        return newHistory.slice(-20);
+      });
+      setHistoryIndex((prev) => prev + 1);
+    },
+    [historyIndex, isUndoRedoAction]
+  );
+
+  const undo = useCallback(() => {
+    if (historyIndex > 0) {
+      setIsUndoRedoAction(true);
+      const previousState = history[historyIndex - 1];
+      setHistoryIndex((prev) => prev - 1);
+
+      // Restore state
+      updateWebsiteSettings(previousState.websiteSettings);
+      setItineraries(previousState.itineraries);
+      localStorage.setItem(
+        "culturinItineraries",
+        JSON.stringify(previousState.itineraries)
+      );
+
+      toast.success("Undone", {
+        description: "Reverted to previous state",
+      });
+    }
+  }, [history, historyIndex, updateWebsiteSettings]);
+
+  const redo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      setIsUndoRedoAction(true);
+      const nextState = history[historyIndex + 1];
+      setHistoryIndex((prev) => prev + 1);
+
+      // Restore state
+      updateWebsiteSettings(nextState.websiteSettings);
+      setItineraries(nextState.itineraries);
+      localStorage.setItem(
+        "culturinItineraries",
+        JSON.stringify(nextState.itineraries)
+      );
+
+      toast.success("Redone", {
+        description: "Applied next state",
+      });
+    }
+  }, [history, historyIndex, updateWebsiteSettings]);
+
+  const handleSettingsChange = useCallback(() => {
     // Trigger immediate preview refresh when settings change
     setPreviewKey((prev) => prev + 1);
-  };
+    setHasUnsavedChanges(true);
+  }, []);
+
+  const handleAutoSave = useCallback(async () => {
+    try {
+      saveUserData();
+      setLastSaved(new Date());
+      setHasUnsavedChanges(false);
+      toast.success("Auto-saved", {
+        description: "Your changes have been saved automatically",
+      });
+    } catch (error) {
+      console.error("Auto-save failed:", error);
+    }
+  }, [saveUserData]);
+
+  const handleManualSave = useCallback(async () => {
+    try {
+      await handleAutoSave();
+      toast.success("Saved successfully", {
+        description: "All changes have been saved",
+      });
+    } catch (error) {
+      toast.error("Save failed", {
+        description: "Please try again",
+      });
+    }
+  }, [handleAutoSave]);
 
   const handlePublish = async () => {
     if (!userData.businessName) {
@@ -109,6 +267,9 @@ const WebsiteBuilder: React.FC = () => {
     setPublishLoading(true);
 
     try {
+      // Save current state before publishing
+      await handleManualSave();
+
       // Generate a unique slug for the website
       const slug = `${userData.businessName
         .toLowerCase()
@@ -144,6 +305,7 @@ const WebsiteBuilder: React.FC = () => {
       );
       localStorage.setItem("publishedItineraries", JSON.stringify(itineraries));
 
+      setHasUnsavedChanges(false);
       toast.success("Website published successfully!", {
         description:
           "Your changes are now live with the latest booking settings.",
@@ -201,16 +363,23 @@ const WebsiteBuilder: React.FC = () => {
     }
   };
 
-  const handleQuickUpdate = (field: string, value: any) => {
-    try {
-      updateWebsiteSettings({ [field]: value });
-      toast.success("Website updated - changes will appear in preview");
-    } catch (error) {
-      toast.error("Failed to update website", {
-        description: "Please try again",
-      });
-    }
-  };
+  const handleQuickUpdate = useCallback(
+    (field: string, value: any) => {
+      try {
+        updateWebsiteSettings({ [field]: value });
+        addToHistory({
+          websiteSettings: { ...userData.websiteSettings, [field]: value },
+          itineraries,
+        });
+        toast.success("Website updated - changes will appear in preview");
+      } catch (error) {
+        toast.error("Failed to update website", {
+          description: "Please try again",
+        });
+      }
+    },
+    [updateWebsiteSettings, userData.websiteSettings, itineraries, addToHistory]
+  );
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -231,13 +400,37 @@ const WebsiteBuilder: React.FC = () => {
       case "configureBooking":
         setActiveTab("booking");
         break;
+      case "toggleAutoSave":
+        setAutoSaveEnabled((prev) => !prev);
+        toast.success(
+          autoSaveEnabled ? "Auto-save disabled" : "Auto-save enabled"
+        );
+        break;
       default:
         toast.error("Unknown action");
     }
   };
 
+  // Memoized values for performance
+  const canUndo = useMemo(() => historyIndex > 0, [historyIndex]);
+  const canRedo = useMemo(
+    () => historyIndex < history.length - 1,
+    [historyIndex, history.length]
+  );
+  const lastSavedText = useMemo(() => {
+    if (!lastSaved) return "Never saved";
+    const now = new Date();
+    const diff = now.getTime() - lastSaved.getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return "Just now";
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    return `${hours}h ago`;
+  }, [lastSaved]);
+
   return (
     <div className="space-y-6">
+      {/* Enhanced Header with Status Indicators */}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-xl font-medium">Your Website</h2>
@@ -245,8 +438,64 @@ const WebsiteBuilder: React.FC = () => {
             Customize your tour operator website with real-time preview and
             booking functionality.
           </p>
+          {/* Status indicators */}
+          <div className="flex items-center gap-4 mt-2 text-xs">
+            <div className="flex items-center gap-1">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  hasUnsavedChanges ? "bg-orange-500" : "bg-green-500"
+                }`}
+              ></div>
+              <span
+                className={
+                  hasUnsavedChanges ? "text-orange-600" : "text-green-600"
+                }
+              >
+                {hasUnsavedChanges ? "Unsaved changes" : "All changes saved"}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Zap className="w-3 h-3" />
+              <span className="text-gray-600">
+                Auto-save: {autoSaveEnabled ? "On" : "Off"}
+              </span>
+            </div>
+            <div className="text-gray-500">Last saved: {lastSavedText}</div>
+          </div>
         </div>
+
         <div className="flex gap-2">
+          {/* Undo/Redo buttons */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={undo}
+            disabled={!canUndo}
+            className="flex items-center"
+          >
+            <Undo className="h-4 w-4 mr-1" />
+            Undo
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={redo}
+            disabled={!canRedo}
+            className="flex items-center"
+          >
+            <Redo className="h-4 w-4 mr-1" />
+            Redo
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={handleManualSave}
+            className="flex items-center"
+          >
+            <Save className="mr-2 h-4 w-4" />
+            Save
+          </Button>
+
           <Button
             variant="outline"
             onClick={handleReloadPreview}
@@ -260,6 +509,7 @@ const WebsiteBuilder: React.FC = () => {
             )}
             Refresh Preview
           </Button>
+
           <Button
             variant="outline"
             onClick={handlePreviewSite}
@@ -268,6 +518,7 @@ const WebsiteBuilder: React.FC = () => {
             <ExternalLink className="mr-2 h-4 w-4" />
             Preview Live Site
           </Button>
+
           <Button
             onClick={handlePublish}
             disabled={publishLoading}
@@ -288,6 +539,7 @@ const WebsiteBuilder: React.FC = () => {
         </div>
       </div>
 
+      {/* Published URL Status */}
       {publishedUrl && (
         <div className="p-4 bg-green-50 border border-green-200 rounded-md flex items-center justify-between">
           <div className="flex items-center">
@@ -320,7 +572,7 @@ const WebsiteBuilder: React.FC = () => {
         </div>
       )}
 
-      {/* Quick Actions Bar */}
+      {/* Enhanced Quick Actions Bar */}
       <div className="bg-gray-50 p-4 rounded-lg border">
         <h3 className="text-sm font-medium mb-3">Quick Actions</h3>
         <div className="flex flex-wrap gap-2">
@@ -352,9 +604,21 @@ const WebsiteBuilder: React.FC = () => {
             <Settings className="h-4 w-4" />
             Configure Booking Flow
           </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleQuickAction("toggleAutoSave")}
+            className={`flex items-center gap-2 ${
+              autoSaveEnabled ? "bg-green-50 border-green-200" : ""
+            }`}
+          >
+            <Zap className="h-4 w-4" />
+            {autoSaveEnabled ? "Auto-save On" : "Auto-save Off"}
+          </Button>
         </div>
       </div>
 
+      {/* Main Tabs */}
       <Tabs
         defaultValue="preview"
         value={activeTab}
