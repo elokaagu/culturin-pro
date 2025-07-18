@@ -100,7 +100,7 @@ const SignIn = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-culturin-indigo/10 to-white">
       <Header type="operator" />
 
-      <main className="flex-1 pt-24 flex items-center justify-center px-4">
+      <main className="flex-1 pt-24 pb-24 flex items-center justify-center px-4">
         <Card className="w-full max-w-md shadow-xl">
           <CardHeader className="text-center">
             <div className="flex items-center justify-center mb-4">
