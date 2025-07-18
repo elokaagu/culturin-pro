@@ -37,7 +37,7 @@ const CulturinPro = () => {
 
   return (
     <div className="space-y-12 animate-fade-in">
-      {/* Hero Section */}
+      {/* Hero Section Only */}
       <div className="text-center max-w-3xl mx-auto mb-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-6">
           Welcome to Culturin Pro
@@ -58,7 +58,6 @@ const CulturinPro = () => {
           Trusted by 1,000+ cultural experience creators worldwide
         </p>
       </div>
-      {/* Main sections removed */}
     </div>
   );
 };
