@@ -254,6 +254,13 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                         >
                           Culturin Studio
                         </Link>
+                        <Link
+                          to="/settings"
+                          className="flex items-center px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          Settings
+                        </Link>
                         {isAdmin && (
                           <Link
                             to="/admin"
@@ -430,6 +437,13 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Culturin Studio
+                    </Link>
+                    <Link
+                      to="/settings"
+                      className="block py-2 font-medium text-gray-800"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Settings
                     </Link>
                     {isAdmin && (
                       <Link
