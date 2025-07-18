@@ -56,7 +56,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
   ];
 
   return (
-    <header className="sticky top-0 w-full z-[60] bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 transition-all duration-300">
+    <header className="sticky top-0 w-full z-[60] bg-gradient-to-r from-white/80 via-white/70 to-white/80 backdrop-blur-xl shadow-lg border-b border-white/20 transition-all duration-300 supports-[backdrop-filter]:bg-white/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           <div className="flex items-center">
@@ -88,7 +88,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                       <TranslatableText text="Product" />{" "}
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-64 bg-white shadow-lg rounded-md p-2 z-[9999]">
+                    <DropdownMenuContent className="w-64 bg-white/90 backdrop-blur-lg shadow-xl rounded-md p-2 z-[9999] border border-white/20">
                       {productLinks.map((item, index) => (
                         <DropdownMenuItem key={index} asChild>
                           <Link
@@ -131,7 +131,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                       <TranslatableText text="Company" />{" "}
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2 z-[9999]">
+                    <DropdownMenuContent className="w-48 bg-white/90 backdrop-blur-lg shadow-xl rounded-md p-2 z-[9999] border border-white/20">
                       <DropdownMenuItem asChild>
                         <Link
                           to="/our-story"
@@ -171,7 +171,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                       <TranslatableText text="Resources" />{" "}
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-48 bg-white shadow-lg rounded-md p-2 z-[9999]">
+                    <DropdownMenuContent className="w-48 bg-white/90 backdrop-blur-lg shadow-xl rounded-md p-2 z-[9999] border border-white/20">
                       <DropdownMenuItem asChild>
                         <Link
                           to="/blog"
@@ -235,7 +235,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-2 z-50">
+                    <div className="absolute right-0 mt-2 w-64 bg-white/90 backdrop-blur-lg rounded-md shadow-xl py-2 z-50 border border-white/20">
                       <div className="px-3 py-2 border-b border-gray-100">
                         <div className="text-sm font-medium text-gray-800">
                           {user.user_metadata?.full_name?.split(" ")[0] ||
@@ -320,7 +320,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg z-[9999] animate-fade-in">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white/90 backdrop-blur-lg shadow-xl z-[9999] animate-fade-in border-b border-white/20">
           <nav className="py-4 px-6">
             <ul className="space-y-2">
               <li className="py-2">
