@@ -1,11 +1,11 @@
-import ProBookingPage from "../../../src/pages/ProBookingPage";
+import BookingManagementPage from "../../../src/pages/pro/BookingManagementPage";
 
 export const metadata = {
-  title: "Booking System | Culturin Studio",
+  title: "Booking Management | Culturin Studio",
   description:
-    "Manage bookings, availability, and pricing for your cultural experiences.",
+    "Manage and track all customer bookings for your cultural experiences.",
 };
 
-export default function Booking() {
-  return <ProBookingPage />;
+export default function BookingManagement() {
+  return <BookingManagementPage />;
 }

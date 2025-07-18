@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Edit, Save, ExternalLink, Image as ImageIcon } from "lucide-react";
+import {
+  Edit,
+  Save,
+  ExternalLink,
+  Image as ImageIcon,
+  ShoppingCart,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -239,6 +245,13 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                   }
                 >
                   <ExternalLink className="h-4 w-4 mr-1" /> Preview Booking
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full mt-2 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10 transition-all duration-300"
+                  onClick={() => router.push(`/pro-dashboard/booking`)}
+                >
+                  <ShoppingCart className="h-4 w-4 mr-1" /> View Bookings
                 </Button>
               </div>
             </div>
