@@ -59,8 +59,8 @@ const CulturinPro = () => {
       </div>
 
       {/* Main sections - simplified */}
-      <FeatureHighlights />
-      <SecuritySection />
+      {/* <FeatureHighlights /> */}
+      {/* <SecuritySection /> */}
     </div>
   );
 };
