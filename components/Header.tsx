@@ -254,13 +254,6 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                         >
                           Culturin Studio
                         </Link>
-                        <Link
-                          to="/settings"
-                          className="flex items-center px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
-                          onClick={() => setIsUserMenuOpen(false)}
-                        >
-                          Settings
-                        </Link>
                         {isAdmin && (
                           <Link
                             to="/admin"
@@ -270,6 +263,13 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                             Admin Dashboard
                           </Link>
                         )}
+                        <Link
+                          to="/settings"
+                          className="flex items-center px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          Settings
+                        </Link>
                         <button
                           onClick={() => {
                             logout();
