@@ -1,13 +1,19 @@
-
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   bookingNotifications: z.boolean().default(true),
@@ -22,6 +28,8 @@ const formSchema = z.object({
 });
 
 const NotificationSettings: React.FC = () => {
+  const [isSaving, setIsSaving] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,9 +45,29 @@ const NotificationSettings: React.FC = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    toast.success("Notification preferences updated");
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSaving(true);
+
+    try {
+      // Simulate API call or data persistence
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      // Here you would typically save to your backend
+      console.log("Saving notification preferences:", values);
+
+      toast.success("Notification preferences updated successfully", {
+        description:
+          "Your notification settings have been saved and will take effect immediately.",
+      });
+    } catch (error) {
+      console.error("Error saving notification preferences:", error);
+      toast.error("Failed to save notification preferences", {
+        description:
+          "Please try again. If the problem persists, contact support.",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -60,13 +88,15 @@ const NotificationSettings: React.FC = () => {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Booking Notifications</FormLabel>
+                      <FormLabel className="text-base">
+                        Booking Notifications
+                      </FormLabel>
                       <FormDescription>
                         Receive notifications when new bookings are made
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch 
+                      <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -74,20 +104,22 @@ const NotificationSettings: React.FC = () => {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="reviewNotifications"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Review Notifications</FormLabel>
+                      <FormLabel className="text-base">
+                        Review Notifications
+                      </FormLabel>
                       <FormDescription>
                         Receive notifications when new reviews are posted
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch 
+                      <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -102,13 +134,15 @@ const NotificationSettings: React.FC = () => {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Account Alerts</FormLabel>
+                      <FormLabel className="text-base">
+                        Account Alerts
+                      </FormLabel>
                       <FormDescription>
                         Get important notifications about your account
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch 
+                      <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -116,20 +150,22 @@ const NotificationSettings: React.FC = () => {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="teamMemberActivity"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Team Member Activity</FormLabel>
+                      <FormLabel className="text-base">
+                        Team Member Activity
+                      </FormLabel>
                       <FormDescription>
                         Get notified about team member actions
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch 
+                      <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -139,9 +175,9 @@ const NotificationSettings: React.FC = () => {
               />
             </div>
           </div>
-          
+
           <Separator />
-          
+
           <div>
             <h3 className="text-lg font-medium mb-4">Marketing & Reports</h3>
             <div className="space-y-4">
@@ -151,13 +187,15 @@ const NotificationSettings: React.FC = () => {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Marketing Emails</FormLabel>
+                      <FormLabel className="text-base">
+                        Marketing Emails
+                      </FormLabel>
                       <FormDescription>
                         Receive tips, product updates and inspiration
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch 
+                      <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -165,20 +203,22 @@ const NotificationSettings: React.FC = () => {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="weeklyReports"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Weekly Summary Reports</FormLabel>
+                      <FormLabel className="text-base">
+                        Weekly Summary Reports
+                      </FormLabel>
                       <FormDescription>
                         Get a weekly overview of your business performance
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch 
+                      <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -193,13 +233,15 @@ const NotificationSettings: React.FC = () => {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Monthly Analytics Reports</FormLabel>
+                      <FormLabel className="text-base">
+                        Monthly Analytics Reports
+                      </FormLabel>
                       <FormDescription>
                         Get detailed monthly business insights and analytics
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch 
+                      <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -209,9 +251,9 @@ const NotificationSettings: React.FC = () => {
               />
             </div>
           </div>
-          
+
           <Separator />
-          
+
           <div>
             <h3 className="text-lg font-medium mb-4">Notification Methods</h3>
             <div className="space-y-4">
@@ -221,13 +263,15 @@ const NotificationSettings: React.FC = () => {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Push Notifications</FormLabel>
+                      <FormLabel className="text-base">
+                        Push Notifications
+                      </FormLabel>
                       <FormDescription>
                         Receive notifications in your browser
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch 
+                      <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -235,20 +279,22 @@ const NotificationSettings: React.FC = () => {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="smsNotifications"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">SMS Notifications</FormLabel>
+                      <FormLabel className="text-base">
+                        SMS Notifications
+                      </FormLabel>
                       <FormDescription>
                         Receive text message notifications
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch 
+                      <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
@@ -260,7 +306,16 @@ const NotificationSettings: React.FC = () => {
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit">Save Preferences</Button>
+            <Button type="submit" disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Saving...
+                </>
+              ) : (
+                "Save Preferences"
+              )}
+            </Button>
           </div>
         </form>
       </Form>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -60,7 +60,8 @@ const timezones = [
 ];
 
 const GeneralSettings: React.FC = () => {
-  const { userData, updateUserData } = useUserData();
+  const { userData, updateUserData, saveUserData } = useUserData();
+  const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -74,23 +75,54 @@ const GeneralSettings: React.FC = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    updateUserData(values);
-
-    // Also update website settings if business name changed
-    if (values.businessName !== userData.businessName) {
-      updateUserData({
-        websiteSettings: {
-          ...userData.websiteSettings,
-          companyName: values.businessName,
-        },
-      });
-    }
-
-    toast.success("Settings updated successfully", {
-      description:
-        "Your profile information has been saved and will be reflected across the platform.",
+  // Update form when userData changes
+  useEffect(() => {
+    form.reset({
+      businessName: userData.businessName,
+      email: userData.email,
+      phone: userData.phone,
+      address: userData.address,
+      timezone: userData.timezone,
+      bio: userData.bio,
     });
+  }, [userData, form]);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSaving(true);
+
+    try {
+      // Update user data
+      updateUserData(values);
+
+      // Also update website settings if business name changed
+      if (values.businessName !== userData.businessName) {
+        updateUserData({
+          websiteSettings: {
+            ...userData.websiteSettings,
+            companyName: values.businessName,
+          },
+        });
+      }
+
+      // Explicitly save to localStorage
+      saveUserData();
+
+      // Simulate a small delay to show loading state
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      toast.success("Settings updated successfully", {
+        description:
+          "Your profile information has been saved and will be reflected across the platform.",
+      });
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      toast.error("Failed to save settings", {
+        description:
+          "Please try again. If the problem persists, contact support.",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -220,7 +252,16 @@ const GeneralSettings: React.FC = () => {
           />
 
           <div className="flex justify-end">
-            <Button type="submit">Save Changes</Button>
+            <Button type="submit" disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
           </div>
         </form>
       </Form>
