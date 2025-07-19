@@ -112,7 +112,7 @@ const SignIn = () => {
                 Back to Home
               </Link>
             </div>
-            <LogIn className="h-12 w-12 text-culturin-indigo mx-auto mb-4" />
+
             <CardTitle className="text-2xl font-bold text-gray-900">
               Welcome Back
             </CardTitle>
