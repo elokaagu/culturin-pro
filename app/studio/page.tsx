@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Crown, ArrowRight, ShoppingCart, Eye, Globe } from "lucide-react";
 
 // Import our modular components
-import FeatureHighlights from "@/components/pro/FeatureHighlights";
+
 import SecuritySection from "@/components/pro/SecuritySection";
 import BookingFlowBuilder from "@/components/pro/website/BookingFlowBuilder";
 import BookingWidget from "@/components/pro/website/BookingWidget";
@@ -112,7 +112,6 @@ function StudioContent() {
             </div>
 
             {/* Main sections */}
-            <FeatureHighlights />
             <SecuritySection />
           </TabsContent>
 
