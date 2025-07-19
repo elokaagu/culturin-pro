@@ -10,7 +10,6 @@ import { Crown, ArrowRight, ShoppingCart, Eye, Globe } from "lucide-react";
 
 // Import our modular components
 
-import SecuritySection from "@/components/pro/SecuritySection";
 import BookingFlowBuilder from "@/components/pro/website/BookingFlowBuilder";
 import BookingWidget from "@/components/pro/website/BookingWidget";
 import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
@@ -112,7 +111,6 @@ function StudioContent() {
             </div>
 
             {/* Main sections */}
-            <SecuritySection />
           </TabsContent>
 
           <TabsContent value="booking-builder" className="space-y-6">
