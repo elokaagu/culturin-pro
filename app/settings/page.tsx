@@ -18,7 +18,16 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/src/components/auth/AuthProvider";
 import { supabase } from "@/lib/supabase";
-import { User, Lock, UserCheck, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  User,
+  Lock,
+  UserCheck,
+  CheckCircle,
+  AlertCircle,
+  ArrowLeft,
+} from "lucide-react";
+import Link from "next/link";
+import SettingsManager from "@/components/pro/settings/SettingsManager";
 
 function SettingsContent() {
   const { user, logout } = useAuth();
@@ -162,13 +171,23 @@ function SettingsContent() {
       <Header type="default" />
 
       <div className="pt-24 pb-12">
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="mb-8">
+            <div className="flex items-center gap-4 mb-4">
+              <Link
+                href="/studio"
+                className="flex items-center text-culturin-indigo hover:text-culturin-indigo/80 transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Studio
+              </Link>
+            </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Account Settings
             </h1>
             <p className="text-gray-600">
-              Manage your profile information and security settings
+              Manage your profile information, security settings, and business
+              preferences
             </p>
           </div>
 
@@ -326,6 +345,21 @@ function SettingsContent() {
               </CardContent>
             </Card>
           </div>
+
+          <Separator className="my-8" />
+
+          {/* Advanced Settings */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Business Settings
+            </h2>
+            <p className="text-gray-600">
+              Configure your business preferences, notifications, and
+              integrations
+            </p>
+          </div>
+
+          <SettingsManager />
         </div>
       </div>
     </div>
