@@ -20,31 +20,37 @@ const themes = [
     id: 1,
     name: "Classic",
     image: "bg-gradient-to-r from-gray-100 to-gray-200",
+    layout: "hero-top",
   },
   {
     id: 2,
     name: "Modern",
     image: "bg-gradient-to-r from-blue-100 to-blue-200",
+    layout: "hero-side",
   },
   {
     id: 3,
     name: "Elegant",
     image: "bg-gradient-to-r from-amber-100 to-amber-200",
+    layout: "hero-top",
   },
   {
     id: 4,
     name: "Minimalist",
     image: "bg-gradient-to-r from-stone-100 to-stone-200",
+    layout: "hero-top",
   },
   {
     id: 5,
     name: "Bold",
     image: "bg-gradient-to-r from-purple-100 to-purple-200",
+    layout: "hero-side",
   },
   {
     id: 6,
     name: "Artisan",
     image: "bg-gradient-to-r from-emerald-100 to-emerald-200",
+    layout: "hero-top",
   },
 ];
 
@@ -78,11 +84,12 @@ const WebsiteThemes: React.FC = () => {
         "selectedWebsiteTheme",
         theme.name.toLowerCase()
       );
+      safeLocalStorage.setItem("selectedWebsiteLayout", theme.layout);
       // Dispatch a custom event so WebsitePreview can refresh
       if (typeof window !== "undefined") {
         window.dispatchEvent(
           new CustomEvent("themeChanged", {
-            detail: { theme: theme.name.toLowerCase() },
+            detail: { theme: theme.name.toLowerCase(), layout: theme.layout },
           })
         );
       }
@@ -117,6 +124,9 @@ const WebsiteThemes: React.FC = () => {
                 {selectedTheme === theme.id && (
                   <Check className="h-4 w-4 text-green-500" />
                 )}
+              </div>
+              <div className="mt-2 text-xs text-gray-500">
+                Layout: {theme.layout.replace("-", " ")}
               </div>
             </CardContent>
           </Card>

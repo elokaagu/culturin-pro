@@ -34,6 +34,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   );
   const [refreshKey, setRefreshKey] = useState(0);
   const [theme, setTheme] = useState("classic");
+  const [layout, setLayout] = useState("hero-top");
 
   useEffect(() => {
     // Load website settings from localStorage
@@ -50,6 +51,9 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
           "Authentic cultural experiences curated by Eloka Agu"
       );
       setTheme(safeLocalStorage.getItem("selectedWebsiteTheme") || "classic");
+      setLayout(
+        safeLocalStorage.getItem("selectedWebsiteLayout") || "hero-top"
+      );
     };
 
     loadSettings();
@@ -134,6 +138,224 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   };
   const themeStyles = getThemeStyles();
 
+  // Layout rendering
+  const renderLayout = () => {
+    if (layout === "hero-side") {
+      return (
+        <div className="flex flex-col md:flex-row h-full">
+          {/* Hero section */}
+          <div
+            className={cn(
+              "flex-1 flex items-center justify-center p-6",
+              themeStyles.heroClass
+            )}
+            style={{
+              backgroundColor:
+                theme === "classic" && !headerImage ? primaryColor : undefined,
+            }}
+          >
+            <div className="w-full">
+              <div className="relative w-full h-32 md:h-64">
+                {headerImage && (
+                  <img
+                    src={headerImage}
+                    alt="Header"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                )}
+                <div
+                  className={cn(
+                    "absolute inset-0 flex flex-col items-center justify-center p-4",
+                    headerImage && "bg-black/40"
+                  )}
+                  style={{ borderRadius: headerImage ? "0.5rem" : undefined }}
+                >
+                  <div
+                    className={cn("text-center", themeStyles.headerTextClass)}
+                  >
+                    <h1 className="text-xl font-bold">{companyName}</h1>
+                    <p className="text-sm mt-1">{tagline}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Tours grid */}
+          <div className="flex-1 p-6">
+            <div
+              className={cn(
+                "grid gap-4 mb-4",
+                viewMode === "mobile"
+                  ? "grid-cols-1"
+                  : "grid-cols-2 md:grid-cols-1"
+              )}
+            >
+              {itineraries.slice(0, 3).map((item, index) => (
+                <div
+                  key={item.id || index}
+                  className={cn(
+                    "h-32 rounded relative overflow-hidden cursor-pointer hover:opacity-90",
+                    themeStyles.cardClass
+                  )}
+                >
+                  {item.image && (
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1">
+                    {item.title}
+                  </div>
+                </div>
+              ))}
+              {itineraries.length === 0 && (
+                <>
+                  <div
+                    className={cn("h-32 rounded", themeStyles.cardClass)}
+                  ></div>
+                  <div
+                    className={cn("h-32 rounded", themeStyles.cardClass)}
+                  ></div>
+                  <div
+                    className={cn("h-32 rounded", themeStyles.cardClass)}
+                  ></div>
+                </>
+              )}
+            </div>
+            {/* CTA and About Us */}
+            <div className="space-y-3">
+              <div
+                className={cn(
+                  "h-12 w-full rounded text-center flex items-center justify-center font-medium cursor-pointer hover:opacity-90",
+                  themeStyles.buttonClass
+                )}
+                style={
+                  theme === "classic"
+                    ? { backgroundColor: primaryColor, color: "#fff" }
+                    : {}
+                }
+              >
+                Book Now
+              </div>
+              <div className="border-t pt-3">
+                <h3 className="font-medium mb-2">About Us</h3>
+                <div className="h-16 bg-gray-100 rounded p-2 mb-2 text-xs overflow-hidden">
+                  {safeLocalStorage.getItem("websiteDescription") ||
+                    "We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots."}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    // Default: hero-top
+    return (
+      <div className="p-0 h-full overflow-auto">
+        {/* Header/Hero section preview */}
+        <div
+          className={cn("w-full h-32 relative", themeStyles.heroClass)}
+          style={{
+            backgroundColor:
+              theme === "classic" && !headerImage ? primaryColor : undefined,
+          }}
+        >
+          {headerImage && (
+            <div className="absolute inset-0">
+              <img
+                src={headerImage}
+                alt="Header"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+            </div>
+          )}
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+            <div className={cn("text-center", themeStyles.headerTextClass)}>
+              <h1 className="text-xl font-bold">{companyName}</h1>
+              <p className="text-sm mt-1">{tagline}</p>
+            </div>
+          </div>
+        </div>
+        {/* Navigation */}
+        <div className="p-4">
+          <div className="flex flex-wrap gap-4 mb-4">
+            <div className="h-6 w-16 rounded bg-gray-200"></div>
+            <div className="h-6 w-16 rounded bg-gray-200"></div>
+            <div className="h-6 w-16 rounded bg-gray-200"></div>
+            <div className="h-6 w-16 rounded bg-gray-200"></div>
+          </div>
+          {/* Tours grid */}
+          <div
+            className={cn(
+              "grid gap-4 mb-4",
+              viewMode === "mobile" ? "grid-cols-1" : "grid-cols-3"
+            )}
+          >
+            {itineraries.slice(0, 3).map((item, index) => (
+              <div
+                key={item.id || index}
+                className={cn(
+                  "h-32 rounded relative overflow-hidden cursor-pointer hover:opacity-90",
+                  themeStyles.cardClass
+                )}
+              >
+                {item.image && (
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1">
+                  {item.title}
+                </div>
+              </div>
+            ))}
+            {itineraries.length === 0 && (
+              <>
+                <div
+                  className={cn("h-32 rounded", themeStyles.cardClass)}
+                ></div>
+                <div
+                  className={cn("h-32 rounded", themeStyles.cardClass)}
+                ></div>
+                <div
+                  className={cn("h-32 rounded", themeStyles.cardClass)}
+                ></div>
+              </>
+            )}
+          </div>
+          {/* Interactive CTAs */}
+          <div className="space-y-3">
+            <div
+              className={cn(
+                "h-12 w-full rounded text-center flex items-center justify-center font-medium cursor-pointer hover:opacity-90",
+                themeStyles.buttonClass
+              )}
+              style={
+                theme === "classic"
+                  ? { backgroundColor: primaryColor, color: "#fff" }
+                  : {}
+              }
+            >
+              Book Now
+            </div>
+            <div className="border-t pt-3">
+              <h3 className="font-medium mb-2">About Us</h3>
+              <div className="h-16 bg-gray-100 rounded p-2 mb-2 text-xs overflow-hidden">
+                {safeLocalStorage.getItem("websiteDescription") ||
+                  "We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots."}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -184,114 +406,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
             key={refreshKey}
           >
             <AspectRatio ratio={16 / 9} className="overflow-visible">
-              <div className="p-0 h-full overflow-auto">
-                {/* Header/Hero section preview */}
-                <div
-                  className={cn("w-full h-32 relative", themeStyles.heroClass)}
-                  style={{
-                    backgroundColor:
-                      theme === "classic" && !headerImage
-                        ? primaryColor
-                        : undefined,
-                  }}
-                >
-                  {headerImage && (
-                    <div className="absolute inset-0">
-                      <img
-                        src={headerImage}
-                        alt="Header"
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-                    </div>
-                  )}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                    <div
-                      className={cn("text-center", themeStyles.headerTextClass)}
-                    >
-                      <h1 className="text-xl font-bold">{companyName}</h1>
-                      <p className="text-sm mt-1">{tagline}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Navigation */}
-                <div className="p-4">
-                  <div className="flex flex-wrap gap-4 mb-4">
-                    <div className="h-6 w-16 rounded bg-gray-200"></div>
-                    <div className="h-6 w-16 rounded bg-gray-200"></div>
-                    <div className="h-6 w-16 rounded bg-gray-200"></div>
-                    <div className="h-6 w-16 rounded bg-gray-200"></div>
-                  </div>
-
-                  {/* Tours grid */}
-                  <div
-                    className={cn(
-                      "grid gap-4 mb-4",
-                      viewMode === "mobile" ? "grid-cols-1" : "grid-cols-3"
-                    )}
-                  >
-                    {itineraries.slice(0, 3).map((item, index) => (
-                      <div
-                        key={item.id || index}
-                        className={cn(
-                          "h-32 rounded relative overflow-hidden cursor-pointer hover:opacity-90",
-                          themeStyles.cardClass
-                        )}
-                      >
-                        {item.image && (
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1">
-                          {item.title}
-                        </div>
-                      </div>
-                    ))}
-                    {itineraries.length === 0 && (
-                      <>
-                        <div
-                          className={cn("h-32 rounded", themeStyles.cardClass)}
-                        ></div>
-                        <div
-                          className={cn("h-32 rounded", themeStyles.cardClass)}
-                        ></div>
-                        <div
-                          className={cn("h-32 rounded", themeStyles.cardClass)}
-                        ></div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Interactive CTAs */}
-                  <div className="space-y-3">
-                    <div
-                      className={cn(
-                        "h-12 w-full rounded text-center flex items-center justify-center font-medium cursor-pointer hover:opacity-90",
-                        themeStyles.buttonClass
-                      )}
-                      style={
-                        theme === "classic"
-                          ? { backgroundColor: primaryColor, color: "#fff" }
-                          : {}
-                      }
-                    >
-                      Book Now
-                    </div>
-
-                    <div className="border-t pt-3">
-                      <h3 className="font-medium mb-2">About Us</h3>
-                      <div className="h-16 bg-gray-100 rounded p-2 mb-2 text-xs overflow-hidden">
-                        {safeLocalStorage.getItem("websiteDescription") ||
-                          "We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots."}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {renderLayout()}
             </AspectRatio>
           </div>
         </CardContent>
