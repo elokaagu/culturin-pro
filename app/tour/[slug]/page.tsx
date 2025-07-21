@@ -255,49 +255,34 @@ export default function TourOperatorPage({
   const renderLayout = () => {
     if (layout === "hero-side") {
       return (
-        <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+        <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-r from-gray-100 to-blue-200 border-4 border-blue-400">
           {/* Hero section */}
-          <div
-            className={cn(
-              "flex-1 flex items-center justify-center p-6",
-              themeStyles.headerBg
-            )}
-            style={{
-              backgroundColor: operatorData?.coverImage
-                ? undefined
-                : operatorData?.primaryColor,
-              backgroundImage: operatorData?.coverImage
-                ? `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${operatorData.coverImage})`
-                : undefined,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          >
+          <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-200 to-blue-400 border-r-4 border-blue-300">
             <div className="w-full text-center text-white">
-              <h1 className="text-5xl font-bold mb-4">{operatorData?.name}</h1>
-              <p className="text-xl mb-6">{operatorData?.tagline}</p>
+              <h1 className="text-5xl font-extrabold mb-4 tracking-widest drop-shadow-lg">
+                {operatorData?.name}
+              </h1>
+              <p className="text-2xl mb-6 italic font-serif">
+                {operatorData?.tagline}
+              </p>
               <Button
                 size="lg"
-                className={cn(
-                  "bg-white text-gray-900 hover:bg-gray-100",
-                  themeStyles.buttonStyle
-                )}
+                className="bg-white text-blue-700 hover:bg-blue-100 font-bold px-8 py-4 rounded-full shadow-lg"
               >
                 Explore Our Tours
               </Button>
             </div>
           </div>
           {/* Tours grid */}
-          <div className="flex-1 p-6">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">Our Tours</h2>
+          <div className="flex-1 p-6 bg-white">
+            <h2 className="text-3xl font-bold text-blue-700 mb-8 border-b-2 border-blue-200 pb-2">
+              Our Tours
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {operatorData?.tours.map((tour) => (
                 <Card
                   key={tour.id}
-                  className={cn(
-                    "overflow-hidden hover:shadow-lg transition-shadow",
-                    themeStyles.cardStyle
-                  )}
+                  className="overflow-hidden border-2 border-blue-200 shadow-lg"
                 >
                   <div className="aspect-video relative">
                     <img
@@ -305,14 +290,9 @@ export default function TourOperatorPage({
                       alt={tour.name}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-4 right-4">
-                      <Badge className="bg-white text-gray-900">
-                        €{tour.price}
-                      </Badge>
-                    </div>
                   </div>
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <h3 className="text-xl font-bold text-blue-700 mb-2">
                       {tour.name}
                     </h3>
                     <p className="text-gray-600 mb-4 line-clamp-2">
@@ -328,23 +308,28 @@ export default function TourOperatorPage({
     }
     if (layout === "magazine") {
       return (
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 to-blue-100">
-          <div className="mb-6 text-4xl font-bold text-purple-700 text-center pt-12">
-            Magazine Cover
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 to-blue-100 border-8 border-pink-300">
+          <div className="mb-6 text-5xl font-extrabold text-purple-700 text-center pt-12 tracking-widest uppercase drop-shadow-lg">
+            Culturin Magazine
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-8 pb-16">
             {operatorData?.tours.slice(0, 4).map((tour, index) => (
               <Card
                 key={tour.id}
-                className="bg-white rounded-lg shadow-md p-4 flex flex-col"
+                className="bg-white rounded-lg shadow-xl p-4 flex flex-col border-2 border-purple-200"
               >
-                <div className="font-semibold text-lg mb-2">{tour.name}</div>
+                <div className="font-bold text-2xl mb-2 text-purple-700">
+                  {tour.name}
+                </div>
                 <img
                   src={tour.image}
                   alt={tour.name}
-                  className="w-full h-32 object-cover rounded mb-2"
+                  className="w-full h-32 object-cover rounded mb-2 border border-purple-100"
                 />
                 <div className="text-xs text-gray-500">{tour.duration}</div>
+                <div className="mt-2 text-sm text-gray-700 italic">
+                  Feature story: {tour.description?.slice(0, 60)}...
+                </div>
               </Card>
             ))}
           </div>
@@ -353,23 +338,28 @@ export default function TourOperatorPage({
     }
     if (layout === "newspaper") {
       return (
-        <div className="min-h-screen p-6 bg-gray-100">
-          <div className="mb-4 text-3xl font-serif font-bold border-b pb-2 text-center">
+        <div className="min-h-screen p-6 bg-gray-100 border-t-8 border-b-8 border-gray-400 font-serif">
+          <div className="mb-4 text-4xl font-bold border-b-4 border-gray-400 pb-2 text-center tracking-widest">
             Culturin Times
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {operatorData?.tours.slice(0, 6).map((tour, index) => (
               <Card
                 key={tour.id}
-                className="bg-white rounded shadow p-3 flex flex-col"
+                className="bg-white rounded shadow p-3 flex flex-col border border-gray-300"
               >
-                <div className="font-bold mb-1">{tour.name}</div>
+                <div className="font-bold mb-1 text-lg text-gray-800">
+                  {tour.name}
+                </div>
                 <img
                   src={tour.image}
                   alt={tour.name}
-                  className="w-full h-20 object-cover rounded mb-1"
+                  className="w-full h-20 object-cover rounded mb-1 border border-gray-200"
                 />
                 <div className="text-xs text-gray-500">{tour.duration}</div>
+                <div className="mt-2 text-xs text-gray-700">
+                  Column: {tour.description?.slice(0, 40)}...
+                </div>
               </Card>
             ))}
           </div>
@@ -378,9 +368,9 @@ export default function TourOperatorPage({
     }
     if (layout === "feed") {
       return (
-        <div className="min-h-screen p-6 bg-white">
-          <div className="mb-4 text-2xl font-bold text-blue-600 text-center">
-            Latest Experiences
+        <div className="min-h-screen p-6 bg-white border-l-8 border-blue-200">
+          <div className="mb-4 text-3xl font-bold text-blue-600 text-center">
+            Latest Experiences Feed
           </div>
           <div className="space-y-4 max-w-2xl mx-auto">
             {operatorData?.tours.map((tour, index) => (
@@ -391,11 +381,16 @@ export default function TourOperatorPage({
                 <img
                   src={tour.image}
                   alt={tour.name}
-                  className="w-20 h-20 object-cover rounded"
+                  className="w-20 h-20 object-cover rounded-full border-2 border-blue-300"
                 />
                 <div>
-                  <div className="font-semibold">{tour.name}</div>
+                  <div className="font-semibold text-lg text-blue-700">
+                    {tour.name}
+                  </div>
                   <div className="text-xs text-gray-500">{tour.duration}</div>
+                  <div className="text-xs text-gray-700 mt-1">
+                    {tour.description?.slice(0, 50)}...
+                  </div>
                 </div>
               </div>
             ))}
