@@ -84,6 +84,11 @@ const WebsiteContent: React.FC = () => {
       safeLocalStorage.removeItem("websiteHeaderImage");
     }
 
+    // Dispatch event for preview refresh
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("websiteContentChanged"));
+    }
+
     toast.success("Content changes saved", {
       description: "Your changes will be applied when you publish your website",
     });

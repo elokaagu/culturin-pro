@@ -58,14 +58,25 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
 
     loadSettings();
 
-    // Set up event listener for storage changes
+    // Set up event listener for storage changes and content changes
     const handleStorageChange = () => {
       loadSettings();
+    };
+    const handleContentChange = () => {
+      loadSettings();
+      toast.success("Preview updated with new content");
     };
 
     if (typeof window !== "undefined") {
       window.addEventListener("storage", handleStorageChange);
-      return () => window.removeEventListener("storage", handleStorageChange);
+      window.addEventListener("websiteContentChanged", handleContentChange);
+      return () => {
+        window.removeEventListener("storage", handleStorageChange);
+        window.removeEventListener(
+          "websiteContentChanged",
+          handleContentChange
+        );
+      };
     }
   }, [refreshKey]);
 
