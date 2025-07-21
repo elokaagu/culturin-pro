@@ -358,6 +358,10 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Debug: Show current layout */}
+      <div className="text-xs text-gray-500 mb-2">
+        Current layout: <span className="font-mono">{layout}</span>
+      </div>
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-medium">Website Preview</h2>
 
