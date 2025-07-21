@@ -33,6 +33,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     "Authentic cultural experiences curated by Eloka Agu"
   );
   const [refreshKey, setRefreshKey] = useState(0);
+  const [theme, setTheme] = useState("classic");
 
   useEffect(() => {
     // Load website settings from localStorage
@@ -48,6 +49,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
         safeLocalStorage.getItem("websiteTagline") ||
           "Authentic cultural experiences curated by Eloka Agu"
       );
+      setTheme(safeLocalStorage.getItem("selectedWebsiteTheme") || "classic");
     };
 
     loadSettings();
@@ -81,6 +83,56 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
       description: "The latest changes have been applied to the preview",
     });
   };
+
+  // Theme style mapping
+  const getThemeStyles = () => {
+    switch (theme.toLowerCase()) {
+      case "modern":
+        return {
+          heroClass: "bg-gradient-to-r from-blue-500 to-purple-600",
+          cardClass: "bg-white shadow-xl rounded-xl",
+          headerTextClass: "text-white",
+          buttonClass: "bg-blue-600 hover:bg-blue-700",
+        };
+      case "minimalist":
+        return {
+          heroClass: "bg-white border-b",
+          cardClass: "bg-white border shadow-sm rounded-md",
+          headerTextClass: "text-black",
+          buttonClass: "bg-black hover:bg-gray-800 text-white",
+        };
+      case "elegant":
+        return {
+          heroClass: "bg-gradient-to-r from-amber-400 to-orange-300",
+          cardClass: "bg-white shadow-lg rounded-lg border border-amber-200",
+          headerTextClass: "text-white",
+          buttonClass: "bg-amber-600 hover:bg-amber-700",
+        };
+      case "bold":
+        return {
+          heroClass: "bg-gradient-to-r from-purple-600 to-pink-600",
+          cardClass: "bg-white shadow-xl rounded-xl border-2 border-purple-200",
+          headerTextClass: "text-white",
+          buttonClass: "bg-purple-600 hover:bg-purple-700",
+        };
+      case "artisan":
+        return {
+          heroClass: "bg-gradient-to-r from-emerald-500 to-teal-600",
+          cardClass: "bg-white shadow-lg rounded-lg border border-emerald-200",
+          headerTextClass: "text-white",
+          buttonClass: "bg-emerald-600 hover:bg-emerald-700",
+        };
+      case "classic":
+      default:
+        return {
+          heroClass: "bg-cover bg-center",
+          cardClass: "bg-white shadow-md rounded-lg",
+          headerTextClass: "text-white",
+          buttonClass: "bg-blue-600 hover:bg-blue-700",
+        };
+    }
+  };
+  const themeStyles = getThemeStyles();
 
   return (
     <div className="space-y-4">
@@ -124,7 +176,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
         <CardContent className="p-4 flex justify-center">
           <div
             className={cn(
-              "rounded-md shadow-lg bg-white overflow-hidden transition-all",
+              "rounded-md shadow-lg overflow-hidden transition-all",
               viewMode === "desktop" && "w-full",
               viewMode === "tablet" && "w-[768px]",
               viewMode === "mobile" && "w-[375px]"
@@ -132,12 +184,15 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
             key={refreshKey}
           >
             <AspectRatio ratio={16 / 9} className="overflow-visible">
-              <div className="p-0 bg-white h-full overflow-auto">
+              <div className="p-0 h-full overflow-auto">
                 {/* Header/Hero section preview */}
                 <div
-                  className="w-full h-32 relative"
+                  className={cn("w-full h-32 relative", themeStyles.heroClass)}
                   style={{
-                    backgroundColor: headerImage ? undefined : primaryColor,
+                    backgroundColor:
+                      theme === "classic" && !headerImage
+                        ? primaryColor
+                        : undefined,
                   }}
                 >
                   {headerImage && (
@@ -151,7 +206,9 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                     </div>
                   )}
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                    <div className="text-white text-center">
+                    <div
+                      className={cn("text-center", themeStyles.headerTextClass)}
+                    >
                       <h1 className="text-xl font-bold">{companyName}</h1>
                       <p className="text-sm mt-1">{tagline}</p>
                     </div>
@@ -177,7 +234,10 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                     {itineraries.slice(0, 3).map((item, index) => (
                       <div
                         key={item.id || index}
-                        className="h-32 rounded bg-gray-200 relative overflow-hidden cursor-pointer hover:opacity-90"
+                        className={cn(
+                          "h-32 rounded relative overflow-hidden cursor-pointer hover:opacity-90",
+                          themeStyles.cardClass
+                        )}
                       >
                         {item.image && (
                           <img
@@ -193,9 +253,15 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                     ))}
                     {itineraries.length === 0 && (
                       <>
-                        <div className="h-32 rounded bg-gray-200"></div>
-                        <div className="h-32 rounded bg-gray-200"></div>
-                        <div className="h-32 rounded bg-gray-200"></div>
+                        <div
+                          className={cn("h-32 rounded", themeStyles.cardClass)}
+                        ></div>
+                        <div
+                          className={cn("h-32 rounded", themeStyles.cardClass)}
+                        ></div>
+                        <div
+                          className={cn("h-32 rounded", themeStyles.cardClass)}
+                        ></div>
                       </>
                     )}
                   </div>
@@ -203,8 +269,15 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                   {/* Interactive CTAs */}
                   <div className="space-y-3">
                     <div
-                      className="h-12 w-full rounded text-center flex items-center justify-center font-medium text-white cursor-pointer hover:opacity-90"
-                      style={{ backgroundColor: primaryColor }}
+                      className={cn(
+                        "h-12 w-full rounded text-center flex items-center justify-center font-medium cursor-pointer hover:opacity-90",
+                        themeStyles.buttonClass
+                      )}
+                      style={
+                        theme === "classic"
+                          ? { backgroundColor: primaryColor, color: "#fff" }
+                          : {}
+                      }
                     >
                       Book Now
                     </div>
