@@ -56,23 +56,31 @@ export default function TourOperatorPage({
   const [loading, setLoading] = useState(true);
   const [operatorData, setOperatorData] = useState<OperatorData | null>(null);
   const [theme, setTheme] = useState("classic");
+  const [layout, setLayout] = useState("hero-top");
   const [publishedItineraries, setPublishedItineraries] = useState<
     ItineraryType[]
   >([]);
 
   useEffect(() => {
-    // Get theme and content from localStorage (set by the website builder)
-    const publishedTheme =
-      localStorage.getItem("publishedWebsiteTheme") || "classic";
+    // Parse theme and layout from slug: e.g. elegant-newspaper-xxxxxx
+    const slugParts = params.slug.split("-");
+    let parsedTheme = "classic";
+    let parsedLayout = "hero-top";
+    if (slugParts.length >= 3) {
+      parsedTheme = slugParts[0];
+      parsedLayout = slugParts[1];
+    }
+    setTheme(parsedTheme);
+    setLayout(parsedLayout);
+
+    // Get content from localStorage (still only one published site supported for content)
     const publishedContentStr = localStorage.getItem("publishedWebsiteContent");
     const publishedItinerariesStr = localStorage.getItem(
       "publishedItineraries"
     );
-
     let publishedContent = null;
     let headerImage = null;
     let itineraries: ItineraryType[] = [];
-
     if (publishedContentStr) {
       try {
         publishedContent = JSON.parse(publishedContentStr);
@@ -81,7 +89,6 @@ export default function TourOperatorPage({
         console.error("Error parsing published content:", e);
       }
     }
-
     if (publishedItinerariesStr) {
       try {
         itineraries = JSON.parse(publishedItinerariesStr);
@@ -90,21 +97,21 @@ export default function TourOperatorPage({
         console.error("Error parsing published itineraries:", e);
       }
     }
-
-    setTheme(publishedTheme);
-
     // Simulate loading operator data
     setTimeout(() => {
       const defaultData: OperatorData = {
         id: params.slug || "demo",
-        name: "Culturin Tours",
-        tagline: "Authentic cultural experiences curated by Eloka Agu",
+        name: publishedContent?.companyName || "Culturin Tours",
+        tagline:
+          publishedContent?.tagline ||
+          "Authentic cultural experiences curated by Eloka Agu",
         description:
+          publishedContent?.description ||
           "Founded by Eloka Agu, Culturin Tours specializes in immersive cultural experiences that connect travelers with authentic local traditions, stories, and communities around the world.",
         logo: "https://placehold.co/200x80",
         coverImage: headerImage || null,
-        theme: publishedTheme,
-        primaryColor: "#9b87f5",
+        theme: parsedTheme,
+        primaryColor: publishedContent?.primaryColor || "#9b87f5",
         contact: {
           email: "eloka@culturintours.com",
           phone: "+1 (555) 123-4567",
@@ -112,18 +119,6 @@ export default function TourOperatorPage({
         },
         tours: [],
       };
-
-      // Apply published content if available
-      if (publishedContent) {
-        defaultData.name = publishedContent.companyName || defaultData.name;
-        defaultData.tagline = publishedContent.tagline || defaultData.tagline;
-        defaultData.description =
-          publishedContent.description || defaultData.description;
-        defaultData.primaryColor =
-          publishedContent.primaryColor || defaultData.primaryColor;
-        defaultData.coverImage = publishedContent.headerImage || null;
-      }
-
       // Convert itineraries to tours
       const toursFromItineraries: Tour[] = itineraries.map((itinerary) => ({
         id: itinerary.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
@@ -141,7 +136,6 @@ export default function TourOperatorPage({
         rating: +(Math.random() * (5 - 4) + 4).toFixed(1),
         reviews: Math.floor(Math.random() * 100) + 50,
       }));
-
       // If we have itineraries, use those; otherwise fallback to sample tours
       if (toursFromItineraries.length > 0) {
         defaultData.tours = toursFromItineraries;
@@ -197,7 +191,6 @@ export default function TourOperatorPage({
           },
         ];
       }
-
       setOperatorData(defaultData);
       setLoading(false);
     }, 500);
