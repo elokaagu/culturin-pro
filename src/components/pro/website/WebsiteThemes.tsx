@@ -78,6 +78,14 @@ const WebsiteThemes: React.FC = () => {
         "selectedWebsiteTheme",
         theme.name.toLowerCase()
       );
+      // Dispatch a custom event so WebsitePreview can refresh
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("themeChanged", {
+            detail: { theme: theme.name.toLowerCase() },
+          })
+        );
+      }
       setShowModal(true);
     }
   };
