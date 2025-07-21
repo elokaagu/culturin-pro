@@ -251,178 +251,326 @@ export default function TourOperatorPage({
 
   const themeStyles = getThemeStyles();
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div
-        className="relative h-96 flex items-center justify-center text-white"
-        style={{
-          background: operatorData.coverImage
-            ? `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${operatorData.coverImage})`
-            : themeStyles.headerBg,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="text-center max-w-4xl px-4">
-          <h1 className="text-5xl font-bold mb-4">{operatorData.name}</h1>
-          <p className="text-xl mb-6">{operatorData.tagline}</p>
-          <Button
-            size="lg"
+  // Layout rendering for published site
+  const renderLayout = () => {
+    if (layout === "hero-side") {
+      return (
+        <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+          {/* Hero section */}
+          <div
             className={cn(
-              "bg-white text-gray-900 hover:bg-gray-100",
-              themeStyles.buttonStyle
+              "flex-1 flex items-center justify-center p-6",
+              themeStyles.headerBg
             )}
+            style={{
+              backgroundColor: operatorData?.coverImage
+                ? undefined
+                : operatorData?.primaryColor,
+              backgroundImage: operatorData?.coverImage
+                ? `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${operatorData.coverImage})`
+                : undefined,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
           >
-            Explore Our Tours
-          </Button>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-12">
-        {/* About Section */}
-        <div className="mb-16">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">About Us</h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              {operatorData.description}
-            </p>
-          </div>
-        </div>
-
-        {/* Tours Grid */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            Our Tours
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {operatorData.tours.map((tour) => (
-              <Card
-                key={tour.id}
+            <div className="w-full text-center text-white">
+              <h1 className="text-5xl font-bold mb-4">{operatorData?.name}</h1>
+              <p className="text-xl mb-6">{operatorData?.tagline}</p>
+              <Button
+                size="lg"
                 className={cn(
-                  "overflow-hidden hover:shadow-lg transition-shadow",
-                  themeStyles.cardStyle
+                  "bg-white text-gray-900 hover:bg-gray-100",
+                  themeStyles.buttonStyle
                 )}
               >
-                <div className="aspect-video relative">
-                  <img
-                    src={tour.image}
-                    alt={tour.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-white text-gray-900">
-                      €{tour.price}
-                    </Badge>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium ml-1">
-                        {tour.rating}
-                      </span>
-                    </div>
-                    <span className="text-sm text-gray-500">
-                      ({tour.reviews} reviews)
-                    </span>
-                  </div>
-
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {tour.name}
-                  </h3>
-                  <p className="text-gray-600 mb-4 line-clamp-2">
-                    {tour.description}
-                  </p>
-
-                  <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{tour.duration}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4" />
-                      <span>Small group</span>
+                Explore Our Tours
+              </Button>
+            </div>
+          </div>
+          {/* Tours grid */}
+          <div className="flex-1 p-6">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">Our Tours</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {operatorData?.tours.map((tour) => (
+                <Card
+                  key={tour.id}
+                  className={cn(
+                    "overflow-hidden hover:shadow-lg transition-shadow",
+                    themeStyles.cardStyle
+                  )}
+                >
+                  <div className="aspect-video relative">
+                    <img
+                      src={tour.image}
+                      alt={tour.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-white text-gray-900">
+                        €{tour.price}
+                      </Badge>
                     </div>
                   </div>
-
-                  <div className="mb-4">
-                    <h4 className="font-medium text-gray-900 mb-2">
-                      Highlights:
-                    </h4>
-                    <ul className="space-y-1">
-                      {tour.highlights.slice(0, 3).map((highlight, index) => (
-                        <li
-                          key={index}
-                          className="flex items-center gap-2 text-sm text-gray-600"
-                        >
-                          <Check className="h-3 w-3 text-green-500 flex-shrink-0" />
-                          <span>{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <Button
-                    className={cn("w-full", themeStyles.buttonStyle)}
-                    style={{ backgroundColor: operatorData.primaryColor }}
-                    onClick={() => handleBookNow(tour.id)}
-                  >
-                    Book Now - €{tour.price}
-                    <ChevronRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </CardContent>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      {tour.name}
+                    </h3>
+                    <p className="text-gray-600 mb-4 line-clamp-2">
+                      {tour.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    if (layout === "magazine") {
+      return (
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 to-blue-100">
+          <div className="mb-6 text-4xl font-bold text-purple-700 text-center pt-12">
+            Magazine Cover
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-8 pb-16">
+            {operatorData?.tours.slice(0, 4).map((tour, index) => (
+              <Card
+                key={tour.id}
+                className="bg-white rounded-lg shadow-md p-4 flex flex-col"
+              >
+                <div className="font-semibold text-lg mb-2">{tour.name}</div>
+                <img
+                  src={tour.image}
+                  alt={tour.name}
+                  className="w-full h-32 object-cover rounded mb-2"
+                />
+                <div className="text-xs text-gray-500">{tour.duration}</div>
               </Card>
             ))}
           </div>
         </div>
-
-        {/* Contact Section */}
-        <div className="bg-white rounded-lg p-8 shadow-sm">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">
-            Get in Touch
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Phone className="h-6 w-6 text-gray-600" />
+      );
+    }
+    if (layout === "newspaper") {
+      return (
+        <div className="min-h-screen p-6 bg-gray-100">
+          <div className="mb-4 text-3xl font-serif font-bold border-b pb-2 text-center">
+            Culturin Times
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {operatorData?.tours.slice(0, 6).map((tour, index) => (
+              <Card
+                key={tour.id}
+                className="bg-white rounded shadow p-3 flex flex-col"
+              >
+                <div className="font-bold mb-1">{tour.name}</div>
+                <img
+                  src={tour.image}
+                  alt={tour.name}
+                  className="w-full h-20 object-cover rounded mb-1"
+                />
+                <div className="text-xs text-gray-500">{tour.duration}</div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (layout === "feed") {
+      return (
+        <div className="min-h-screen p-6 bg-white">
+          <div className="mb-4 text-2xl font-bold text-blue-600 text-center">
+            Latest Experiences
+          </div>
+          <div className="space-y-4 max-w-2xl mx-auto">
+            {operatorData?.tours.map((tour, index) => (
+              <div
+                key={tour.id}
+                className="flex items-center gap-4 border-b pb-3"
+              >
+                <img
+                  src={tour.image}
+                  alt={tour.name}
+                  className="w-20 h-20 object-cover rounded"
+                />
+                <div>
+                  <div className="font-semibold">{tour.name}</div>
+                  <div className="text-xs text-gray-500">{tour.duration}</div>
+                </div>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Phone</h3>
-              <p className="text-gray-600">{operatorData.contact.phone}</p>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    // Default: hero-top
+    return (
+      <>
+        {/* Header */}
+        <div
+          className="relative h-96 flex items-center justify-center text-white"
+          style={{
+            background: operatorData?.coverImage
+              ? `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${operatorData.coverImage})`
+              : themeStyles.headerBg,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="text-center max-w-4xl px-4">
+            <h1 className="text-5xl font-bold mb-4">{operatorData?.name}</h1>
+            <p className="text-xl mb-6">{operatorData?.tagline}</p>
+            <Button
+              size="lg"
+              className={cn(
+                "bg-white text-gray-900 hover:bg-gray-100",
+                themeStyles.buttonStyle
+              )}
+            >
+              Explore Our Tours
+            </Button>
+          </div>
+        </div>
+        {/* Main Content */}
+        <div className="container mx-auto px-4 py-12">
+          {/* About Section */}
+          <div className="mb-16">
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                About Us
+              </h2>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                {operatorData?.description}
+              </p>
             </div>
-
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Mail className="h-6 w-6 text-gray-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Email</h3>
-              <p className="text-gray-600">{operatorData.contact.email}</p>
+          </div>
+          {/* Tours Grid */}
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+              Our Tours
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {operatorData?.tours.map((tour) => (
+                <Card
+                  key={tour.id}
+                  className={cn(
+                    "overflow-hidden hover:shadow-lg transition-shadow",
+                    themeStyles.cardStyle
+                  )}
+                >
+                  <div className="aspect-video relative">
+                    <img
+                      src={tour.image}
+                      alt={tour.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-white text-gray-900">
+                        €{tour.price}
+                      </Badge>
+                    </div>
+                  </div>
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium ml-1">
+                          {tour.rating}
+                        </span>
+                      </div>
+                      <span className="text-sm text-gray-500">
+                        ({tour.reviews} reviews)
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      {tour.name}
+                    </h3>
+                    <p className="text-gray-600 mb-4 line-clamp-2">
+                      {tour.description}
+                    </p>
+                    <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{tour.duration}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        <span>Small group</span>
+                      </div>
+                    </div>
+                    <div className="mb-4">
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        Highlights:
+                      </h4>
+                      <ul className="space-y-1">
+                        {tour.highlights.slice(0, 3).map((highlight, index) => (
+                          <li
+                            key={index}
+                            className="flex items-center gap-2 text-sm text-gray-600"
+                          >
+                            <Check className="h-3 w-3 text-green-500 flex-shrink-0" />
+                            <span>{highlight}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <Button
+                      className={cn("w-full", themeStyles.buttonStyle)}
+                      style={{ backgroundColor: operatorData?.primaryColor }}
+                      onClick={() => handleBookNow(tour.id)}
+                    >
+                      Book Now - €{tour.price}
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <MapIcon className="h-6 w-6 text-gray-600" />
+          </div>
+          {/* Contact Section */}
+          <div className="bg-white rounded-lg p-8 shadow-sm">
+            <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">
+              Get in Touch
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Phone className="h-6 w-6 text-gray-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">Phone</h3>
+                <p className="text-gray-600">{operatorData?.contact.phone}</p>
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Address</h3>
-              <p className="text-gray-600">{operatorData.contact.address}</p>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Mail className="h-6 w-6 text-gray-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">Email</h3>
+                <p className="text-gray-600">{operatorData?.contact.email}</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <MapIcon className="h-6 w-6 text-gray-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-2">Address</h3>
+                <p className="text-gray-600">{operatorData?.contact.address}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+        {/* Footer */}
+        <footer className="bg-gray-900 text-white py-12">
+          <div className="container mx-auto px-4 text-center">
+            <h3 className="text-2xl font-bold mb-4">{operatorData?.name}</h3>
+            <p className="text-gray-400 mb-6">{operatorData?.tagline}</p>
+            <p className="text-sm text-gray-500">
+              © {new Date().getFullYear()} {operatorData?.name}. All rights
+              reserved.
+            </p>
+          </div>
+        </footer>
+      </>
+    );
+  };
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4 text-center">
-          <h3 className="text-2xl font-bold mb-4">{operatorData.name}</h3>
-          <p className="text-gray-400 mb-6">{operatorData.tagline}</p>
-          <p className="text-sm text-gray-500">
-            © {new Date().getFullYear()} {operatorData.name}. All rights
-            reserved.
-          </p>
-        </div>
-      </footer>
-    </div>
-  );
+  return <>{renderLayout()}</>;
 }
