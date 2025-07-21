@@ -5,43 +5,45 @@ import { Badge } from "@/components/ui/badge";
 import { Lock, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useUserData } from "../../../src/contexts/UserDataContext";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const themes = [
   {
     id: 1,
     name: "Classic",
     image: "bg-gradient-to-r from-gray-100 to-gray-200",
-    premium: false,
   },
   {
     id: 2,
     name: "Modern",
     image: "bg-gradient-to-r from-blue-100 to-blue-200",
-    premium: false,
   },
   {
     id: 3,
     name: "Elegant",
     image: "bg-gradient-to-r from-amber-100 to-amber-200",
-    premium: true,
   },
   {
     id: 4,
     name: "Minimalist",
     image: "bg-gradient-to-r from-stone-100 to-stone-200",
-    premium: false,
   },
   {
     id: 5,
     name: "Bold",
     image: "bg-gradient-to-r from-purple-100 to-purple-200",
-    premium: true,
   },
   {
     id: 6,
     name: "Artisan",
     image: "bg-gradient-to-r from-emerald-100 to-emerald-200",
-    premium: true,
   },
 ];
 
@@ -68,6 +70,8 @@ const WebsiteThemes: React.FC = () => {
     return 1;
   });
 
+  const [showModal, setShowModal] = useState(false);
+
   // Update selectedTheme when userData changes
   useEffect(() => {
     const currentTheme = userData.websiteSettings.theme;
@@ -81,14 +85,7 @@ const WebsiteThemes: React.FC = () => {
     }
   }, [userData.websiteSettings.theme]);
 
-  const handleSelectTheme = (id: number, isPremium: boolean) => {
-    if (isPremium) {
-      toast.error("Premium theme requires upgrade", {
-        description: "Upgrade to Pro Plus to access premium themes",
-      });
-      return;
-    }
-
+  const handleSelectTheme = (id: number) => {
     setSelectedTheme(id);
     const themeName =
       themes.find((t) => t.id === id)?.name.toLowerCase() || "classic";
@@ -124,6 +121,7 @@ const WebsiteThemes: React.FC = () => {
             })
           );
         }
+        setShowModal(true);
 
         toast.success(`"${theme.name}" theme applied successfully`, {
           description:
@@ -157,24 +155,14 @@ const WebsiteThemes: React.FC = () => {
                 ? "ring-2 ring-primary"
                 : "hover:shadow-md"
             }`}
-            onClick={() => handleSelectTheme(theme.id, theme.premium)}
+            onClick={() => handleSelectTheme(theme.id)}
           >
-            <div className={`h-36 ${theme.image}`}>
-              {theme.premium && (
-                <div className="flex justify-end p-2">
-                  <Badge className="bg-gray-900/80 text-white">Premium</Badge>
-                </div>
-              )}
-            </div>
+            <div className={`h-36 ${theme.image}`}></div>
             <CardContent className="p-4">
               <div className="flex justify-between items-center">
                 <h3 className="font-medium">{theme.name}</h3>
-                {theme.premium ? (
-                  <Lock className="h-4 w-4 text-gray-400" />
-                ) : (
-                  selectedTheme === theme.id && (
-                    <Check className="h-4 w-4 text-green-500" />
-                  )
+                {selectedTheme === theme.id && (
+                  <Check className="h-4 w-4 text-green-500" />
                 )}
               </div>
             </CardContent>
@@ -199,6 +187,26 @@ const WebsiteThemes: React.FC = () => {
           </span>
         )}
       </div>
+
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Theme Applied!</DialogTitle>
+          </DialogHeader>
+          <div className="py-2">
+            <p>
+              Your "{themes.find((t) => t.id === selectedTheme)?.name}" theme
+              has been applied successfully.
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              Switch to the Preview tab to see your updated website.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowModal(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
