@@ -142,110 +142,50 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   const renderLayout = () => {
     if (layout === "hero-side") {
       return (
-        <div className="flex flex-col md:flex-row h-full">
+        <div className="flex flex-col md:flex-row h-full bg-gradient-to-r from-gray-100 to-blue-200 border-4 border-blue-400">
           {/* Hero section */}
-          <div
-            className={cn(
-              "flex-1 flex items-center justify-center p-6",
-              themeStyles.heroClass
-            )}
-            style={{
-              backgroundColor:
-                theme === "classic" && !headerImage ? primaryColor : undefined,
-            }}
-          >
-            <div className="w-full">
-              <div className="relative w-full h-32 md:h-64">
-                {headerImage && (
-                  <img
-                    src={headerImage}
-                    alt="Header"
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                )}
-                <div
-                  className={cn(
-                    "absolute inset-0 flex flex-col items-center justify-center p-4",
-                    headerImage && "bg-black/40"
-                  )}
-                  style={{ borderRadius: headerImage ? "0.5rem" : undefined }}
-                >
-                  <div
-                    className={cn("text-center", themeStyles.headerTextClass)}
-                  >
-                    <h1 className="text-xl font-bold">{companyName}</h1>
-                    <p className="text-sm mt-1">{tagline}</p>
-                  </div>
-                </div>
-              </div>
+          <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-200 to-blue-400 border-r-4 border-blue-300">
+            <div className="w-full text-center text-white">
+              <h1 className="text-5xl font-extrabold mb-4 tracking-widest drop-shadow-lg">
+                {companyName}
+              </h1>
+              <p className="text-2xl mb-6 italic font-serif">{tagline}</p>
+              <Button
+                size="lg"
+                className="bg-white text-blue-700 hover:bg-blue-100 font-bold px-8 py-4 rounded-full shadow-lg"
+              >
+                Explore Our Tours
+              </Button>
             </div>
           </div>
           {/* Tours grid */}
-          <div className="flex-1 p-6">
-            <div
-              className={cn(
-                "grid gap-4 mb-4",
-                viewMode === "mobile"
-                  ? "grid-cols-1"
-                  : "grid-cols-2 md:grid-cols-1"
-              )}
-            >
-              {itineraries.slice(0, 3).map((item, index) => (
-                <div
-                  key={item.id || index}
-                  className={cn(
-                    "h-32 rounded relative overflow-hidden cursor-pointer hover:opacity-90",
-                    themeStyles.cardClass
-                  )}
+          <div className="flex-1 p-6 bg-white">
+            <h2 className="text-3xl font-bold text-blue-700 mb-8 border-b-2 border-blue-200 pb-2">
+              Our Tours
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {itineraries.map((item) => (
+                <Card
+                  key={item.id}
+                  className="overflow-hidden border-2 border-blue-200 shadow-lg"
                 >
-                  {item.image && (
+                  <div className="aspect-video relative">
                     <img
                       src={item.image}
                       alt={item.title}
                       className="w-full h-full object-cover"
                     />
-                  )}
-                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1">
-                    {item.title}
                   </div>
-                </div>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold text-blue-700 mb-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4 line-clamp-2">
+                      {item.description}
+                    </p>
+                  </CardContent>
+                </Card>
               ))}
-              {itineraries.length === 0 && (
-                <>
-                  <div
-                    className={cn("h-32 rounded", themeStyles.cardClass)}
-                  ></div>
-                  <div
-                    className={cn("h-32 rounded", themeStyles.cardClass)}
-                  ></div>
-                  <div
-                    className={cn("h-32 rounded", themeStyles.cardClass)}
-                  ></div>
-                </>
-              )}
-            </div>
-            {/* CTA and About Us */}
-            <div className="space-y-3">
-              <div
-                className={cn(
-                  "h-12 w-full rounded text-center flex items-center justify-center font-medium cursor-pointer hover:opacity-90",
-                  themeStyles.buttonClass
-                )}
-                style={
-                  theme === "classic"
-                    ? { backgroundColor: primaryColor, color: "#fff" }
-                    : {}
-                }
-              >
-                Book Now
-              </div>
-              <div className="border-t pt-3">
-                <h3 className="font-medium mb-2">About Us</h3>
-                <div className="h-16 bg-gray-100 rounded p-2 mb-2 text-xs overflow-hidden">
-                  {safeLocalStorage.getItem("websiteDescription") ||
-                    "We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots."}
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -253,55 +193,59 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     }
     if (layout === "magazine") {
       return (
-        <div className="flex flex-col md:flex-row h-full">
-          <div className="flex-1 p-6 bg-gradient-to-br from-pink-100 to-blue-100">
-            <div className="mb-6 text-3xl font-bold text-purple-700">
-              Magazine Cover
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {itineraries.slice(0, 4).map((item, index) => (
-                <div
-                  key={item.id || index}
-                  className="bg-white rounded-lg shadow-md p-4 flex flex-col"
-                >
-                  <div className="font-semibold text-lg mb-2">{item.title}</div>
-                  {item.image && (
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-32 object-cover rounded mb-2"
-                    />
-                  )}
-                  <div className="text-xs text-gray-500">{item.days} days</div>
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 to-blue-100 border-8 border-pink-300">
+          <div className="mb-6 text-5xl font-extrabold text-purple-700 text-center pt-12 tracking-widest uppercase drop-shadow-lg">
+            Culturin Magazine
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-8 pb-16">
+            {itineraries.slice(0, 4).map((item, index) => (
+              <Card
+                key={item.id}
+                className="bg-white rounded-lg shadow-xl p-4 flex flex-col border-2 border-purple-200"
+              >
+                <div className="font-bold text-2xl mb-2 text-purple-700">
+                  {item.title}
                 </div>
-              ))}
-            </div>
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-32 object-cover rounded mb-2 border border-purple-100"
+                />
+                <div className="text-xs text-gray-500">{item.days} days</div>
+                <div className="mt-2 text-sm text-gray-700 italic">
+                  Feature story: {item.description?.slice(0, 60)}...
+                </div>
+              </Card>
+            ))}
           </div>
         </div>
       );
     }
     if (layout === "newspaper") {
       return (
-        <div className="p-6 bg-gray-100">
-          <div className="mb-4 text-2xl font-serif font-bold border-b pb-2">
+        <div className="min-h-screen p-6 bg-gray-100 border-t-8 border-b-8 border-gray-400 font-serif">
+          <div className="mb-4 text-4xl font-bold border-b-4 border-gray-400 pb-2 text-center tracking-widest">
             Culturin Times
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {itineraries.slice(0, 6).map((item, index) => (
-              <div
-                key={item.id || index}
-                className="bg-white rounded shadow p-3 flex flex-col"
+              <Card
+                key={item.id}
+                className="bg-white rounded shadow p-3 flex flex-col border border-gray-300"
               >
-                <div className="font-bold mb-1">{item.title}</div>
-                {item.image && (
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-20 object-cover rounded mb-1"
-                  />
-                )}
+                <div className="font-bold mb-1 text-lg text-gray-800">
+                  {item.title}
+                </div>
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-20 object-cover rounded mb-1 border border-gray-200"
+                />
                 <div className="text-xs text-gray-500">{item.days} days</div>
-              </div>
+                <div className="mt-2 text-xs text-gray-700">
+                  Column: {item.description?.slice(0, 40)}...
+                </div>
+              </Card>
             ))}
           </div>
         </div>
@@ -309,26 +253,29 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     }
     if (layout === "feed") {
       return (
-        <div className="p-6 bg-white">
-          <div className="mb-4 text-xl font-bold text-blue-600">
-            Latest Experiences
+        <div className="min-h-screen p-6 bg-white border-l-8 border-blue-200">
+          <div className="mb-4 text-3xl font-bold text-blue-600 text-center">
+            Latest Experiences Feed
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 max-w-2xl mx-auto">
             {itineraries.map((item, index) => (
               <div
-                key={item.id || index}
+                key={item.id}
                 className="flex items-center gap-4 border-b pb-3"
               >
-                {item.image && (
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-20 h-20 object-cover rounded"
-                  />
-                )}
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-20 h-20 object-cover rounded-full border-2 border-blue-300"
+                />
                 <div>
-                  <div className="font-semibold">{item.title}</div>
+                  <div className="font-semibold text-lg text-blue-700">
+                    {item.title}
+                  </div>
                   <div className="text-xs text-gray-500">{item.days} days</div>
+                  <div className="text-xs text-gray-700 mt-1">
+                    {item.description?.slice(0, 50)}...
+                  </div>
                 </div>
               </div>
             ))}
