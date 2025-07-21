@@ -94,8 +94,13 @@ const WebsiteBuilder: React.FC = () => {
     setPublishLoading(true);
 
     try {
-      // Generate a unique slug for the website
-      const slug = `demo-${Date.now().toString(36)}`;
+      const currentTheme =
+        safeLocalStorage.getItem("selectedWebsiteTheme") || "classic";
+      const currentLayout =
+        safeLocalStorage.getItem("selectedWebsiteLayout") || "hero-top";
+      const slug = `${currentTheme}-${currentLayout}-${Date.now().toString(
+        36
+      )}`;
       const newPublishedUrl = `tour/${slug}`;
 
       // Simulate publishing process - in a real app, this would save to a backend
@@ -107,10 +112,6 @@ const WebsiteBuilder: React.FC = () => {
       safeLocalStorage.setItem("publishedWebsiteUrl", newPublishedUrl);
 
       // Get current theme from localStorage
-      const currentTheme =
-        safeLocalStorage.getItem("selectedWebsiteTheme") || "classic";
-
-      // Save website content and theme to localStorage for the tour operator website
       const websiteContent = {
         companyName:
           safeLocalStorage.getItem("websiteCompanyName") || "Culturin Tours",
@@ -138,7 +139,7 @@ const WebsiteBuilder: React.FC = () => {
       toast.success("Website published successfully!", {
         description: "Your changes are now live.",
       });
-    } catch (error) {
+    } catch (e) {
       toast.error("Failed to publish website", {
         description: "Please try again or contact support",
       });

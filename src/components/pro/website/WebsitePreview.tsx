@@ -251,6 +251,91 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
         </div>
       );
     }
+    if (layout === "magazine") {
+      return (
+        <div className="flex flex-col md:flex-row h-full">
+          <div className="flex-1 p-6 bg-gradient-to-br from-pink-100 to-blue-100">
+            <div className="mb-6 text-3xl font-bold text-purple-700">
+              Magazine Cover
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {itineraries.slice(0, 4).map((item, index) => (
+                <div
+                  key={item.id || index}
+                  className="bg-white rounded-lg shadow-md p-4 flex flex-col"
+                >
+                  <div className="font-semibold text-lg mb-2">{item.title}</div>
+                  {item.image && (
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-32 object-cover rounded mb-2"
+                    />
+                  )}
+                  <div className="text-xs text-gray-500">{item.days} days</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    if (layout === "newspaper") {
+      return (
+        <div className="p-6 bg-gray-100">
+          <div className="mb-4 text-2xl font-serif font-bold border-b pb-2">
+            Culturin Times
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {itineraries.slice(0, 6).map((item, index) => (
+              <div
+                key={item.id || index}
+                className="bg-white rounded shadow p-3 flex flex-col"
+              >
+                <div className="font-bold mb-1">{item.title}</div>
+                {item.image && (
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-20 object-cover rounded mb-1"
+                  />
+                )}
+                <div className="text-xs text-gray-500">{item.days} days</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (layout === "feed") {
+      return (
+        <div className="p-6 bg-white">
+          <div className="mb-4 text-xl font-bold text-blue-600">
+            Latest Experiences
+          </div>
+          <div className="space-y-4">
+            {itineraries.map((item, index) => (
+              <div
+                key={item.id || index}
+                className="flex items-center gap-4 border-b pb-3"
+              >
+                {item.image && (
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-20 h-20 object-cover rounded"
+                  />
+                )}
+                <div>
+                  <div className="font-semibold">{item.title}</div>
+                  <div className="text-xs text-gray-500">{item.days} days</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
     // Default: hero-top
     return (
       <div className="p-0 h-full overflow-auto">

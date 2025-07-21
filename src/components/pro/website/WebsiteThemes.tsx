@@ -26,19 +26,19 @@ const themes = [
     id: 2,
     name: "Modern",
     image: "bg-gradient-to-r from-blue-100 to-blue-200",
-    layout: "hero-side",
+    layout: "magazine",
   },
   {
     id: 3,
     name: "Elegant",
     image: "bg-gradient-to-r from-amber-100 to-amber-200",
-    layout: "hero-top",
+    layout: "newspaper",
   },
   {
     id: 4,
     name: "Minimalist",
     image: "bg-gradient-to-r from-stone-100 to-stone-200",
-    layout: "hero-top",
+    layout: "feed",
   },
   {
     id: 5,
