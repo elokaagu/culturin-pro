@@ -117,7 +117,48 @@ const WebsiteThemes: React.FC = () => {
             }`}
             onClick={() => handleSelectTheme(theme.id)}
           >
-            <div className={`h-36 ${theme.image}`}></div>
+            {/* Mini layout preview */}
+            <div className="h-20 flex items-center justify-center bg-gray-50 border-b">
+              {theme.layout === "hero-top" && (
+                <div className="w-full flex flex-col items-center">
+                  <div className="w-3/4 h-3 bg-blue-300 rounded mb-1" />
+                  <div className="w-2/3 h-2 bg-gray-300 rounded mb-1" />
+                  <div className="w-1/2 h-2 bg-gray-200 rounded" />
+                </div>
+              )}
+              {theme.layout === "hero-side" && (
+                <div className="w-full flex flex-row items-center gap-1">
+                  <div className="w-1/2 h-8 bg-blue-300 rounded" />
+                  <div className="flex-1 flex flex-col gap-1">
+                    <div className="w-full h-2 bg-gray-300 rounded" />
+                    <div className="w-full h-2 bg-gray-200 rounded" />
+                  </div>
+                </div>
+              )}
+              {theme.layout === "magazine" && (
+                <div className="w-full flex flex-row gap-1">
+                  <div className="w-1/3 h-12 bg-purple-200 rounded" />
+                  <div className="w-1/3 h-12 bg-pink-200 rounded" />
+                  <div className="w-1/3 h-12 bg-blue-200 rounded" />
+                </div>
+              )}
+              {theme.layout === "newspaper" && (
+                <div className="w-full flex flex-row gap-1">
+                  <div className="w-1/4 h-16 bg-gray-300 rounded" />
+                  <div className="w-1/4 h-16 bg-gray-200 rounded" />
+                  <div className="w-1/4 h-16 bg-gray-300 rounded" />
+                  <div className="w-1/4 h-16 bg-gray-200 rounded" />
+                </div>
+              )}
+              {theme.layout === "feed" && (
+                <div className="w-full flex flex-col gap-1 items-center">
+                  <div className="w-3/4 h-2 bg-blue-200 rounded" />
+                  <div className="w-2/3 h-2 bg-blue-100 rounded" />
+                  <div className="w-1/2 h-2 bg-blue-50 rounded" />
+                </div>
+              )}
+            </div>
+            {/* End mini layout preview */}
             <CardContent className="p-4">
               <div className="flex justify-between items-center">
                 <h3 className="font-medium">{theme.name}</h3>
