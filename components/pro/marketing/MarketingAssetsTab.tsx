@@ -21,7 +21,18 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Grid3X3, FileText, Image, QrCode, Download, Eye } from "lucide-react";
+import {
+  Grid3X3,
+  FileText,
+  Image,
+  QrCode,
+  Download,
+  Eye,
+  Loader2,
+  Copy,
+  Check,
+  Sparkles,
+} from "lucide-react";
 import { toast } from "sonner";
 
 const MarketingAssetsTab = () => {
@@ -37,8 +48,68 @@ const MarketingAssetsTab = () => {
   const [colorTheme, setColorTheme] = useState("blue-ocean");
   const [templateStyle, setTemplateStyle] = useState("modern");
 
-  const handleGenerateAsset = (assetType: string) => {
-    toast.success(`Generating ${assetType}...`);
+  // AI Generation states
+  const [generatedCopy, setGeneratedCopy] = useState<any>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [copiedContent, setCopiedContent] = useState(false);
+
+  const handleGenerateAsset = async (assetType: string) => {
+    // Validate required fields
+    if (!experienceTitle || !location || !duration) {
+      toast.error(
+        "Please fill in the Experience Title, Location, and Duration fields."
+      );
+      return;
+    }
+
+    setIsGenerating(true);
+    setGeneratedCopy(null);
+
+    try {
+      const response = await fetch("/api/generate-marketing-copy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          experienceTitle,
+          location,
+          duration,
+          price,
+          keyDetails,
+          assetType,
+          templateStyle,
+          colorTheme,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate marketing copy");
+      }
+
+      setGeneratedCopy(data.marketingCopy);
+      toast.success(`${assetType} copy generated successfully!`);
+    } catch (error: any) {
+      console.error("Error generating marketing copy:", error);
+      toast.error(
+        error.message || "Failed to generate marketing copy. Please try again."
+      );
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleCopyContent = async (content: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedContent(true);
+      toast.success("Content copied to clipboard!");
+      setTimeout(() => setCopiedContent(false), 2000);
+    } catch (err) {
+      toast.error("Failed to copy content");
+    }
   };
 
   const handlePreview = () => {
@@ -74,6 +145,216 @@ const MarketingAssetsTab = () => {
     { value: "forest-green", label: "Forest Green" },
     { value: "royal-purple", label: "Royal Purple" },
   ];
+
+  const renderGeneratedContent = (content: any, assetType: string) => {
+    if (!content) return null;
+
+    switch (assetType) {
+      case "info-card":
+        return (
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium mb-2">Headline:</h4>
+              <p className="text-lg font-semibold text-gray-800">
+                {content.headline}
+              </p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">Description:</h4>
+              <p className="text-gray-700">{content.description}</p>
+            </div>
+            {content.highlights && (
+              <div>
+                <h4 className="font-medium mb-2">Key Highlights:</h4>
+                <ul className="space-y-1">
+                  {content.highlights.map(
+                    (highlight: string, index: number) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="text-blue-500 mt-1">•</span>
+                        <span className="text-gray-700">{highlight}</span>
+                      </li>
+                    )
+                  )}
+                </ul>
+              </div>
+            )}
+            {content.callToAction && (
+              <div>
+                <h4 className="font-medium mb-2">Call to Action:</h4>
+                <p className="text-gray-700 font-medium">
+                  {content.callToAction}
+                </p>
+              </div>
+            )}
+            {content.hashtags && (
+              <div>
+                <h4 className="font-medium mb-2">Suggested Hashtags:</h4>
+                <div className="flex flex-wrap gap-2">
+                  {content.hashtags.map((tag: string, index: number) => (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="text-blue-600"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
+      case "flyer":
+        return (
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium mb-2">Headline:</h4>
+              <p className="text-xl font-bold text-gray-800">
+                {content.headline}
+              </p>
+            </div>
+            {content.subheading && (
+              <div>
+                <h4 className="font-medium mb-2">Subheading:</h4>
+                <p className="text-lg text-gray-700">{content.subheading}</p>
+              </div>
+            )}
+            {content.benefits && (
+              <div>
+                <h4 className="font-medium mb-2">Key Benefits:</h4>
+                <ul className="space-y-1">
+                  {content.benefits.map((benefit: string, index: number) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">✓</span>
+                      <span className="text-gray-700">{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {content.included && (
+              <div>
+                <h4 className="font-medium mb-2">What's Included:</h4>
+                <ul className="space-y-1">
+                  {content.included.map((item: string, index: number) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1">•</span>
+                      <span className="text-gray-700">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {content.callToAction && (
+              <div>
+                <h4 className="font-medium mb-2">Call to Action:</h4>
+                <p className="text-gray-700 font-semibold">
+                  {content.callToAction}
+                </p>
+              </div>
+            )}
+            {content.contactInfo && (
+              <div>
+                <h4 className="font-medium mb-2">Contact Info:</h4>
+                <p className="text-gray-700">{content.contactInfo}</p>
+              </div>
+            )}
+            {content.socialProof && (
+              <div>
+                <h4 className="font-medium mb-2">Social Proof:</h4>
+                <p className="text-gray-600 italic">{content.socialProof}</p>
+              </div>
+            )}
+          </div>
+        );
+
+      case "social-graphics":
+        return (
+          <div className="space-y-6">
+            {content.instagramPost && (
+              <div className="border rounded-lg p-4">
+                <h4 className="font-medium mb-2 flex items-center gap-2">
+                  <Image className="h-4 w-4" />
+                  Instagram Post
+                </h4>
+                <div className="space-y-2">
+                  <p className="text-gray-700">
+                    {content.instagramPost.caption}
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {content.instagramPost.hashtags?.map(
+                      (tag: string, index: number) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="text-pink-600"
+                        >
+                          {tag}
+                        </Badge>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            {content.instagramStory && (
+              <div className="border rounded-lg p-4">
+                <h4 className="font-medium mb-2 flex items-center gap-2">
+                  <Image className="h-4 w-4" />
+                  Instagram Story
+                </h4>
+                <p className="text-gray-700">{content.instagramStory.text}</p>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {content.instagramStory.hashtags?.map(
+                    (tag: string, index: number) => (
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="text-pink-600"
+                      >
+                        {tag}
+                      </Badge>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+            {content.facebookPost && (
+              <div className="border rounded-lg p-4">
+                <h4 className="font-medium mb-2 flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Facebook Post
+                </h4>
+                <p className="text-gray-700">
+                  {content.facebookPost.description}
+                </p>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {content.facebookPost.hashtags?.map(
+                    (tag: string, index: number) => (
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="text-blue-600"
+                      >
+                        {tag}
+                      </Badge>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+
+      default:
+        return (
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <p className="text-gray-700">{JSON.stringify(content, null, 2)}</p>
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -224,7 +505,10 @@ const MarketingAssetsTab = () => {
           <TabsContent value="info-cards">
             <Card>
               <CardHeader>
-                <CardTitle>Information Cards</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-blue-600" />
+                  Information Cards
+                </CardTitle>
                 <CardDescription>
                   Create compact info cards perfect for handouts and displays
                 </CardDescription>
@@ -232,10 +516,21 @@ const MarketingAssetsTab = () => {
               <CardContent className="space-y-4">
                 <div className="flex gap-3">
                   <Button
-                    onClick={() => handleGenerateAsset("info card")}
+                    onClick={() => handleGenerateAsset("info-card")}
+                    disabled={isGenerating}
                     className="flex-1"
                   >
-                    Generate Info Card
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Generate Info Card
+                      </>
+                    )}
                   </Button>
                   <Button variant="outline" onClick={handlePreview}>
                     <Eye className="h-4 w-4 mr-2" />
@@ -246,6 +541,37 @@ const MarketingAssetsTab = () => {
                     Download
                   </Button>
                 </div>
+
+                {generatedCopy && (
+                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-medium">Generated Content:</h4>
+                      <Button
+                        onClick={() =>
+                          handleCopyContent(
+                            JSON.stringify(generatedCopy, null, 2)
+                          )
+                        }
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        {copiedContent ? (
+                          <>
+                            <Check className="h-4 w-4" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-4 w-4" />
+                            Copy
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    {renderGeneratedContent(generatedCopy, "info-card")}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -253,7 +579,10 @@ const MarketingAssetsTab = () => {
           <TabsContent value="flyers">
             <Card>
               <CardHeader>
-                <CardTitle>Marketing Flyers</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-green-600" />
+                  Marketing Flyers
+                </CardTitle>
                 <CardDescription>
                   Design eye-catching flyers for promoting your experiences
                 </CardDescription>
@@ -262,9 +591,20 @@ const MarketingAssetsTab = () => {
                 <div className="flex gap-3">
                   <Button
                     onClick={() => handleGenerateAsset("flyer")}
+                    disabled={isGenerating}
                     className="flex-1"
                   >
-                    Generate Flyer
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Generate Flyer
+                      </>
+                    )}
                   </Button>
                   <Button variant="outline" onClick={handlePreview}>
                     <Eye className="h-4 w-4 mr-2" />
@@ -275,6 +615,37 @@ const MarketingAssetsTab = () => {
                     Download
                   </Button>
                 </div>
+
+                {generatedCopy && (
+                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-medium">Generated Content:</h4>
+                      <Button
+                        onClick={() =>
+                          handleCopyContent(
+                            JSON.stringify(generatedCopy, null, 2)
+                          )
+                        }
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        {copiedContent ? (
+                          <>
+                            <Check className="h-4 w-4" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-4 w-4" />
+                            Copy
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    {renderGeneratedContent(generatedCopy, "flyer")}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -282,7 +653,10 @@ const MarketingAssetsTab = () => {
           <TabsContent value="social-graphics">
             <Card>
               <CardHeader>
-                <CardTitle>Social Media Graphics</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-purple-600" />
+                  Social Media Graphics
+                </CardTitle>
                 <CardDescription>
                   Create graphics optimized for social media platforms
                 </CardDescription>
@@ -311,10 +685,21 @@ const MarketingAssetsTab = () => {
 
                 <div className="flex gap-3">
                   <Button
-                    onClick={() => handleGenerateAsset("social graphics")}
+                    onClick={() => handleGenerateAsset("social-graphics")}
+                    disabled={isGenerating}
                     className="flex-1"
                   >
-                    Generate All Formats
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Generate All Formats
+                      </>
+                    )}
                   </Button>
                   <Button variant="outline" onClick={handlePreview}>
                     <Eye className="h-4 w-4 mr-2" />
@@ -325,6 +710,37 @@ const MarketingAssetsTab = () => {
                     Download
                   </Button>
                 </div>
+
+                {generatedCopy && (
+                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-medium">Generated Content:</h4>
+                      <Button
+                        onClick={() =>
+                          handleCopyContent(
+                            JSON.stringify(generatedCopy, null, 2)
+                          )
+                        }
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        {copiedContent ? (
+                          <>
+                            <Check className="h-4 w-4" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-4 w-4" />
+                            Copy
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    {renderGeneratedContent(generatedCopy, "social-graphics")}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
