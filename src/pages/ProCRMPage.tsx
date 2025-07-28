@@ -35,7 +35,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import EmailAutomation from "@/components/pro/crm/EmailAutomation";
-import GuestSegmentation from "@/components/pro/crm/GuestSegmentation";
 import LoyaltyProgram from "@/components/pro/crm/LoyaltyProgram";
 
 // Mock data
@@ -720,15 +719,13 @@ const ProCRMPage = () => {
             onValueChange={setActiveTab}
             className="space-y-6"
           >
-            <TabsList className="grid grid-cols-6 w-full max-w-4xl">
+            <TabsList className="grid grid-cols-4 w-full max-w-4xl">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="all-guests">All Guests</TabsTrigger>
-              <TabsTrigger value="segmentation">Segmentation</TabsTrigger>
               <TabsTrigger value="email-automation">
                 Email Automation
               </TabsTrigger>
               <TabsTrigger value="loyalty">Loyalty Program</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
@@ -906,60 +903,12 @@ const ProCRMPage = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="segmentation">
-              <GuestSegmentation />
-            </TabsContent>
-
             <TabsContent value="email-automation">
               <EmailAutomation />
             </TabsContent>
 
             <TabsContent value="loyalty">
               <LoyaltyProgram />
-            </TabsContent>
-
-            <TabsContent value="analytics" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">
-                        87%
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Email Open Rate
-                      </p>
-                      <Progress value={87} className="mt-3" />
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">
-                        34%
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Repeat Booking Rate
-                      </p>
-                      <Progress value={34} className="mt-3" />
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">
-                        $127
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Avg. Customer Value
-                      </p>
-                      <Progress value={65} className="mt-3" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
             </TabsContent>
           </Tabs>
         )}
