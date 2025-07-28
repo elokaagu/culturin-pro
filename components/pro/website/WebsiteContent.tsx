@@ -19,6 +19,7 @@ const WebsiteContent: React.FC = () => {
   const [description, setDescription] = useState("");
   const [primaryColor, setPrimaryColor] = useState("");
   const [headerImage, setHeaderImage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Initialize form with user data
   useEffect(() => {
@@ -95,25 +96,86 @@ const WebsiteContent: React.FC = () => {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setIsSaving(true);
     try {
+      // Validate required fields
+      if (!companyName.trim()) {
+        toast.error("Company name is required");
+        return;
+      }
+
+      if (!tagline.trim()) {
+        toast.error("Tagline is required");
+        return;
+      }
+
+      if (!description.trim()) {
+        toast.error("Description is required");
+        return;
+      }
+
+      if (!primaryColor) {
+        toast.error("Primary color is required");
+        return;
+      }
+
       const updates = {
-        companyName,
-        tagline,
-        description,
+        companyName: companyName.trim(),
+        tagline: tagline.trim(),
+        description: description.trim(),
         primaryColor,
         headerImage,
       };
 
+      // Update website settings
       updateWebsiteSettings(updates);
 
-      toast.success("Website content saved", {
-        description: "All changes have been applied to your website",
+      // Also save to localStorage for immediate persistence
+      localStorage.setItem(
+        "culturin_user_data",
+        JSON.stringify({
+          ...userData,
+          websiteSettings: {
+            ...userData.websiteSettings,
+            ...updates,
+          },
+        })
+      );
+
+      // Save published content for website preview
+      const publishedContent = {
+        companyName: updates.companyName,
+        tagline: updates.tagline,
+        description: updates.description,
+        primaryColor: updates.primaryColor,
+        headerImage: updates.headerImage,
+        theme: userData.websiteSettings.theme || "classic",
+        lastUpdated: new Date().toISOString(),
+      };
+
+      localStorage.setItem(
+        "publishedWebsiteContent",
+        JSON.stringify(publishedContent)
+      );
+
+      toast.success("Website content saved successfully!", {
+        description:
+          "Your changes have been applied and are live on your website",
       });
+
+      // Optional: Trigger a page refresh or update preview
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
+      console.error("Save error:", error);
       toast.error("Failed to save content", {
-        description: "Please try again",
+        description:
+          "Please try again or contact support if the issue persists",
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -322,7 +384,20 @@ const WebsiteContent: React.FC = () => {
           <div className="text-sm text-gray-500">
             Changes are automatically saved as you type
           </div>
-          <Button onClick={handleSave}>Save All Changes</Button>
+          <Button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="min-w-[140px]"
+          >
+            {isSaving ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Saving...
+              </>
+            ) : (
+              "Save All Changes"
+            )}
+          </Button>
         </div>
       </div>
     </div>
