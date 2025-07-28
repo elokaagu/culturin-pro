@@ -139,18 +139,14 @@ const GuestsTable = ({ guests, onViewGuest }) => {
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Search guests by name, email, or status..."
-            className="pl-10"
+            className="pl-4"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add Guest
-        </Button>
+        <Button className="bg-blue-600 hover:bg-blue-700">Add Guest</Button>
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -216,18 +212,6 @@ const GuestsTable = ({ guests, onViewGuest }) => {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    {guest.loyaltyTier === "ambassador" && (
-                      <Crown className="h-4 w-4 text-blue-600" />
-                    )}
-                    {guest.loyaltyTier === "gold" && (
-                      <Star className="h-4 w-4 text-blue-600" />
-                    )}
-                    {guest.loyaltyTier === "silver" && (
-                      <Target className="h-4 w-4 text-blue-600" />
-                    )}
-                    {guest.loyaltyTier === "bronze" && (
-                      <Users className="h-4 w-4 text-blue-600" />
-                    )}
                     <span className="text-sm font-medium capitalize">
                       {guest.loyaltyTier}
                     </span>
@@ -246,7 +230,6 @@ const GuestsTable = ({ guests, onViewGuest }) => {
                       </span>
                       {guest.avgRating && (
                         <div className="flex items-center gap-1">
-                          <Star className="h-3 w-3 text-yellow-500 fill-current" />
                           <span className="text-xs text-gray-600">
                             {guest.avgRating}
                           </span>
@@ -261,7 +244,6 @@ const GuestsTable = ({ guests, onViewGuest }) => {
                 <TableCell>
                   {guest.loyaltyPoints > 0 ? (
                     <div className="flex items-center gap-1">
-                      <Gift className="h-4 w-4 text-blue-600" />
                       <span className="text-sm font-medium">
                         {guest.loyaltyPoints}
                       </span>
@@ -278,13 +260,13 @@ const GuestsTable = ({ guests, onViewGuest }) => {
                       onClick={() => onViewGuest(guest)}
                       className="h-8 w-8 p-0"
                     >
-                      <Search className="h-4 w-4" />
+                      View
                     </Button>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <Mail className="h-4 w-4" />
+                      Email
                     </Button>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <MessageSquare className="h-4 w-4" />
+                      Message
                     </Button>
                   </div>
                 </TableCell>
@@ -308,21 +290,6 @@ const GuestDetails = ({ guest, onBack }) => {
       title: "Notes saved",
       description: "Guest notes have been updated successfully.",
     });
-  };
-
-  const getTierIcon = (tier) => {
-    switch (tier) {
-      case "ambassador":
-        return <Crown className="h-4 w-4 text-blue-600" />;
-      case "gold":
-        return <Star className="h-4 w-4 text-blue-600" />;
-      case "silver":
-        return <Target className="h-4 w-4 text-blue-600" />;
-      case "bronze":
-        return <Users className="h-4 w-4 text-blue-600" />;
-      default:
-        return <Users className="h-4 w-4 text-blue-600" />;
-    }
   };
 
   const getTierColor = (tier) => {
@@ -351,14 +318,12 @@ const GuestDetails = ({ guest, onBack }) => {
             variant="outline"
             className="border-blue-200 text-blue-600 hover:bg-blue-50"
           >
-            <Mail className="h-4 w-4 mr-2" />
             Send Email
           </Button>
           <Button
             variant="outline"
             className="border-blue-200 text-blue-600 hover:bg-blue-50"
           >
-            <MessageSquare className="h-4 w-4 mr-2" />
             Send Message
           </Button>
         </div>
@@ -395,7 +360,6 @@ const GuestDetails = ({ guest, onBack }) => {
                     {guest.status}
                   </Badge>
                   <div className="flex items-center gap-2">
-                    {getTierIcon(guest.loyaltyTier)}
                     <Badge
                       variant="outline"
                       className={getTierColor(guest.loyaltyTier)}
@@ -508,18 +472,6 @@ const GuestDetails = ({ guest, onBack }) => {
                   Avg Rating
                 </span>
                 <div className="flex items-center gap-2">
-                  <div className="flex">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`h-4 w-4 ${
-                          star <= guest.avgRating
-                            ? "text-yellow-500 fill-current"
-                            : "text-gray-300"
-                        }`}
-                      />
-                    ))}
-                  </div>
                   <span className="text-sm font-bold text-gray-900">
                     {guest.avgRating}/5
                   </span>
@@ -587,18 +539,7 @@ const GuestDetails = ({ guest, onBack }) => {
                       $250
                     </TableCell>
                     <TableCell>
-                      <div className="flex">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`h-4 w-4 ${
-                              star <= 5
-                                ? "text-yellow-500 fill-current"
-                                : "text-gray-300"
-                            }`}
-                          />
-                        ))}
-                      </div>
+                      <span className="text-sm">5/5</span>
                     </TableCell>
                   </TableRow>
                   {guest.bookings >= 2 && (
@@ -610,18 +551,7 @@ const GuestDetails = ({ guest, onBack }) => {
                         $180
                       </TableCell>
                       <TableCell>
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                              key={star}
-                              className={`h-4 w-4 ${
-                                star <= 5
-                                  ? "text-yellow-500 fill-current"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          ))}
-                        </div>
+                        <span className="text-sm">5/5</span>
                       </TableCell>
                     </TableRow>
                   )}
@@ -630,7 +560,6 @@ const GuestDetails = ({ guest, onBack }) => {
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500">
-              <Users className="h-12 w-12 mx-auto mb-3 text-gray-300" />
               <p>No booking history available</p>
             </div>
           )}
@@ -647,21 +576,18 @@ const GuestDetails = ({ guest, onBack }) => {
               variant="outline"
               className="border-blue-200 text-blue-600 hover:bg-blue-50"
             >
-              <Mail className="h-4 w-4 mr-2" />
               Send Email
             </Button>
             <Button
               variant="outline"
               className="border-blue-200 text-blue-600 hover:bg-blue-50"
             >
-              <Gift className="h-4 w-4 mr-2" />
               Send Loyalty Offer
             </Button>
             <Button
               variant="outline"
               className="border-blue-200 text-blue-600 hover:bg-blue-50"
             >
-              <Calendar className="h-4 w-4 mr-2" />
               Schedule Follow-up
             </Button>
             {guest.loyaltyTier !== "ambassador" && (
@@ -669,7 +595,6 @@ const GuestDetails = ({ guest, onBack }) => {
                 variant="outline"
                 className="border-blue-200 text-blue-600 hover:bg-blue-50"
               >
-                <TrendingUp className="h-4 w-4 mr-2" />
                 Upgrade Tier
               </Button>
             )}
@@ -738,11 +663,9 @@ const ProCRMPage = () => {
                         <p className="text-sm text-gray-600">Total Guests</p>
                         <p className="text-2xl font-bold">{totalGuests}</p>
                         <p className="text-xs text-blue-600 flex items-center mt-1">
-                          <ArrowUpRight className="h-3 w-3 mr-1" />
                           +12% this month
                         </p>
                       </div>
-                      <Users className="h-8 w-8 text-blue-600" />
                     </div>
                   </CardContent>
                 </Card>
@@ -754,11 +677,9 @@ const ProCRMPage = () => {
                         <p className="text-sm text-gray-600">Active Guests</p>
                         <p className="text-2xl font-bold">{activeGuests}</p>
                         <p className="text-xs text-blue-600 flex items-center mt-1">
-                          <ArrowUpRight className="h-3 w-3 mr-1" />
                           +8% this month
                         </p>
                       </div>
-                      <TrendingUp className="h-8 w-8 text-blue-600" />
                     </div>
                   </CardContent>
                 </Card>
@@ -773,7 +694,6 @@ const ProCRMPage = () => {
                           High value segment
                         </p>
                       </div>
-                      <Crown className="h-8 w-8 text-blue-600" />
                     </div>
                   </CardContent>
                 </Card>
@@ -788,7 +708,6 @@ const ProCRMPage = () => {
                           Excellent rating
                         </p>
                       </div>
-                      <Star className="h-8 w-8 text-blue-600" />
                     </div>
                   </CardContent>
                 </Card>
@@ -805,21 +724,18 @@ const ProCRMPage = () => {
                       variant="outline"
                       className="h-auto p-6 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
                     >
-                      <Mail className="h-8 w-8 text-blue-600" />
                       <span className="font-medium">Create Email Campaign</span>
                     </Button>
                     <Button
                       variant="outline"
                       className="h-auto p-6 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
                     >
-                      <Target className="h-8 w-8 text-blue-600" />
                       <span className="font-medium">Create Guest Segment</span>
                     </Button>
                     <Button
                       variant="outline"
                       className="h-auto p-6 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
                     >
-                      <Gift className="h-8 w-8 text-blue-600" />
                       <span className="font-medium">Manage Rewards</span>
                     </Button>
                   </div>
@@ -836,7 +752,9 @@ const ProCRMPage = () => {
                     <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-100">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <Star className="h-5 w-5 text-blue-600" />
+                          <span className="text-blue-600 font-semibold text-sm">
+                            AP
+                          </span>
                         </div>
                         <div>
                           <div className="font-medium text-gray-900">
@@ -855,7 +773,9 @@ const ProCRMPage = () => {
                     <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-100">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <Gift className="h-5 w-5 text-blue-600" />
+                          <span className="text-blue-600 font-semibold text-sm">
+                            SM
+                          </span>
                         </div>
                         <div>
                           <div className="font-medium text-gray-900">
@@ -874,7 +794,9 @@ const ProCRMPage = () => {
                     <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-100">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <Heart className="h-5 w-5 text-blue-600" />
+                          <span className="text-blue-600 font-semibold text-sm">
+                            JW
+                          </span>
                         </div>
                         <div>
                           <div className="font-medium text-gray-900">
