@@ -49,6 +49,7 @@ import {
   Wand2,
 } from "lucide-react";
 import { toast } from "sonner";
+import html2canvas from "html2canvas";
 
 const MarketingAssetsTab = () => {
   const [experienceTitle, setExperienceTitle] = useState(
@@ -68,6 +69,7 @@ const MarketingAssetsTab = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedContent, setCopiedContent] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const [referenceImages, setReferenceImages] = useState<File[]>([]);
   const [isGeneratingFlyer, setIsGeneratingFlyer] = useState(false);
@@ -144,8 +146,224 @@ const MarketingAssetsTab = () => {
     setIsPreviewOpen(true);
   };
 
-  const handleDownload = () => {
-    toast.success("Asset downloaded!");
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      // Create a temporary container for the card
+      const cardContainer = document.createElement("div");
+      cardContainer.style.position = "absolute";
+      cardContainer.style.left = "-9999px";
+      cardContainer.style.top = "0";
+      cardContainer.style.width = "400px";
+      cardContainer.style.height = "600px";
+      cardContainer.style.backgroundColor = "white";
+      cardContainer.style.padding = "20px";
+      cardContainer.style.borderRadius = "8px";
+      cardContainer.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
+
+      // Create the card content
+      const colors = getThemeColors(colorTheme);
+      cardContainer.innerHTML = `
+        <div style="
+          border-radius: 8px;
+          overflow: hidden;
+          border: 1px solid ${colors.border.replace("border-", "")};
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        ">
+          <!-- Header -->
+          <div style="
+            background: ${colors.primary.replace("bg-", "")};
+            color: white;
+            padding: 16px;
+          ">
+            <h3 style="
+              font-size: 18px;
+              font-weight: bold;
+              margin-bottom: 4px;
+              margin: 0 0 4px 0;
+            ">
+              ${generatedCopy?.headline || "Dive into Dutch Culinary Tradition"}
+            </h3>
+            <div style="
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              font-size: 14px;
+              opacity: 0.9;
+            ">
+              <span>📍</span>
+              <span>${location}</span>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div style="
+            padding: 16px;
+            background: white;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+          ">
+            <div>
+              <p style="
+                color: #374151;
+                margin-bottom: 16px;
+                line-height: 1.5;
+              ">
+                ${
+                  generatedCopy?.description ||
+                  "Immerse yourself in Amsterdam's rich culture through a hands-on traditional cooking workshop."
+                }
+              </p>
+
+              ${
+                generatedCopy?.highlights
+                  ? `
+                <div style="margin-bottom: 16px;">
+                  <h4 style="
+                    font-weight: 500;
+                    color: #1f2937;
+                    margin-bottom: 8px;
+                  ">Key Highlights:</h4>
+                  <ul style="margin: 0; padding-left: 16px;">
+                    ${generatedCopy.highlights
+                      .map(
+                        (highlight: string) => `
+                      <li style="
+                        color: #374151;
+                        font-size: 14px;
+                        margin-bottom: 4px;
+                      ">• ${highlight}</li>
+                    `
+                      )
+                      .join("")}
+                  </ul>
+                </div>
+              `
+                  : ""
+              }
+            </div>
+
+            <div>
+              <!-- Details -->
+              <div style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-bottom: 16px;
+                font-size: 14px;
+              ">
+                <div style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  color: #374151;
+                ">
+                  <span>🕒</span>
+                  <span>${duration}</span>
+                </div>
+                <div style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  color: #374151;
+                ">
+                  <span>💰</span>
+                  <span>${price}</span>
+                </div>
+              </div>
+
+              ${
+                generatedCopy?.callToAction
+                  ? `
+                <div style="
+                  background: ${colors.secondary.replace("bg-", "")};
+                  padding: 12px;
+                  border-radius: 8px;
+                  margin-bottom: 12px;
+                  text-align: center;
+                ">
+                  <p style="
+                    font-weight: 500;
+                    color: #1f2937;
+                    margin: 0;
+                  ">${generatedCopy.callToAction}</p>
+                </div>
+              `
+                  : ""
+              }
+
+              ${
+                generatedCopy?.hashtags
+                  ? `
+                <div style="
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 4px;
+                ">
+                  ${generatedCopy.hashtags
+                    .map(
+                      (tag: string) => `
+                    <span style="
+                      border: 1px solid ${colors.text.replace("text-", "")};
+                      color: ${colors.text.replace("text-", "")};
+                      padding: 2px 8px;
+                      border-radius: 12px;
+                      font-size: 12px;
+                    ">${tag}</span>
+                  `
+                    )
+                    .join("")}
+                </div>
+              `
+                  : ""
+              }
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Add to document temporarily
+      document.body.appendChild(cardContainer);
+
+      // Use html2canvas to convert to image
+      const canvas = await html2canvas(cardContainer, {
+        width: 400,
+        height: 600,
+        scale: 2, // Higher resolution
+        backgroundColor: "#ffffff",
+        useCORS: true,
+        allowTaint: true,
+      });
+
+      // Remove temporary element
+      document.body.removeChild(cardContainer);
+
+      // Convert to blob and download
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `information-card-${
+            new Date().toISOString().split("T")[0]
+          }.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          toast.success("Information card downloaded successfully!");
+        }
+      }, "image/png");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Failed to download card. Please try again.");
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleReferenceImageUpload = (
@@ -959,9 +1177,13 @@ const MarketingAssetsTab = () => {
                 </div>
 
                 <div className="flex gap-2 justify-center">
-                  <Button onClick={handleDownload}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Card
+                  <Button onClick={handleDownload} disabled={isDownloading}>
+                    {isDownloading ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Download className="h-4 w-4 mr-2" />
+                    )}
+                    {isDownloading ? "Downloading..." : "Download Card"}
                   </Button>
                   <Button
                     variant="outline"

@@ -4,14 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, Mail, Phone, Calendar, MapPin, Star, Users } from "lucide-react";
+import {
+  Search,
+  Filter,
+  Mail,
+  Phone,
+  Calendar,
+  MapPin,
+  Star,
+  Users,
+} from "lucide-react";
 import GuestDetailsModal from "./GuestDetailsModal";
 
 // Mock guest data
@@ -81,23 +90,32 @@ const GuestsTab = () => {
   const [selectedGuest, setSelectedGuest] = useState(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
-  const filteredGuests = mockGuests.filter(guest => {
-    const matchesSearch = guest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         guest.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || guest.status === statusFilter;
+  const filteredGuests = mockGuests.filter((guest) => {
+    const matchesSearch =
+      guest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      guest.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || guest.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "vip": return "bg-purple-100 text-purple-800";
-      case "active": return "bg-green-100 text-green-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "vip":
+        return "bg-culturin-indigo text-white";
+      case "active":
+        return "bg-culturin-indigo/20 text-culturin-indigo";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
   };
 
   const handleViewDetails = (guest: any) => {
@@ -110,9 +128,11 @@ const GuestsTab = () => {
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div>
           <h2 className="text-2xl font-medium">Guest Management</h2>
-          <p className="text-gray-600 mt-1">Manage your guest relationships and bookings</p>
+          <p className="text-gray-600 mt-1">
+            Manage your guest relationships and bookings
+          </p>
         </div>
-        <Button className="bg-black hover:bg-gray-800 text-white">
+        <Button className="bg-culturin-indigo hover:bg-culturin-indigo/90 text-white">
           Export Guest List
         </Button>
       </div>
@@ -192,7 +212,9 @@ const GuestsTab = () => {
                 <div className="flex items-center gap-4 flex-1">
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={guest.avatar} alt={guest.name} />
-                    <AvatarFallback>{getInitials(guest.name)}</AvatarFallback>
+                    <AvatarFallback className="bg-culturin-indigo/20 text-culturin-indigo">
+                      {getInitials(guest.name)}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
@@ -224,21 +246,23 @@ const GuestsTab = () => {
                     <div className="text-xs text-gray-500">Bookings</div>
                   </div>
                   <div>
-                    <div className="font-medium">${guest.totalSpent}</div>
+                    <div className="font-medium text-culturin-indigo">
+                      ${guest.totalSpent}
+                    </div>
                     <div className="text-xs text-gray-500">Total Spent</div>
                   </div>
                   <div>
                     <div className="font-medium flex items-center justify-center gap-1">
-                      <Star className="h-3 w-3 text-yellow-500" />
+                      <Star className="h-3 w-3 text-culturin-indigo" />
                       {guest.rating}
                     </div>
                     <div className="text-xs text-gray-500">Rating</div>
                   </div>
                   <div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full"
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full border-culturin-indigo text-culturin-indigo hover:bg-culturin-indigo hover:text-white"
                       onClick={() => handleViewDetails(guest)}
                     >
                       View Details
@@ -277,7 +301,7 @@ const GuestsTab = () => {
       )}
 
       {/* Guest Details Modal */}
-      <GuestDetailsModal 
+      <GuestDetailsModal
         open={detailsModalOpen}
         onOpenChange={setDetailsModalOpen}
         guest={selectedGuest}

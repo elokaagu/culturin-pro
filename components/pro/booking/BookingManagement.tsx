@@ -139,10 +139,19 @@ const BookingManagement: React.FC = () => {
 
   const getStatusBadge = (status: Booking["status"]) => {
     const statusConfig = {
-      confirmed: { color: "bg-green-100 text-green-800", icon: CheckCircle },
-      pending: { color: "bg-yellow-100 text-yellow-800", icon: AlertCircle },
+      confirmed: {
+        color: "bg-culturin-indigo/10 text-culturin-indigo",
+        icon: CheckCircle,
+      },
+      pending: {
+        color: "bg-culturin-indigo/20 text-culturin-indigo",
+        icon: AlertCircle,
+      },
       cancelled: { color: "bg-red-100 text-red-800", icon: XCircle },
-      completed: { color: "bg-blue-100 text-blue-800", icon: CheckCircle },
+      completed: {
+        color: "bg-culturin-indigo/15 text-culturin-indigo",
+        icon: CheckCircle,
+      },
     };
 
     const config = statusConfig[status];
@@ -252,7 +261,7 @@ const BookingManagement: React.FC = () => {
                 </p>
                 <p className="text-2xl font-bold">{stats.total}</p>
               </div>
-              <Calendar className="h-8 w-8 text-blue-600" />
+              <Calendar className="h-8 w-8 text-culturin-indigo" />
             </div>
           </CardContent>
         </Card>
@@ -262,11 +271,11 @@ const BookingManagement: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Confirmed</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-2xl font-bold text-culturin-indigo">
                   {stats.confirmed}
                 </p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-culturin-indigo" />
             </div>
           </CardContent>
         </Card>
@@ -276,11 +285,11 @@ const BookingManagement: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-yellow-600">
+                <p className="text-2xl font-bold text-culturin-indigo/80">
                   {stats.pending}
                 </p>
               </div>
-              <AlertCircle className="h-8 w-8 text-yellow-600" />
+              <AlertCircle className="h-8 w-8 text-culturin-indigo/80" />
             </div>
           </CardContent>
         </Card>
@@ -290,11 +299,11 @@ const BookingManagement: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Completed</p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-2xl font-bold text-culturin-indigo">
                   {stats.completed}
                 </p>
               </div>
-              <Star className="h-8 w-8 text-blue-600" />
+              <Star className="h-8 w-8 text-culturin-indigo" />
             </div>
           </CardContent>
         </Card>
@@ -306,11 +315,11 @@ const BookingManagement: React.FC = () => {
                 <p className="text-sm font-medium text-gray-600">
                   Total Revenue
                 </p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-2xl font-bold text-culturin-indigo">
                   ${stats.revenue.toFixed(2)}
                 </p>
               </div>
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <DollarSign className="h-8 w-8 text-culturin-indigo" />
             </div>
           </CardContent>
         </Card>
@@ -331,7 +340,10 @@ const BookingManagement: React.FC = () => {
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
-              <Button onClick={loadBookings}>
+              <Button
+                onClick={loadBookings}
+                className="bg-culturin-indigo hover:bg-culturin-indigo/90"
+              >
                 <Clock className="h-4 w-4 mr-2" />
                 Refresh
               </Button>
