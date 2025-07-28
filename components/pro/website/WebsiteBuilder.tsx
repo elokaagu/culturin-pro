@@ -8,6 +8,7 @@ import WebsiteContent from "./WebsiteContent";
 import WebsiteSettings from "./WebsiteSettings";
 import BookingFlowBuilder from "./BookingFlowBuilder";
 import HeaderFooterCustomizer from "./HeaderFooterCustomizer";
+import FontCustomizer from "./FontCustomizer";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -625,11 +626,12 @@ const WebsiteBuilder: React.FC = () => {
         value={activeTab}
         onValueChange={handleTabChange}
       >
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="preview">Preview</TabsTrigger>
           <TabsTrigger value="themes">Themes</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="header-footer">Header & Footer</TabsTrigger>
+          <TabsTrigger value="fonts">Fonts & Animations</TabsTrigger>
           <TabsTrigger value="booking">Booking Flow</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
@@ -652,6 +654,10 @@ const WebsiteBuilder: React.FC = () => {
 
         <TabsContent value="header-footer">
           <HeaderFooterCustomizer onSettingsChange={handleSettingsChange} />
+        </TabsContent>
+
+        <TabsContent value="fonts">
+          <FontCustomizer onSettingsChange={handleSettingsChange} />
         </TabsContent>
 
         <TabsContent value="booking">

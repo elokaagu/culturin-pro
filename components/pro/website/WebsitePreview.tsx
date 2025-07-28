@@ -55,6 +55,8 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     theme,
     headerSettings,
     footerSettings,
+    fontSettings,
+    animationSettings,
   } = websiteSettings;
 
   // Update internal refresh key when external key changes
@@ -167,6 +169,90 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   };
 
   const themeStyles = getThemeStyles();
+
+  // Get font styles
+  const getFontStyles = () => {
+    if (!fontSettings) return {};
+
+    return {
+      headingStyle: {
+        fontFamily: `"${fontSettings.headingFont}", sans-serif`,
+        fontWeight: fontSettings.headingFontWeight,
+        fontSize: `${fontSettings.headingFontSize}px`,
+        lineHeight: fontSettings.lineHeight,
+        letterSpacing: `${fontSettings.letterSpacing}px`,
+      },
+      bodyStyle: {
+        fontFamily: `"${fontSettings.bodyFont}", sans-serif`,
+        fontWeight: fontSettings.bodyFontWeight,
+        fontSize: `${fontSettings.bodyFontSize}px`,
+        lineHeight: fontSettings.lineHeight,
+        letterSpacing: `${fontSettings.letterSpacing}px`,
+      },
+    };
+  };
+
+  // Get animation classes
+  const getAnimationClasses = () => {
+    if (!animationSettings?.enableAnimations) return {};
+
+    const speed = animationSettings.animationSpeed;
+    const type = animationSettings.animationType;
+
+    const baseClass = `transition-all duration-${Math.round(
+      speed * 1000
+    )} ease-in-out`;
+
+    let animationClass = baseClass;
+    switch (type) {
+      case "fade":
+        animationClass += " opacity-0 animate-fade-in";
+        break;
+      case "slide-up":
+        animationClass += " transform translate-y-8 opacity-0 animate-slide-up";
+        break;
+      case "slide-down":
+        animationClass +=
+          " transform -translate-y-8 opacity-0 animate-slide-down";
+        break;
+      case "slide-left":
+        animationClass +=
+          " transform translate-x-8 opacity-0 animate-slide-left";
+        break;
+      case "slide-right":
+        animationClass +=
+          " transform -translate-x-8 opacity-0 animate-slide-right";
+        break;
+      case "zoom-in":
+        animationClass += " transform scale-95 opacity-0 animate-zoom-in";
+        break;
+      case "zoom-out":
+        animationClass += " transform scale-105 opacity-0 animate-zoom-out";
+        break;
+      case "bounce":
+        animationClass += " animate-bounce";
+        break;
+      case "flip":
+        animationClass += " transform rotate-y-180 animate-flip";
+        break;
+      case "rotate":
+        animationClass += " animate-spin";
+        break;
+    }
+
+    return {
+      animationClass,
+      hoverClass: animationSettings?.enableHoverEffects
+        ? "hover:scale-105 hover:shadow-lg"
+        : "",
+      scrollClass: animationSettings?.enableScrollAnimations
+        ? "animate-on-scroll"
+        : "",
+    };
+  };
+
+  const fontStyles = getFontStyles();
+  const animationClasses = getAnimationClasses();
 
   const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
@@ -293,10 +379,17 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                     )}
                   >
                     <div
-                      className={cn("text-center", themeStyles.headerTextClass)}
+                      className={cn(
+                        "text-center",
+                        themeStyles.headerTextClass,
+                        animationClasses.animationClass
+                      )}
+                      style={fontStyles.headingStyle}
                     >
                       <h1 className="text-xl font-bold">{companyName}</h1>
-                      <p className="text-sm mt-1">{tagline}</p>
+                      <p className="text-sm mt-1" style={fontStyles.bodyStyle}>
+                        {tagline}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -322,8 +415,11 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                         key={item.id || index}
                         className={cn(
                           "h-32 relative overflow-hidden cursor-pointer hover:opacity-90",
-                          themeStyles.cardClass
+                          themeStyles.cardClass,
+                          animationClasses.hoverClass,
+                          animationClasses.animationClass
                         )}
+                        style={{ animationDelay: `${index * 0.1}s` }}
                       >
                         {item.image && (
                           <img
@@ -332,7 +428,10 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                             className="w-full h-full object-cover"
                           />
                         )}
-                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1">
+                        <div
+                          className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1"
+                          style={fontStyles.bodyStyle}
+                        >
                           {item.title}
                         </div>
                       </div>
@@ -357,20 +456,36 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                     <div
                       className={cn(
                         "h-12 w-full rounded text-center flex items-center justify-center font-medium cursor-pointer hover:opacity-90",
-                        themeStyles.buttonClass
+                        themeStyles.buttonClass,
+                        animationClasses.hoverClass,
+                        animationClasses.animationClass
                       )}
                       style={{
                         backgroundColor: themeStyles.buttonClass.includes("bg-")
                           ? undefined
                           : primaryColor,
+                        ...fontStyles.bodyStyle,
                       }}
                     >
                       Book Now
                     </div>
 
-                    <div className="border-t pt-3">
-                      <h3 className="font-medium mb-2">About Us</h3>
-                      <div className="h-16 bg-gray-100 rounded p-2 mb-2 text-xs overflow-hidden">
+                    <div
+                      className={cn(
+                        "border-t pt-3",
+                        animationClasses.animationClass
+                      )}
+                    >
+                      <h3
+                        className="font-medium mb-2"
+                        style={fontStyles.headingStyle}
+                      >
+                        About Us
+                      </h3>
+                      <div
+                        className="h-16 bg-gray-100 rounded p-2 mb-2 text-xs overflow-hidden"
+                        style={fontStyles.bodyStyle}
+                      >
                         {description}
                       </div>
                     </div>

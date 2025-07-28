@@ -56,6 +56,23 @@ export interface UserData {
         website: string;
       };
     };
+    fontSettings?: {
+      headingFont: string;
+      bodyFont: string;
+      headingFontWeight: number;
+      bodyFontWeight: number;
+      headingFontSize: number;
+      bodyFontSize: number;
+      lineHeight: number;
+      letterSpacing: number;
+    };
+    animationSettings?: {
+      enableAnimations: boolean;
+      animationSpeed: number;
+      animationType: string;
+      enableHoverEffects: boolean;
+      enableScrollAnimations: boolean;
+    };
     bookingSettings: {
       currency: string;
       paymentMethods: string[];
