@@ -125,7 +125,9 @@ export default function TourOperatorPage({
         name: itinerary.title,
         duration: `${itinerary.days} ${itinerary.days === 1 ? "day" : "days"}`,
         price: Math.floor(Math.random() * 50) + 40,
-        image: itinerary.image || "https://placehold.co/600x400",
+        image:
+          itinerary.image ||
+          "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
         description:
           itinerary.description || `Experience the best of ${itinerary.title}.`,
         highlights: [
@@ -146,7 +148,8 @@ export default function TourOperatorPage({
             name: "Gaudí Masterpieces Tour",
             duration: "4 hours",
             price: 65,
-            image: "https://placehold.co/600x400",
+            image:
+              "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
             description:
               "Explore Antoni Gaudí's most famous architectural works including Sagrada Familia and Park Güell with skip-the-line access.",
             highlights: [
@@ -162,7 +165,8 @@ export default function TourOperatorPage({
             name: "Evening Tapas & Wine Tour",
             duration: "3 hours",
             price: 80,
-            image: "https://placehold.co/600x400",
+            image:
+              "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
             description:
               "Discover Barcelona's culinary scene with this guided walking tour of the best tapas bars in the Gothic Quarter and El Born.",
             highlights: [
@@ -178,7 +182,8 @@ export default function TourOperatorPage({
             name: "Gothic Quarter Hidden Gems",
             duration: "2.5 hours",
             price: 45,
-            image: "https://placehold.co/600x400",
+            image:
+              "https://images.unsplash.com/photo-1543783207-ec63e4900aba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
             description:
               "Wander through the labyrinthine streets of Barcelona's Gothic Quarter discovering secret squares and hidden history.",
             highlights: [
