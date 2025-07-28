@@ -20,7 +20,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { FileText, Edit, Mail, Sparkles } from "lucide-react";
+import {
+  FileText,
+  Edit,
+  Mail,
+  Sparkles,
+  Loader2,
+  Copy,
+  Check,
+} from "lucide-react";
 import { toast } from "sonner";
 
 const ContentCreatorTab = () => {
@@ -34,13 +42,116 @@ const ContentCreatorTab = () => {
   const [duration, setDuration] = useState("3 hours");
   const [writingStyle, setWritingStyle] = useState("engaging");
 
-  const handleGenerateContent = (contentType: string) => {
-    toast.success(`Generating ${contentType} content...`);
-    // In real app, this would call an AI service
+  // Additional fields for blog posts
+  const [topic, setTopic] = useState("Cultural Experience");
+  const [targetKeywords, setTargetKeywords] = useState(
+    "cultural experience, travel, local traditions"
+  );
+
+  // Additional fields for email campaigns
+  const [campaignType, setCampaignType] = useState("promotional");
+  const [offer, setOffer] = useState("");
+
+  const [generatedContent, setGeneratedContent] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleGenerateContent = async (contentType: string) => {
+    // Validate required fields
+    if (!experienceTitle || !keyElements || !location) {
+      toast.error(
+        "Please fill in the Experience Title, Key Cultural Elements, and Location fields."
+      );
+      return;
+    }
+
+    setIsGenerating(true);
+    setGeneratedContent("");
+
+    try {
+      let endpoint = "";
+      let requestBody: any = {
+        title: experienceTitle,
+        culturalElements: keyElements,
+        location: location,
+        duration: duration,
+        writingStyle: writingStyle,
+      };
+
+      if (contentType === "description") {
+        endpoint = "/api/generate-description";
+      } else if (contentType === "blog post") {
+        endpoint = "/api/generate-blog-post";
+        requestBody = {
+          ...requestBody,
+          topic: topic,
+          targetKeywords: targetKeywords,
+        };
+      } else if (contentType === "email campaign") {
+        endpoint = "/api/generate-email-campaign";
+        requestBody = {
+          ...requestBody,
+          campaignType: campaignType,
+          offer: offer,
+        };
+      } else {
+        throw new Error("Unsupported content type");
+      }
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate content");
+      }
+
+      // Extract the appropriate field based on content type
+      let content = "";
+      if (contentType === "description") {
+        content = data.description;
+      } else if (contentType === "blog post") {
+        content = data.blogPost;
+      } else if (contentType === "email campaign") {
+        content = data.emailCampaign;
+      }
+
+      setGeneratedContent(content);
+      toast.success(`${contentType} generated successfully!`);
+    } catch (error: any) {
+      console.error("Error generating content:", error);
+      toast.error(
+        error.message || "Failed to generate content. Please try again."
+      );
+      setGeneratedContent(
+        "Sorry, there was an error generating the content. Please try again."
+      );
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleSaveTemplate = () => {
     toast.success("Template saved successfully!");
+  };
+
+  const handleCopyContent = async () => {
+    if (generatedContent) {
+      try {
+        await navigator.clipboard.writeText(generatedContent);
+        setCopied(true);
+        toast.success("Content copied to clipboard!");
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        toast.error("Failed to copy content");
+      }
+    }
   };
 
   return (
@@ -166,9 +277,20 @@ const ContentCreatorTab = () => {
               <CardContent>
                 <Button
                   onClick={() => handleGenerateContent("description")}
+                  disabled={isGenerating}
                   className="w-full"
                 >
-                  Generate Content
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Generating Content...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Generate Content
+                    </>
+                  )}
                 </Button>
               </CardContent>
             </Card>
@@ -186,12 +308,43 @@ const ContentCreatorTab = () => {
                   drive traffic
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="topic">Blog Topic</Label>
+                    <Input
+                      id="topic"
+                      value={topic}
+                      onChange={(e) => setTopic(e.target.value)}
+                      placeholder="Cultural Experience"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="target-keywords">Target Keywords</Label>
+                    <Input
+                      id="target-keywords"
+                      value={targetKeywords}
+                      onChange={(e) => setTargetKeywords(e.target.value)}
+                      placeholder="cultural experience, travel, local traditions"
+                    />
+                  </div>
+                </div>
                 <Button
                   onClick={() => handleGenerateContent("blog post")}
+                  disabled={isGenerating}
                   className="w-full"
                 >
-                  Generate Content
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Generating Blog Post...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Generate Blog Post
+                    </>
+                  )}
                 </Button>
               </CardContent>
             </Card>
@@ -209,12 +362,53 @@ const ContentCreatorTab = () => {
                   experiences
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="campaign-type">Campaign Type</Label>
+                    <Select
+                      value={campaignType}
+                      onValueChange={setCampaignType}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select campaign type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="promotional">Promotional</SelectItem>
+                        <SelectItem value="newsletter">Newsletter</SelectItem>
+                        <SelectItem value="announcement">
+                          Announcement
+                        </SelectItem>
+                        <SelectItem value="follow-up">Follow-up</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="offer">Special Offer (Optional)</Label>
+                    <Input
+                      id="offer"
+                      value={offer}
+                      onChange={(e) => setOffer(e.target.value)}
+                      placeholder="20% off, Free upgrade, etc."
+                    />
+                  </div>
+                </div>
                 <Button
                   onClick={() => handleGenerateContent("email campaign")}
+                  disabled={isGenerating}
                   className="w-full"
                 >
-                  Generate Content
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Generating Email Campaign...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Generate Email Campaign
+                    </>
+                  )}
                 </Button>
               </CardContent>
             </Card>
@@ -222,22 +416,56 @@ const ContentCreatorTab = () => {
         </div>
       </Tabs>
 
-      {/* Sample Generated Content Section */}
+      {/* Generated Content Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Sample Generated Content</CardTitle>
-          <CardDescription>
-            Here's an example of AI-generated content for your experience
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Generated Content</CardTitle>
+              <CardDescription>
+                {generatedContent
+                  ? "Here's your AI-generated content"
+                  : "Generated content will appear here"}
+              </CardDescription>
+            </div>
+            {generatedContent && (
+              <Button
+                onClick={handleCopyContent}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4" />
+                    Copy
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600 italic">
-              Sample content will appear here after generation. This would
-              include compelling descriptions, engaging blog posts, or
-              persuasive email campaigns tailored to your cultural experience.
-            </p>
-          </div>
+          {generatedContent ? (
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                {generatedContent}
+              </p>
+            </div>
+          ) : (
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600 italic">
+                Sample content will appear here after generation. This would
+                include compelling descriptions, engaging blog posts, or
+                persuasive email campaigns tailored to your cultural experience.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
