@@ -1,5 +1,47 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Fallback social media caption generator
+function generateFallbackSocialCaption(
+  experienceType: string,
+  keyHighlights: string,
+  tone: string,
+  platform: string,
+  hashtags: string
+) {
+  const style = tone?.toLowerCase() || "engaging";
+  const socialPlatform = platform?.toLowerCase() || "instagram";
+
+  let caption = "";
+
+  if (socialPlatform.includes("instagram")) {
+    caption = `🌟 Discover the authentic magic of ${experienceType}! 
+
+✨ Experience ${keyHighlights} like never before
+
+🌍 Immerse yourself in local culture and traditions
+👥 Connect with amazing local communities
+📸 Create memories that will last a lifetime
+
+Ready for an adventure that will transform how you see the world? 🌟
+
+#CulturalExperience #LocalCulture #AuthenticTravel #CulturalTourism #TravelInspiration #LocalTraditions #CulturalImmersion #TravelGoals #CulturalHeritage #AuthenticExperience ${hashtags}`;
+  } else if (socialPlatform.includes("facebook")) {
+    caption = `Ready to experience the authentic heart of local culture? 
+
+Our ${experienceType} experience offers you the unique opportunity to ${keyHighlights} in the most authentic way possible.
+
+Join us for an immersive journey that will connect you with local communities and traditions like never before. This isn't just a tour – it's a transformative cultural experience that will stay with you forever.
+
+Book your spot today and prepare to be amazed by the rich cultural heritage that awaits you!
+
+#CulturalExperience #LocalCulture #AuthenticTravel #CulturalTourism #TravelInspiration #LocalTraditions #CulturalImmersion #TravelGoals #CulturalHeritage #AuthenticExperience ${hashtags}`;
+  } else {
+    caption = `Discover the authentic magic of ${experienceType}! Experience ${keyHighlights} and immerse yourself in local culture. Ready for an adventure that will transform how you see the world? Book your spot today! #CulturalExperience #LocalCulture #AuthenticTravel ${hashtags}`;
+  }
+
+  return caption;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { experienceType, keyHighlights, tone, platform, hashtags } =
@@ -74,6 +116,23 @@ Format the caption with proper line breaks and emojis for social media.`;
     if (!response.ok) {
       const errorData = await response.json();
       console.error("OpenAI API error:", errorData);
+
+      // Check if it's a quota error and provide fallback
+      if (errorData.error?.code === "insufficient_quota") {
+        console.log("OpenAI quota exceeded, using fallback content");
+        const fallbackCaption = generateFallbackSocialCaption(
+          experienceType,
+          keyHighlights,
+          tone,
+          platform,
+          hashtags
+        );
+        return NextResponse.json({
+          caption: fallbackCaption,
+          note: "Generated using fallback content due to OpenAI quota limits",
+        });
+      }
+
       return NextResponse.json(
         { error: "Failed to generate caption. Please try again." },
         { status: 500 }

@@ -1,5 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Fallback content generator
+function generateFallbackDescription(
+  title: string,
+  culturalElements: string,
+  location: string,
+  duration: string,
+  writingStyle: string
+) {
+  const style = writingStyle?.toLowerCase() || "engaging";
+
+  let tone = "immersive and authentic";
+  if (style.includes("casual")) tone = "friendly and approachable";
+  if (style.includes("professional")) tone = "sophisticated and informative";
+  if (style.includes("exciting")) tone = "thrilling and adventurous";
+
+  return `Discover the authentic heart of ${location} through our ${title} experience. This ${duration} journey takes you deep into the local culture, where you'll experience ${culturalElements} firsthand.
+
+Our expert local guides will share the rich traditions and stories that make this experience truly special. You'll have the opportunity to connect with local communities, learn about their customs, and create memories that will last a lifetime.
+
+This isn't just a tour – it's an immersive cultural journey that will transform how you see and understand ${location}. Whether you're a seasoned traveler or new to cultural experiences, this adventure promises to be both educational and deeply moving.
+
+Book your spot today and prepare to be amazed by the authentic beauty of local culture.`;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { title, culturalElements, location, duration, writingStyle } =
@@ -74,6 +98,23 @@ Write the description in a ${
     if (!response.ok) {
       const errorData = await response.json();
       console.error("OpenAI API error:", errorData);
+
+      // Check if it's a quota error and provide fallback
+      if (errorData.error?.code === "insufficient_quota") {
+        console.log("OpenAI quota exceeded, using fallback content");
+        const fallbackDescription = generateFallbackDescription(
+          title,
+          culturalElements,
+          location,
+          duration,
+          writingStyle
+        );
+        return NextResponse.json({
+          description: fallbackDescription,
+          note: "Generated using fallback content due to OpenAI quota limits",
+        });
+      }
+
       return NextResponse.json(
         { error: "Failed to generate description. Please try again." },
         { status: 500 }

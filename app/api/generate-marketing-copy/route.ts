@@ -1,5 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Fallback marketing copy generator
+function generateFallbackMarketingCopy(
+  experienceTitle: string,
+  location: string,
+  duration: string,
+  price: string,
+  keyDetails: string,
+  assetType: string,
+  templateStyle: string,
+  colorTheme: string
+) {
+  const style = templateStyle?.toLowerCase() || "modern";
+  const asset = assetType?.toLowerCase() || "social";
+
+  let copyObj: any = {};
+
+  if (asset.includes("social")) {
+    copyObj = {
+      headline: `Discover the Authentic Magic of ${location}`,
+      subheadline: `Experience ${experienceTitle} - A ${duration} Cultural Journey`,
+      description: `Immerse yourself in the rich traditions and local culture of ${location}. This ${duration} experience offers you the unique opportunity to ${keyDetails} in the most authentic way possible.`,
+      cta: "Book Your Cultural Adventure Today",
+      features: [
+        "Expert local guides",
+        "Small group experiences",
+        "Authentic cultural immersion",
+        "Hands-on activities",
+        "Deep community connections",
+      ],
+    };
+  } else if (asset.includes("email")) {
+    copyObj = {
+      subject: `Experience the Authentic Heart of ${location}`,
+      headline: `Discover ${experienceTitle}`,
+      subheadline: `A ${duration} Cultural Journey in ${location}`,
+      body: `Ready to experience the authentic magic of ${location}? Our ${experienceTitle} experience offers you the unique opportunity to ${keyDetails} in the most authentic way possible.`,
+      cta: "Book Your Spot Today",
+      footer:
+        "Don't miss this opportunity to connect with local culture and traditions.",
+    };
+  } else {
+    copyObj = {
+      headline: `Experience ${experienceTitle}`,
+      subheadline: `${duration} Cultural Journey in ${location}`,
+      description: `Discover the authentic heart of ${location} through our ${experienceTitle} experience. Immerse yourself in local culture and traditions like never before.`,
+      cta: "Book Now",
+      price: price || "Contact for pricing",
+    };
+  }
+
+  return JSON.stringify(copyObj);
+}
+
 export async function POST(request: NextRequest) {
   try {
     const {
@@ -36,140 +89,100 @@ export async function POST(request: NextRequest) {
     let prompt = "";
     let systemPrompt = "";
 
-    switch (assetType) {
-      case "info-card":
-        systemPrompt =
-          "You are an expert marketing copywriter specializing in cultural tourism. You create compelling, concise copy for information cards that highlight the unique value of cultural experiences.";
-        prompt = `Create marketing copy for an information card with the following details:
+    if (assetType === "social-media") {
+      systemPrompt =
+        "You are an expert social media marketer specializing in cultural tourism. You create engaging, platform-optimized content that drives engagement and inspires travelers to book authentic cultural experiences.";
+      prompt = `Create engaging social media marketing copy for a cultural experience with the following details:
 
 Experience Title: ${experienceTitle}
 Location: ${location}
 Duration: ${duration}
-Price: ${price || "Not specified"}
-Key Details: ${keyDetails || "Not specified"}
+Price: ${price || "Contact for pricing"}
+Key Details: ${keyDetails}
 Template Style: ${templateStyle || "Modern"}
-Color Theme: ${colorTheme || "Blue Ocean"}
+Color Theme: ${colorTheme || "Warm"}
 
-Please create:
-1. A compelling headline (max 8 words)
-2. A brief description (2-3 sentences)
-3. Key highlights/bullet points (3-4 points)
-4. A call-to-action phrase
-5. Suggested hashtags (3-5 relevant tags)
+Please create marketing copy that includes:
+- An attention-grabbing headline
+- Compelling subheadline
+- Engaging description (2-3 sentences)
+- Clear value proposition
+- Strong call to action
+- 3-5 key features/benefits
+- Uses a ${templateStyle?.toLowerCase() || "modern"} style
+- Incorporates cultural authenticity and local connection
+- Is optimized for social media engagement
 
-Make the copy:
-- Concise and impactful
-- Highlight cultural authenticity
-- Include practical details
-- Use language that creates urgency/excitement
-- Optimized for the ${templateStyle} style
-- Suitable for ${colorTheme} color theme
-
-Format the response as JSON with the following structure:
+Format as JSON with the following structure:
 {
   "headline": "string",
-  "description": "string", 
-  "highlights": ["string", "string", "string"],
-  "callToAction": "string",
-  "hashtags": ["string", "string", "string"]
+  "subheadline": "string", 
+  "description": "string",
+  "cta": "string",
+  "features": ["string", "string", "string"]
 }`;
-        break;
-
-      case "flyer":
-        systemPrompt =
-          "You are an expert marketing copywriter specializing in cultural tourism. You create compelling flyer copy that drives bookings and highlights authentic cultural experiences.";
-        prompt = `Create marketing copy for a promotional flyer with the following details:
+    } else if (assetType === "email") {
+      systemPrompt =
+        "You are an expert email marketer specializing in cultural tourism. You create compelling email content that inspires travelers to book authentic cultural experiences.";
+      prompt = `Create engaging email marketing copy for a cultural experience with the following details:
 
 Experience Title: ${experienceTitle}
 Location: ${location}
 Duration: ${duration}
-Price: ${price || "Not specified"}
-Key Details: ${keyDetails || "Not specified"}
+Price: ${price || "Contact for pricing"}
+Key Details: ${keyDetails}
+Template Style: ${templateStyle || "Professional"}
+Color Theme: ${colorTheme || "Warm"}
+
+Please create email marketing copy that includes:
+- An attention-grabbing subject line
+- Compelling headline
+- Engaging subheadline
+- Body copy (3-4 sentences)
+- Strong call to action
+- Professional footer
+- Uses a ${templateStyle?.toLowerCase() || "professional"} style
+- Incorporates cultural authenticity and local connection
+
+Format as JSON with the following structure:
+{
+  "subject": "string",
+  "headline": "string",
+  "subheadline": "string",
+  "body": "string", 
+  "cta": "string",
+  "footer": "string"
+}`;
+    } else {
+      systemPrompt =
+        "You are an expert marketing copywriter specializing in cultural tourism. You create compelling marketing content that inspires travelers to book authentic cultural experiences.";
+      prompt = `Create engaging marketing copy for a cultural experience with the following details:
+
+Experience Title: ${experienceTitle}
+Location: ${location}
+Duration: ${duration}
+Price: ${price || "Contact for pricing"}
+Key Details: ${keyDetails}
 Template Style: ${templateStyle || "Modern"}
-Color Theme: ${colorTheme || "Blue Ocean"}
+Color Theme: ${colorTheme || "Warm"}
 
-Please create:
-1. An attention-grabbing headline
-2. A compelling subheading
-3. Key benefits (4-5 bullet points)
-4. What's included section
-5. A strong call-to-action
-6. Contact/booking information
-7. Social proof element
+Please create marketing copy that includes:
+- An attention-grabbing headline
+- Compelling subheadline
+- Engaging description (2-3 sentences)
+- Clear value proposition
+- Strong call to action
+- Uses a ${templateStyle?.toLowerCase() || "modern"} style
+- Incorporates cultural authenticity and local connection
 
-Make the copy:
-- Persuasive and action-oriented
-- Highlight unique cultural aspects
-- Include specific details about the experience
-- Create urgency and excitement
-- Professional yet approachable
-- Optimized for the ${templateStyle} style
-- Suitable for ${colorTheme} color theme
-
-Format the response as JSON with the following structure:
+Format as JSON with the following structure:
 {
   "headline": "string",
-  "subheading": "string",
-  "benefits": ["string", "string", "string", "string"],
-  "included": ["string", "string", "string"],
-  "callToAction": "string",
-  "contactInfo": "string",
-  "socialProof": "string"
+  "subheadline": "string",
+  "description": "string",
+  "cta": "string",
+  "price": "string"
 }`;
-        break;
-
-      case "social-graphics":
-        systemPrompt =
-          "You are an expert social media copywriter specializing in cultural tourism. You create engaging copy for social media graphics that drive engagement and bookings.";
-        prompt = `Create marketing copy for social media graphics with the following details:
-
-Experience Title: ${experienceTitle}
-Location: ${location}
-Duration: ${duration}
-Price: ${price || "Not specified"}
-Key Details: ${keyDetails || "Not specified"}
-Template Style: ${templateStyle || "Modern"}
-Color Theme: ${colorTheme || "Blue Ocean"}
-
-Please create copy for different social media formats:
-1. Instagram Post (caption + hashtags)
-2. Instagram Story (short, punchy text)
-3. Facebook Post (engaging description)
-
-Make the copy:
-- Platform-optimized for each format
-- Include relevant emojis and hashtags
-- Highlight cultural authenticity
-- Create FOMO (fear of missing out)
-- Include clear call-to-action
-- Optimized for the ${templateStyle} style
-- Suitable for ${colorTheme} color theme
-
-Format the response as JSON with the following structure:
-{
-  "instagramPost": {
-    "caption": "string",
-    "hashtags": ["string", "string", "string"]
-  },
-  "instagramStory": {
-    "text": "string",
-    "hashtags": ["string", "string"]
-  },
-  "facebookPost": {
-    "description": "string",
-    "hashtags": ["string", "string", "string"]
-  }
-}`;
-        break;
-
-      default:
-        return NextResponse.json(
-          {
-            error:
-              "Invalid asset type. Supported types: info-card, flyer, social-graphics",
-          },
-          { status: 400 }
-        );
     }
 
     // Call OpenAI API
@@ -199,6 +212,26 @@ Format the response as JSON with the following structure:
     if (!response.ok) {
       const errorData = await response.json();
       console.error("OpenAI API error:", errorData);
+
+      // Check if it's a quota error and provide fallback
+      if (errorData.error?.code === "insufficient_quota") {
+        console.log("OpenAI quota exceeded, using fallback content");
+        const fallbackCopy = generateFallbackMarketingCopy(
+          experienceTitle,
+          location,
+          duration,
+          price,
+          keyDetails,
+          assetType,
+          templateStyle,
+          colorTheme
+        );
+        return NextResponse.json({
+          marketingCopy: JSON.parse(fallbackCopy),
+          note: "Generated using fallback content due to OpenAI quota limits",
+        });
+      }
+
       return NextResponse.json(
         { error: "Failed to generate marketing copy. Please try again." },
         { status: 500 }

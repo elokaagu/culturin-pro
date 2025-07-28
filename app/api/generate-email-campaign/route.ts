@@ -1,5 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Fallback email campaign generator
+function generateFallbackEmailCampaign(
+  title: string,
+  culturalElements: string,
+  location: string,
+  duration: string,
+  writingStyle: string,
+  campaignType: string,
+  offer: string
+) {
+  const style = writingStyle?.toLowerCase() || "engaging";
+  const type = campaignType?.toLowerCase() || "promotional";
+
+  let subjectLine = `Discover the Authentic Magic of ${location}`;
+  if (type.includes("newsletter"))
+    subjectLine = `Your Cultural Journey Awaits in ${location}`;
+  if (type.includes("announcement"))
+    subjectLine = `New Cultural Experience: ${title} in ${location}`;
+  if (type.includes("follow"))
+    subjectLine = `Don't Miss Out: ${title} Experience in ${location}`;
+
+  return `Subject: ${subjectLine}
+
+Dear Cultural Explorer,
+
+Are you ready to experience the authentic heart of ${location}? We're excited to introduce you to our newest cultural experience: ${title}.
+
+This ${duration} journey will take you deep into local traditions where you'll experience ${culturalElements} firsthand. Our expert local guides will share the rich stories and customs that make this experience truly special.
+
+What makes this experience unique:
+• Authentic cultural immersion
+• Expert local guides
+• Small group sizes for personal attention
+• Hands-on cultural activities
+• Deep connection with local communities
+
+${offer ? `Special Offer: ${offer}` : ""}
+
+This isn't just another tour – it's an opportunity to transform how you see and understand ${location}. Whether you're a seasoned traveler or new to cultural experiences, this adventure promises to be both educational and deeply moving.
+
+Ready to start your cultural journey? Book your spot today and prepare to be amazed by the authentic beauty of local culture.
+
+Best regards,
+The Culturin Team
+
+P.S. Don't wait too long – authentic cultural experiences like this tend to fill up quickly!`;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const {
@@ -85,6 +133,25 @@ Format the email with proper paragraphs and make it ready to send.`;
     if (!response.ok) {
       const errorData = await response.json();
       console.error("OpenAI API error:", errorData);
+
+      // Check if it's a quota error and provide fallback
+      if (errorData.error?.code === "insufficient_quota") {
+        console.log("OpenAI quota exceeded, using fallback content");
+        const fallbackEmail = generateFallbackEmailCampaign(
+          title,
+          culturalElements,
+          location,
+          duration,
+          writingStyle,
+          campaignType,
+          offer
+        );
+        return NextResponse.json({
+          emailCampaign: fallbackEmail,
+          note: "Generated using fallback content due to OpenAI quota limits",
+        });
+      }
+
       return NextResponse.json(
         { error: "Failed to generate email campaign. Please try again." },
         { status: 500 }

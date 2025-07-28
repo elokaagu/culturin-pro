@@ -1,5 +1,57 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Fallback blog post generator
+function generateFallbackBlogPost(
+  title: string,
+  culturalElements: string,
+  location: string,
+  duration: string,
+  writingStyle: string,
+  topic: string,
+  targetKeywords: string
+) {
+  const style = writingStyle?.toLowerCase() || "engaging";
+
+  let tone = "immersive and authentic";
+  if (style.includes("casual")) tone = "friendly and approachable";
+  if (style.includes("professional")) tone = "sophisticated and informative";
+  if (style.includes("exciting")) tone = "thrilling and adventurous";
+
+  return `# Discover the Magic of ${location}: An Authentic Cultural Experience
+
+## Introduction
+
+Are you ready to embark on a journey that will transform how you see the world? Our ${title} experience in ${location} offers travelers an unprecedented opportunity to dive deep into local culture and traditions.
+
+## What Makes This Experience Special
+
+This ${duration} adventure isn't your typical tourist experience. Instead, it's a carefully crafted journey that allows you to experience ${culturalElements} in their most authentic form. Our local guides, who are deeply connected to their cultural heritage, will share stories and traditions that have been passed down through generations.
+
+## The Cultural Immersion
+
+When you join our ${title} experience, you're not just observing – you're participating. You'll have the unique opportunity to:
+
+- Connect with local communities on a personal level
+- Learn about traditional customs and practices
+- Experience cultural activities firsthand
+- Understand the historical significance of local traditions
+- Create meaningful connections with local artisans and storytellers
+
+## Why Cultural Tourism Matters
+
+Cultural tourism isn't just about seeing new places – it's about understanding different ways of life. When you choose experiences like our ${title}, you're supporting local communities and helping preserve cultural traditions for future generations.
+
+## Planning Your Visit
+
+The experience takes place in ${location} and lasts approximately ${duration}. We recommend booking in advance to secure your spot, as our small group sizes ensure an intimate and personal experience.
+
+## Conclusion
+
+Don't miss the opportunity to experience the authentic heart of ${location}. Book your ${title} experience today and prepare to be amazed by the rich cultural heritage that awaits you.
+
+*Ready to start your cultural journey? Contact us to learn more about this incredible experience.*`;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const {
@@ -87,6 +139,25 @@ Format the blog post with proper paragraphs and subheadings.`;
     if (!response.ok) {
       const errorData = await response.json();
       console.error("OpenAI API error:", errorData);
+
+      // Check if it's a quota error and provide fallback
+      if (errorData.error?.code === "insufficient_quota") {
+        console.log("OpenAI quota exceeded, using fallback content");
+        const fallbackBlogPost = generateFallbackBlogPost(
+          title,
+          culturalElements,
+          location,
+          duration,
+          writingStyle,
+          topic,
+          targetKeywords
+        );
+        return NextResponse.json({
+          blogPost: fallbackBlogPost,
+          note: "Generated using fallback content due to OpenAI quota limits",
+        });
+      }
+
       return NextResponse.json(
         { error: "Failed to generate blog post. Please try again." },
         { status: 500 }

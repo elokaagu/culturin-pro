@@ -22,6 +22,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Grid3X3,
   FileText,
   Image,
@@ -32,6 +39,10 @@ import {
   Copy,
   Check,
   Sparkles,
+  MapPin,
+  Clock,
+  DollarSign,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -52,6 +63,7 @@ const MarketingAssetsTab = () => {
   const [generatedCopy, setGeneratedCopy] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedContent, setCopiedContent] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handleGenerateAsset = async (assetType: string) => {
     // Validate required fields
@@ -113,11 +125,144 @@ const MarketingAssetsTab = () => {
   };
 
   const handlePreview = () => {
-    toast.info("Opening preview...");
+    if (!generatedCopy) {
+      toast.error("Please generate content first before previewing");
+      return;
+    }
+    setIsPreviewOpen(true);
   };
 
   const handleDownload = () => {
     toast.success("Asset downloaded!");
+  };
+
+  const getThemeColors = (theme: string) => {
+    switch (theme) {
+      case "blue-ocean":
+        return {
+          primary: "bg-blue-600",
+          secondary: "bg-blue-100",
+          text: "text-blue-600",
+          border: "border-blue-200",
+        };
+      case "sunset-orange":
+        return {
+          primary: "bg-orange-500",
+          secondary: "bg-orange-100",
+          text: "text-orange-500",
+          border: "border-orange-200",
+        };
+      case "forest-green":
+        return {
+          primary: "bg-green-600",
+          secondary: "bg-green-100",
+          text: "text-green-600",
+          border: "border-green-200",
+        };
+      case "royal-purple":
+        return {
+          primary: "bg-purple-600",
+          secondary: "bg-purple-100",
+          text: "text-purple-600",
+          border: "border-purple-200",
+        };
+      default:
+        return {
+          primary: "bg-blue-600",
+          secondary: "bg-blue-100",
+          text: "text-blue-600",
+          border: "border-blue-200",
+        };
+    }
+  };
+
+  const InfoCardPreview = ({ content }: { content: any }) => {
+    const colors = getThemeColors(colorTheme);
+
+    return (
+      <div className="max-w-sm mx-auto">
+        <div
+          className={`rounded-lg shadow-lg overflow-hidden border ${colors.border}`}
+        >
+          {/* Header */}
+          <div className={`${colors.primary} text-white p-4`}>
+            <h3 className="text-lg font-bold mb-1">
+              {content.headline || "Dive into Dutch Culinary Tradition"}
+            </h3>
+            <div className="flex items-center gap-2 text-sm opacity-90">
+              <MapPin className="h-3 w-3" />
+              <span>{location}</span>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="p-4 bg-white">
+            <p className="text-gray-700 mb-4">
+              {content.description ||
+                "Immerse yourself in Amsterdam's rich culture through a hands-on traditional cooking workshop."}
+            </p>
+
+            {/* Key Highlights */}
+            {content.highlights && (
+              <div className="mb-4">
+                <h4 className="font-medium text-gray-800 mb-2">
+                  Key Highlights:
+                </h4>
+                <ul className="space-y-1">
+                  {content.highlights.map(
+                    (highlight: string, index: number) => (
+                      <li
+                        key={index}
+                        className="flex items-start gap-2 text-sm"
+                      >
+                        <span className={`${colors.text} mt-1`}>•</span>
+                        <span className="text-gray-700">{highlight}</span>
+                      </li>
+                    )
+                  )}
+                </ul>
+              </div>
+            )}
+
+            {/* Details */}
+            <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-gray-500" />
+                <span className="text-gray-700">{duration}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-gray-500" />
+                <span className="text-gray-700">{price}</span>
+              </div>
+            </div>
+
+            {/* Call to Action */}
+            {content.callToAction && (
+              <div className={`${colors.secondary} p-3 rounded-lg mb-3`}>
+                <p className="font-medium text-gray-800 text-center">
+                  {content.callToAction}
+                </p>
+              </div>
+            )}
+
+            {/* Hashtags */}
+            {content.hashtags && (
+              <div className="flex flex-wrap gap-1">
+                {content.hashtags.map((tag: string, index: number) => (
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className={`${colors.text} text-xs`}
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const templateStyles = [
@@ -532,7 +677,11 @@ const MarketingAssetsTab = () => {
                       </>
                     )}
                   </Button>
-                  <Button variant="outline" onClick={handlePreview}>
+                  <Button
+                    variant="outline"
+                    onClick={handlePreview}
+                    disabled={!generatedCopy}
+                  >
                     <Eye className="h-4 w-4 mr-2" />
                     Preview
                   </Button>
@@ -575,6 +724,38 @@ const MarketingAssetsTab = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Preview Modal */}
+          <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Information Card Preview</DialogTitle>
+                <DialogDescription>
+                  How your information card will look with the current design
+                  settings
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="flex justify-center">
+                  <InfoCardPreview content={generatedCopy} />
+                </div>
+
+                <div className="flex gap-2 justify-center">
+                  <Button onClick={handleDownload}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Card
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsPreviewOpen(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           <TabsContent value="flyers">
             <Card>
