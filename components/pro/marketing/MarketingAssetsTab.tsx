@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -43,6 +43,10 @@ import {
   Clock,
   DollarSign,
   Users,
+  Upload,
+  X,
+  Palette,
+  Wand2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -64,6 +68,14 @@ const MarketingAssetsTab = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedContent, setCopiedContent] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const [referenceImages, setReferenceImages] = useState<File[]>([]);
+  const [isGeneratingFlyer, setIsGeneratingFlyer] = useState(false);
+  const [generatedFlyerUrl, setGeneratedFlyerUrl] = useState<string | null>(
+    null
+  );
+  const [isReferenceModalOpen, setIsReferenceModalOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleGenerateAsset = async (assetType: string) => {
     // Validate required fields
@@ -134,6 +146,113 @@ const MarketingAssetsTab = () => {
 
   const handleDownload = () => {
     toast.success("Asset downloaded!");
+  };
+
+  const handleReferenceImageUpload = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(event.target.files || []);
+    const validFiles = files.filter((file) => {
+      const isValidType = ["image/jpeg", "image/png", "image/webp"].includes(
+        file.type
+      );
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB limit
+
+      if (!isValidType) {
+        toast.error(
+          `${file.name} is not a supported image type. Please use JPG, PNG, or WebP.`
+        );
+        return false;
+      }
+      if (!isValidSize) {
+        toast.error(`${file.name} is too large. Maximum size is 5MB.`);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length > 0) {
+      const newImages = [...referenceImages, ...validFiles].slice(0, 3); // Keep max 3 images
+      setReferenceImages(newImages);
+      toast.success(
+        `${validFiles.length} reference image(s) uploaded successfully`
+      );
+    }
+  };
+
+  const handleRemoveReferenceImage = (index: number) => {
+    setReferenceImages((prev) => prev.filter((_, i) => i !== index));
+    toast.success("Reference image removed");
+  };
+
+  const handleGenerateFlyerFromReferences = async () => {
+    if (referenceImages.length === 0) {
+      toast.error("Please upload at least one reference image");
+      return;
+    }
+
+    if (!experienceTitle || !location || !duration) {
+      toast.error(
+        "Please fill in the Experience Title, Location, and Duration fields."
+      );
+      return;
+    }
+
+    setIsGeneratingFlyer(true);
+    setGeneratedFlyerUrl(null);
+
+    try {
+      // Convert images to base64 for API
+      const imagePromises = referenceImages.map((file) => {
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+      });
+
+      const base64Images = await Promise.all(imagePromises);
+
+      const response = await fetch("/api/generate-flyer-from-references", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          experienceTitle,
+          location,
+          duration,
+          price,
+          keyDetails,
+          templateStyle,
+          colorTheme,
+          referenceImages: base64Images,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate flyer");
+      }
+
+      // Store the generated flyer design
+      setGeneratedCopy(data.flyerDesign);
+      setGeneratedFlyerUrl(data.flyerUrl);
+
+      if (data.note) {
+        toast.success(`Flyer generated successfully! ${data.note}`);
+      } else {
+        toast.success("Flyer generated successfully from your references!");
+      }
+    } catch (error: any) {
+      console.error("Error generating flyer:", error);
+      toast.error(
+        error.message || "Failed to generate flyer. Please try again."
+      );
+    } finally {
+      setIsGeneratingFlyer(false);
+    }
   };
 
   const getThemeColors = (theme: string) => {
@@ -257,6 +376,104 @@ const MarketingAssetsTab = () => {
                     {tag}
                   </Badge>
                 ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const FlyerPreview = ({ design }: { design: any }) => {
+    const colors = getThemeColors(colorTheme);
+
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div
+          className={`rounded-lg shadow-lg overflow-hidden border ${colors.border}`}
+        >
+          {/* Header */}
+          <div className={`${colors.primary} text-white p-6`}>
+            <h2 className="text-2xl font-bold mb-2">
+              {design.headline || "Experience Title"}
+            </h2>
+            <p className="text-lg opacity-90">
+              {design.subheading || "Subheading"}
+            </p>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 bg-white">
+            <p className="text-gray-700 mb-6 text-lg">
+              {design.description || "Description of the experience"}
+            </p>
+
+            {/* Benefits */}
+            {design.benefits && (
+              <div className="mb-6">
+                <h3 className="font-bold text-gray-800 mb-3">Key Benefits:</h3>
+                <ul className="space-y-2">
+                  {design.benefits.map((benefit: string, index: number) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className={`${colors.text} mt-1 text-lg`}>✓</span>
+                      <span className="text-gray-700">{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* What's Included */}
+            {design.included && (
+              <div className="mb-6">
+                <h3 className="font-bold text-gray-800 mb-3">
+                  What's Included:
+                </h3>
+                <ul className="space-y-2">
+                  {design.included.map((item: string, index: number) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className={`${colors.text} mt-1`}>•</span>
+                      <span className="text-gray-700">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Price and Details */}
+            <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-gray-500" />
+                <span className="text-gray-700 font-medium">{duration}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5 text-gray-500" />
+                <span className="text-gray-700 font-medium">{price}</span>
+              </div>
+            </div>
+
+            {/* Call to Action */}
+            {design.callToAction && (
+              <div
+                className={`${colors.secondary} p-4 rounded-lg mb-4 text-center`}
+              >
+                <p className="text-lg font-bold text-gray-800">
+                  {design.callToAction}
+                </p>
+              </div>
+            )}
+
+            {/* Contact Info */}
+            {design.contactInfo && (
+              <div className="text-center text-gray-600 mb-4">
+                <p>{design.contactInfo}</p>
+              </div>
+            )}
+
+            {/* Social Proof */}
+            {design.socialProof && (
+              <div className="text-center text-gray-500 italic">
+                <p>{design.socialProof}</p>
               </div>
             )}
           </div>
@@ -768,12 +985,99 @@ const MarketingAssetsTab = () => {
                   Design eye-catching flyers for promoting your experiences
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
+                {/* Reference Images Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium mb-1">Reference Images</h4>
+                      <p className="text-sm text-gray-600">
+                        Upload up to 3 reference images to guide the AI design
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsReferenceModalOpen(true)}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      View References
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {referenceImages.map((image, index) => (
+                      <div
+                        key={index}
+                        className="relative border rounded-lg p-2"
+                      >
+                        <div className="aspect-square bg-gray-100 rounded flex items-center justify-center">
+                          <img
+                            src={URL.createObjectURL(image)}
+                            alt={`Reference ${index + 1}`}
+                            className="w-full h-full object-cover rounded"
+                          />
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="absolute top-1 right-1 h-6 w-6 p-0 bg-white/80 hover:bg-white"
+                          onClick={() => handleRemoveReferenceImage(index)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                        <p className="text-xs text-gray-600 mt-1 truncate">
+                          Reference {index + 1}
+                        </p>
+                      </div>
+                    ))}
+
+                    {referenceImages.length < 3 && (
+                      <div
+                        className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors cursor-pointer"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                        <p className="text-sm text-gray-600">Add Reference</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {3 - referenceImages.length} more allowed
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleReferenceImageUpload}
+                    className="hidden"
+                  />
+                </div>
+
                 <div className="flex gap-3">
+                  <Button
+                    onClick={handleGenerateFlyerFromReferences}
+                    disabled={isGeneratingFlyer || referenceImages.length === 0}
+                    className="flex-1"
+                  >
+                    {isGeneratingFlyer ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Generating Flyer...
+                      </>
+                    ) : (
+                      <>
+                        <Wand2 className="h-4 w-4 mr-2" />
+                        Generate Flyer from References
+                      </>
+                    )}
+                  </Button>
                   <Button
                     onClick={() => handleGenerateAsset("flyer")}
                     disabled={isGenerating}
-                    className="flex-1"
+                    variant="outline"
                   >
                     {isGenerating ? (
                       <>
@@ -783,7 +1087,7 @@ const MarketingAssetsTab = () => {
                     ) : (
                       <>
                         <Sparkles className="h-4 w-4 mr-2" />
-                        Generate Flyer
+                        Generate Standard Flyer
                       </>
                     )}
                   </Button>
@@ -797,10 +1101,40 @@ const MarketingAssetsTab = () => {
                   </Button>
                 </div>
 
-                {generatedCopy && (
+                {/* Generated Flyer Preview */}
+                {generatedFlyerUrl && (
                   <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                     <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-medium">Generated Content:</h4>
+                      <h4 className="font-medium">Generated Flyer:</h4>
+                      <Button
+                        onClick={() =>
+                          handleCopyContent(
+                            "Flyer generated from your references"
+                          )
+                        }
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Copy className="h-4 w-4" />
+                        Copy Info
+                      </Button>
+                    </div>
+                    <div className="flex justify-center">
+                      <img
+                        src={generatedFlyerUrl}
+                        alt="Generated Flyer"
+                        className="max-w-full h-auto rounded-lg shadow-lg"
+                        style={{ maxHeight: "500px" }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {generatedCopy && !generatedFlyerUrl && (
+                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-medium">Generated Flyer Design:</h4>
                       <Button
                         onClick={() =>
                           handleCopyContent(
@@ -824,11 +1158,87 @@ const MarketingAssetsTab = () => {
                         )}
                       </Button>
                     </div>
+
+                    {/* Visual Preview */}
+                    <div className="mb-4">
+                      <FlyerPreview design={generatedCopy} />
+                    </div>
+
+                    {/* Text Content */}
                     {renderGeneratedContent(generatedCopy, "flyer")}
                   </div>
                 )}
               </CardContent>
             </Card>
+
+            {/* Reference Images Modal */}
+            <Dialog
+              open={isReferenceModalOpen}
+              onOpenChange={setIsReferenceModalOpen}
+            >
+              <DialogContent className="max-w-4xl">
+                <DialogHeader>
+                  <DialogTitle>Reference Images</DialogTitle>
+                  <DialogDescription>
+                    These images will guide the AI in creating your flyer design
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-4">
+                  {referenceImages.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Palette className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium mb-2">
+                        No reference images
+                      </h3>
+                      <p className="text-gray-600">
+                        Upload reference images to help the AI understand your
+                        design preferences
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {referenceImages.map((image, index) => (
+                        <div key={index} className="space-y-2">
+                          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                            <img
+                              src={URL.createObjectURL(image)}
+                              alt={`Reference ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">
+                              Reference {index + 1}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleRemoveReferenceImage(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 justify-center">
+                    <Button onClick={() => fileInputRef.current?.click()}>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Add Reference Image
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsReferenceModalOpen(false)}
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
 
           <TabsContent value="social-graphics">
