@@ -55,7 +55,12 @@ import {
   Camera,
   Palette,
   Zap,
+  Loader2,
+  Copy,
+  Check,
+  Sparkles,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface SocialPost {
   id: string;
@@ -90,7 +95,15 @@ const SocialMediaManager: React.FC = () => {
   );
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const [toneValue, setToneValue] = useState<number>(50);
-  const { toast } = useToast();
+
+  // AI Caption Generator states
+  const [experienceType, setExperienceType] = useState("");
+  const [keyHighlights, setKeyHighlights] = useState("");
+  const [captionTone, setCaptionTone] = useState("engaging");
+  const [captionPlatform, setCaptionPlatform] = useState("Instagram");
+  const [generatedCaption, setGeneratedCaption] = useState("");
+  const [isGeneratingCaption, setIsGeneratingCaption] = useState(false);
+  const [copiedCaption, setCopiedCaption] = useState(false);
 
   const mockPosts: SocialPost[] = [
     {
@@ -177,25 +190,75 @@ const SocialMediaManager: React.FC = () => {
   ];
 
   const handleCreatePost = () => {
-    toast({
-      title: "Post Created",
-      description: "Your social media post has been created successfully.",
-    });
+    toast.success("Your social media post has been created successfully.");
     setIsCreatePostOpen(false);
   };
 
   const handleSchedulePost = () => {
-    toast({
-      title: "Post Scheduled",
-      description: "Your post has been scheduled for publishing.",
-    });
+    toast.success("Your post has been scheduled for publishing.");
   };
 
   const handlePublishPost = (postId: string) => {
-    toast({
-      title: "Post Published",
-      description: "Your post has been published successfully.",
-    });
+    toast.success("Your post has been published successfully.");
+  };
+
+  const handleGenerateCaption = async () => {
+    if (!experienceType || !keyHighlights) {
+      toast.error(
+        "Please fill in the Experience Type and Key Highlights fields."
+      );
+      return;
+    }
+
+    setIsGeneratingCaption(true);
+    setGeneratedCaption("");
+
+    try {
+      const response = await fetch("/api/generate-social-caption", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          experienceType,
+          keyHighlights,
+          tone: captionTone,
+          platform: captionPlatform,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate caption");
+      }
+
+      setGeneratedCaption(data.caption);
+      toast.success("Caption generated successfully!");
+    } catch (error: any) {
+      console.error("Error generating caption:", error);
+      toast.error(
+        error.message || "Failed to generate caption. Please try again."
+      );
+      setGeneratedCaption(
+        "Sorry, there was an error generating the caption. Please try again."
+      );
+    } finally {
+      setIsGeneratingCaption(false);
+    }
+  };
+
+  const handleCopyCaption = async () => {
+    if (generatedCaption) {
+      try {
+        await navigator.clipboard.writeText(generatedCaption);
+        setCopiedCaption(true);
+        toast.success("Caption copied to clipboard!");
+        setTimeout(() => setCopiedCaption(false), 2000);
+      } catch (err) {
+        toast.error("Failed to copy caption");
+      }
+    }
   };
 
   const getPlatformIcon = (platform: string) => {
@@ -799,7 +862,10 @@ const SocialMediaManager: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>AI Caption Generator</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-blue-600" />
+                  AI Caption Generator
+                </CardTitle>
                 <CardDescription>
                   Generate engaging captions for your posts
                 </CardDescription>
@@ -807,27 +873,102 @@ const SocialMediaManager: React.FC = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Experience Type</label>
-                  <Input placeholder="e.g., Cooking class, Art workshop, Walking tour" />
+                  <Input
+                    placeholder="e.g., Cooking class, Art workshop, Walking tour"
+                    value={experienceType}
+                    onChange={(e) => setExperienceType(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Key Highlights</label>
-                  <Textarea placeholder="What makes this experience special?" />
+                  <Textarea
+                    placeholder="What makes this experience special?"
+                    value={keyHighlights}
+                    onChange={(e) => setKeyHighlights(e.target.value)}
+                    className="min-h-[80px]"
+                  />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Tone</label>
-                  <Select defaultValue="engaging">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="professional">Professional</SelectItem>
-                      <SelectItem value="engaging">Engaging</SelectItem>
-                      <SelectItem value="casual">Casual</SelectItem>
-                      <SelectItem value="inspiring">Inspiring</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Platform</label>
+                    <Select
+                      value={captionPlatform}
+                      onValueChange={setCaptionPlatform}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Instagram">Instagram</SelectItem>
+                        <SelectItem value="Facebook">Facebook</SelectItem>
+                        <SelectItem value="Twitter">Twitter</SelectItem>
+                        <SelectItem value="TikTok">TikTok</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Tone</label>
+                    <Select value={captionTone} onValueChange={setCaptionTone}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="engaging">Engaging</SelectItem>
+                        <SelectItem value="professional">
+                          Professional
+                        </SelectItem>
+                        <SelectItem value="casual">Casual</SelectItem>
+                        <SelectItem value="inspiring">Inspiring</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <Button className="w-full">Generate Caption</Button>
+                <Button
+                  onClick={handleGenerateCaption}
+                  disabled={isGeneratingCaption}
+                  className="w-full"
+                >
+                  {isGeneratingCaption ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Generating Caption...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Generate Caption
+                    </>
+                  )}
+                </Button>
+
+                {generatedCaption && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium">Generated Caption:</h4>
+                      <Button
+                        onClick={handleCopyCaption}
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        {copiedCaption ? (
+                          <>
+                            <Check className="h-4 w-4" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-4 w-4" />
+                            Copy
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                      {generatedCaption}
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
