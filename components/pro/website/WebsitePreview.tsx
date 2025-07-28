@@ -9,7 +9,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Laptop, Smartphone, Tablet, RefreshCw } from "lucide-react";
+import {
+  Laptop,
+  Smartphone,
+  Tablet,
+  RefreshCw,
+  Phone,
+  Mail,
+  MapPin,
+  Facebook,
+  Twitter,
+  Instagram,
+  Youtube,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ItineraryType } from "@/data/itineraryData";
@@ -41,6 +53,8 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     primaryColor,
     headerImage,
     theme,
+    headerSettings,
+    footerSettings,
   } = websiteSettings;
 
   // Update internal refresh key when external key changes
@@ -215,7 +229,12 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                 {/* Header/Hero section preview */}
                 <div
                   className={cn(
-                    "w-full h-32 relative",
+                    "w-full relative",
+                    headerSettings?.height === "small" && "h-20",
+                    headerSettings?.height === "medium" && "h-32",
+                    headerSettings?.height === "large" && "h-48",
+                    headerSettings?.height === "full" && "h-96",
+                    !headerSettings?.height && "h-32",
                     headerImage ? "" : themeStyles.heroClass
                   )}
                   style={{
@@ -237,7 +256,42 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                       <div className="absolute inset-0 bg-black bg-opacity-40"></div>
                     </div>
                   )}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+
+                  {/* Custom Header Logo */}
+                  {headerSettings?.logo && (
+                    <div className="absolute top-4 left-4">
+                      <img
+                        src={headerSettings.logo}
+                        alt="Logo"
+                        className="h-8 w-auto object-contain"
+                      />
+                    </div>
+                  )}
+
+                  {/* Navigation Menu */}
+                  {headerSettings?.showNav && headerSettings?.navItems && (
+                    <div className="absolute top-4 right-4">
+                      <div className="flex gap-4">
+                        {headerSettings.navItems.map((item, index) => (
+                          <div
+                            key={index}
+                            className="text-white text-sm font-medium hover:opacity-80 cursor-pointer"
+                          >
+                            {item}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div
+                    className={cn(
+                      "absolute inset-0 flex flex-col items-center justify-center p-4",
+                      headerSettings?.textAlign === "left" && "items-start",
+                      headerSettings?.textAlign === "right" && "items-end",
+                      headerSettings?.textAlign === "center" && "items-center"
+                    )}
+                  >
                     <div
                       className={cn("text-center", themeStyles.headerTextClass)}
                     >
@@ -321,6 +375,111 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                       </div>
                     </div>
                   </div>
+
+                  {/* Customizable Footer */}
+                  {footerSettings && (
+                    <div
+                      className="border-t pt-4 mt-4"
+                      style={{
+                        backgroundColor: footerSettings.backgroundColor,
+                        color: footerSettings.textColor,
+                      }}
+                    >
+                      <div
+                        className={cn(
+                          "grid gap-4 p-4",
+                          footerSettings.layout === "1-column" && "grid-cols-1",
+                          footerSettings.layout === "2-column" && "grid-cols-2",
+                          footerSettings.layout === "3-column" && "grid-cols-3",
+                          footerSettings.layout === "4-column" && "grid-cols-4"
+                        )}
+                      >
+                        {/* Logo and Company Info */}
+                        <div className="space-y-2">
+                          {footerSettings.showLogo && footerSettings.logo && (
+                            <img
+                              src={footerSettings.logo}
+                              alt="Footer Logo"
+                              className="h-8 w-auto object-contain"
+                            />
+                          )}
+                          <h3 className="font-semibold">{companyName}</h3>
+                          <p className="text-xs opacity-80">{tagline}</p>
+                        </div>
+
+                        {/* Contact Information */}
+                        <div className="space-y-2">
+                          <h4 className="font-medium text-sm">Contact</h4>
+                          {footerSettings.contactInfo.phone && (
+                            <div className="flex items-center gap-1 text-xs">
+                              <Phone className="h-3 w-3" />
+                              {footerSettings.contactInfo.phone}
+                            </div>
+                          )}
+                          {footerSettings.contactInfo.email && (
+                            <div className="flex items-center gap-1 text-xs">
+                              <Mail className="h-3 w-3" />
+                              {footerSettings.contactInfo.email}
+                            </div>
+                          )}
+                          {footerSettings.contactInfo.address && (
+                            <div className="flex items-center gap-1 text-xs">
+                              <MapPin className="h-3 w-3" />
+                              {footerSettings.contactInfo.address}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Social Media Links */}
+                        {footerSettings.showSocial && (
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-sm">Follow Us</h4>
+                            <div className="flex gap-2">
+                              {footerSettings.socialLinks.facebook && (
+                                <div className="w-6 h-6 bg-white bg-opacity-20 rounded flex items-center justify-center">
+                                  <Facebook className="h-3 w-3" />
+                                </div>
+                              )}
+                              {footerSettings.socialLinks.twitter && (
+                                <div className="w-6 h-6 bg-white bg-opacity-20 rounded flex items-center justify-center">
+                                  <Twitter className="h-3 w-3" />
+                                </div>
+                              )}
+                              {footerSettings.socialLinks.instagram && (
+                                <div className="w-6 h-6 bg-white bg-opacity-20 rounded flex items-center justify-center">
+                                  <Instagram className="h-3 w-3" />
+                                </div>
+                              )}
+                              {footerSettings.socialLinks.youtube && (
+                                <div className="w-6 h-6 bg-white bg-opacity-20 rounded flex items-center justify-center">
+                                  <Youtube className="h-3 w-3" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Quick Links */}
+                        <div className="space-y-2">
+                          <h4 className="font-medium text-sm">Quick Links</h4>
+                          <div className="space-y-1 text-xs">
+                            <div className="hover:opacity-80 cursor-pointer">
+                              About Us
+                            </div>
+                            <div className="hover:opacity-80 cursor-pointer">
+                              Our Tours
+                            </div>
+                            <div className="hover:opacity-80 cursor-pointer">
+                              Contact
+                            </div>
+                            <div className="hover:opacity-80 cursor-pointer">
+                              Privacy Policy
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </AspectRatio>

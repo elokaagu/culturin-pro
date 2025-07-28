@@ -27,6 +27,35 @@ export interface UserData {
     headerImage: string | null;
     theme: string;
     enableBooking: boolean;
+    headerSettings?: {
+      layout: string;
+      height: string;
+      textAlign: string;
+      showNav: boolean;
+      navItems: string[];
+      logo: string | null;
+      backgroundType: string;
+    };
+    footerSettings?: {
+      layout: string;
+      showLogo: boolean;
+      logo: string | null;
+      backgroundColor: string;
+      textColor: string;
+      showSocial: boolean;
+      socialLinks: {
+        facebook: string;
+        twitter: string;
+        instagram: string;
+        youtube: string;
+      };
+      contactInfo: {
+        phone: string;
+        email: string;
+        address: string;
+        website: string;
+      };
+    };
     bookingSettings: {
       currency: string;
       paymentMethods: string[];

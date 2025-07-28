@@ -5,8 +5,16 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown, ArrowRight, ShoppingCart, Eye, Globe } from "lucide-react";
+import {
+  Crown,
+  ArrowRight,
+  ShoppingCart,
+  Eye,
+  Globe,
+  Users,
+} from "lucide-react";
 
 // Import our modular components
 
@@ -92,7 +100,144 @@ function StudioContent() {
               </p>
             </div>
 
-            {/* Main sections */}
+            {/* Feature Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              <Card className="p-6 hover:shadow-lg transition-shadow">
+                <CardContent className="p-0">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                      <Globe className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Website Builder</h3>
+                  </div>
+                  <p className="text-gray-600 mb-4">
+                    Create stunning tour operator websites with drag-and-drop
+                    tools, customizable themes, and integrated booking systems.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => router.push("/pro-dashboard/website")}
+                  >
+                    Build Website
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="p-6 hover:shadow-lg transition-shadow">
+                <CardContent className="p-0">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                      <ShoppingCart className="h-6 w-6 text-green-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Booking System</h3>
+                  </div>
+                  <p className="text-gray-600 mb-4">
+                    Streamline your booking process with automated
+                    confirmations, payment processing, and guest management
+                    tools.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => router.push("/pro-dashboard/booking")}
+                  >
+                    Manage Bookings
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="p-6 hover:shadow-lg transition-shadow">
+                <CardContent className="p-0">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                      <Eye className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold">
+                      Analytics & Insights
+                    </h3>
+                  </div>
+                  <p className="text-gray-600 mb-4">
+                    Track performance, understand guest behavior, and optimize
+                    your business with comprehensive analytics and reporting.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => router.push("/pro-dashboard/analytics")}
+                  >
+                    View Analytics
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="p-6 hover:shadow-lg transition-shadow">
+                <CardContent className="p-0">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
+                      <Crown className="h-6 w-6 text-orange-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Marketing Tools</h3>
+                  </div>
+                  <p className="text-gray-600 mb-4">
+                    Create compelling marketing campaigns, social media content,
+                    and promotional materials to attract more guests.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => router.push("/pro-dashboard/marketing")}
+                  >
+                    Start Marketing
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="p-6 hover:shadow-lg transition-shadow">
+                <CardContent className="p-0">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mr-4">
+                      <Users className="h-6 w-6 text-red-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Guest CRM</h3>
+                  </div>
+                  <p className="text-gray-600 mb-4">
+                    Build lasting relationships with your guests through
+                    personalized communication, loyalty programs, and guest
+                    management.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => router.push("/pro-dashboard/crm")}
+                  >
+                    Manage Guests
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="p-6 hover:shadow-lg transition-shadow">
+                <CardContent className="p-0">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
+                      <ArrowRight className="h-6 w-6 text-indigo-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Itinerary Builder</h3>
+                  </div>
+                  <p className="text-gray-600 mb-4">
+                    Design immersive cultural experiences with our intuitive
+                    itinerary builder and experience management tools.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => router.push("/pro-dashboard/itinerary")}
+                  >
+                    Create Experiences
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="booking-builder" className="space-y-6">
