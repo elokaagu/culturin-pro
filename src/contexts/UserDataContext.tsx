@@ -73,6 +73,28 @@ export interface UserData {
       enableHoverEffects: boolean;
       enableScrollAnimations: boolean;
     };
+    placedBlocks?: Array<{
+      id: string;
+      blockType: string;
+      content: any;
+      settings: {
+        textAlign?: "left" | "center" | "right";
+        fontSize?: string;
+        fontWeight?: string;
+        color?: string;
+        backgroundColor?: string;
+        padding?: string;
+        margin?: string;
+        width?: string;
+        height?: string;
+        borderRadius?: string;
+        border?: string;
+        shadow?: string;
+        gap?: string;
+        fontStyle?: string;
+      };
+      position: number;
+    }>;
     bookingSettings: {
       currency: string;
       paymentMethods: string[];

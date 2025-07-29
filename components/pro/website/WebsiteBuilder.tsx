@@ -9,6 +9,7 @@ import WebsiteSettings from "./WebsiteSettings";
 import BookingFlowBuilder from "./BookingFlowBuilder";
 import HeaderFooterCustomizer from "./HeaderFooterCustomizer";
 import FontCustomizer from "./FontCustomizer";
+import DragDropBuilder from "./DragDropBuilder";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -626,8 +627,9 @@ const WebsiteBuilder: React.FC = () => {
         value={activeTab}
         onValueChange={handleTabChange}
       >
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="preview">Preview</TabsTrigger>
+          <TabsTrigger value="builder">Drag & Drop</TabsTrigger>
           <TabsTrigger value="themes">Themes</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="header-footer">Header & Footer</TabsTrigger>
@@ -642,6 +644,10 @@ const WebsiteBuilder: React.FC = () => {
             itineraries={itineraries}
             refreshKey={previewKey}
           />
+        </TabsContent>
+
+        <TabsContent value="builder">
+          <DragDropBuilder />
         </TabsContent>
 
         <TabsContent value="themes">

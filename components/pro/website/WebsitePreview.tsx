@@ -57,6 +57,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     footerSettings,
     fontSettings,
     animationSettings,
+    placedBlocks,
   } = websiteSettings;
 
   // Update internal refresh key when external key changes
@@ -254,6 +255,294 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   const fontStyles = getFontStyles();
   const animationClasses = getAnimationClasses();
 
+  // Render placed blocks from drag & drop builder
+  const renderPlacedBlocks = () => {
+    if (!placedBlocks || placedBlocks.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="space-y-4">
+        {placedBlocks
+          .sort((a, b) => a.position - b.position)
+          .map((block) => {
+            const style: React.CSSProperties = {
+              textAlign: block.settings.textAlign as
+                | "left"
+                | "center"
+                | "right"
+                | "justify",
+              fontSize: block.settings.fontSize,
+              fontWeight: block.settings.fontWeight,
+              color: block.settings.color,
+              backgroundColor: block.settings.backgroundColor,
+              padding: block.settings.padding,
+              margin: block.settings.margin,
+              width: block.settings.width,
+              height: block.settings.height,
+              borderRadius: block.settings.borderRadius,
+              border: block.settings.border,
+              boxShadow: block.settings.shadow,
+            };
+
+            switch (block.blockType) {
+              case "header":
+                return (
+                  <header
+                    key={block.id}
+                    style={style}
+                    className="flex justify-between items-center"
+                  >
+                    <div className="font-bold text-xl">
+                      {block.content.logo}
+                    </div>
+                    <nav className="flex gap-4">
+                      {block.content.navigation.map(
+                        (item: string, index: number) => (
+                          <a
+                            key={index}
+                            href="#"
+                            className="hover:text-blue-600"
+                          >
+                            {item}
+                          </a>
+                        )
+                      )}
+                    </nav>
+                    <Button size="sm">{block.content.cta}</Button>
+                  </header>
+                );
+
+              case "footer":
+                return (
+                  <footer
+                    key={block.id}
+                    style={style}
+                    className="flex flex-col gap-4"
+                  >
+                    <div className="font-bold">{block.content.companyName}</div>
+                    <div className="flex gap-4">
+                      {block.content.links.map(
+                        (link: string, index: number) => (
+                          <a key={index} href="#" className="hover:underline">
+                            {link}
+                          </a>
+                        )
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      {block.content.socialMedia.map(
+                        (social: string, index: number) => (
+                          <a key={index} href="#" className="hover:opacity-80">
+                            {social}
+                          </a>
+                        )
+                      )}
+                    </div>
+                  </footer>
+                );
+
+              case "hero":
+                return (
+                  <section
+                    key={block.id}
+                    style={style}
+                    className="flex flex-col items-center justify-center min-h-[400px]"
+                  >
+                    <h1 className="text-4xl font-bold mb-4">
+                      {block.content.title}
+                    </h1>
+                    <p className="text-xl mb-6">{block.content.subtitle}</p>
+                    <Button size="lg">{block.content.ctaText}</Button>
+                  </section>
+                );
+
+              case "text":
+                return (
+                  <div key={block.id} style={style}>
+                    <p>{block.content.text}</p>
+                  </div>
+                );
+
+              case "heading":
+                return (
+                  <div key={block.id} style={style}>
+                    {block.content.level === "h1" && (
+                      <h1>{block.content.text}</h1>
+                    )}
+                    {block.content.level === "h2" && (
+                      <h2>{block.content.text}</h2>
+                    )}
+                    {block.content.level === "h3" && (
+                      <h3>{block.content.text}</h3>
+                    )}
+                  </div>
+                );
+
+              case "image":
+                return (
+                  <div key={block.id} style={style}>
+                    <img
+                      src={
+                        block.content.src ||
+                        "https://via.placeholder.com/400x300?text=Add+Image"
+                      }
+                      alt={block.content.alt}
+                      className="w-full h-auto"
+                    />
+                    {block.content.caption && (
+                      <p className="text-sm text-gray-600 mt-2">
+                        {block.content.caption}
+                      </p>
+                    )}
+                  </div>
+                );
+
+              case "grid":
+                return (
+                  <div
+                    key={block.id}
+                    style={style}
+                    className={`grid grid-cols-${block.content.columns} gap-4`}
+                  >
+                    {block.content.items.map((item: any, index: number) => (
+                      <div key={index} className="p-4 border rounded">
+                        <h3 className="font-bold">{item.title}</h3>
+                        <p>{item.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                );
+
+              case "quote":
+                return (
+                  <blockquote
+                    key={block.id}
+                    style={style}
+                    className="text-center"
+                  >
+                    <p className="mb-4">"{block.content.text}"</p>
+                    <footer>
+                      <cite className="font-bold">{block.content.author}</cite>
+                      {block.content.role && (
+                        <span className="text-gray-600">
+                          , {block.content.role}
+                        </span>
+                      )}
+                    </footer>
+                  </blockquote>
+                );
+
+              case "list":
+                return (
+                  <div key={block.id} style={style}>
+                    {block.content.type === "bullet" ? (
+                      <ul className="list-disc list-inside">
+                        {block.content.items.map(
+                          (item: string, index: number) => (
+                            <li key={index}>{item}</li>
+                          )
+                        )}
+                      </ul>
+                    ) : (
+                      <ol className="list-decimal list-inside">
+                        {block.content.items.map(
+                          (item: string, index: number) => (
+                            <li key={index}>{item}</li>
+                          )
+                        )}
+                      </ol>
+                    )}
+                  </div>
+                );
+
+              case "contact":
+                return (
+                  <div
+                    key={block.id}
+                    style={style}
+                    className="max-w-md mx-auto"
+                  >
+                    <h3 className="text-xl font-bold mb-4">
+                      {block.content.title}
+                    </h3>
+                    <form className="space-y-4">
+                      {block.content.fields.map(
+                        (field: string, index: number) => (
+                          <div key={index}>
+                            <label className="block text-sm font-medium mb-1">
+                              {field}
+                            </label>
+                            {field === "Message" ? (
+                              <textarea
+                                className="w-full p-2 border rounded"
+                                rows={4}
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                className="w-full p-2 border rounded"
+                              />
+                            )}
+                          </div>
+                        )
+                      )}
+                      <Button type="submit" className="w-full">
+                        {block.content.submitText}
+                      </Button>
+                    </form>
+                  </div>
+                );
+
+              case "booking":
+                return (
+                  <div
+                    key={block.id}
+                    style={style}
+                    className="max-w-md mx-auto"
+                  >
+                    <h3 className="text-xl font-bold mb-4">
+                      {block.content.title}
+                    </h3>
+                    <div className="space-y-4">
+                      <select className="w-full p-2 border rounded">
+                        <option>Select a tour</option>
+                        {block.content.tours.map(
+                          (tour: string, index: number) => (
+                            <option key={index}>{tour}</option>
+                          )
+                        )}
+                      </select>
+                      <Button className="w-full">Book Now</Button>
+                    </div>
+                  </div>
+                );
+
+              case "map":
+                return (
+                  <div
+                    key={block.id}
+                    style={style}
+                    className="bg-gray-200 flex items-center justify-center"
+                  >
+                    <div className="text-center">
+                      <MapPin className="h-8 w-8 mx-auto mb-2 text-gray-600" />
+                      <p className="font-bold">{block.content.location}</p>
+                      <p className="text-sm text-gray-600">
+                        {block.content.address}
+                      </p>
+                    </div>
+                  </div>
+                );
+
+              default:
+                return <div key={block.id}>Unknown block type</div>;
+            }
+          })}
+      </div>
+    );
+  };
+
   const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
     toast.success("Preview refreshed", {
@@ -393,6 +682,9 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Placed Blocks from Drag & Drop Builder */}
+                {renderPlacedBlocks()}
 
                 {/* Navigation */}
                 <div className={cn("p-4", themeStyles.navClass)}>
