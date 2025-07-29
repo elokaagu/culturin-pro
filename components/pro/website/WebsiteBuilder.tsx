@@ -627,7 +627,7 @@ const WebsiteBuilder: React.FC = () => {
         value={activeTab}
         onValueChange={handleTabChange}
       >
-        <TabsList className="grid w-full grid-cols-8">
+        <TabsList className="flex w-full overflow-x-auto">
           <TabsTrigger value="preview">Preview</TabsTrigger>
           <TabsTrigger value="builder">Drag & Drop</TabsTrigger>
           <TabsTrigger value="themes">Themes</TabsTrigger>
