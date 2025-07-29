@@ -627,14 +627,14 @@ const WebsiteBuilder: React.FC = () => {
         value={activeTab}
         onValueChange={handleTabChange}
       >
-        <TabsList className="flex w-full overflow-x-auto">
+        <TabsList className="flex w-full overflow-x-auto min-w-0">
           <TabsTrigger value="preview">Preview</TabsTrigger>
-          <TabsTrigger value="builder">Drag & Drop</TabsTrigger>
+          <TabsTrigger value="builder">Builder</TabsTrigger>
           <TabsTrigger value="themes">Themes</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
-          <TabsTrigger value="header-footer">Header & Footer</TabsTrigger>
-          <TabsTrigger value="fonts">Fonts & Animations</TabsTrigger>
-          <TabsTrigger value="booking">Booking Flow</TabsTrigger>
+          <TabsTrigger value="header-footer">Header</TabsTrigger>
+          <TabsTrigger value="fonts">Fonts</TabsTrigger>
+          <TabsTrigger value="booking">Booking</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
