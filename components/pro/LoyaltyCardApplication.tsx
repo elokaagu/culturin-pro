@@ -35,12 +35,11 @@ import {
   Gift,
   TrendingUp,
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const LoyaltyCardApplication: React.FC = () => {
   const { user } = useAuth();
   const { userData, updateUserData } = useUserData();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTier, setSelectedTier] = useState("bronze");
 
@@ -126,11 +125,7 @@ const LoyaltyCardApplication: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to apply for a loyalty card.",
-        variant: "destructive",
-      });
+      toast.error("Please sign in to apply for a loyalty card.");
       return;
     }
 
@@ -139,11 +134,7 @@ const LoyaltyCardApplication: React.FC = () => {
     const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
     
     if (missingFields.length > 0) {
-      toast({
-        title: "Missing information",
-        description: `Please fill in: ${missingFields.join(", ")}`,
-        variant: "destructive",
-      });
+      toast.error(`Please fill in: ${missingFields.join(", ")}`);
       return;
     }
 
@@ -187,20 +178,13 @@ const LoyaltyCardApplication: React.FC = () => {
 
       updateUserData({ loyaltyCard: loyaltyCardData });
 
-      toast({
-        title: "Application submitted",
-        description: "Your loyalty card application has been submitted successfully. We'll review your application and contact you within 2-3 business days.",
-      });
+      toast.success("Your loyalty card application has been submitted successfully. We'll review your application and contact you within 2-3 business days.");
 
       // Redirect to loyalty dashboard
       window.location.href = "/pro-dashboard/loyalty";
     } catch (error) {
       console.error("Error creating loyalty card:", error);
-      toast({
-        title: "Application failed",
-        description: "Failed to submit your application. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to submit your application. Please try again.");
     } finally {
       setIsLoading(false);
     }

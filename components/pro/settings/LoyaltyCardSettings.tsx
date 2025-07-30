@@ -30,12 +30,11 @@ import {
   Zap,
   Users,
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const LoyaltyCardSettings: React.FC = () => {
   const { user } = useAuth();
   const { userData, updateUserData } = useUserData();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
 
@@ -50,7 +49,7 @@ const LoyaltyCardSettings: React.FC = () => {
 
     try {
       const { data, error } = await loyaltyUtils.getLoyaltyCardByUser(user.id);
-      
+
       if (error && error.code !== "PGRST116") {
         console.error("Error loading loyalty card:", error);
         return;
@@ -81,12 +80,8 @@ const LoyaltyCardSettings: React.FC = () => {
   };
 
   const connectWallet = async () => {
-    if (typeof window !== 'undefined' && !(window as any).ethereum) {
-      toast({
-        title: "MetaMask not found",
-        description: "Please install MetaMask to connect your wallet.",
-        variant: "destructive",
-      });
+    if (typeof window !== "undefined" && !(window as any).ethereum) {
+      toast.error("MetaMask not found. Please install MetaMask to connect your wallet.");
       return;
     }
 
@@ -98,32 +93,28 @@ const LoyaltyCardSettings: React.FC = () => {
       });
 
       const walletAddress = accounts[0];
-      
+
       // Update loyalty card with wallet address
       if (loyaltyCard.cardId) {
-        const { error } = await loyaltyUtils.updateLoyaltyCard(loyaltyCard.cardId, {
-          wallet_address: walletAddress,
-        });
+        const { error } = await loyaltyUtils.updateLoyaltyCard(
+          loyaltyCard.cardId,
+          {
+            wallet_address: walletAddress,
+          }
+        );
 
         if (error) throw error;
       }
 
-      setLoyaltyCard(prev => ({ ...prev, walletAddress }));
+      setLoyaltyCard((prev) => ({ ...prev, walletAddress }));
       updateUserData({
-        loyaltyCard: { ...loyaltyCard, walletAddress }
+        loyaltyCard: { ...loyaltyCard, walletAddress },
       });
 
-      toast({
-        title: "Wallet connected",
-        description: "Your wallet has been successfully connected to your loyalty card.",
-      });
+      toast.success("Wallet connected successfully!");
     } catch (error) {
       console.error("Error connecting wallet:", error);
-      toast({
-        title: "Connection failed",
-        description: "Failed to connect wallet. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to connect wallet. Please try again.");
     } finally {
       setIsConnectingWallet(false);
     }
@@ -166,11 +157,7 @@ const LoyaltyCardSettings: React.FC = () => {
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {status}
-          </Badge>
-        );
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
@@ -198,11 +185,7 @@ const LoyaltyCardSettings: React.FC = () => {
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {status}
-          </Badge>
-        );
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
@@ -222,11 +205,11 @@ const LoyaltyCardSettings: React.FC = () => {
             <div>
               <CardTitle className="flex items-center gap-2">
                 {getTierIcon(loyaltyCard.tier)}
-                {loyaltyCard.tier.charAt(0).toUpperCase() + loyaltyCard.tier.slice(1)} Tier
+                {loyaltyCard.tier.charAt(0).toUpperCase() +
+                  loyaltyCard.tier.slice(1)}{" "}
+                Tier
               </CardTitle>
-              <CardDescription>
-                Card ID: {loyaltyCard.cardId}
-              </CardDescription>
+              <CardDescription>Card ID: {loyaltyCard.cardId}</CardDescription>
             </div>
             {getStatusBadge(loyaltyCard.status)}
           </div>
@@ -236,7 +219,9 @@ const LoyaltyCardSettings: React.FC = () => {
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <Wallet className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-800">Balance</span>
+                <span className="text-sm font-medium text-blue-800">
+                  Balance
+                </span>
               </div>
               <p className="text-2xl font-bold text-blue-900">
                 ${loyaltyCard.balance.toFixed(2)}
@@ -247,7 +232,9 @@ const LoyaltyCardSettings: React.FC = () => {
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <Gift className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium text-green-800">Rewards</span>
+                <span className="text-sm font-medium text-green-800">
+                  Rewards
+                </span>
               </div>
               <p className="text-2xl font-bold text-green-900">
                 ${loyaltyCard.rewardsBalance.toFixed(2)}
@@ -258,7 +245,9 @@ const LoyaltyCardSettings: React.FC = () => {
             <div className="bg-gradient-to-br from-purple-50 to-violet-50 p-4 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp className="h-4 w-4 text-purple-600" />
-                <span className="text-sm font-medium text-purple-800">Rate</span>
+                <span className="text-sm font-medium text-purple-800">
+                  Rate
+                </span>
               </div>
               <p className="text-2xl font-bold text-purple-900">
                 {(loyaltyCard.rewardsRate * 100).toFixed(1)}%
@@ -278,9 +267,7 @@ const LoyaltyCardSettings: React.FC = () => {
             </div>
             <div>
               <Label className="text-sm font-medium">Annual Fee</Label>
-              <p className="text-sm text-gray-600">
-                ${loyaltyCard.annualFee}
-              </p>
+              <p className="text-sm text-gray-600">${loyaltyCard.annualFee}</p>
             </div>
           </div>
 
@@ -288,7 +275,8 @@ const LoyaltyCardSettings: React.FC = () => {
             <div>
               <Label className="text-sm font-medium">Connected Wallet</Label>
               <p className="text-sm text-gray-600 font-mono">
-                {loyaltyCard.walletAddress.slice(0, 6)}...{loyaltyCard.walletAddress.slice(-4)}
+                {loyaltyCard.walletAddress.slice(0, 6)}...
+                {loyaltyCard.walletAddress.slice(-4)}
               </p>
             </div>
           ) : (
@@ -349,10 +337,13 @@ const LoyaltyCardSettings: React.FC = () => {
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-center gap-2 text-yellow-800">
                 <Clock className="h-4 w-4" />
-                <span className="text-sm font-medium">Verification in Progress</span>
+                <span className="text-sm font-medium">
+                  Verification in Progress
+                </span>
               </div>
               <p className="text-sm text-yellow-700 mt-1">
-                Your identity verification is being processed. This usually takes 1-2 business days.
+                Your identity verification is being processed. This usually
+                takes 1-2 business days.
               </p>
             </div>
           )}
@@ -385,4 +376,4 @@ const LoyaltyCardSettings: React.FC = () => {
   );
 };
 
-export default LoyaltyCardSettings; 
+export default LoyaltyCardSettings;

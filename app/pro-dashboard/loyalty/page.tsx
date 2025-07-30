@@ -43,7 +43,7 @@ import {
   Calendar,
   MapPin,
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface Transaction {
   id: string;
@@ -60,7 +60,6 @@ interface Transaction {
 const LoyaltyDashboard: React.FC = () => {
   const { user } = useAuth();
   const { userData } = useUserData();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
@@ -90,11 +89,7 @@ const LoyaltyDashboard: React.FC = () => {
 
   const connectWallet = async () => {
     if (typeof window !== 'undefined' && !(window as any).ethereum) {
-      toast({
-        title: "MetaMask not found",
-        description: "Please install MetaMask to connect your wallet.",
-        variant: "destructive",
-      });
+      toast.error("MetaMask not found. Please install MetaMask to connect your wallet.");
       return;
     }
 
@@ -116,17 +111,10 @@ const LoyaltyDashboard: React.FC = () => {
         if (error) throw error;
       }
 
-      toast({
-        title: "Wallet connected",
-        description: "Your wallet has been successfully connected to your loyalty card.",
-      });
+      toast.success("Wallet connected successfully!");
     } catch (error) {
       console.error("Error connecting wallet:", error);
-      toast({
-        title: "Connection failed",
-        description: "Failed to connect wallet. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to connect wallet. Please try again.");
     } finally {
       setIsConnectingWallet(false);
     }
