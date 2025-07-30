@@ -29,6 +29,11 @@ import {
   Redo,
   Monitor,
   Tablet,
+  Cloud,
+  Download,
+  Upload,
+  FileText,
+  Image,
 } from "lucide-react";
 import { useNavigate } from "../../../lib/navigation";
 import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
@@ -47,9 +52,21 @@ interface HistoryInput {
   itineraries: ItineraryType[];
 }
 
+// Website data structure for persistence
+interface WebsiteData {
+  settings: any;
+  itineraries: ItineraryType[];
+  blocks: any[];
+  theme: string;
+  publishedUrl: string;
+  lastModified: Date;
+  version: string;
+}
+
 const WebsiteBuilder: React.FC = () => {
   const [publishLoading, setPublishLoading] = useState(false);
   const [refreshLoading, setRefreshLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
   const [publishedUrl, setPublishedUrl] = useState("");
   const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
@@ -57,6 +74,7 @@ const WebsiteBuilder: React.FC = () => {
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
 
   // History management
   const [history, setHistory] = useState<HistoryState[]>([]);
@@ -68,43 +86,53 @@ const WebsiteBuilder: React.FC = () => {
 
   // Initialize data - only on client side
   useEffect(() => {
-    // Initialize published URL from localStorage
-    const storedUrl = localStorage.getItem("publishedWebsiteUrl");
-    setPublishedUrl(storedUrl || "tour/demo");
+    if (typeof window === 'undefined') return;
 
-    // Get itineraries from localStorage or use sample data
-    const storedItineraries = localStorage.getItem("culturinItineraries");
-    if (storedItineraries) {
+    // Load website data from localStorage
+    const loadWebsiteData = () => {
       try {
-        const parsedItineraries = JSON.parse(storedItineraries);
-        setItineraries(parsedItineraries);
+        // Load published URL
+        const storedUrl = localStorage.getItem("publishedWebsiteUrl");
+        setPublishedUrl(storedUrl || "tour/demo");
+
+        // Load itineraries
+        const storedItineraries = localStorage.getItem("culturinItineraries");
+        if (storedItineraries) {
+          const parsedItineraries = JSON.parse(storedItineraries);
+          setItineraries(parsedItineraries);
+        } else {
+          setItineraries(sampleItineraries);
+          localStorage.setItem("culturinItineraries", JSON.stringify(sampleItineraries));
+        }
+
+        // Load last saved timestamp
+        const lastSavedStr = localStorage.getItem("websiteLastSaved");
+        if (lastSavedStr) {
+          setLastSaved(new Date(lastSavedStr));
+        }
+
+        // Load auto-save preference
+        const autoSavePref = localStorage.getItem("websiteAutoSave");
+        if (autoSavePref !== null) {
+          setAutoSaveEnabled(autoSavePref === 'true');
+        }
+
+        // Add initial state to history
         addToHistory({
           websiteSettings: userData.websiteSettings,
-          itineraries: parsedItineraries,
+          itineraries: storedItineraries ? JSON.parse(storedItineraries) : sampleItineraries,
         });
-      } catch (e) {
-        console.error("Error parsing itineraries:", e);
+
+        console.log("Website data loaded successfully");
+      } catch (error) {
+        console.error("Error loading website data:", error);
+        // Fallback to default data
         setItineraries(sampleItineraries);
-        localStorage.setItem(
-          "culturinItineraries",
-          JSON.stringify(sampleItineraries)
-        );
-        addToHistory({
-          websiteSettings: userData.websiteSettings,
-          itineraries: sampleItineraries,
-        });
+        localStorage.setItem("culturinItineraries", JSON.stringify(sampleItineraries));
       }
-    } else {
-      setItineraries(sampleItineraries);
-      localStorage.setItem(
-        "culturinItineraries",
-        JSON.stringify(sampleItineraries)
-      );
-      addToHistory({
-        websiteSettings: userData.websiteSettings,
-        itineraries: sampleItineraries,
-      });
-    }
+    };
+
+    loadWebsiteData();
   }, [userData.websiteSettings]);
 
   // Auto-refresh preview when user data changes
@@ -112,6 +140,7 @@ const WebsiteBuilder: React.FC = () => {
     if (!isUndoRedoAction) {
       setPreviewKey((prev) => prev + 1);
       setHasUnsavedChanges(true);
+      setSaveStatus('saving');
 
       // Auto-save if enabled
       if (autoSaveEnabled) {
@@ -129,6 +158,9 @@ const WebsiteBuilder: React.FC = () => {
   useEffect(() => {
     const handleSettingsChange = (event: CustomEvent) => {
       setPreviewKey((prev) => prev + 1);
+      setHasUnsavedChanges(true);
+      setSaveStatus('saving');
+      
       // Update itineraries if they changed
       if (event.detail?.filteredItineraries) {
         setItineraries(event.detail.filteredItineraries);
@@ -144,6 +176,8 @@ const WebsiteBuilder: React.FC = () => {
 
     const handleThemeChange = (event: CustomEvent) => {
       setPreviewKey((prev) => prev + 1);
+      setHasUnsavedChanges(true);
+      setSaveStatus('saving');
       addToHistory({ websiteSettings: userData.websiteSettings, itineraries });
       toast.success("Theme applied", {
         description: `Applied "${event.detail.theme}" theme to preview`,
@@ -235,33 +269,141 @@ const WebsiteBuilder: React.FC = () => {
     // Trigger immediate preview refresh when settings change
     setPreviewKey((prev) => prev + 1);
     setHasUnsavedChanges(true);
+    setSaveStatus('saving');
   }, []);
 
+  // Enhanced auto-save function
   const handleAutoSave = useCallback(async () => {
     try {
+      setSaveLoading(true);
+      
+      // Save user data
       saveUserData();
+      
+      // Save website-specific data
+      const websiteData: WebsiteData = {
+        settings: userData.websiteSettings,
+        itineraries: itineraries,
+        blocks: userData.websiteSettings.placedBlocks || [],
+        theme: userData.websiteSettings.theme,
+        publishedUrl: publishedUrl,
+        lastModified: new Date(),
+        version: '1.0.0'
+      };
+
+      localStorage.setItem("websiteData", JSON.stringify(websiteData));
+      localStorage.setItem("websiteLastSaved", new Date().toISOString());
+      localStorage.setItem("websiteAutoSave", autoSaveEnabled.toString());
+      
       setLastSaved(new Date());
       setHasUnsavedChanges(false);
-      toast.success("Auto-saved", {
-        description: "Your changes have been saved automatically",
-      });
+      setSaveStatus('saved');
+      
+      console.log("Website auto-saved successfully");
     } catch (error) {
       console.error("Auto-save failed:", error);
+      setSaveStatus('error');
+      toast.error("Auto-save failed", {
+        description: "Please save manually",
+      });
+    } finally {
+      setSaveLoading(false);
     }
-  }, [saveUserData]);
+  }, [saveUserData, userData.websiteSettings, itineraries, publishedUrl, autoSaveEnabled]);
 
+  // Enhanced manual save function
   const handleManualSave = useCallback(async () => {
     try {
+      setSaveLoading(true);
+      setSaveStatus('saving');
+      
       await handleAutoSave();
-      toast.success("Saved successfully", {
+      
+      toast.success("Website saved successfully", {
         description: "All changes have been saved",
       });
     } catch (error) {
+      setSaveStatus('error');
       toast.error("Save failed", {
         description: "Please try again",
       });
+    } finally {
+      setSaveLoading(false);
     }
   }, [handleAutoSave]);
+
+  // Export website data
+  const handleExportWebsite = useCallback(() => {
+    try {
+      const websiteData: WebsiteData = {
+        settings: userData.websiteSettings,
+        itineraries: itineraries,
+        blocks: userData.websiteSettings.placedBlocks || [],
+        theme: userData.websiteSettings.theme,
+        publishedUrl: publishedUrl,
+        lastModified: new Date(),
+        version: '1.0.0'
+      };
+
+      const dataStr = JSON.stringify(websiteData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `website-backup-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success("Website exported", {
+        description: "Backup file downloaded",
+      });
+    } catch (error) {
+      toast.error("Export failed", {
+        description: "Please try again",
+      });
+    }
+  }, [userData.websiteSettings, itineraries, publishedUrl]);
+
+  // Import website data
+  const handleImportWebsite = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const websiteData: WebsiteData = JSON.parse(e.target?.result as string);
+        
+        // Validate the imported data
+        if (websiteData.settings && websiteData.itineraries) {
+          updateWebsiteSettings(websiteData.settings);
+          setItineraries(websiteData.itineraries);
+          if (websiteData.publishedUrl) {
+            setPublishedUrl(websiteData.publishedUrl);
+            localStorage.setItem("publishedWebsiteUrl", websiteData.publishedUrl);
+          }
+          
+          // Save the imported data
+          localStorage.setItem("websiteData", JSON.stringify(websiteData));
+          localStorage.setItem("culturinItineraries", JSON.stringify(websiteData.itineraries));
+          
+          toast.success("Website imported", {
+            description: "Your website data has been restored",
+          });
+        } else {
+          throw new Error("Invalid website data format");
+        }
+      } catch (error) {
+        toast.error("Import failed", {
+          description: "Invalid file format",
+        });
+      }
+    };
+    reader.readAsText(file);
+  }, [updateWebsiteSettings]);
 
   const handlePublish = async () => {
     if (!userData.businessName) {
@@ -350,17 +492,13 @@ const WebsiteBuilder: React.FC = () => {
           setItineraries(parsedItineraries);
         } catch (e) {
           console.error("Error parsing itineraries:", e);
-          toast.error("Error loading itineraries", {
-            description: "Using default data",
-          });
         }
       }
 
-      // Simulate refresh delay for better UX
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
       setPreviewKey((prev) => prev + 1);
-      toast.success("Preview refreshed with latest changes");
+      toast.success("Preview refreshed", {
+        description: "Website preview has been updated",
+      });
     } catch (error) {
       toast.error("Failed to refresh preview", {
         description: "Please try again",
@@ -370,70 +508,59 @@ const WebsiteBuilder: React.FC = () => {
     }
   };
 
-  const handleQuickUpdate = useCallback(
-    (field: string, value: any) => {
-      try {
-        updateWebsiteSettings({ [field]: value });
-        addToHistory({
-          websiteSettings: { ...userData.websiteSettings, [field]: value },
-          itineraries,
-        });
-        toast.success("Website updated - changes will appear in preview");
-      } catch (error) {
-        toast.error("Failed to update website", {
-          description: "Please try again",
-        });
-      }
-    },
-    [updateWebsiteSettings, userData.websiteSettings, itineraries, addToHistory]
-  );
-
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    toast.success(`Switched to ${value} tab`);
   };
 
   const handleQuickAction = (action: string) => {
     switch (action) {
-      case "resetColor":
-        handleQuickUpdate("primaryColor", "#9b87f5");
+      case "reset-brand-color":
+        updateWebsiteSettings({ primaryColor: "#3B82F6" });
+        toast.success("Brand color reset", {
+          description: "Reset to default blue color",
+        });
         break;
-      case "toggleBooking":
-        handleQuickUpdate(
-          "enableBooking",
-          !userData.websiteSettings.enableBooking
-        );
-        break;
-      case "configureBooking":
-        setActiveTab("booking");
-        break;
-      case "toggleAutoSave":
-        setAutoSaveEnabled((prev) => !prev);
-        toast.success(
-          autoSaveEnabled ? "Auto-save disabled" : "Auto-save enabled"
-        );
+      case "disable-booking":
+        updateWebsiteSettings({ enableBooking: false });
+        toast.success("Booking disabled", {
+          description: "Booking functionality has been turned off",
+        });
         break;
       default:
-        toast.error("Unknown action");
+        break;
     }
   };
 
-  // Memoized values for performance
-  const canUndo = useMemo(() => historyIndex > 0, [historyIndex]);
-  const canRedo = useMemo(
-    () => historyIndex < history.length - 1,
-    [historyIndex, history.length]
-  );
+  // Format last saved time
   const lastSavedText = useMemo(() => {
-    if (!lastSaved) return "Never saved";
+    if (!lastSaved) return "Never";
     const now = new Date();
     const diff = now.getTime() - lastSaved.getTime();
     const minutes = Math.floor(diff / 60000);
+    
     if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
+    if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    
     const hours = Math.floor(minutes / 60);
-    return `${hours}h ago`;
+    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    
+    const days = Math.floor(hours / 24);
+    return `${days} day${days > 1 ? 's' : ''} ago`;
   }, [lastSaved]);
+
+  // Save status indicator
+  const getSaveStatusIcon = () => {
+    switch (saveStatus) {
+      case 'saving':
+        return <Loader2 className="h-3 w-3 animate-spin text-blue-500" />;
+      case 'error':
+        return <div className="h-3 w-3 rounded-full bg-red-500" />;
+      case 'saved':
+        return <Check className="h-3 w-3 text-green-500" />;
+      default:
+        return <div className="h-3 w-3 rounded-full bg-gray-300" />;
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -441,237 +568,205 @@ const WebsiteBuilder: React.FC = () => {
       <div className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
         {/* Sidebar Header - Fixed */}
         <div className="p-6 border-b border-gray-200 flex-shrink-0">
-          <h2 className="text-xl font-semibold mb-2">Your Website</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Customize your tour operator website with real-time preview and booking functionality.
-          </p>
+          <div className="mb-4">
+            <h2 className="text-xl font-bold text-gray-900">Your Website</h2>
+            <p className="text-sm text-gray-600">
+              Customize your tour operator website with real-time preview and booking functionality.
+            </p>
+          </div>
           
-          {/* Status indicators */}
-          <div className="space-y-2 text-xs">
-            <div className="flex items-center gap-2">
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  hasUnsavedChanges ? "bg-orange-500" : "bg-green-500"
-                }`}
-              ></div>
-              <span
-                className={
-                  hasUnsavedChanges ? "text-orange-600" : "text-green-600"
-                }
-              >
-                {hasUnsavedChanges ? "Unsaved changes" : "All changes saved"}
+          {/* Status Indicators */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm">
+              {getSaveStatusIcon()}
+              <span className={saveStatus === 'error' ? 'text-red-600' : 'text-gray-600'}>
+                {saveStatus === 'saving' ? 'Saving...' : 
+                 saveStatus === 'error' ? 'Save failed' : 
+                 hasUnsavedChanges ? 'Unsaved changes' : 'All changes saved'}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Zap className="w-3 h-3" />
-              <span className="text-gray-600">
-                Auto-save: {autoSaveEnabled ? "On" : "Off"}
-              </span>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Zap className="h-3 w-3" />
+              Auto-save: {autoSaveEnabled ? 'On' : 'Off'}
             </div>
-            <div className="text-gray-500">Last saved: {lastSavedText}</div>
+            <div className="text-sm text-gray-500">
+              Last saved: {lastSavedText}
+            </div>
           </div>
         </div>
 
         {/* Scrollable Content Area - Everything below status indicators */}
         <div className="flex-1 overflow-y-auto">
-          {/* Action Buttons */}
+          {/* Action Buttons (now scrollable) */}
           <div className="p-6 border-b border-gray-200 space-y-4">
-            {/* Primary Action */}
-            <Button
-              onClick={handlePublish}
-              disabled={publishLoading}
-              className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90 text-white font-medium"
-            >
-              {publishLoading ? (
-                <>
-                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                  Publishing...
-                </>
-              ) : (
-                <>
-                  <Globe className="mr-2 h-4 w-4" />
-                  Publish Changes
-                </>
-              )}
-            </Button>
-
-            {/* Secondary Actions */}
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={undo}
-                disabled={!canUndo}
-                className="text-xs"
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleManualSave}
+                disabled={saveLoading || !hasUnsavedChanges}
+                className="flex-1"
+                variant={hasUnsavedChanges ? "default" : "outline"}
               >
-                <Undo className="h-3 w-3 mr-1" />
-                Undo
+                {saveLoading ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
+                Save
               </Button>
-              <Button
+              <Button 
+                onClick={handleReloadPreview}
+                disabled={refreshLoading}
                 variant="outline"
-                size="sm"
-                onClick={redo}
-                disabled={!canRedo}
-                className="text-xs"
+                size="icon"
               >
-                <Redo className="h-3 w-3 mr-1" />
-                Redo
+                {refreshLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
               </Button>
             </div>
             
-            <div className="grid grid-cols-2 gap-2">
-              <Button
+            <div className="flex gap-2">
+              <Button 
+                onClick={undo}
+                disabled={historyIndex <= 0}
                 variant="outline"
-                onClick={handleManualSave}
-                className="text-xs"
+                size="icon"
               >
-                <Save className="mr-1 h-3 w-3" />
-                Save
+                <Undo className="h-4 w-4" />
               </Button>
-              <Button
+              <Button 
+                onClick={redo}
+                disabled={historyIndex >= history.length - 1}
                 variant="outline"
-                onClick={handleReloadPreview}
-                disabled={refreshLoading}
-                className="text-xs"
+                size="icon"
               >
-                {refreshLoading ? (
-                  <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                ) : (
-                  <RefreshCw className="mr-1 h-3 w-3" />
-                )}
-                Refresh
+                <Redo className="h-4 w-4" />
               </Button>
             </div>
           </div>
 
-          {/* Published URL Status */}
+          {/* Published URL Status (scrollable) */}
           {publishedUrl && (
             <div className="p-6 border-b border-gray-200">
-              <div className="bg-green-50 border border-green-200 rounded-md p-3">
-                <div className="flex items-center mb-2">
-                  <div className="rounded-full bg-green-100 p-1">
-                    <Check className="h-4 w-4 text-green-600" />
-                  </div>
-                  <span className="ml-2 text-sm font-medium text-green-800">
-                    Site Published
-                  </span>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  <span className="font-medium text-green-800">Site Published</span>
                 </div>
-                <div className="text-xs text-green-700 mb-2">
-                  <a
-                    href={`/${publishedUrl}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline hover:text-green-900 break-all"
-                  >
-                    {typeof window !== "undefined" ? window.location.origin : ""}/
-                    {publishedUrl}
-                  </a>
+                <div className="text-sm text-green-700 mb-3">
+                  {publishedUrl}
                 </div>
-                {userData.websiteSettings.enableBooking && (
-                  <div className="flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                    <ShoppingCart className="h-3 w-3" />
-                    Booking Enabled
-                  </div>
-                )}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <div className="flex items-center gap-2 mb-3">
+                  <ShoppingCart className="h-3 w-3 text-green-600" />
+                  <span className="text-sm text-green-700">Booking Enabled</span>
+                </div>
+                <Button
                   onClick={handlePreviewSite}
-                  className="w-full mt-2"
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
                 >
-                  <Eye className="h-4 w-4 mr-1" />
+                  <Eye className="h-4 w-4 mr-2" />
                   Visit Site
                 </Button>
               </div>
             </div>
           )}
 
-          {/* Quick Actions */}
+          {/* Quick Actions (scrollable) */}
           <div className="p-6 border-b border-gray-200">
-            <h3 className="text-sm font-medium mb-4 text-gray-900">Quick Actions</h3>
+            <h3 className="font-medium text-gray-900 mb-4">Quick Actions</h3>
             
-            {/* Brand Settings */}
-            <div className="mb-4">
-              <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">Brand Settings</h4>
-              <div className="space-y-2">
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">BRAND SETTINGS</h4>
                 <Button
-                  size="sm"
+                  onClick={() => handleQuickAction("reset-brand-color")}
                   variant="outline"
-                  onClick={() => handleQuickAction("resetColor")}
-                  className="w-full justify-start text-xs"
+                  size="sm"
+                  className="w-full justify-start"
                 >
-                  <Palette className="h-3 w-3 mr-2" />
+                  <Palette className="h-4 w-4 mr-2" />
                   Reset Brand Color
                 </Button>
               </div>
-            </div>
-
-            {/* Booking Settings */}
-            <div className="mb-4">
-              <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">Booking Settings</h4>
-              <div className="space-y-2">
+              
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">BOOKING SETTINGS</h4>
                 <Button
-                  size="sm"
+                  onClick={() => handleQuickAction("disable-booking")}
                   variant="outline"
-                  onClick={() => handleQuickAction("toggleBooking")}
-                  className="w-full justify-start text-xs"
-                >
-                  <ShoppingCart className="h-3 w-3 mr-2" />
-                  {userData.websiteSettings.enableBooking ? "Disable" : "Enable"} Booking
-                </Button>
-                <Button
                   size="sm"
-                  variant="outline"
-                  onClick={() => handleQuickAction("configureBooking")}
-                  className="w-full justify-start text-xs"
+                  className="w-full justify-start"
                 >
-                  <Settings className="h-3 w-3 mr-2" />
-                  Configure Booking Flow
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Disable Booking
                 </Button>
               </div>
-            </div>
 
-            {/* System Settings */}
-            <div>
-              <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">System</h4>
-              <div className="space-y-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleQuickAction("toggleAutoSave")}
-                  className={`w-full justify-start text-xs ${
-                    autoSaveEnabled ? "bg-green-50 border-green-200 text-green-700" : ""
-                  }`}
-                >
-                  <Zap className="h-3 w-3 mr-2" />
-                  {autoSaveEnabled ? "Auto-save On" : "Auto-save Off"}
-                </Button>
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">BACKUP & RESTORE</h4>
+                <div className="space-y-2">
+                  <Button
+                    onClick={handleExportWebsite}
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export Website
+                  </Button>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={handleImportWebsite}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full justify-start"
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Import Website
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Navigation Tabs */}
+          {/* Navigation Tabs (scrollable) */}
           <div className="p-6">
-            <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-900 mb-1">Website Builder</h3>
-              <p className="text-xs text-gray-500">Customize your site's design and content</p>
-            </div>
-            <Tabs
-              defaultValue="preview"
-              value={activeTab}
-              onValueChange={handleTabChange}
-              className="w-full"
-            >
-              <TabsList className="flex flex-col w-full h-auto bg-transparent">
-                <TabsTrigger value="preview" className="w-full justify-start h-10 text-sm">Preview</TabsTrigger>
-                <TabsTrigger value="builder" className="w-full justify-start h-10 text-sm">Builder</TabsTrigger>
-                <TabsTrigger value="themes" className="w-full justify-start h-10 text-sm">Themes</TabsTrigger>
-                <TabsTrigger value="content" className="w-full justify-start h-10 text-sm">Content</TabsTrigger>
-                <TabsTrigger value="header-footer" className="w-full justify-start h-10 text-sm">Header</TabsTrigger>
-                <TabsTrigger value="fonts" className="w-full justify-start h-10 text-sm">Fonts</TabsTrigger>
-                <TabsTrigger value="booking" className="w-full justify-start h-10 text-sm">Booking</TabsTrigger>
-                <TabsTrigger value="settings" className="w-full justify-start h-10 text-sm">Settings</TabsTrigger>
-                <TabsTrigger value="media-library" className="w-full justify-start h-10 text-sm">Media Library</TabsTrigger>
+            <Tabs value={activeTab} onValueChange={handleTabChange}>
+              <TabsList className="flex flex-col w-full justify-start">
+                <TabsTrigger value="preview" className="w-full justify-start">
+                  <Eye className="h-4 w-4 mr-2" />
+                  Preview
+                </TabsTrigger>
+                <TabsTrigger value="builder" className="w-full justify-start">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Builder
+                </TabsTrigger>
+                <TabsTrigger value="themes" className="w-full justify-start">
+                  <Palette className="h-4 w-4 mr-2" />
+                  Themes
+                </TabsTrigger>
+                <TabsTrigger value="content" className="w-full justify-start">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Content
+                </TabsTrigger>
+                <TabsTrigger value="booking" className="w-full justify-start">
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Booking
+                </TabsTrigger>
+                <TabsTrigger value="media-library" className="w-full justify-start">
+                  <Image className="h-4 w-4 mr-2" />
+                  Media Library
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -680,112 +775,112 @@ const WebsiteBuilder: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {/* Preview Controls */}
+        {/* Preview Controls (fixed) */}
         <div className="p-4 border-b border-gray-200 bg-white">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">Website Preview</h2>
-              <p className="text-sm text-gray-500">See your changes in real-time</p>
+              <p className="text-sm text-gray-600">See your changes in real-time</p>
             </div>
             <div className="flex items-center gap-2">
               <Button
-                variant="outline"
-                size="sm"
                 onClick={handleReloadPreview}
                 disabled={refreshLoading}
-                className="text-xs"
+                variant="outline"
+                size="sm"
               >
                 {refreshLoading ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
-                  <RefreshCw className="h-3 w-3" />
+                  <RefreshCw className="h-4 w-4 mr-2" />
                 )}
-                <span className="ml-1 hidden sm:inline">Refresh</span>
+                Refresh
               </Button>
-              <div className="flex border rounded-md">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs rounded-r-none border-r"
-                >
-                  <Monitor className="h-3 w-3 mr-1" />
-                  <span className="hidden sm:inline">Desktop</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs rounded-l-none"
-                >
-                  <Tablet className="h-3 w-3 mr-1" />
-                  <span className="hidden sm:inline">Mobile</span>
-                </Button>
-              </div>
+              <Button variant="outline" size="sm">
+                <Monitor className="h-4 w-4 mr-2" />
+                Desktop
+              </Button>
+              <Button variant="outline" size="sm">
+                <Tablet className="h-4 w-4 mr-2" />
+                Mobile
+              </Button>
             </div>
           </div>
         </div>
 
-        {/* Content based on active tab */}
+        {/* Content based on active tab (scrollable) */}
         <div className="flex-1 overflow-auto">
-          {activeTab === "preview" && (
-            <WebsitePreview
-              key={previewKey}
-              itineraries={itineraries}
-              refreshKey={previewKey}
-            />
-          )}
-          
-          {activeTab === "builder" && (
-            <div className="p-6">
+                     <TabsContent value="preview" className="h-full">
+             <WebsitePreview
+               key={previewKey}
+               itineraries={itineraries}
+             />
+           </TabsContent>
+
+          <TabsContent value="builder" className="p-6">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold">Building Blocks</h3>
+                  <p className="text-sm text-gray-600">Drag blocks to build your website</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm">
+                    <Eye className="h-4 w-4 mr-2" />
+                    Preview
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                  <Button size="sm">
+                    <Save className="h-4 w-4 mr-2" />
+                    Save
+                  </Button>
+                </div>
+              </div>
               <DragDropBuilder />
             </div>
-          )}
-          
-          {activeTab === "themes" && (
-            <div className="p-6">
-              <WebsiteThemes />
-            </div>
-          )}
-          
-          {activeTab === "content" && (
-            <div className="p-6">
-              <WebsiteContent />
-            </div>
-          )}
-          
-          {activeTab === "header-footer" && (
-            <div className="p-6">
-              <HeaderFooterCustomizer onSettingsChange={handleSettingsChange} />
-            </div>
-          )}
-          
-          {activeTab === "fonts" && (
-            <div className="p-6">
-              <FontCustomizer onSettingsChange={handleSettingsChange} />
-            </div>
-          )}
-          
-          {activeTab === "booking" && (
-            <div className="p-6">
-              <BookingFlowBuilder />
-            </div>
-          )}
-          
-          {activeTab === "settings" && (
-            <div className="p-6">
-              <WebsiteSettings
-                itineraries={itineraries}
-                setItineraries={setItineraries}
-                onSettingsChange={handleSettingsChange}
-              />
-            </div>
-          )}
+          </TabsContent>
 
-          {activeTab === "media-library" && (
-            <div className="p-6">
-              <MediaLibrary />
-            </div>
-          )}
+          <TabsContent value="themes" className="p-6">
+            <WebsiteThemes />
+          </TabsContent>
+
+          <TabsContent value="content" className="p-6">
+            <WebsiteContent />
+          </TabsContent>
+
+          <TabsContent value="booking" className="p-6">
+            <BookingFlowBuilder />
+          </TabsContent>
+
+          <TabsContent value="media-library" className="p-6">
+            <MediaLibrary />
+          </TabsContent>
         </div>
+      </div>
+
+      {/* Publish Button - Fixed at bottom */}
+      <div className="fixed bottom-6 right-6">
+        <Button
+          onClick={handlePublish}
+          disabled={publishLoading}
+          size="lg"
+          className="bg-culturin-indigo hover:bg-culturin-indigo/90 shadow-lg"
+        >
+          {publishLoading ? (
+            <>
+              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              Publishing...
+            </>
+          ) : (
+            <>
+              <Globe className="h-5 w-5 mr-2" />
+              Publish Changes
+            </>
+          )}
+        </Button>
       </div>
     </div>
   );
