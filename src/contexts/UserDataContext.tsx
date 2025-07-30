@@ -245,6 +245,12 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
           const storedData = localStorage.getItem("culturin_user_data");
           if (storedData) {
             const parsedData = JSON.parse(storedData);
+            
+            // Convert memberSince back to Date object if it exists
+            if (parsedData.loyaltyCard && parsedData.loyaltyCard.memberSince) {
+              parsedData.loyaltyCard.memberSince = new Date(parsedData.loyaltyCard.memberSince);
+            }
+            
             setUserData({ ...defaultUserData, ...parsedData });
           } else {
             // Initialize with user auth data if available

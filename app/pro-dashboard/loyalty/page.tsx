@@ -267,7 +267,12 @@ const LoyaltyDashboard: React.FC = () => {
                   <div>
                     <Label className="text-sm font-medium">Member Since</Label>
                     <p className="text-sm text-gray-600">
-                      {loyaltyCard.memberSince.toLocaleDateString()}
+                      {loyaltyCard.memberSince 
+                        ? (loyaltyCard.memberSince instanceof Date 
+                            ? loyaltyCard.memberSince.toLocaleDateString()
+                            : new Date(loyaltyCard.memberSince).toLocaleDateString())
+                        : "N/A"
+                      }
                     </p>
                   </div>
                   <div>
