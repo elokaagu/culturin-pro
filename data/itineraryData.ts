@@ -239,6 +239,12 @@ export interface ItineraryType {
   image: string;
   themeType: string;
   regions: string[];
+  price?: number;
+  currency?: string;
+  groupSize?: { min: number; max: number };
+  difficulty?: 'easy' | 'moderate' | 'hard';
+  tags?: string[];
+  modules?: ItineraryModule[];
 }
 
 export type TemplateType = {

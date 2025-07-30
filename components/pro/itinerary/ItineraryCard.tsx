@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardHeader,
@@ -8,7 +8,25 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, Edit } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Progress } from "@/components/ui/progress";
+import { 
+  Clock, 
+  Edit, 
+  MoreHorizontal, 
+  Share2, 
+  Copy, 
+  Archive, 
+  BarChart3,
+  Globe,
+  TrendingUp,
+  Eye
+} from "lucide-react";
 import Image from "@/components/ui/image";
 import { ItineraryType } from "@/data/itineraryData";
 
@@ -23,18 +41,59 @@ interface ItineraryCardProps {
   themeType: string;
   regions: string[];
   onEdit: () => void;
+  onQuickAction?: (itineraryId: string, action: string) => void;
+  completionPercentage?: number;
+  isTrending?: boolean;
 }
 
 const ItineraryCard: React.FC<ItineraryCardProps> = ({
+  id,
   title,
   days,
   lastUpdated,
   status,
   image,
   onEdit,
+  onQuickAction,
+  completionPercentage = 0,
+  isTrending = false,
   themeType,
   regions,
 }) => {
+  const [showActions, setShowActions] = useState(false);
+
+  const handleQuickAction = (action: string) => {
+    if (onQuickAction) {
+      onQuickAction(id, action);
+    }
+  };
+
+  const getStatusColor = () => {
+    switch (status) {
+      case 'published':
+        return 'bg-green-500';
+      case 'draft':
+        return 'bg-yellow-500';
+      case 'archived':
+        return 'bg-gray-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
+  const getStatusText = () => {
+    switch (status) {
+      case 'published':
+        return 'Live';
+      case 'draft':
+        return 'Draft';
+      case 'archived':
+        return 'Archived';
+      default:
+        return 'Draft';
+    }
+  };
+
   return (
     <Card
       className="relative h-64 overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer group"
@@ -46,21 +105,78 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
         alt={title}
         className="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-300 group-hover:scale-110"
       />
+      
       {/* Gradient overlay for readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10 transition-opacity duration-300 group-hover:opacity-90" />
+      
+      {/* Progress Bar */}
+      {completionPercentage > 0 && (
+        <div className="absolute top-0 left-0 right-0 z-20 p-3">
+          <div className="bg-black/50 rounded-lg p-2">
+            <div className="flex items-center justify-between text-white text-xs mb-1">
+              <span>Completion</span>
+              <span>{completionPercentage}%</span>
+            </div>
+            <Progress value={completionPercentage} className="h-1" />
+          </div>
+        </div>
+      )}
+
+      {/* Action Menu */}
+      <div className="absolute top-2 right-2 z-30">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 bg-black/50 text-white hover:bg-black/70"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => handleQuickAction('duplicate')}>
+              <Copy className="h-4 w-4 mr-2" />
+              Duplicate
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleQuickAction('share')}>
+              <Share2 className="h-4 w-4 mr-2" />
+              Share
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleQuickAction('analytics')}>
+              <BarChart3 className="h-4 w-4 mr-2" />
+              View Analytics
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleQuickAction('push-to-website')}>
+              <Globe className="h-4 w-4 mr-2" />
+              Push to Website
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleQuickAction('archive')}>
+              <Archive className="h-4 w-4 mr-2" />
+              Archive
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Status Badge */}
+      <div className="absolute top-2 left-2 z-30">
+        <Badge
+          className={`${getStatusColor()} text-white text-xs`}
+        >
+          {getStatusText()}
+        </Badge>
+      </div>
+
       {/* Content overlayed at the bottom */}
       <div className="absolute bottom-0 left-0 w-full z-20 p-4 flex flex-col gap-2 transition-transform duration-300 group-hover:translate-y-0">
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg text-white drop-shadow font-semibold transition-all duration-300 group-hover:text-xl">
             {title}
           </CardTitle>
-          <Badge
-            variant={status === "published" ? "default" : "outline"}
-            className="bg-white/80 text-gray-900 transition-all duration-300 group-hover:bg-white group-hover:scale-105"
-          >
-            {status === "published" ? "Published" : "Draft"}
-          </Badge>
         </div>
+        
         <CardDescription className="flex items-center gap-1 text-white/90 text-sm transition-all duration-300 group-hover:text-white">
           <Clock className="h-3 w-3" /> {days} days
           {regions && regions.length > 0 && (
@@ -69,29 +185,55 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
             </span>
           )}
         </CardDescription>
+        
         <div className="flex justify-between items-center mt-2">
           <span className="text-xs text-white/80 group-hover:text-white transition-colors duration-300">
             Last updated {lastUpdated}
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 bg-white/90 text-gray-900 hover:bg-white transition-all duration-300 group-hover:bg-white group-hover:scale-105 group-hover:shadow-md"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit();
-            }}
-          >
-            <Edit className="h-3 w-3 mr-1" /> Edit
-          </Button>
+          <div className="flex items-center gap-2">
+            {status === 'published' && (
+              <Badge className="bg-green-500/80 text-white text-xs">
+                <Globe className="h-3 w-3 mr-1" />
+                Live on Site
+              </Badge>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 bg-white/90 text-gray-900 hover:bg-white transition-all duration-300 group-hover:bg-white group-hover:scale-105 group-hover:shadow-md"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+            >
+              <Edit className="h-3 w-3 mr-1" /> Edit
+            </Button>
+          </div>
         </div>
       </div>
-      {/* Theme badge in the top right */}
+
+      {/* Theme badge */}
       {themeType && (
-        <Badge className="absolute top-2 right-2 bg-black/70 text-white z-30 transition-all duration-300 group-hover:bg-black/90 group-hover:scale-110">
+        <Badge className="absolute top-12 left-2 bg-black/70 text-white z-30 transition-all duration-300 group-hover:bg-black/90 group-hover:scale-110">
           {themeType.charAt(0).toUpperCase() + themeType.slice(1)}
         </Badge>
       )}
+
+      {/* Hover overlay with quick stats */}
+      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-15 flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <div className="font-semibold">Bookings</div>
+              <div className="text-2xl font-bold">12</div>
+            </div>
+            <div>
+              <div className="font-semibold">Views</div>
+              <div className="text-2xl font-bold">1.2k</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </Card>
   );
 };
