@@ -433,18 +433,19 @@ const WebsiteBuilder: React.FC = () => {
   }, [lastSaved]);
 
   return (
-    <div className="space-y-6">
-      {/* Enhanced Header with Status Indicators */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-xl font-medium">Your Website</h2>
-          <p className="text-sm text-gray-500">
-            Customize your tour operator website with real-time preview and
-            booking functionality.
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar */}
+      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+        {/* Sidebar Header */}
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-xl font-semibold mb-2">Your Website</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Customize your tour operator website with real-time preview and booking functionality.
           </p>
+          
           {/* Status indicators */}
-          <div className="flex items-center gap-4 mt-2 text-xs">
-            <div className="flex items-center gap-1">
+          <div className="space-y-2 text-xs">
+            <div className="flex items-center gap-2">
               <div
                 className={`w-2 h-2 rounded-full ${
                   hasUnsavedChanges ? "bg-orange-500" : "bg-green-500"
@@ -458,7 +459,7 @@ const WebsiteBuilder: React.FC = () => {
                 {hasUnsavedChanges ? "Unsaved changes" : "All changes saved"}
               </span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <Zap className="w-3 h-3" />
               <span className="text-gray-600">
                 Auto-save: {autoSaveEnabled ? "On" : "Off"}
@@ -468,65 +469,59 @@ const WebsiteBuilder: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex gap-2">
-          {/* Undo/Redo buttons */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={undo}
-            disabled={!canUndo}
-            className="flex items-center"
-          >
-            <Undo className="h-4 w-4 mr-1" />
-            Undo
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={redo}
-            disabled={!canRedo}
-            className="flex items-center"
-          >
-            <Redo className="h-4 w-4 mr-1" />
-            Redo
-          </Button>
-
-          <Button
-            variant="outline"
-            onClick={handleManualSave}
-            className="flex items-center"
-          >
-            <Save className="mr-2 h-4 w-4" />
-            Save
-          </Button>
-
-          <Button
-            variant="outline"
-            onClick={handleReloadPreview}
-            disabled={refreshLoading}
-            className="flex items-center"
-          >
-            {refreshLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
-            )}
-            Refresh Preview
-          </Button>
-
-          <Button
-            variant="outline"
-            onClick={handlePreviewSite}
-            className="flex items-center"
-          >
-            <ExternalLink className="mr-2 h-4 w-4" />
-            Preview Live Site
-          </Button>
+        {/* Action Buttons */}
+        <div className="p-6 border-b border-gray-200 space-y-3">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={undo}
+              disabled={!canUndo}
+              className="flex-1"
+            >
+              <Undo className="h-4 w-4 mr-1" />
+              Undo
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={redo}
+              disabled={!canRedo}
+              className="flex-1"
+            >
+              <Redo className="h-4 w-4 mr-1" />
+              Redo
+            </Button>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={handleManualSave}
+              className="flex-1"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              Save
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleReloadPreview}
+              disabled={refreshLoading}
+              className="flex-1"
+            >
+              {refreshLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
+              Refresh
+            </Button>
+          </div>
 
           <Button
             onClick={handlePublish}
             disabled={publishLoading}
-            className="flex items-center"
+            className="w-full"
           >
             {publishLoading ? (
               <>
@@ -541,144 +536,176 @@ const WebsiteBuilder: React.FC = () => {
             )}
           </Button>
         </div>
-      </div>
 
-      {/* Published URL Status */}
-      {publishedUrl && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-md flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="rounded-full bg-green-100 p-1">
-              <Check className="h-4 w-4 text-green-600" />
-            </div>
-            <span className="ml-2 text-sm text-green-800">
-              Your site is published at:{" "}
-              <a
-                href={`/${publishedUrl}`}
-                target="_blank"
-                rel="noreferrer"
-                className="font-medium underline hover:text-green-900"
-              >
-                {typeof window !== "undefined" ? window.location.origin : ""}/
-                {publishedUrl}
-              </a>
+        {/* Published URL Status */}
+        {publishedUrl && (
+          <div className="p-6 border-b border-gray-200">
+            <div className="bg-green-50 border border-green-200 rounded-md p-3">
+              <div className="flex items-center mb-2">
+                <div className="rounded-full bg-green-100 p-1">
+                  <Check className="h-4 w-4 text-green-600" />
+                </div>
+                <span className="ml-2 text-sm font-medium text-green-800">
+                  Site Published
+                </span>
+              </div>
+              <div className="text-xs text-green-700 mb-2">
+                <a
+                  href={`/${publishedUrl}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline hover:text-green-900 break-all"
+                >
+                  {typeof window !== "undefined" ? window.location.origin : ""}/
+                  {publishedUrl}
+                </a>
+              </div>
               {userData.websiteSettings.enableBooking && (
-                <span className="ml-2 inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                <div className="flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
                   <ShoppingCart className="h-3 w-3" />
                   Booking Enabled
-                </span>
+                </div>
               )}
-            </span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handlePreviewSite}
+                className="w-full mt-2"
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                Visit Site
+              </Button>
+            </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={handlePreviewSite}>
-            <Eye className="h-4 w-4 mr-1" />
-            Visit
-          </Button>
-        </div>
-      )}
+        )}
 
-      {/* Enhanced Quick Actions Bar */}
-      <div className="bg-gray-50 p-4 rounded-lg border">
-        <h3 className="text-sm font-medium mb-3">Quick Actions</h3>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleQuickAction("resetColor")}
-            className="flex items-center gap-2"
+        {/* Quick Actions */}
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-sm font-medium mb-3">Quick Actions</h3>
+          <div className="space-y-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleQuickAction("resetColor")}
+              className="w-full justify-start"
+            >
+              <Palette className="h-4 w-4 mr-2" />
+              Reset Brand Color
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleQuickAction("toggleBooking")}
+              className="w-full justify-start"
+            >
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              {userData.websiteSettings.enableBooking ? "Disable" : "Enable"} Booking
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleQuickAction("configureBooking")}
+              className="w-full justify-start"
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Configure Booking Flow
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleQuickAction("toggleAutoSave")}
+              className={`w-full justify-start ${
+                autoSaveEnabled ? "bg-green-50 border-green-200" : ""
+              }`}
+            >
+              <Zap className="h-4 w-4 mr-2" />
+              {autoSaveEnabled ? "Auto-save On" : "Auto-save Off"}
+            </Button>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="flex-1 p-6">
+          <h3 className="text-sm font-medium mb-3">Website Builder</h3>
+          <Tabs
+            defaultValue="preview"
+            value={activeTab}
+            onValueChange={handleTabChange}
+            className="w-full"
           >
-            <Palette className="h-4 w-4" />
-            Reset Brand Color
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleQuickAction("toggleBooking")}
-            className="flex items-center gap-2"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            {userData.websiteSettings.enableBooking ? "Disable" : "Enable"}{" "}
-            Booking
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleQuickAction("configureBooking")}
-            className="flex items-center gap-2"
-          >
-            <Settings className="h-4 w-4" />
-            Configure Booking Flow
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleQuickAction("toggleAutoSave")}
-            className={`flex items-center gap-2 ${
-              autoSaveEnabled ? "bg-green-50 border-green-200" : ""
-            }`}
-          >
-            <Zap className="h-4 w-4" />
-            {autoSaveEnabled ? "Auto-save On" : "Auto-save Off"}
-          </Button>
+            <TabsList className="flex flex-col w-full h-auto bg-transparent">
+              <TabsTrigger value="preview" className="w-full justify-start h-10">Preview</TabsTrigger>
+              <TabsTrigger value="builder" className="w-full justify-start h-10">Builder</TabsTrigger>
+              <TabsTrigger value="themes" className="w-full justify-start h-10">Themes</TabsTrigger>
+              <TabsTrigger value="content" className="w-full justify-start h-10">Content</TabsTrigger>
+              <TabsTrigger value="header-footer" className="w-full justify-start h-10">Header</TabsTrigger>
+              <TabsTrigger value="fonts" className="w-full justify-start h-10">Fonts</TabsTrigger>
+              <TabsTrigger value="booking" className="w-full justify-start h-10">Booking</TabsTrigger>
+              <TabsTrigger value="settings" className="w-full justify-start h-10">Settings</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       </div>
 
-      {/* Main Tabs */}
-      <Tabs
-        defaultValue="preview"
-        value={activeTab}
-        onValueChange={handleTabChange}
-      >
-        <TabsList className="flex w-full overflow-x-auto min-w-0">
-          <TabsTrigger value="preview">Preview</TabsTrigger>
-          <TabsTrigger value="builder">Builder</TabsTrigger>
-          <TabsTrigger value="themes">Themes</TabsTrigger>
-          <TabsTrigger value="content">Content</TabsTrigger>
-          <TabsTrigger value="header-footer">Header</TabsTrigger>
-          <TabsTrigger value="fonts">Fonts</TabsTrigger>
-          <TabsTrigger value="booking">Booking</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="preview">
-          <WebsitePreview
-            key={previewKey}
-            itineraries={itineraries}
-            refreshKey={previewKey}
-          />
-        </TabsContent>
-
-        <TabsContent value="builder">
-          <DragDropBuilder />
-        </TabsContent>
-
-        <TabsContent value="themes">
-          <WebsiteThemes />
-        </TabsContent>
-
-        <TabsContent value="content">
-          <WebsiteContent />
-        </TabsContent>
-
-        <TabsContent value="header-footer">
-          <HeaderFooterCustomizer onSettingsChange={handleSettingsChange} />
-        </TabsContent>
-
-        <TabsContent value="fonts">
-          <FontCustomizer onSettingsChange={handleSettingsChange} />
-        </TabsContent>
-
-        <TabsContent value="booking">
-          <BookingFlowBuilder />
-        </TabsContent>
-
-        <TabsContent value="settings">
-          <WebsiteSettings
-            itineraries={itineraries}
-            setItineraries={setItineraries}
-            onSettingsChange={handleSettingsChange}
-          />
-        </TabsContent>
-      </Tabs>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Content based on active tab */}
+        <div className="flex-1 overflow-auto">
+          {activeTab === "preview" && (
+            <WebsitePreview
+              key={previewKey}
+              itineraries={itineraries}
+              refreshKey={previewKey}
+            />
+          )}
+          
+          {activeTab === "builder" && (
+            <div className="p-6">
+              <DragDropBuilder />
+            </div>
+          )}
+          
+          {activeTab === "themes" && (
+            <div className="p-6">
+              <WebsiteThemes />
+            </div>
+          )}
+          
+          {activeTab === "content" && (
+            <div className="p-6">
+              <WebsiteContent />
+            </div>
+          )}
+          
+          {activeTab === "header-footer" && (
+            <div className="p-6">
+              <HeaderFooterCustomizer onSettingsChange={handleSettingsChange} />
+            </div>
+          )}
+          
+          {activeTab === "fonts" && (
+            <div className="p-6">
+              <FontCustomizer onSettingsChange={handleSettingsChange} />
+            </div>
+          )}
+          
+          {activeTab === "booking" && (
+            <div className="p-6">
+              <BookingFlowBuilder />
+            </div>
+          )}
+          
+          {activeTab === "settings" && (
+            <div className="p-6">
+              <WebsiteSettings
+                itineraries={itineraries}
+                setItineraries={setItineraries}
+                onSettingsChange={handleSettingsChange}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
