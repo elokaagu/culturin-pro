@@ -472,78 +472,78 @@ const WebsiteBuilder: React.FC = () => {
           </div>
         </div>
 
-        {/* Action Buttons - Fixed */}
-        <div className="p-6 border-b border-gray-200 space-y-4 flex-shrink-0">
-          {/* Primary Action */}
-          <Button
-            onClick={handlePublish}
-            disabled={publishLoading}
-            className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90 text-white font-medium"
-          >
-            {publishLoading ? (
-              <>
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                Publishing...
-              </>
-            ) : (
-              <>
-                <Globe className="mr-2 h-4 w-4" />
-                Publish Changes
-              </>
-            )}
-          </Button>
-
-          {/* Secondary Actions */}
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={undo}
-              disabled={!canUndo}
-              className="text-xs"
-            >
-              <Undo className="h-3 w-3 mr-1" />
-              Undo
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={redo}
-              disabled={!canRedo}
-              className="text-xs"
-            >
-              <Redo className="h-3 w-3 mr-1" />
-              Redo
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              onClick={handleManualSave}
-              className="text-xs"
-            >
-              <Save className="mr-1 h-3 w-3" />
-              Save
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleReloadPreview}
-              disabled={refreshLoading}
-              className="text-xs"
-            >
-              {refreshLoading ? (
-                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-              ) : (
-                <RefreshCw className="mr-1 h-3 w-3" />
-              )}
-              Refresh
-            </Button>
-          </div>
-        </div>
-
-        {/* Scrollable Content Area */}
+        {/* Scrollable Content Area - Everything below status indicators */}
         <div className="flex-1 overflow-y-auto">
+          {/* Action Buttons */}
+          <div className="p-6 border-b border-gray-200 space-y-4">
+            {/* Primary Action */}
+            <Button
+              onClick={handlePublish}
+              disabled={publishLoading}
+              className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90 text-white font-medium"
+            >
+              {publishLoading ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  Publishing...
+                </>
+              ) : (
+                <>
+                  <Globe className="mr-2 h-4 w-4" />
+                  Publish Changes
+                </>
+              )}
+            </Button>
+
+            {/* Secondary Actions */}
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={undo}
+                disabled={!canUndo}
+                className="text-xs"
+              >
+                <Undo className="h-3 w-3 mr-1" />
+                Undo
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={redo}
+                disabled={!canRedo}
+                className="text-xs"
+              >
+                <Redo className="h-3 w-3 mr-1" />
+                Redo
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="outline"
+                onClick={handleManualSave}
+                className="text-xs"
+              >
+                <Save className="mr-1 h-3 w-3" />
+                Save
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleReloadPreview}
+                disabled={refreshLoading}
+                className="text-xs"
+              >
+                {refreshLoading ? (
+                  <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-1 h-3 w-3" />
+                )}
+                Refresh
+              </Button>
+            </div>
+          </div>
+
           {/* Published URL Status */}
           {publishedUrl && (
             <div className="p-6 border-b border-gray-200">

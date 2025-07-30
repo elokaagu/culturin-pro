@@ -1,21 +1,27 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { 
-  CreditCard, 
-  Wallet, 
-  Settings, 
-  Calendar, 
-  Users, 
+import {
+  CreditCard,
+  Wallet,
+  Settings,
+  Calendar,
+  Users,
   Shield,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -36,22 +42,22 @@ const BookingFlowBuilder: React.FC = () => {
       description: "Accept credit cards and digital wallets worldwide",
       icon: <CreditCard className="h-5 w-5" />,
       isConnected: true,
-      isRecommended: true
+      isRecommended: true,
     },
     {
       id: "paypal",
       name: "PayPal",
       description: "Trusted payment method for international travelers",
       icon: <Wallet className="h-5 w-5" />,
-      isConnected: false
+      isConnected: false,
     },
     {
       id: "crypto",
       name: "Crypto Payments",
       description: "Accept USDC, USDT, and other cryptocurrencies",
       icon: <Wallet className="h-5 w-5" />,
-      isConnected: false
-    }
+      isConnected: false,
+    },
   ]);
 
   const [bookingSettings, setBookingSettings] = useState({
@@ -62,13 +68,13 @@ const BookingFlowBuilder: React.FC = () => {
     maxGroupSize: 12,
     requireContactInfo: true,
     sendConfirmationEmail: true,
-    sendReminderEmail: true
+    sendReminderEmail: true,
   });
 
   const handleSettingChange = (key: string, value: any) => {
-    setBookingSettings(prev => ({
+    setBookingSettings((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
     toast.success("Setting updated");
   };
@@ -82,9 +88,12 @@ const BookingFlowBuilder: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Booking Flow Configuration</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Booking Flow Configuration
+        </h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Configure your booking process, payment methods, and customer experience settings.
+          Configure your booking process, payment methods, and customer
+          experience settings.
         </p>
       </div>
 
@@ -123,7 +132,9 @@ const BookingFlowBuilder: React.FC = () => {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600">{provider.description}</p>
+                  <p className="text-sm text-gray-600">
+                    {provider.description}
+                  </p>
                 </div>
               </div>
               <Button
@@ -152,14 +163,18 @@ const BookingFlowBuilder: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <Label className="text-sm font-medium">Require Deposit</Label>
-                <p className="text-xs text-gray-500">Collect partial payment upfront</p>
+                <p className="text-xs text-gray-500">
+                  Collect partial payment upfront
+                </p>
               </div>
               <Switch
                 checked={bookingSettings.requireDeposit}
-                onCheckedChange={(checked) => handleSettingChange("requireDeposit", checked)}
+                onCheckedChange={(checked) =>
+                  handleSettingChange("requireDeposit", checked)
+                }
               />
             </div>
-            
+
             {bookingSettings.requireDeposit && (
               <div className="space-y-2">
                 <Label htmlFor="depositPercentage">Deposit Percentage</Label>
@@ -168,7 +183,12 @@ const BookingFlowBuilder: React.FC = () => {
                     id="depositPercentage"
                     type="number"
                     value={bookingSettings.depositPercentage}
-                    onChange={(e) => handleSettingChange("depositPercentage", parseInt(e.target.value))}
+                    onChange={(e) =>
+                      handleSettingChange(
+                        "depositPercentage",
+                        parseInt(e.target.value)
+                      )
+                    }
                     className="w-20"
                     min="0"
                     max="100"
@@ -191,15 +211,21 @@ const BookingFlowBuilder: React.FC = () => {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-sm font-medium">Allow Cancellations</Label>
-                <p className="text-xs text-gray-500">Let customers cancel bookings</p>
+                <Label className="text-sm font-medium">
+                  Allow Cancellations
+                </Label>
+                <p className="text-xs text-gray-500">
+                  Let customers cancel bookings
+                </p>
               </div>
               <Switch
                 checked={bookingSettings.allowCancellations}
-                onCheckedChange={(checked) => handleSettingChange("allowCancellations", checked)}
+                onCheckedChange={(checked) =>
+                  handleSettingChange("allowCancellations", checked)
+                }
               />
             </div>
-            
+
             {bookingSettings.allowCancellations && (
               <div className="space-y-2">
                 <Label htmlFor="cancellationDays">Cancellation Window</Label>
@@ -208,11 +234,18 @@ const BookingFlowBuilder: React.FC = () => {
                     id="cancellationDays"
                     type="number"
                     value={bookingSettings.cancellationDays}
-                    onChange={(e) => handleSettingChange("cancellationDays", parseInt(e.target.value))}
+                    onChange={(e) =>
+                      handleSettingChange(
+                        "cancellationDays",
+                        parseInt(e.target.value)
+                      )
+                    }
                     className="w-20"
                     min="0"
                   />
-                  <span className="text-sm text-gray-500">days before tour</span>
+                  <span className="text-sm text-gray-500">
+                    days before tour
+                  </span>
                 </div>
               </div>
             )}
@@ -234,7 +267,9 @@ const BookingFlowBuilder: React.FC = () => {
                 id="maxGroupSize"
                 type="number"
                 value={bookingSettings.maxGroupSize}
-                onChange={(e) => handleSettingChange("maxGroupSize", parseInt(e.target.value))}
+                onChange={(e) =>
+                  handleSettingChange("maxGroupSize", parseInt(e.target.value))
+                }
                 min="1"
                 max="50"
               />
@@ -253,34 +288,50 @@ const BookingFlowBuilder: React.FC = () => {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-sm font-medium">Require Contact Info</Label>
+                <Label className="text-sm font-medium">
+                  Require Contact Info
+                </Label>
                 <p className="text-xs text-gray-500">Collect phone and email</p>
               </div>
               <Switch
                 checked={bookingSettings.requireContactInfo}
-                onCheckedChange={(checked) => handleSettingChange("requireContactInfo", checked)}
+                onCheckedChange={(checked) =>
+                  handleSettingChange("requireContactInfo", checked)
+                }
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-sm font-medium">Send Confirmation Email</Label>
-                <p className="text-xs text-gray-500">Auto-send booking confirmations</p>
+                <Label className="text-sm font-medium">
+                  Send Confirmation Email
+                </Label>
+                <p className="text-xs text-gray-500">
+                  Auto-send booking confirmations
+                </p>
               </div>
               <Switch
                 checked={bookingSettings.sendConfirmationEmail}
-                onCheckedChange={(checked) => handleSettingChange("sendConfirmationEmail", checked)}
+                onCheckedChange={(checked) =>
+                  handleSettingChange("sendConfirmationEmail", checked)
+                }
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-sm font-medium">Send Reminder Email</Label>
-                <p className="text-xs text-gray-500">Remind customers before tour</p>
+                <Label className="text-sm font-medium">
+                  Send Reminder Email
+                </Label>
+                <p className="text-xs text-gray-500">
+                  Remind customers before tour
+                </p>
               </div>
               <Switch
                 checked={bookingSettings.sendReminderEmail}
-                onCheckedChange={(checked) => handleSettingChange("sendReminderEmail", checked)}
+                onCheckedChange={(checked) =>
+                  handleSettingChange("sendReminderEmail", checked)
+                }
               />
             </div>
           </CardContent>
