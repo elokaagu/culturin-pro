@@ -33,6 +33,7 @@ import {
 import { useNavigate } from "../../../lib/navigation";
 import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
 import { useUserData } from "../../../src/contexts/UserDataContext";
+import MediaLibrary from "./MediaLibrary";
 
 // History management for undo/redo functionality
 interface HistoryState {
@@ -668,6 +669,7 @@ const WebsiteBuilder: React.FC = () => {
               <TabsTrigger value="fonts" className="w-full justify-start h-10 text-sm">Fonts</TabsTrigger>
               <TabsTrigger value="booking" className="w-full justify-start h-10 text-sm">Booking</TabsTrigger>
               <TabsTrigger value="settings" className="w-full justify-start h-10 text-sm">Settings</TabsTrigger>
+              <TabsTrigger value="media-library" className="w-full justify-start h-10 text-sm">Media Library</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -772,6 +774,12 @@ const WebsiteBuilder: React.FC = () => {
                 setItineraries={setItineraries}
                 onSettingsChange={handleSettingsChange}
               />
+            </div>
+          )}
+
+          {activeTab === "media-library" && (
+            <div className="p-6">
+              <MediaLibrary />
             </div>
           )}
         </div>

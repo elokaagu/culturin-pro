@@ -1,454 +1,298 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { useUserData } from "../../../src/contexts/UserDataContext";
-import { toast } from "sonner";
-import {
-  CreditCard,
-  DollarSign,
-  Calendar,
-  Users,
+import { 
+  CreditCard, 
+  Wallet, 
+  Settings, 
+  Calendar, 
+  Users, 
   Shield,
-  FileText,
-  Settings,
-  Eye,
   CheckCircle,
+  AlertCircle
 } from "lucide-react";
+import { toast } from "sonner";
+
+interface PaymentProvider {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  isConnected: boolean;
+  isRecommended?: boolean;
+}
 
 const BookingFlowBuilder: React.FC = () => {
-  const { userData, updateWebsiteSettings } = useUserData();
-  const [previewMode, setPreviewMode] = useState(false);
-
-  const bookingSettings = userData.websiteSettings.bookingSettings;
-
-  const handleSettingUpdate = (key: string, value: any) => {
-    try {
-      updateWebsiteSettings({
-        bookingSettings: {
-          ...bookingSettings,
-          [key]: value,
-        },
-      });
-      toast.success("Booking setting updated", {
-        description: `${key} has been updated successfully`,
-      });
-    } catch (error) {
-      toast.error("Failed to update booking setting", {
-        description: "Please try again",
-      });
+  const [paymentProviders] = useState<PaymentProvider[]>([
+    {
+      id: "stripe",
+      name: "Stripe",
+      description: "Accept credit cards and digital wallets worldwide",
+      icon: <CreditCard className="h-5 w-5" />,
+      isConnected: true,
+      isRecommended: true
+    },
+    {
+      id: "paypal",
+      name: "PayPal",
+      description: "Trusted payment method for international travelers",
+      icon: <Wallet className="h-5 w-5" />,
+      isConnected: false
+    },
+    {
+      id: "crypto",
+      name: "Crypto Payments",
+      description: "Accept USDC, USDT, and other cryptocurrencies",
+      icon: <Wallet className="h-5 w-5" />,
+      isConnected: false
     }
+  ]);
+
+  const [bookingSettings, setBookingSettings] = useState({
+    requireDeposit: true,
+    depositPercentage: 25,
+    allowCancellations: true,
+    cancellationDays: 7,
+    maxGroupSize: 12,
+    requireContactInfo: true,
+    sendConfirmationEmail: true,
+    sendReminderEmail: true
+  });
+
+  const handleSettingChange = (key: string, value: any) => {
+    setBookingSettings(prev => ({
+      ...prev,
+      [key]: value
+    }));
+    toast.success("Setting updated");
   };
 
-  const handleToggleBooking = (enabled: boolean) => {
-    try {
-      updateWebsiteSettings({ enableBooking: enabled });
-      toast.success(enabled ? "Booking enabled" : "Booking disabled", {
-        description: enabled
-          ? "Customers can now book your experiences online"
-          : "Online booking has been disabled",
-      });
-    } catch (error) {
-      toast.error("Failed to toggle booking", {
-        description: "Please try again",
-      });
-    }
+  const handleConnectProvider = (providerId: string) => {
+    // Simulate connection process
+    toast.success("Payment provider connected successfully!");
   };
-
-  const handlePreviewToggle = () => {
-    try {
-      setPreviewMode(!previewMode);
-      toast.success(previewMode ? "Preview hidden" : "Preview shown", {
-        description: previewMode
-          ? "Booking flow preview has been hidden"
-          : "Booking flow preview is now visible",
-      });
-    } catch (error) {
-      toast.error("Failed to toggle preview", {
-        description: "Please try again",
-      });
-    }
-  };
-
-  const currencies = [
-    { value: "USD", label: "US Dollar ($)" },
-    { value: "EUR", label: "Euro (€)" },
-    { value: "GBP", label: "British Pound (£)" },
-    { value: "CAD", label: "Canadian Dollar (C$)" },
-    { value: "AUD", label: "Australian Dollar (A$)" },
-  ];
-
-  const paymentMethodOptions = [
-    { id: "credit_card", label: "Credit/Debit Cards", icon: CreditCard },
-    { id: "paypal", label: "PayPal", icon: DollarSign },
-    { id: "bank_transfer", label: "Bank Transfer", icon: Shield },
-  ];
-
-  const BookingPreview = () => (
-    <Card className="border-2 border-blue-200 bg-blue-50/30">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Eye className="h-5 w-5" />
-          Booking Flow Preview
-        </CardTitle>
-        <CardDescription>
-          This is how customers will see your booking process
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="bg-white p-4 rounded-lg border">
-          <h3 className="font-semibold mb-2">Step 1: Select Experience</h3>
-          <div className="text-sm text-gray-600">
-            Customer selects from your available experiences
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-lg border">
-          <h3 className="font-semibold mb-2">Step 2: Choose Date & Time</h3>
-          <div className="text-sm text-gray-600">
-            Interactive calendar with available slots
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-lg border">
-          <h3 className="font-semibold mb-2">Step 3: Guest Information</h3>
-          <div className="text-sm text-gray-600">
-            Contact details and special requirements
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-lg border">
-          <h3 className="font-semibold mb-2">Step 4: Payment</h3>
-          <div className="flex gap-2 mb-2">
-            {bookingSettings.paymentMethods.map((method) => {
-              const option = paymentMethodOptions.find(
-                (opt) => opt.id === method
-              );
-              return option ? (
-                <Badge
-                  key={method}
-                  variant="secondary"
-                  className="flex items-center gap-1"
-                >
-                  <option.icon className="h-3 w-3" />
-                  {option.label}
-                </Badge>
-              ) : null;
-            })}
-          </div>
-          <div className="text-sm text-gray-600">
-            {bookingSettings.requireDeposit
-              ? `${bookingSettings.depositAmount}% deposit required`
-              : "Full payment required"}
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-lg border">
-          <h3 className="font-semibold mb-2">Step 5: Confirmation</h3>
-          <div className="text-sm text-gray-600">
-            Booking confirmation with cancellation policy
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-xl font-medium">Booking Flow Settings</h2>
-          <p className="text-sm text-gray-500">
-            Configure how customers book your experiences
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant={previewMode ? "default" : "outline"}
-            onClick={handlePreviewToggle}
-          >
-            <Eye className="h-4 w-4 mr-2" />
-            {previewMode ? "Hide Preview" : "Show Preview"}
-          </Button>
-        </div>
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Booking Flow Configuration</h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Configure your booking process, payment methods, and customer experience settings.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="space-y-6">
-          {/* Enable/Disable Booking */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                Booking Status
-              </CardTitle>
-              <CardDescription>
-                Enable or disable online booking for your website
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
+      {/* Payment Providers */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CreditCard className="h-5 w-5" />
+            Payment Providers
+          </CardTitle>
+          <CardDescription>
+            Connect payment methods to accept bookings and payments
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {paymentProviders.map((provider) => (
+            <div
+              key={provider.id}
+              className="flex items-center justify-between p-4 border rounded-lg"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gray-100 rounded-lg">
+                  {provider.icon}
+                </div>
                 <div>
-                  <Label
-                    htmlFor="enable-booking"
-                    className="text-base font-medium"
-                  >
-                    Enable Online Booking
-                  </Label>
-                  <p className="text-sm text-gray-500">
-                    Allow customers to book experiences directly from your
-                    website
-                  </p>
-                </div>
-                <Switch
-                  id="enable-booking"
-                  checked={userData.websiteSettings.enableBooking}
-                  onCheckedChange={handleToggleBooking}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Payment Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                Payment Settings
-              </CardTitle>
-              <CardDescription>
-                Configure payment methods and currency
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="currency">Currency</Label>
-                <Select
-                  value={bookingSettings.currency}
-                  onValueChange={(value) =>
-                    handleSettingUpdate("currency", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select currency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {currencies.map((currency) => (
-                      <SelectItem key={currency.value} value={currency.value}>
-                        {currency.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label className="text-base font-medium">Payment Methods</Label>
-                <p className="text-sm text-gray-500 mb-3">
-                  Select which payment methods to accept
-                </p>
-                <div className="space-y-2">
-                  {paymentMethodOptions.map((option) => (
-                    <div
-                      key={option.id}
-                      className="flex items-center space-x-2"
-                    >
-                      <Checkbox
-                        id={option.id}
-                        checked={bookingSettings.paymentMethods.includes(
-                          option.id
-                        )}
-                        onCheckedChange={(checked) => {
-                          const methods = checked
-                            ? [...bookingSettings.paymentMethods, option.id]
-                            : bookingSettings.paymentMethods.filter(
-                                (m) => m !== option.id
-                              );
-                          handleSettingUpdate("paymentMethods", methods);
-                        }}
-                      />
-                      <Label
-                        htmlFor={option.id}
-                        className="flex items-center gap-2 cursor-pointer"
-                      >
-                        <option.icon className="h-4 w-4" />
-                        {option.label}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label
-                      htmlFor="require-deposit"
-                      className="text-base font-medium"
-                    >
-                      Require Deposit
-                    </Label>
-                    <p className="text-sm text-gray-500">
-                      Require partial payment upfront
-                    </p>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-medium">{provider.name}</h3>
+                    {provider.isRecommended && (
+                      <Badge className="bg-green-100 text-green-700 text-xs">
+                        Recommended
+                      </Badge>
+                    )}
+                    {provider.isConnected && (
+                      <Badge className="bg-blue-100 text-blue-700 text-xs">
+                        Connected
+                      </Badge>
+                    )}
                   </div>
-                  <Switch
-                    id="require-deposit"
-                    checked={bookingSettings.requireDeposit}
-                    onCheckedChange={(checked) =>
-                      handleSettingUpdate("requireDeposit", checked)
-                    }
+                  <p className="text-sm text-gray-600">{provider.description}</p>
+                </div>
+              </div>
+              <Button
+                variant={provider.isConnected ? "outline" : "default"}
+                size="sm"
+                onClick={() => handleConnectProvider(provider.id)}
+              >
+                {provider.isConnected ? "Connected" : "Connect"}
+              </Button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Booking Settings */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Payment Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Payment Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm font-medium">Require Deposit</Label>
+                <p className="text-xs text-gray-500">Collect partial payment upfront</p>
+              </div>
+              <Switch
+                checked={bookingSettings.requireDeposit}
+                onCheckedChange={(checked) => handleSettingChange("requireDeposit", checked)}
+              />
+            </div>
+            
+            {bookingSettings.requireDeposit && (
+              <div className="space-y-2">
+                <Label htmlFor="depositPercentage">Deposit Percentage</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="depositPercentage"
+                    type="number"
+                    value={bookingSettings.depositPercentage}
+                    onChange={(e) => handleSettingChange("depositPercentage", parseInt(e.target.value))}
+                    className="w-20"
+                    min="0"
+                    max="100"
                   />
+                  <span className="text-sm text-gray-500">%</span>
                 </div>
-
-                {bookingSettings.requireDeposit && (
-                  <div>
-                    <Label htmlFor="deposit-amount">Deposit Percentage</Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="deposit-amount"
-                        type="number"
-                        min="1"
-                        max="100"
-                        value={bookingSettings.depositAmount}
-                        onChange={(e) =>
-                          handleSettingUpdate(
-                            "depositAmount",
-                            parseInt(e.target.value)
-                          )
-                        }
-                        className="w-20"
-                      />
-                      <span className="text-sm text-gray-500">%</span>
-                    </div>
-                  </div>
-                )}
               </div>
-            </CardContent>
-          </Card>
+            )}
+          </CardContent>
+        </Card>
 
-          {/* Policies */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Booking Policies
-              </CardTitle>
-              <CardDescription>
-                Set cancellation policy and terms
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        {/* Cancellation Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Cancellation Policy
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="cancellation-policy">Cancellation Policy</Label>
-                <Textarea
-                  id="cancellation-policy"
-                  value={bookingSettings.cancellationPolicy}
-                  onChange={(e) =>
-                    handleSettingUpdate("cancellationPolicy", e.target.value)
-                  }
-                  placeholder="Describe your cancellation policy..."
-                  rows={3}
-                />
+                <Label className="text-sm font-medium">Allow Cancellations</Label>
+                <p className="text-xs text-gray-500">Let customers cancel bookings</p>
               </div>
-
-              <div>
-                <Label htmlFor="terms-conditions">Terms & Conditions</Label>
-                <Textarea
-                  id="terms-conditions"
-                  value={bookingSettings.termsAndConditions}
-                  onChange={(e) =>
-                    handleSettingUpdate("termsAndConditions", e.target.value)
-                  }
-                  placeholder="Enter your terms and conditions..."
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Preview Column */}
-        <div className="space-y-6">
-          {previewMode && <BookingPreview />}
-
-          {!userData.websiteSettings.enableBooking && (
-            <Card className="border-orange-200 bg-orange-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-orange-700">
-                  <Shield className="h-5 w-5" />
-                  Booking Disabled
-                </CardTitle>
-                <CardDescription className="text-orange-600">
-                  Online booking is currently disabled. Enable it to start
-                  accepting bookings.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          )}
-
-          {userData.websiteSettings.enableBooking && (
-            <Card className="border-green-200 bg-green-50/30">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-green-700">
-                  <CheckCircle className="h-5 w-5" />
-                  Booking Active
-                </CardTitle>
-                <CardDescription className="text-green-600">
-                  Your booking system is configured and ready to accept
-                  reservations.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Currency:</span>
-                    <span className="font-medium">
-                      {bookingSettings.currency}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Payment Methods:</span>
-                    <span className="font-medium">
-                      {bookingSettings.paymentMethods.length}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Deposit Required:</span>
-                    <span className="font-medium">
-                      {bookingSettings.requireDeposit
-                        ? `${bookingSettings.depositAmount}%`
-                        : "No"}
-                    </span>
-                  </div>
+              <Switch
+                checked={bookingSettings.allowCancellations}
+                onCheckedChange={(checked) => handleSettingChange("allowCancellations", checked)}
+              />
+            </div>
+            
+            {bookingSettings.allowCancellations && (
+              <div className="space-y-2">
+                <Label htmlFor="cancellationDays">Cancellation Window</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="cancellationDays"
+                    type="number"
+                    value={bookingSettings.cancellationDays}
+                    onChange={(e) => handleSettingChange("cancellationDays", parseInt(e.target.value))}
+                    className="w-20"
+                    min="0"
+                  />
+                  <span className="text-sm text-gray-500">days before tour</span>
                 </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Group Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Group Settings
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="maxGroupSize">Maximum Group Size</Label>
+              <Input
+                id="maxGroupSize"
+                type="number"
+                value={bookingSettings.maxGroupSize}
+                onChange={(e) => handleSettingChange("maxGroupSize", parseInt(e.target.value))}
+                min="1"
+                max="50"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Communication Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              Communication
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm font-medium">Require Contact Info</Label>
+                <p className="text-xs text-gray-500">Collect phone and email</p>
+              </div>
+              <Switch
+                checked={bookingSettings.requireContactInfo}
+                onCheckedChange={(checked) => handleSettingChange("requireContactInfo", checked)}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm font-medium">Send Confirmation Email</Label>
+                <p className="text-xs text-gray-500">Auto-send booking confirmations</p>
+              </div>
+              <Switch
+                checked={bookingSettings.sendConfirmationEmail}
+                onCheckedChange={(checked) => handleSettingChange("sendConfirmationEmail", checked)}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm font-medium">Send Reminder Email</Label>
+                <p className="text-xs text-gray-500">Remind customers before tour</p>
+              </div>
+              <Switch
+                checked={bookingSettings.sendReminderEmail}
+                onCheckedChange={(checked) => handleSettingChange("sendReminderEmail", checked)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <Button className="bg-culturin-indigo hover:bg-culturin-indigo/90">
+          <CheckCircle className="mr-2 h-4 w-4" />
+          Save Booking Settings
+        </Button>
       </div>
     </div>
   );

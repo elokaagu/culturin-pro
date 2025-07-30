@@ -1,212 +1,217 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Lock, Check } from "lucide-react";
+import { Check, Mountain, Crown, Building2, Heart, Leaf, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { useUserData } from "../../../src/contexts/UserDataContext";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 
-const themes = [
+interface Template {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  image: string;
+  features: string[];
+  isPopular?: boolean;
+  isNew?: boolean;
+}
+
+const templates: Template[] = [
   {
-    id: 1,
-    name: "Classic",
-    image: "bg-gradient-to-r from-gray-100 to-gray-200",
+    id: "adventure",
+    name: "Adventure Explorer",
+    description: "Perfect for adventure tour operators with stunning imagery and bold typography",
+    category: "Adventure",
+    image: "/lovable-uploads/2e9a9e9e-af76-4913-8148-9fce248d55c9.png",
+    features: ["Hero video background", "Adventure gallery", "Trip difficulty levels", "Booking calendar"],
+    isPopular: true
   },
   {
-    id: 2,
-    name: "Modern",
-    image: "bg-gradient-to-r from-blue-100 to-blue-200",
+    id: "luxury",
+    name: "Luxury Retreat",
+    description: "Elegant design for high-end travel experiences with sophisticated styling",
+    category: "Luxury",
+    image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
+    features: ["Premium imagery", "Luxury amenities", "Concierge booking", "VIP testimonials"],
+    isNew: true
   },
   {
-    id: 3,
-    name: "Elegant",
-    image: "bg-gradient-to-r from-amber-100 to-amber-200",
+    id: "city-tours",
+    name: "City Explorer",
+    description: "Urban-focused design perfect for city tour operators and cultural experiences",
+    category: "City Tours",
+    image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
+    features: ["Interactive maps", "Local highlights", "Cultural insights", "Group bookings"]
   },
   {
-    id: 4,
-    name: "Minimalist",
-    image: "bg-gradient-to-r from-stone-100 to-stone-200",
+    id: "cultural",
+    name: "Cultural Immersion",
+    description: "Deep cultural experiences with rich storytelling and local connections",
+    category: "Cultural",
+    image: "/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png",
+    features: ["Story-driven content", "Local guides", "Cultural workshops", "Community impact"]
   },
   {
-    id: 5,
-    name: "Bold",
-    image: "bg-gradient-to-r from-purple-100 to-purple-200",
-  },
-  {
-    id: 6,
-    name: "Artisan",
-    image: "bg-gradient-to-r from-emerald-100 to-emerald-200",
-  },
+    id: "eco-tourism",
+    name: "Eco Adventure",
+    description: "Sustainable tourism focus with nature-inspired design and eco-friendly messaging",
+    category: "Eco-Tourism",
+    image: "/lovable-uploads/1b4ba777-0a40-4904-98a9-11b727de21a6.png",
+    features: ["Sustainability focus", "Nature photography", "Eco-certifications", "Conservation impact"]
+  }
 ];
 
 const WebsiteThemes: React.FC = () => {
-  const { userData, updateWebsiteSettings } = useUserData();
-  const [applyingTheme, setApplyingTheme] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState<number>(() => {
-    // Get theme from UserDataContext first, then fallback to localStorage
-    const currentTheme = userData.websiteSettings.theme;
-    if (currentTheme) {
-      const themeObj = themes.find(
-        (t) => t.name.toLowerCase() === currentTheme.toLowerCase()
-      );
-      return themeObj ? themeObj.id : 1;
-    }
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [applyingTemplate, setApplyingTemplate] = useState(false);
 
-    const saved = localStorage.getItem("selectedWebsiteTheme");
-    if (saved) {
-      const themeObj = themes.find(
-        (t) => t.name.toLowerCase() === saved.toLowerCase()
-      );
-      return themeObj ? themeObj.id : 1;
-    }
-    return 1;
-  });
-
-  const [showModal, setShowModal] = useState(false);
-
-  // Update selectedTheme when userData changes
-  useEffect(() => {
-    const currentTheme = userData.websiteSettings.theme;
-    if (currentTheme) {
-      const themeObj = themes.find(
-        (t) => t.name.toLowerCase() === currentTheme.toLowerCase()
-      );
-      if (themeObj && themeObj.id !== selectedTheme) {
-        setSelectedTheme(themeObj.id);
-      }
-    }
-  }, [userData.websiteSettings.theme]);
-
-  const handleSelectTheme = (id: number) => {
-    setSelectedTheme(id);
-    const themeName =
-      themes.find((t) => t.id === id)?.name.toLowerCase() || "classic";
-
-    // Update both localStorage and UserDataContext
-    localStorage.setItem("selectedWebsiteTheme", themeName);
-    updateWebsiteSettings({ theme: themeName });
-
-    toast.success(`"${themes.find((t) => t.id === id)?.name}" theme selected`, {
-      description: "Theme will be applied when you click Apply Theme",
-    });
+  const handleTemplateSelect = (templateId: string) => {
+    setSelectedTemplate(templateId);
   };
 
-  const handleApplyTheme = async () => {
-    const theme = themes.find((t) => t.id === selectedTheme);
-    if (theme) {
-      setApplyingTheme(true);
-      const themeName = theme.name.toLowerCase();
+  const handleApplyTemplate = async (template: Template) => {
+    setApplyingTemplate(true);
+    
+    // Simulate template application
+    setTimeout(() => {
+      // Here you would actually apply the template settings
+      toast.success(`${template.name} template applied successfully!`);
+      setApplyingTemplate(false);
+      setSelectedTemplate(null);
+    }, 1500);
+  };
 
-      try {
-        // Update both localStorage and UserDataContext
-        localStorage.setItem("selectedWebsiteTheme", themeName);
-        updateWebsiteSettings({ theme: themeName });
-
-        // Simulate a brief delay for better UX
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        // Trigger a custom event to notify other components
-        if (typeof window !== "undefined") {
-          window.dispatchEvent(
-            new CustomEvent("themeChanged", {
-              detail: { theme: themeName },
-            })
-          );
-        }
-        setShowModal(true);
-
-        toast.success(`"${theme.name}" theme applied successfully`, {
-          description:
-            "Your website preview will update with the new theme. Switch to Preview tab to see changes.",
-        });
-      } catch (error) {
-        toast.error("Failed to apply theme", {
-          description: "Please try again.",
-        });
-      } finally {
-        setApplyingTheme(false);
-      }
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "Adventure":
+        return <Mountain className="h-4 w-4" />;
+      case "Luxury":
+        return <Crown className="h-4 w-4" />;
+      case "City Tours":
+        return <Building2 className="h-4 w-4" />;
+      case "Cultural":
+        return <Heart className="h-4 w-4" />;
+      case "Eco-Tourism":
+        return <Leaf className="h-4 w-4" />;
+      default:
+        return <Sparkles className="h-4 w-4" />;
     }
   };
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-lg font-medium">Select a Theme</h2>
-        <p className="text-gray-600 text-sm">
-          Choose a theme that best represents your brand
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Template</h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Select a template that matches your brand and tour style. Each template is fully customizable 
+          and optimized for tour operators.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {themes.map((theme) => (
+      {/* Template Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {templates.map((template) => (
           <Card
-            key={theme.id}
-            className={`overflow-hidden cursor-pointer transition-all ${
-              selectedTheme === theme.id
-                ? "ring-2 ring-primary"
-                : "hover:shadow-md"
+            key={template.id}
+            className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
+              selectedTemplate === template.id
+                ? "ring-2 ring-culturin-indigo border-culturin-indigo"
+                : "hover:border-gray-300"
             }`}
-            onClick={() => handleSelectTheme(theme.id)}
+            onClick={() => handleTemplateSelect(template.id)}
           >
-            <div className={`h-36 ${theme.image}`}></div>
-            <CardContent className="p-4">
-              <div className="flex justify-between items-center">
-                <h3 className="font-medium">{theme.name}</h3>
-                {selectedTheme === theme.id && (
-                  <Check className="h-4 w-4 text-green-500" />
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  {getCategoryIcon(template.category)}
+                  <Badge variant="outline" className="text-xs">
+                    {template.category}
+                  </Badge>
+                </div>
+                <div className="flex gap-1">
+                  {template.isPopular && (
+                    <Badge className="bg-orange-100 text-orange-700 text-xs">
+                      Popular
+                    </Badge>
+                  )}
+                  {template.isNew && (
+                    <Badge className="bg-green-100 text-green-700 text-xs">
+                      New
+                    </Badge>
+                  )}
+                </div>
+              </div>
+              <CardTitle className="text-lg">{template.name}</CardTitle>
+              <CardDescription className="text-sm">
+                {template.description}
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="pt-0">
+              {/* Template Preview Image */}
+              <div className="relative mb-4">
+                <img
+                  src={template.image}
+                  alt={template.name}
+                  className="w-full h-32 object-cover rounded-lg"
+                />
+                {selectedTemplate === template.id && (
+                  <div className="absolute inset-0 bg-culturin-indigo/20 rounded-lg flex items-center justify-center">
+                    <Check className="h-8 w-8 text-white bg-culturin-indigo rounded-full p-1" />
+                  </div>
                 )}
               </div>
+
+              {/* Features */}
+              <div className="space-y-2 mb-4">
+                <h4 className="text-sm font-medium text-gray-700">Key Features:</h4>
+                <ul className="space-y-1">
+                  {template.features.map((feature, index) => (
+                    <li key={index} className="text-xs text-gray-600 flex items-center gap-1">
+                      <Check className="h-3 w-3 text-green-500" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Apply Button */}
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleApplyTemplate(template);
+                }}
+                disabled={applyingTemplate}
+                className="w-full"
+              >
+                {applyingTemplate ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                    Applying...
+                  </>
+                ) : (
+                  "Apply Template"
+                )}
+              </Button>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <div className="pt-4 flex gap-3 items-center">
-        <Button
-          onClick={handleApplyTheme}
-          disabled={applyingTheme}
-          className="flex items-center gap-2"
-        >
-          {applyingTheme && (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          )}
-          {applyingTheme ? "Applying Theme..." : "Apply Theme"}
-        </Button>
-        {selectedTheme && (
-          <span className="text-sm text-gray-500">
-            Selected: {themes.find((t) => t.id === selectedTheme)?.name}
-          </span>
-        )}
-      </div>
-
-      <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Theme Applied!</DialogTitle>
-          </DialogHeader>
-          <div className="py-2">
-            <p>
-              Your "{themes.find((t) => t.id === selectedTheme)?.name}" theme
-              has been applied successfully.
-            </p>
-            <p className="text-sm text-gray-500 mt-2">
-              Switch to the Preview tab to see your updated website.
-            </p>
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setShowModal(false)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Custom Template Option */}
+      <Card className="border-dashed border-2 border-gray-300 hover:border-culturin-indigo transition-colors">
+        <CardContent className="p-6 text-center">
+          <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Custom Template</h3>
+          <p className="text-gray-600 mb-4">
+            Start from scratch and build your perfect website with our drag-and-drop builder.
+          </p>
+          <Button variant="outline" className="w-full">
+            Start from Scratch
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 };
