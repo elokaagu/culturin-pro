@@ -480,33 +480,35 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b flex justify-between items-center">
-        <h3 className="text-lg font-semibold">
-          Travel Itinerary: {itinerary.title}
-        </h3>
-        <div className="flex gap-2">
-          <div className="border rounded-md overflow-hidden">
-            <Button
-              variant={viewMode === "edit" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("edit")}
-              className="rounded-none"
-            >
-              Edit
-            </Button>
-            <Button
-              variant={viewMode === "preview" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("preview")}
-              className="rounded-none"
-              aria-label="Preview"
-            >
-              <Eye className="h-4 w-4" />
+      <div className="p-4 border-b">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <h3 className="text-lg font-semibold">
+            Travel Itinerary: {itinerary.title}
+          </h3>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="border rounded-md overflow-hidden flex">
+              <Button
+                variant={viewMode === "edit" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("edit")}
+                className="rounded-none"
+              >
+                Edit
+              </Button>
+              <Button
+                variant={viewMode === "preview" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("preview")}
+                className="rounded-none"
+                aria-label="Preview"
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            </div>
+            <Button size="sm" onClick={handleSaveChanges}>
+              <Save className="h-4 w-4 mr-1" /> Save Changes
             </Button>
           </div>
-          <Button size="sm" onClick={handleSaveChanges}>
-            <Save className="h-4 w-4 mr-1" /> Save Changes
-          </Button>
         </div>
       </div>
 
@@ -521,27 +523,29 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
           className="flex-1"
         >
           <div className="border-b sticky top-0 bg-white z-10">
-            <TabsList className="mx-4 my-2">
-              {dayTabs.map((day) => {
-                const dayModules = modules.filter((m) => m.day === day);
-                const dayTotal = calculateDayTotal(day);
-                return (
-                  <TabsTrigger
-                    key={day}
-                    value={String(day)}
-                    className="flex flex-col"
-                  >
-                    <span>
-                      Day {day}
-                    </span>
-                    <div className="flex gap-2 text-xs">
-                      <span>{dayModules.length} items</span>
-                      {dayTotal > 0 && <span>${dayTotal}</span>}
-                    </div>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
+            <div className="overflow-x-auto">
+              <TabsList className="mx-4 my-2 min-w-max">
+                {dayTabs.map((day) => {
+                  const dayModules = modules.filter((m) => m.day === day);
+                  const dayTotal = calculateDayTotal(day);
+                  return (
+                    <TabsTrigger
+                      key={day}
+                      value={String(day)}
+                      className="flex flex-col min-w-[80px]"
+                    >
+                      <span>
+                        Day {day}
+                      </span>
+                      <div className="flex gap-1 text-xs">
+                        <span>{dayModules.length} items</span>
+                        {dayTotal > 0 && <span>${dayTotal}</span>}
+                      </div>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </div>
           </div>
 
           <ScrollArea className="flex-1">
