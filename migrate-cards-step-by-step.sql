@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS public.card_transactions (
 -- STEP 3: Create the card_settings table
 CREATE TABLE IF NOT EXISTS public.card_settings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    operator_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    operator_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
     default_monthly_limit DECIMAL(10,2) DEFAULT 1000.00,
     default_daily_limit DECIMAL(10,2) DEFAULT 200.00,
     default_weekly_limit DECIMAL(10,2) DEFAULT 500.00,
@@ -100,12 +100,14 @@ CREATE POLICY "Operators can update their own card settings" ON public.card_sett
 CREATE POLICY "Operators can insert their own card settings" ON public.card_settings
     FOR INSERT WITH CHECK (auth.uid() = operator_id);
 
--- STEP 9: Insert sample settings for testing
+-- STEP 9: Insert sample settings for testing (only if not exists)
 INSERT INTO public.card_settings (operator_id, default_monthly_limit, default_daily_limit, default_weekly_limit)
 SELECT id, 1000.00, 200.00, 500.00
 FROM auth.users
 WHERE email = 'eloka.agu@icloud.com'
-ON CONFLICT (operator_id) DO NOTHING;
+AND NOT EXISTS (
+    SELECT 1 FROM public.card_settings WHERE operator_id = auth.users.id
+);
 
 -- STEP 10: Verify tables were created
 SELECT 'Tables created successfully!' as status;
