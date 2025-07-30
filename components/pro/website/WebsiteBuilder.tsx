@@ -27,6 +27,8 @@ import {
   History,
   Undo,
   Redo,
+  Monitor,
+  Tablet,
 } from "lucide-react";
 import { useNavigate } from "../../../lib/navigation";
 import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
@@ -470,62 +472,16 @@ const WebsiteBuilder: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="p-6 border-b border-gray-200 space-y-3">
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={undo}
-              disabled={!canUndo}
-              className="flex-1"
-            >
-              <Undo className="h-4 w-4 mr-1" />
-              Undo
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={redo}
-              disabled={!canRedo}
-              className="flex-1"
-            >
-              <Redo className="h-4 w-4 mr-1" />
-              Redo
-            </Button>
-          </div>
-          
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={handleManualSave}
-              className="flex-1"
-            >
-              <Save className="mr-2 h-4 w-4" />
-              Save
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleReloadPreview}
-              disabled={refreshLoading}
-              className="flex-1"
-            >
-              {refreshLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="mr-2 h-4 w-4" />
-              )}
-              Refresh
-            </Button>
-          </div>
-
+        <div className="p-6 border-b border-gray-200 space-y-4">
+          {/* Primary Action */}
           <Button
             onClick={handlePublish}
             disabled={publishLoading}
-            className="w-full"
+            className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90 text-white font-medium"
           >
             {publishLoading ? (
               <>
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                 Publishing...
               </>
             ) : (
@@ -535,6 +491,54 @@ const WebsiteBuilder: React.FC = () => {
               </>
             )}
           </Button>
+
+          {/* Secondary Actions */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={undo}
+              disabled={!canUndo}
+              className="text-xs"
+            >
+              <Undo className="h-3 w-3 mr-1" />
+              Undo
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={redo}
+              disabled={!canRedo}
+              className="text-xs"
+            >
+              <Redo className="h-3 w-3 mr-1" />
+              Redo
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="outline"
+              onClick={handleManualSave}
+              className="text-xs"
+            >
+              <Save className="mr-1 h-3 w-3" />
+              Save
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleReloadPreview}
+              disabled={refreshLoading}
+              className="text-xs"
+            >
+              {refreshLoading ? (
+                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-1 h-3 w-3" />
+              )}
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {/* Published URL Status */}
@@ -581,52 +585,74 @@ const WebsiteBuilder: React.FC = () => {
 
         {/* Quick Actions */}
         <div className="p-6 border-b border-gray-200">
-          <h3 className="text-sm font-medium mb-3">Quick Actions</h3>
-          <div className="space-y-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleQuickAction("resetColor")}
-              className="w-full justify-start"
-            >
-              <Palette className="h-4 w-4 mr-2" />
-              Reset Brand Color
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleQuickAction("toggleBooking")}
-              className="w-full justify-start"
-            >
-              <ShoppingCart className="h-4 w-4 mr-2" />
-              {userData.websiteSettings.enableBooking ? "Disable" : "Enable"} Booking
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleQuickAction("configureBooking")}
-              className="w-full justify-start"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Configure Booking Flow
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleQuickAction("toggleAutoSave")}
-              className={`w-full justify-start ${
-                autoSaveEnabled ? "bg-green-50 border-green-200" : ""
-              }`}
-            >
-              <Zap className="h-4 w-4 mr-2" />
-              {autoSaveEnabled ? "Auto-save On" : "Auto-save Off"}
-            </Button>
+          <h3 className="text-sm font-medium mb-4 text-gray-900">Quick Actions</h3>
+          
+          {/* Brand Settings */}
+          <div className="mb-4">
+            <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">Brand Settings</h4>
+            <div className="space-y-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleQuickAction("resetColor")}
+                className="w-full justify-start text-xs"
+              >
+                <Palette className="h-3 w-3 mr-2" />
+                Reset Brand Color
+              </Button>
+            </div>
+          </div>
+
+          {/* Booking Settings */}
+          <div className="mb-4">
+            <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">Booking Settings</h4>
+            <div className="space-y-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleQuickAction("toggleBooking")}
+                className="w-full justify-start text-xs"
+              >
+                <ShoppingCart className="h-3 w-3 mr-2" />
+                {userData.websiteSettings.enableBooking ? "Disable" : "Enable"} Booking
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleQuickAction("configureBooking")}
+                className="w-full justify-start text-xs"
+              >
+                <Settings className="h-3 w-3 mr-2" />
+                Configure Booking Flow
+              </Button>
+            </div>
+          </div>
+
+          {/* System Settings */}
+          <div>
+            <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">System</h4>
+            <div className="space-y-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleQuickAction("toggleAutoSave")}
+                className={`w-full justify-start text-xs ${
+                  autoSaveEnabled ? "bg-green-50 border-green-200 text-green-700" : ""
+                }`}
+              >
+                <Zap className="h-3 w-3 mr-2" />
+                {autoSaveEnabled ? "Auto-save On" : "Auto-save Off"}
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Navigation Tabs */}
         <div className="flex-1 p-6">
-          <h3 className="text-sm font-medium mb-3">Website Builder</h3>
+          <div className="mb-4">
+            <h3 className="text-sm font-medium text-gray-900 mb-1">Website Builder</h3>
+            <p className="text-xs text-gray-500">Customize your site's design and content</p>
+          </div>
           <Tabs
             defaultValue="preview"
             value={activeTab}
@@ -634,14 +660,14 @@ const WebsiteBuilder: React.FC = () => {
             className="w-full"
           >
             <TabsList className="flex flex-col w-full h-auto bg-transparent">
-              <TabsTrigger value="preview" className="w-full justify-start h-10">Preview</TabsTrigger>
-              <TabsTrigger value="builder" className="w-full justify-start h-10">Builder</TabsTrigger>
-              <TabsTrigger value="themes" className="w-full justify-start h-10">Themes</TabsTrigger>
-              <TabsTrigger value="content" className="w-full justify-start h-10">Content</TabsTrigger>
-              <TabsTrigger value="header-footer" className="w-full justify-start h-10">Header</TabsTrigger>
-              <TabsTrigger value="fonts" className="w-full justify-start h-10">Fonts</TabsTrigger>
-              <TabsTrigger value="booking" className="w-full justify-start h-10">Booking</TabsTrigger>
-              <TabsTrigger value="settings" className="w-full justify-start h-10">Settings</TabsTrigger>
+              <TabsTrigger value="preview" className="w-full justify-start h-10 text-sm">Preview</TabsTrigger>
+              <TabsTrigger value="builder" className="w-full justify-start h-10 text-sm">Builder</TabsTrigger>
+              <TabsTrigger value="themes" className="w-full justify-start h-10 text-sm">Themes</TabsTrigger>
+              <TabsTrigger value="content" className="w-full justify-start h-10 text-sm">Content</TabsTrigger>
+              <TabsTrigger value="header-footer" className="w-full justify-start h-10 text-sm">Header</TabsTrigger>
+              <TabsTrigger value="fonts" className="w-full justify-start h-10 text-sm">Fonts</TabsTrigger>
+              <TabsTrigger value="booking" className="w-full justify-start h-10 text-sm">Booking</TabsTrigger>
+              <TabsTrigger value="settings" className="w-full justify-start h-10 text-sm">Settings</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -649,6 +675,50 @@ const WebsiteBuilder: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
+        {/* Preview Controls */}
+        <div className="p-4 border-b border-gray-200 bg-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Website Preview</h2>
+              <p className="text-sm text-gray-500">See your changes in real-time</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleReloadPreview}
+                disabled={refreshLoading}
+                className="text-xs"
+              >
+                {refreshLoading ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-3 w-3" />
+                )}
+                <span className="ml-1 hidden sm:inline">Refresh</span>
+              </Button>
+              <div className="flex border rounded-md">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs rounded-r-none border-r"
+                >
+                  <Monitor className="h-3 w-3 mr-1" />
+                  <span className="hidden sm:inline">Desktop</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs rounded-l-none"
+                >
+                  <Tablet className="h-3 w-3 mr-1" />
+                  <span className="hidden sm:inline">Mobile</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Content based on active tab */}
         <div className="flex-1 overflow-auto">
           {activeTab === "preview" && (
