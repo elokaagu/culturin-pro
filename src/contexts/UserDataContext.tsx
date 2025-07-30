@@ -128,6 +128,22 @@ export interface UserData {
       isDefault: boolean;
     }>;
   };
+
+  // Loyalty Card Settings
+  loyaltyCard: {
+    cardId: string;
+    tier: 'bronze' | 'silver' | 'gold' | 'platinum';
+    balance: number;
+    rewardsBalance: number;
+    walletAddress: string;
+    status: 'active' | 'suspended' | 'pending';
+    memberSince: Date;
+    kycStatus: 'pending' | 'verified' | 'rejected';
+    amlCheck: 'passed' | 'failed' | 'pending';
+    annualFee: number;
+    rewardsRate: number;
+    benefits: string[];
+  };
 }
 
 interface UserDataContextType {
@@ -192,6 +208,21 @@ const defaultUserData: UserData = {
         isDefault: true,
       },
     ],
+  },
+
+  loyaltyCard: {
+    cardId: "loyalty-123",
+    tier: "bronze",
+    balance: 100,
+    rewardsBalance: 50,
+    walletAddress: "0x1234567890abcdef1234567890abcdef12345678",
+    status: "active",
+    memberSince: new Date("2023-01-01"),
+    kycStatus: "verified",
+    amlCheck: "passed",
+    annualFee: 50,
+    rewardsRate: 0.1,
+    benefits: ["Free coffee", "Priority booking"],
   },
 };
 

@@ -209,6 +209,69 @@ CREATE POLICY "Authenticated users can upload" ON storage.objects FOR INSERT WIT
 CREATE POLICY "Users can update their own uploads" ON storage.objects FOR UPDATE USING (auth.uid()::text = (storage.foldername(name))[1]);
 CREATE POLICY "Users can delete their own uploads" ON storage.objects FOR DELETE USING (auth.uid()::text = (storage.foldername(name))[1]);
 
+-- Create loyalty_cards table
+CREATE TABLE IF NOT EXISTS public.loyalty_cards (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  card_id TEXT UNIQUE NOT NULL,
+  tier TEXT DEFAULT 'bronze' CHECK (tier IN ('bronze', 'silver', 'gold', 'platinum')),
+  balance DECIMAL(15,2) DEFAULT 0,
+  rewards_balance DECIMAL(15,2) DEFAULT 0,
+  wallet_address TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'suspended')),
+  kyc_status TEXT DEFAULT 'pending',
+  aml_check TEXT DEFAULT 'pending',
+  member_since TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create loyalty_transactions table
+CREATE TABLE IF NOT EXISTS public.loyalty_transactions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  card_id UUID REFERENCES public.loyalty_cards(id) ON DELETE CASCADE,
+  booking_id UUID REFERENCES public.bookings(id),
+  amount DECIMAL(15,2) NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('purchase', 'reward', 'refund', 'transfer')),
+  blockchain_tx_hash TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS on loyalty_cards
+ALTER TABLE public.loyalty_cards ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for loyalty_cards
+CREATE POLICY "Users can view their own loyalty cards" ON public.loyalty_cards
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own loyalty cards" ON public.loyalty_cards
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own loyalty cards" ON public.loyalty_cards
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Enable RLS on loyalty_transactions
+ALTER TABLE public.loyalty_transactions ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for loyalty_transactions
+CREATE POLICY "Users can view their own loyalty transactions" ON public.loyalty_transactions
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM public.loyalty_cards 
+      WHERE loyalty_cards.id = loyalty_transactions.card_id 
+      AND loyalty_cards.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can insert their own loyalty transactions" ON public.loyalty_transactions
+  FOR INSERT WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.loyalty_cards 
+      WHERE loyalty_cards.id = loyalty_transactions.card_id 
+      AND loyalty_cards.user_id = auth.uid()
+    )
+  );
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_tours_operator_id ON public.tours(operator_id);
 CREATE INDEX IF NOT EXISTS idx_tours_status ON public.tours(status);
@@ -217,3 +280,7 @@ CREATE INDEX IF NOT EXISTS idx_bookings_tour_id ON public.bookings(tour_id);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_author_id ON public.blog_posts(author_id);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON public.blog_posts(published);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON public.blog_posts(slug); 
+CREATE INDEX IF NOT EXISTS idx_loyalty_cards_user_id ON public.loyalty_cards(user_id);
+CREATE INDEX IF NOT EXISTS idx_loyalty_cards_card_id ON public.loyalty_cards(card_id);
+CREATE INDEX IF NOT EXISTS idx_loyalty_transactions_card_id ON public.loyalty_transactions(card_id);
+CREATE INDEX IF NOT EXISTS idx_loyalty_transactions_created_at ON public.loyalty_transactions(created_at); 

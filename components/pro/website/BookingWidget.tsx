@@ -25,6 +25,8 @@ import {
   Mail,
   Phone,
   MapPin,
+  Wallet,
+  Gift,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -79,6 +81,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
     cardExpiry: "",
     cardCVC: "",
   });
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("credit-card");
+  const [loyaltyCardBalance, setLoyaltyCardBalance] = useState(1000); // Mock balance
+  const [loyaltyCardRewards, setLoyaltyCardRewards] = useState(150); // Mock rewards
 
   // Generate available dates (next 30 days)
   const generateAvailableDates = useCallback(() => {
@@ -235,22 +240,29 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
   };
 
   const handleCompleteBooking = async () => {
-    // Validate payment details
-    if (!formData.cardName.trim()) {
-      toast.error("Card holder name is required");
-      return;
-    }
-    if (!validateCardNumber(formData.cardNumber)) {
-      toast.error("Please enter a valid card number");
-      return;
-    }
-    if (!validateExpiry(formData.cardExpiry)) {
-      toast.error("Please enter a valid expiry date (MM/YY)");
-      return;
-    }
-    if (!validateCVC(formData.cardCVC)) {
-      toast.error("Please enter a valid CVC");
-      return;
+    // Validate payment details based on selected method
+    if (selectedPaymentMethod === "credit-card") {
+      if (!formData.cardName.trim()) {
+        toast.error("Card holder name is required");
+        return;
+      }
+      if (!validateCardNumber(formData.cardNumber)) {
+        toast.error("Please enter a valid card number");
+        return;
+      }
+      if (!validateExpiry(formData.cardExpiry)) {
+        toast.error("Please enter a valid expiry date (MM/YY)");
+        return;
+      }
+      if (!validateCVC(formData.cardCVC)) {
+        toast.error("Please enter a valid CVC");
+        return;
+      }
+    } else if (selectedPaymentMethod === "loyalty-card") {
+      if (loyaltyCardBalance < finalTotal) {
+        toast.error("Insufficient loyalty card balance");
+        return;
+      }
     }
 
     setIsProcessing(true);
@@ -263,6 +275,14 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
       const ref = `CULT-${Date.now().toString().slice(-6)}`;
       setBookingReference(ref);
 
+      // Calculate rewards if using loyalty card
+      let rewardsEarned = 0;
+      if (selectedPaymentMethod === "loyalty-card") {
+        rewardsEarned = finalTotal * 0.02; // 2% rewards rate
+        setLoyaltyCardBalance(prev => prev - finalTotal);
+        setLoyaltyCardRewards(prev => prev + rewardsEarned);
+      }
+
       // Save booking to localStorage (in a real app, this would go to a database)
       const booking = {
         id: ref,
@@ -273,6 +293,8 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
         guestCount,
         totalPrice: finalTotal,
         currency: selectedCurrency,
+        paymentMethod: selectedPaymentMethod,
+        rewardsEarned,
         customerInfo: {
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -657,71 +679,175 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
               <div className="space-y-6">
+                {/* Payment Method Selection */}
                 <div>
-                  <Label htmlFor="cardName">Name on Card *</Label>
-                  <Input
-                    id="cardName"
-                    name="cardName"
-                    value={formData.cardName}
-                    onChange={handleFormChange}
-                    placeholder="Enter the name on your card"
-                    defaultValue={`${formData.firstName} ${formData.lastName}`}
-                    required
-                  />
-                </div>
+                  <Label className="text-base font-medium mb-3 block">Payment Method</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPaymentMethod("credit-card")}
+                      className={`p-4 border rounded-lg text-left transition-all ${
+                        selectedPaymentMethod === "credit-card"
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <CreditCard className="h-5 w-5" />
+                        <span className="font-medium">Credit Card</span>
+                      </div>
+                      <p className="text-sm text-gray-600">Pay with your credit or debit card</p>
+                    </button>
 
-                <div>
-                  <Label htmlFor="cardNumber">Card Number *</Label>
-                  <Input
-                    id="cardNumber"
-                    name="cardNumber"
-                    value={formData.cardNumber}
-                    onChange={handleFormChange}
-                    placeholder="1234 5678 9012 3456"
-                    maxLength={19}
-                    required
-                  />
-                </div>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPaymentMethod("loyalty-card")}
+                      className={`p-4 border rounded-lg text-left transition-all ${
+                        selectedPaymentMethod === "loyalty-card"
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <Gift className="h-5 w-5" />
+                        <span className="font-medium">Loyalty Card</span>
+                      </div>
+                      <p className="text-sm text-gray-600">Pay with your Culturin loyalty card</p>
+                      <p className="text-xs text-green-600 mt-1">Balance: ${loyaltyCardBalance.toFixed(2)}</p>
+                    </button>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="cardExpiry">Expiry Date *</Label>
-                    <Input
-                      id="cardExpiry"
-                      name="cardExpiry"
-                      value={formData.cardExpiry}
-                      onChange={handleFormChange}
-                      placeholder="MM/YY"
-                      maxLength={5}
-                      required
-                    />
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPaymentMethod("stablecoin")}
+                      className={`p-4 border rounded-lg text-left transition-all ${
+                        selectedPaymentMethod === "stablecoin"
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <Wallet className="h-5 w-5" />
+                        <span className="font-medium">USDC/USDT</span>
+                      </div>
+                      <p className="text-sm text-gray-600">Pay with stablecoins</p>
+                    </button>
                   </div>
-                  <div>
-                    <Label htmlFor="cardCVC">CVC *</Label>
-                    <Input
-                      id="cardCVC"
-                      name="cardCVC"
-                      value={formData.cardCVC}
-                      onChange={handleFormChange}
-                      placeholder="123"
-                      maxLength={4}
-                      required
-                    />
-                  </div>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <div className="flex items-start gap-2">
-                    <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5" />
-                    <div className="text-sm text-blue-800">
-                      <p className="font-medium mb-1">Secure Payment</p>
-                      <p>
-                        Your payment information is encrypted and secure. We use
-                        industry-standard SSL encryption to protect your data.
-                      </p>
+                {/* Payment Form based on selected method */}
+                {selectedPaymentMethod === "credit-card" && (
+                  <>
+                    <div>
+                      <Label htmlFor="cardName">Name on Card *</Label>
+                      <Input
+                        id="cardName"
+                        name="cardName"
+                        value={formData.cardName}
+                        onChange={handleFormChange}
+                        placeholder="Enter the name on your card"
+                        defaultValue={`${formData.firstName} ${formData.lastName}`}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="cardNumber">Card Number *</Label>
+                      <Input
+                        id="cardNumber"
+                        name="cardNumber"
+                        value={formData.cardNumber}
+                        onChange={handleFormChange}
+                        placeholder="1234 5678 9012 3456"
+                        maxLength={19}
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="cardExpiry">Expiry Date *</Label>
+                        <Input
+                          id="cardExpiry"
+                          name="cardExpiry"
+                          value={formData.cardExpiry}
+                          onChange={handleFormChange}
+                          placeholder="MM/YY"
+                          maxLength={5}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="cardCVC">CVC *</Label>
+                        <Input
+                          id="cardCVC"
+                          name="cardCVC"
+                          value={formData.cardCVC}
+                          onChange={handleFormChange}
+                          placeholder="123"
+                          maxLength={4}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {selectedPaymentMethod === "loyalty-card" && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 text-blue-800 mb-2">
+                      <Gift className="h-4 w-4" />
+                      <span className="font-medium">Loyalty Card Payment</span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Available Balance:</span>
+                        <span className="font-medium">${loyaltyCardBalance.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Payment Amount:</span>
+                        <span className="font-medium">${finalTotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Rewards Earned:</span>
+                        <span className="font-medium text-green-600">
+                          +${(finalTotal * 0.02).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between border-t pt-2">
+                        <span>Remaining Balance:</span>
+                        <span className="font-medium">
+                          ${(loyaltyCardBalance - finalTotal).toFixed(2)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
+
+                {selectedPaymentMethod === "stablecoin" && (
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 text-purple-800 mb-2">
+                      <Wallet className="h-4 w-4" />
+                      <span className="font-medium">Stablecoin Payment</span>
+                    </div>
+                    <p className="text-sm text-purple-700">
+                      Connect your wallet to pay with USDC or USDT. You'll be redirected to your wallet for payment confirmation.
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="mt-3"
+                      onClick={() => {
+                        // In a real implementation, this would connect to MetaMask/Coinbase Wallet
+                        toast({
+                          title: "Wallet Connection",
+                          description: "Connecting to your wallet...",
+                        });
+                      }}
+                    >
+                      <Wallet className="mr-2 h-4 w-4" />
+                      Connect Wallet
+                    </Button>
+                  </div>
+                )}
 
                 <Button
                   onClick={handleCompleteBooking}
@@ -736,7 +862,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                     </>
                   ) : (
                     <>
-                      <CreditCard className="mr-2 h-4 w-4" />
+                      {selectedPaymentMethod === "credit-card" && <CreditCard className="mr-2 h-4 w-4" />}
+                      {selectedPaymentMethod === "loyalty-card" && <Gift className="mr-2 h-4 w-4" />}
+                      {selectedPaymentMethod === "stablecoin" && <Wallet className="mr-2 h-4 w-4" />}
                       Complete Booking
                     </>
                   )}

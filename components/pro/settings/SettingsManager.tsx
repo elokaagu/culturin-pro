@@ -6,6 +6,7 @@ import GeneralSettings from "./GeneralSettings";
 import NotificationSettings from "./NotificationSettings";
 import BillingSettings from "./BillingSettings";
 import SecuritySettings from "./SecuritySettings";
+import LoyaltyCardSettings from "./LoyaltyCardSettings";
 
 const SettingsManager: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const SettingsManager: React.FC = () => {
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="loyalty">Loyalty Card</TabsTrigger>
         </TabsList>
 
         <div className="bg-white p-6 rounded-lg border border-gray-100">
@@ -33,6 +35,10 @@ const SettingsManager: React.FC = () => {
 
           <TabsContent value="security">
             <SecuritySettings />
+          </TabsContent>
+
+          <TabsContent value="loyalty">
+            <LoyaltyCardSettings />
           </TabsContent>
         </div>
       </Tabs>

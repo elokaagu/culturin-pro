@@ -268,3 +268,113 @@ export const analyticsUtils = {
     });
   },
 };
+
+// Loyalty card utilities
+export const loyaltyUtils = {
+  // Get loyalty card by user
+  getLoyaltyCardByUser: async (userId: string) => {
+    return await supabase
+      .from("loyalty_cards")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
+  },
+
+  // Create a new loyalty card
+  createLoyaltyCard: async (cardData: any) => {
+    return await supabase
+      .from("loyalty_cards")
+      .insert([cardData])
+      .select()
+      .single();
+  },
+
+  // Update loyalty card
+  updateLoyaltyCard: async (cardId: string, updates: any) => {
+    return await supabase
+      .from("loyalty_cards")
+      .update(updates)
+      .eq("id", cardId)
+      .select()
+      .single();
+  },
+
+  // Get loyalty transactions
+  getLoyaltyTransactions: async (cardId: string) => {
+    return await supabase
+      .from("loyalty_transactions")
+      .select(`
+        *,
+        bookings (
+          guest_name,
+          tour_id,
+          total_price
+        )
+      `)
+      .eq("card_id", cardId)
+      .order("created_at", { ascending: false });
+  },
+
+  // Create loyalty transaction
+  createLoyaltyTransaction: async (transactionData: any) => {
+    return await supabase
+      .from("loyalty_transactions")
+      .insert([transactionData])
+      .select()
+      .single();
+  },
+
+  // Calculate rewards for a purchase
+  calculateRewards: (amount: number, tier: string) => {
+    const rates = {
+      bronze: 0.02,
+      silver: 0.03,
+      gold: 0.04,
+      platinum: 0.05,
+    };
+    return amount * (rates[tier as keyof typeof rates] || 0.02);
+  },
+
+  // Get tier benefits
+  getTierBenefits: (tier: string) => {
+    const benefits = {
+      bronze: [
+        "Priority customer support",
+        "5% discount on experiences",
+        "Free cancellation up to 48 hours",
+      ],
+      silver: [
+        "All Bronze benefits",
+        "Concierge booking service",
+        "Exclusive member-only experiences",
+        "Travel insurance included",
+      ],
+      gold: [
+        "All Silver benefits",
+        "Private guide services",
+        "VIP airport transfers",
+        "24/7 emergency support",
+        "Custom itinerary planning",
+      ],
+      platinum: [
+        "All Gold benefits",
+        "Private jet booking service",
+        "Exclusive access to cultural events",
+        "Personal travel advisor",
+        "Luxury accommodation upgrades",
+      ],
+    };
+    return benefits[tier as keyof typeof benefits] || benefits.bronze;
+  },
+
+  // Get tier pricing
+  getTierPricing: (tier: string) => {
+    const pricing = {
+      bronze: { annualFee: 99, minBalance: 1000 },
+      silver: { annualFee: 299, minBalance: 5000 },
+      gold: { annualFee: 599, minBalance: 10000 },
+      platinum: { annualFee: 1199, minBalance: 25000 },
+    };
+    return pricing[tier as keyof typeof pricing] || pricing.bronze;
+  },
+};

@@ -17,6 +17,10 @@ import {
   Home,
   LogOut,
   ChevronDown,
+  BarChart3,
+  Calendar,
+  Map,
+  CreditCard,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -49,6 +53,11 @@ const menuItems = [
     icon: ChartBar,
   },
   { name: "Settings", path: "/pro-dashboard/settings", icon: Settings },
+  {
+    name: "Loyalty Card",
+    path: "/pro-dashboard/loyalty",
+    icon: CreditCard,
+  },
 ];
 
 const ProSidebar: React.FC = () => {
