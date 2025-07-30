@@ -12,7 +12,7 @@ function generateFallbackDescription(
 
   let tone = "immersive and authentic";
   if (style.includes("casual")) tone = "friendly and approachable";
-  if (style.includes("professional")) tone = "sophisticated and informative";
+  if (style.includes("professional")) tone = "sophisticated and inyformative";
   if (style.includes("exciting")) tone = "thrilling and adventurous";
 
   return `Discover the authentic heart of ${location} through our ${title} experience. This ${duration} journey takes you deep into the local culture, where you'll experience ${culturalElements} firsthand.

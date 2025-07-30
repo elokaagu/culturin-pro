@@ -83,12 +83,14 @@ const ProItineraryPage = () => {
       subtitle="Create and manage your experience itineraries"
     >
       <div className="px-4 sm:px-0">
-        <ItineraryTabs
-          activeTab={activeTab}
-          itineraries={itineraries}
-          onCreateNewItinerary={handleCreateNewItinerary}
-          onEditItinerary={handleEditItinerary}
-        />
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <ItineraryTabs
+            activeTab={activeTab}
+            itineraries={itineraries}
+            onCreateNewItinerary={handleCreateNewItinerary}
+            onEditItinerary={handleEditItinerary}
+          />
+        </Tabs>
       </div>
       
       {showEditor && selectedItinerary && (
