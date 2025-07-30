@@ -35,10 +35,11 @@ const BookingFlowPreview: React.FC = () => {
     title: "",
     description: "",
     days: 0,
-    storyMode: false,
     lastUpdated: "",
     status: "published",
     image: "",
+    themeType: "cultural",
+    regions: [],
     price: 149,
     rating: 4.8,
     ratingCount: 126,
@@ -87,12 +88,13 @@ const BookingFlowPreview: React.FC = () => {
           foundItinerary?.description ||
           "Experience the best of Barcelona's rich culture, architecture, and cuisine in this immersive tour.",
         days: foundItinerary?.days || 3,
-        storyMode: foundItinerary?.storyMode || false,
         lastUpdated: foundItinerary?.lastUpdated || "2 days ago",
         status: "published",
         image:
           foundItinerary?.image ||
           "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
+        themeType: foundItinerary?.themeType || "cultural",
+        regions: foundItinerary?.regions || ["Europe", "Spain"],
         price: 149,
         rating: 4.8,
         ratingCount: 126,

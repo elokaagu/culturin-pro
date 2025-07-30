@@ -105,13 +105,14 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       className="border rounded-lg overflow-hidden bg-white"
     >
       <CollapsibleTrigger asChild>
-        <div className="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-50">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Edit className="h-4 w-4" />
-            <h3 className="font-medium">
-              {itinerary.storyMode ? "Story Editor" : "Itinerary Editor"}:{" "}
-              {itinerary.title}
-            </h3>
+            <h2 className="text-xl font-semibold">
+              Itinerary Editor: {selectedItinerary.title}
+            </h2>
+            <Badge variant="outline" className="text-xs">
+              {selectedItinerary.status}
+            </Badge>
           </div>
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" asChild>
@@ -132,7 +133,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       <CollapsibleContent>
         <ResizablePanelGroup direction="horizontal" className="min-h-[600px]">
           <ResizablePanel defaultSize={25}>
-            <ModuleLibrary isStoryMode={itinerary.storyMode || false} />
+            <ModuleLibrary />
           </ResizablePanel>
 
           <ResizableHandle withHandle />

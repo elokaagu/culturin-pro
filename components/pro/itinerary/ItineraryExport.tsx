@@ -25,7 +25,12 @@ import {
 import { ItineraryType, ItineraryModule } from "@/data/itineraryData";
 
 interface ItineraryExportProps {
-  itinerary: ItineraryType;
+  itinerary: ItineraryType & {
+    price?: number;
+    currency?: string;
+    groupSize?: { min: number; max: number };
+    difficulty?: string;
+  };
   modules: ItineraryModule[];
 }
 

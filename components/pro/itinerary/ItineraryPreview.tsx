@@ -40,7 +40,13 @@ import Image from "@/components/ui/image";
 import { ItineraryType, ItineraryModule } from "@/data/itineraryData";
 
 interface ItineraryPreviewProps {
-  itinerary: ItineraryType;
+  itinerary: ItineraryType & {
+    modules?: ItineraryModule[];
+    price?: number;
+    currency?: string;
+    groupSize?: { min: number; max: number };
+    difficulty?: string;
+  };
   onSaveChanges?: () => void;
 }
 
@@ -384,7 +390,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle className="text-lg">
-                  {itinerary.storyMode ? `Chapter ${day}` : `Day ${day}`}
+                  Day {day}
                 </CardTitle>
                 <div className="flex gap-2">
                   {totalDuration > 0 && (
@@ -475,9 +481,8 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b flex justify-between items-center">
-        <h3 className="font-medium">
-          {itinerary.storyMode ? "Story Journey" : "Travel Itinerary"}:{" "}
-          {itinerary.title}
+        <h3 className="text-lg font-semibold">
+          Travel Itinerary: {itinerary.title}
         </h3>
         <div className="flex gap-2">
           <div className="border rounded-md overflow-hidden">
@@ -527,7 +532,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                     className="flex flex-col"
                   >
                     <span>
-                      {itinerary.storyMode ? `Chapter ${day}` : `Day ${day}`}
+                      Day {day}
                     </span>
                     <div className="flex gap-2 text-xs">
                       <span>{dayModules.length} items</span>

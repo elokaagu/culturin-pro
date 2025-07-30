@@ -20,7 +20,11 @@ import {
 import { ItineraryType, ItineraryModule } from "@/data/itineraryData";
 
 interface PricingCalculatorProps {
-  itinerary: ItineraryType;
+  itinerary: ItineraryType & {
+    groupSize?: { min: number; max: number };
+    price?: number;
+    currency?: string;
+  };
   modules: ItineraryModule[];
   onPriceUpdate: (price: number) => void;
 }

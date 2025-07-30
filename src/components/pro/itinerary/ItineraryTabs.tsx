@@ -18,7 +18,6 @@ interface ItineraryTabsProps {
   onCreateNewItinerary: () => void;
   onEditItinerary: (itinerary: ItineraryType) => void;
   onUseTemplate: (template: any) => void;
-  onStartStoryMode: () => void;
 }
 
 const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
@@ -30,7 +29,6 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
   onCreateNewItinerary,
   onEditItinerary,
   onUseTemplate,
-  onStartStoryMode,
 }) => {
   // Group itineraries by theme type for thematic view
   const groupedItineraries = itineraries.reduce((acc, itinerary) => {
@@ -138,20 +136,6 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
         </div>
       </TabsContent>
       
-      <TabsContent value="story-mode" className="mt-6">
-        <div className="text-center py-12 sm:py-16 bg-slate-50 rounded-lg border-2 border-dashed mx-4 sm:mx-0">
-          <h3 className="text-lg sm:text-xl font-medium mb-2">Story Mode</h3>
-          <p className="text-gray-500 mb-1 text-sm sm:text-base px-4">Create narrative-driven experiences</p>
-          <p className="text-gray-400 text-xs sm:text-sm mb-6 px-4">Perfect for walking tours and cultural journeys</p>
-          
-          <div className="flex flex-col items-center gap-2">
-            <Badge variant="outline" className="mb-4 text-xs sm:text-sm">New Feature</Badge>
-            <Button onClick={onStartStoryMode} className="px-6 sm:px-8 text-sm">
-              Start Story Mode
-            </Button>
-          </div>
-        </div>
-      </TabsContent>
     </>
   );
 };

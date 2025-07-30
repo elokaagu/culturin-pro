@@ -229,34 +229,17 @@ export type ItineraryModule = {
   };
 };
 
-export type ItineraryType = {
+export interface ItineraryType {
   id: string;
   title: string;
+  description: string;
   days: number;
   lastUpdated: string;
-  status: "published" | "draft";
+  status: 'draft' | 'published' | 'archived';
   image: string;
-  themeType?: string;
-  description?: string;
-  regions?: string[];
-  storyMode?: boolean;
-  price?: number;
-  currency?: string;
-  groupSize?: {
-    min: number;
-    max: number;
-  };
-  difficulty?: "easy" | "moderate" | "challenging";
-  tags?: string[];
-  modules?: ItineraryModule[];
-  settings?: {
-    allowBooking?: boolean;
-    requireDeposit?: boolean;
-    cancellationPolicy?: string;
-    languages?: string[];
-    accessibility?: string[];
-  };
-};
+  themeType: string;
+  regions: string[];
+}
 
 export type TemplateType = {
   id: string;

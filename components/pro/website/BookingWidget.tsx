@@ -33,7 +33,11 @@ import { toast } from "sonner";
 import { useUserData } from "../../../src/contexts/UserDataContext";
 
 interface BookingWidgetProps {
-  tour: ItineraryType;
+  tour: ItineraryType & {
+    price?: number;
+    currency?: string;
+    groupSize?: { min: number; max: number };
+  };
   primaryColor: string;
   companyName: string;
 }
@@ -81,7 +85,8 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
     cardExpiry: "",
     cardCVC: "",
   });
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("credit-card");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState("credit-card");
   const [loyaltyCardBalance, setLoyaltyCardBalance] = useState(1000); // Mock balance
   const [loyaltyCardRewards, setLoyaltyCardRewards] = useState(150); // Mock rewards
 
@@ -279,8 +284,8 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
       let rewardsEarned = 0;
       if (selectedPaymentMethod === "loyalty-card") {
         rewardsEarned = finalTotal * 0.02; // 2% rewards rate
-        setLoyaltyCardBalance(prev => prev - finalTotal);
-        setLoyaltyCardRewards(prev => prev + rewardsEarned);
+        setLoyaltyCardBalance((prev) => prev - finalTotal);
+        setLoyaltyCardRewards((prev) => prev + rewardsEarned);
       }
 
       // Save booking to localStorage (in a real app, this would go to a database)
@@ -681,7 +686,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
               <div className="space-y-6">
                 {/* Payment Method Selection */}
                 <div>
-                  <Label className="text-base font-medium mb-3 block">Payment Method</Label>
+                  <Label className="text-base font-medium mb-3 block">
+                    Payment Method
+                  </Label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <button
                       type="button"
@@ -696,7 +703,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                         <CreditCard className="h-5 w-5" />
                         <span className="font-medium">Credit Card</span>
                       </div>
-                      <p className="text-sm text-gray-600">Pay with your credit or debit card</p>
+                      <p className="text-sm text-gray-600">
+                        Pay with your credit or debit card
+                      </p>
                     </button>
 
                     <button
@@ -712,8 +721,12 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                         <Gift className="h-5 w-5" />
                         <span className="font-medium">Loyalty Card</span>
                       </div>
-                      <p className="text-sm text-gray-600">Pay with your Culturin loyalty card</p>
-                      <p className="text-xs text-green-600 mt-1">Balance: ${loyaltyCardBalance.toFixed(2)}</p>
+                      <p className="text-sm text-gray-600">
+                        Pay with your Culturin loyalty card
+                      </p>
+                      <p className="text-xs text-green-600 mt-1">
+                        Balance: ${loyaltyCardBalance.toFixed(2)}
+                      </p>
                     </button>
 
                     <button
@@ -729,7 +742,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                         <Wallet className="h-5 w-5" />
                         <span className="font-medium">USDC/USDT</span>
                       </div>
-                      <p className="text-sm text-gray-600">Pay with stablecoins</p>
+                      <p className="text-sm text-gray-600">
+                        Pay with stablecoins
+                      </p>
                     </button>
                   </div>
                 </div>
@@ -801,11 +816,15 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span>Available Balance:</span>
-                        <span className="font-medium">${loyaltyCardBalance.toFixed(2)}</span>
+                        <span className="font-medium">
+                          ${loyaltyCardBalance.toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Payment Amount:</span>
-                        <span className="font-medium">${finalTotal.toFixed(2)}</span>
+                        <span className="font-medium">
+                          ${finalTotal.toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Rewards Earned:</span>
@@ -830,7 +849,8 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                       <span className="font-medium">Stablecoin Payment</span>
                     </div>
                     <p className="text-sm text-purple-700">
-                      Connect your wallet to pay with USDC or USDT. You'll be redirected to your wallet for payment confirmation.
+                      Connect your wallet to pay with USDC or USDT. You'll be
+                      redirected to your wallet for payment confirmation.
                     </p>
                     <Button
                       variant="outline"
@@ -859,9 +879,15 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                     </>
                   ) : (
                     <>
-                      {selectedPaymentMethod === "credit-card" && <CreditCard className="mr-2 h-4 w-4" />}
-                      {selectedPaymentMethod === "loyalty-card" && <Gift className="mr-2 h-4 w-4" />}
-                      {selectedPaymentMethod === "stablecoin" && <Wallet className="mr-2 h-4 w-4" />}
+                      {selectedPaymentMethod === "credit-card" && (
+                        <CreditCard className="mr-2 h-4 w-4" />
+                      )}
+                      {selectedPaymentMethod === "loyalty-card" && (
+                        <Gift className="mr-2 h-4 w-4" />
+                      )}
+                      {selectedPaymentMethod === "stablecoin" && (
+                        <Wallet className="mr-2 h-4 w-4" />
+                      )}
                       Complete Booking
                     </>
                   )}

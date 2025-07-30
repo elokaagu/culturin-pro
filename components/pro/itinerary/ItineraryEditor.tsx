@@ -176,7 +176,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       <div className="flex flex-col md:flex-row gap-0 md:gap-6 p-0 md:p-8 transition-all duration-500">
         {/* Left: Module Library */}
         <div className="w-full md:w-1/4 bg-white/80 rounded-b-2xl md:rounded-2xl shadow md:shadow-lg p-4 md:p-0 md:pt-4 md:pb-4 md:pl-0 md:pr-4 animate-slide-in-left">
-          <ModuleLibrary isStoryMode={itinerary.storyMode || false} />
+          <ModuleLibrary />
         </div>
         {/* Center: Itinerary Preview */}
         <div className="w-full md:w-2/4 bg-white rounded-2xl shadow-lg p-4 md:p-8 animate-fade-in">

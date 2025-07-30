@@ -87,18 +87,17 @@ export const resourcesData = [
 ];
 
 // Type definitions
-export type ItineraryType = {
+export interface ItineraryType {
   id: string;
   title: string;
+  description: string;
   days: number;
   lastUpdated: string;
-  status: 'published' | 'draft';
+  status: 'draft' | 'published' | 'archived';
   image: string;
-  themeType?: string;
-  description?: string;
-  regions?: string[];
-  storyMode?: boolean;
-};
+  themeType: string;
+  regions: string[];
+}
 
 export type TemplateType = {
   id: string;

@@ -65,26 +65,6 @@ const ProItineraryPage = () => {
     });
   };
 
-  const handleStartStoryMode = () => {
-    const newStoryItinerary: ItineraryType = {
-      id: `story-${Date.now()}`,
-      title: "New Story Experience",
-      days: 1,
-      lastUpdated: "just now",
-      status: 'draft',
-      image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
-      themeType: "narrative",
-      description: "Create an immersive narrative experience",
-      storyMode: true,
-      regions: []
-    };
-    
-    setItineraries([newStoryItinerary, ...itineraries]);
-    setSelectedItinerary(newStoryItinerary);
-    setActiveTab('itineraries');
-    setShowEditor(true);
-  };
-
   const handleEditorClose = () => {
     setShowEditor(false);
     setSelectedItinerary(null);
@@ -138,13 +118,6 @@ const ProItineraryPage = () => {
               <TabsTrigger value="templates" className="flex-1 sm:flex-initial text-xs sm:text-sm">
                 Templates
               </TabsTrigger>
-              <TabsTrigger value="story-mode" className="relative flex-1 sm:flex-initial text-xs sm:text-sm">
-                <span className="hidden sm:inline">Story Mode</span>
-                <span className="sm:hidden">Story</span>
-                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[8px] sm:text-[10px] rounded-full w-3 h-3 sm:w-4 sm:h-4 flex items-center justify-center">
-                  β
-                </span>
-              </TabsTrigger>
             </TabsList>
           </div>
           
@@ -157,7 +130,6 @@ const ProItineraryPage = () => {
             onCreateNewItinerary={handleCreateNewItinerary}
             onEditItinerary={handleEditItinerary}
             onUseTemplate={handleUseTemplate}
-            onStartStoryMode={handleStartStoryMode}
           />
         </Tabs>
       </div>

@@ -33,10 +33,17 @@ function StudioContent() {
   };
 
   // Sample tour for booking preview - ensure we always have a valid ItineraryType
-  const sampleTour: ItineraryType = sampleItineraries[0] || {
-    id: "sample-1",
-    title: "Cultural Heritage Experience",
-    description: "Immerse yourself in local traditions and history",
+  const sampleItinerary: ItineraryType & {
+    price?: number;
+    currency?: string;
+    groupSize?: { min: number; max: number };
+    difficulty?: string;
+    tags?: string[];
+    modules?: any[];
+  } = {
+    id: "sample-cultural-tour",
+    title: "Traditional Crafts & Local Cuisine",
+    description: "Immerse yourself in local traditions and flavors",
     days: 3,
     lastUpdated: "1 day ago",
     status: "published",
@@ -184,7 +191,7 @@ function StudioContent() {
                   </p>
                 </div>
                 <BookingWidget
-                  tour={sampleTour}
+                  tour={sampleItinerary}
                   primaryColor={userData.websiteSettings.primaryColor}
                   companyName={
                     userData.websiteSettings.companyName ||
