@@ -54,8 +54,8 @@ const menuItems = [
   },
   { name: "Settings", path: "/pro-dashboard/settings", icon: Settings },
   {
-    name: "Loyalty Card",
-    path: "/pro-dashboard/loyalty",
+    name: "Cards",
+    path: "/pro-dashboard/cards",
     icon: CreditCard,
   },
 ];
@@ -69,8 +69,8 @@ const ProSidebar: React.FC = () => {
     if (user?.user_metadata?.full_name) {
       return user.user_metadata.full_name;
     }
-    
-    if (typeof window !== 'undefined') {
+
+    if (typeof window !== "undefined") {
       const storedUserName = localStorage.getItem("userName");
       if (storedUserName) {
         return storedUserName;
@@ -79,12 +79,12 @@ const ProSidebar: React.FC = () => {
       localStorage.setItem("userName", "Eloka Agu");
       return "Eloka Agu";
     }
-    
+
     return "User";
   }, [user]);
 
   const planType = useMemo(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const storedPlanType = localStorage.getItem("planType");
       if (storedPlanType) {
         return storedPlanType;
@@ -98,8 +98,8 @@ const ProSidebar: React.FC = () => {
 
   useEffect(() => {
     // Store the current route for navigation
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('lastRoute', '/pro-dashboard');
+    if (typeof window !== "undefined") {
+      localStorage.setItem("lastRoute", "/pro-dashboard");
     }
   }, [location.pathname]);
 
