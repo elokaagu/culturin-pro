@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Progress } from "@/components/ui/progress";
+
 import { 
   Clock, 
   Edit, 
@@ -68,31 +68,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
     }
   };
 
-  const getStatusColor = () => {
-    switch (status) {
-      case 'published':
-        return 'bg-green-500';
-      case 'draft':
-        return 'bg-yellow-500';
-      case 'archived':
-        return 'bg-gray-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
 
-  const getStatusText = () => {
-    switch (status) {
-      case 'published':
-        return 'Live';
-      case 'draft':
-        return 'Draft';
-      case 'archived':
-        return 'Archived';
-      default:
-        return 'Draft';
-    }
-  };
 
   return (
     <Card
@@ -109,18 +85,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
       {/* Gradient overlay for readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10 transition-opacity duration-300 group-hover:opacity-90" />
       
-      {/* Progress Bar - Moved to bottom for better layout */}
-      {completionPercentage > 0 && (
-        <div className="absolute bottom-0 left-0 right-0 z-20">
-          <div className="bg-black/50 p-2">
-            <div className="flex items-center justify-between text-white text-xs mb-1">
-              <span>Completion</span>
-              <span>{completionPercentage}%</span>
-            </div>
-            <Progress value={completionPercentage} className="h-1" />
-          </div>
-        </div>
-      )}
+
 
       {/* Action Menu */}
       <div className="absolute top-2 right-2 z-30">
@@ -160,19 +125,10 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
         </DropdownMenu>
       </div>
 
-      {/* Status Badge */}
-      <div className="absolute top-2 left-2 z-30">
-        <Badge
-          className={`${getStatusColor()} text-white text-xs`}
-        >
-          {getStatusText()}
-        </Badge>
-      </div>
+
 
       {/* Content overlayed at the bottom */}
-      <div className={`absolute left-0 w-full z-20 p-4 flex flex-col gap-2 transition-transform duration-300 group-hover:translate-y-0 ${
-        completionPercentage > 0 ? 'bottom-16' : 'bottom-0'
-      }`}>
+      <div className="absolute left-0 w-full z-20 p-4 flex flex-col gap-2 transition-transform duration-300 group-hover:translate-y-0 bottom-0">
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg text-white drop-shadow font-semibold transition-all duration-300 group-hover:text-xl">
             {title}
@@ -193,12 +149,6 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
             Last updated {lastUpdated}
           </span>
           <div className="flex items-center gap-2">
-            {status === 'published' && (
-              <Badge className="bg-green-500/80 text-white text-xs">
-                <Globe className="h-3 w-3 mr-1" />
-                Live on Site
-              </Badge>
-            )}
             <Button
               variant="outline"
               size="sm"
@@ -221,21 +171,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
         </Badge>
       )}
 
-      {/* Hover overlay with quick stats */}
-      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-15 flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <div className="font-semibold">Bookings</div>
-              <div className="text-2xl font-bold">12</div>
-            </div>
-            <div>
-              <div className="font-semibold">Views</div>
-              <div className="text-2xl font-bold">1.2k</div>
-            </div>
-          </div>
-        </div>
-      </div>
+
     </Card>
   );
 };
