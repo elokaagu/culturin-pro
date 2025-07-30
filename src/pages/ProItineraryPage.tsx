@@ -11,7 +11,6 @@ import { useToast } from '@/components/ui/use-toast';
 
 const ProItineraryPage = () => {
   const [activeTab, setActiveTab] = useState('itineraries');
-  const [viewType, setViewType] = useState<'daily' | 'thematic'>('daily');
   const [itineraries, setItineraries] = useState<ItineraryType[]>(sampleItineraries);
   const [selectedItinerary, setSelectedItinerary] = useState<ItineraryType | null>(null);
   const [showEditor, setShowEditor] = useState(false);
@@ -39,30 +38,6 @@ const ProItineraryPage = () => {
   const handleEditItinerary = (itinerary: ItineraryType) => {
     setSelectedItinerary(itinerary);
     setShowEditor(true);
-  };
-
-  const handleUseTemplate = (template: any) => {
-    const newItinerary: ItineraryType = {
-      id: `template-${Date.now()}`,
-      title: template.title,
-      days: 5,
-      lastUpdated: "just now",
-      status: 'draft',
-      image: template.image,
-      themeType: template.theme.toLowerCase(),
-      description: template.description,
-      regions: []
-    };
-    
-    setItineraries([newItinerary, ...itineraries]);
-    setSelectedItinerary(newItinerary);
-    setActiveTab('itineraries');
-    setShowEditor(true);
-    
-    toast({
-      title: "Template Applied",
-      description: `${template.title} template has been applied to your new itinerary.`,
-    });
   };
 
   const handleEditorClose = () => {
@@ -108,30 +83,12 @@ const ProItineraryPage = () => {
       subtitle="Create and manage your experience itineraries"
     >
       <div className="px-4 sm:px-0">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <div className="overflow-x-auto">
-            <TabsList className="w-full sm:w-auto min-w-full sm:min-w-0">
-              <TabsTrigger value="itineraries" className="flex-1 sm:flex-initial text-xs sm:text-sm">
-                <span className="hidden sm:inline">Your Itineraries</span>
-                <span className="sm:hidden">Itineraries</span>
-              </TabsTrigger>
-              <TabsTrigger value="templates" className="flex-1 sm:flex-initial text-xs sm:text-sm">
-                Templates
-              </TabsTrigger>
-            </TabsList>
-          </div>
-          
-          <ItineraryTabs
-            activeTab={activeTab}
-            viewType={viewType}
-            setViewType={setViewType}
-            itineraries={itineraries}
-            templates={sampleTemplates}
-            onCreateNewItinerary={handleCreateNewItinerary}
-            onEditItinerary={handleEditItinerary}
-            onUseTemplate={handleUseTemplate}
-          />
-        </Tabs>
+        <ItineraryTabs
+          activeTab={activeTab}
+          itineraries={itineraries}
+          onCreateNewItinerary={handleCreateNewItinerary}
+          onEditItinerary={handleEditItinerary}
+        />
       </div>
       
       {showEditor && selectedItinerary && (
