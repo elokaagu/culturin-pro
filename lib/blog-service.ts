@@ -5,8 +5,12 @@ type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 type BlogPostInsert = Database["public"]["Tables"]["blog_posts"]["Insert"];
 type BlogPostUpdate = Database["public"]["Tables"]["blog_posts"]["Update"];
 
-// Check if Supabase is configured
+// Check if Supabase is configured and we're in a browser environment
 const isSupabaseConfigured = () => {
+  // During build time (SSR), return false to use fallback data
+  if (typeof window === 'undefined') {
+    return false;
+  }
   return !!supabase;
 };
 

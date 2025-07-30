@@ -810,54 +810,56 @@ const WebsiteBuilder: React.FC = () => {
 
         {/* Content based on active tab (scrollable) */}
         <div className="flex-1 overflow-auto">
-                     <TabsContent value="preview" className="h-full">
-             <WebsitePreview
-               key={previewKey}
-               itineraries={itineraries}
-             />
-           </TabsContent>
+          <Tabs value={activeTab} onValueChange={handleTabChange}>
+            <TabsContent value="preview" className="h-full">
+              <WebsitePreview
+                key={previewKey}
+                itineraries={itineraries}
+              />
+            </TabsContent>
 
-          <TabsContent value="builder" className="p-6">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold">Building Blocks</h3>
-                  <p className="text-sm text-gray-600">Drag blocks to build your website</p>
+            <TabsContent value="builder" className="p-6">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold">Building Blocks</h3>
+                    <p className="text-sm text-gray-600">Drag blocks to build your website</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Preview
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Download className="h-4 w-4 mr-2" />
+                      Export
+                    </Button>
+                    <Button size="sm">
+                      <Save className="h-4 w-4 mr-2" />
+                      Save
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm">
-                    <Eye className="h-4 w-4 mr-2" />
-                    Preview
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Download className="h-4 w-4 mr-2" />
-                    Export
-                  </Button>
-                  <Button size="sm">
-                    <Save className="h-4 w-4 mr-2" />
-                    Save
-                  </Button>
-                </div>
+                <DragDropBuilder />
               </div>
-              <DragDropBuilder />
-            </div>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="themes" className="p-6">
-            <WebsiteThemes />
-          </TabsContent>
+            <TabsContent value="themes" className="p-6">
+              <WebsiteThemes />
+            </TabsContent>
 
-          <TabsContent value="content" className="p-6">
-            <WebsiteContent />
-          </TabsContent>
+            <TabsContent value="content" className="p-6">
+              <WebsiteContent />
+            </TabsContent>
 
-          <TabsContent value="booking" className="p-6">
-            <BookingFlowBuilder />
-          </TabsContent>
+            <TabsContent value="booking" className="p-6">
+              <BookingFlowBuilder />
+            </TabsContent>
 
-          <TabsContent value="media-library" className="p-6">
-            <MediaLibrary />
-          </TabsContent>
+            <TabsContent value="media-library" className="p-6">
+              <MediaLibrary />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
