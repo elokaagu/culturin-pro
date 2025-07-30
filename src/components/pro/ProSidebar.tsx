@@ -14,6 +14,7 @@ import {
   Megaphone,
   Globe,
   Home,
+  CreditCard,
 } from "lucide-react";
 import Image from "@/components/ui/image";
 
@@ -32,6 +33,11 @@ const menuItems = [
   { name: "Guest CRM", path: "/pro-dashboard/crm", icon: Users },
   { name: "Marketing", path: "/pro-dashboard/marketing", icon: Megaphone },
   { name: "Website", path: "/pro-dashboard/website", icon: Globe },
+  {
+    name: "Cards",
+    path: "/pro-dashboard/cards",
+    icon: CreditCard,
+  },
   {
     name: "Analytics",
     path: "/pro-dashboard/analytics",

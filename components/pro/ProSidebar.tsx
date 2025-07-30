@@ -48,16 +48,16 @@ const menuItems = [
   { name: "Marketing", path: "/pro-dashboard/marketing", icon: Megaphone },
   { name: "Website", path: "/pro-dashboard/website", icon: Globe },
   {
+    name: "Cards",
+    path: "/pro-dashboard/cards",
+    icon: CreditCard,
+  },
+  {
     name: "Analytics",
     path: "/pro-dashboard/analytics",
     icon: ChartBar,
   },
   { name: "Settings", path: "/pro-dashboard/settings", icon: Settings },
-  {
-    name: "Cards",
-    path: "/pro-dashboard/cards",
-    icon: CreditCard,
-  },
 ];
 
 const ProSidebar: React.FC = () => {
