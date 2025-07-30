@@ -20,6 +20,14 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -102,14 +110,21 @@ const ContentCreator: React.FC = () => {
   const [activeTab, setActiveTab] = useState("create");
   const [selectedContentType, setSelectedContentType] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
+  const [generatedContent, setGeneratedContent] =
+    useState<GeneratedContent | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [brandVoice, setBrandVoice] = useState<BrandVoice>({
     tone: "friendly",
     style: "conversational",
     keywords: ["authentic", "immersive", "cultural"],
-    examples: []
+    examples: [],
   });
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [isGeneratingImages, setIsGeneratingImages] = useState(false);
+  const [imageStyle, setImageStyle] = useState("realistic");
+  const [imageAspectRatio, setImageAspectRatio] = useState("1:1");
+  const [imagePrompt, setImagePrompt] = useState("");
+  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
 
   const contentTypes: ContentType[] = [
     {
@@ -119,7 +134,7 @@ const ContentCreator: React.FC = () => {
       description: "Engaging captions for Instagram posts",
       category: "social",
       format: "Short, catchy with emojis",
-      wordCount: "50-100 words"
+      wordCount: "50-100 words",
     },
     {
       id: "tiktok-hook",
@@ -128,7 +143,7 @@ const ContentCreator: React.FC = () => {
       description: "Attention-grabbing hooks for TikTok",
       category: "social",
       format: "First 3 seconds hook",
-      wordCount: "10-20 words"
+      wordCount: "10-20 words",
     },
     {
       id: "google-ad",
@@ -137,7 +152,7 @@ const ContentCreator: React.FC = () => {
       description: "High-converting ad copy for Google Ads",
       category: "advertising",
       format: "Headline + Description",
-      wordCount: "30-90 characters"
+      wordCount: "30-90 characters",
     },
     {
       id: "facebook-ad",
@@ -146,7 +161,7 @@ const ContentCreator: React.FC = () => {
       description: "Engaging ad copy for Facebook/Instagram",
       category: "advertising",
       format: "Primary text + Headlines",
-      wordCount: "125 characters"
+      wordCount: "125 characters",
     },
     {
       id: "blog-post",
@@ -155,7 +170,7 @@ const ContentCreator: React.FC = () => {
       description: "SEO-optimized blog content",
       category: "content",
       format: "Introduction + Body + Conclusion",
-      wordCount: "500-1000 words"
+      wordCount: "500-1000 words",
     },
     {
       id: "email-newsletter",
@@ -164,7 +179,7 @@ const ContentCreator: React.FC = () => {
       description: "Engaging email content for campaigns",
       category: "email",
       format: "Subject line + Body",
-      wordCount: "200-500 words"
+      wordCount: "200-500 words",
     },
     {
       id: "whatsapp-script",
@@ -173,7 +188,7 @@ const ContentCreator: React.FC = () => {
       description: "Personalized messaging scripts",
       category: "social",
       format: "Conversational tone",
-      wordCount: "50-150 words"
+      wordCount: "50-150 words",
     },
     {
       id: "event-flyer",
@@ -182,26 +197,29 @@ const ContentCreator: React.FC = () => {
       description: "Compelling event descriptions",
       category: "content",
       format: "Headline + Benefits + CTA",
-      wordCount: "100-200 words"
-    }
+      wordCount: "100-200 words",
+    },
   ];
 
   const handleGenerateContent = async () => {
     setIsGenerating(true);
-    
+
     // Simulate AI generation
     setTimeout(() => {
       const mockContent: GeneratedContent = {
         id: Date.now().toString(),
         type: selectedContentType,
         title: "Generated Content",
-        content: "🌟 Experience the authentic flavors of Barcelona with our Traditional Cooking Class! 🇪🇸\n\nLearn to cook like a local in a charming family kitchen, using time-honored recipes passed down through generations. From paella to tapas, discover the secrets of Spanish cuisine while immersing yourself in the rich cultural traditions of Catalonia.\n\nPerfect for food lovers, culture enthusiasts, and anyone who wants to take home more than just memories! 🍷✨\n\nBook now and save 20% with code: CULTURE20",
+        content:
+          "🌟 Experience the authentic flavors of Barcelona with our Traditional Cooking Class! 🇪🇸\n\nLearn to cook like a local in a charming family kitchen, using time-honored recipes passed down through generations. From paella to tapas, discover the secrets of Spanish cuisine while immersing yourself in the rich cultural traditions of Catalonia.\n\nPerfect for food lovers, culture enthusiasts, and anyone who wants to take home more than just memories! 🍷✨\n\nBook now and save 20% with code: CULTURE20",
         wordCount: 89,
         tone: "friendly",
         createdAt: new Date().toISOString(),
-        platform: selectedContentType.includes("instagram") ? "Instagram" : "General"
+        platform: selectedContentType.includes("instagram")
+          ? "Instagram"
+          : "General",
       };
-      
+
       setGeneratedContent(mockContent);
       setIsGenerating(false);
       toast.success("Content generated successfully!");
@@ -210,7 +228,7 @@ const ContentCreator: React.FC = () => {
 
   const handleQuickEdit = (action: string) => {
     if (!generatedContent) return;
-    
+
     toast.success(`Content updated: ${action}`);
     // Here you would call the AI API to modify the content
   };
@@ -226,8 +244,25 @@ const ContentCreator: React.FC = () => {
     toast.success("Content copied to clipboard!");
   };
 
+  const handleGenerateImages = async () => {
+    setIsGeneratingImages(true);
+    
+    // Mock image generation - replace with actual API call
+    setTimeout(() => {
+      const mockImages = [
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop",
+      ];
+      setGeneratedImages(mockImages);
+      setIsGeneratingImages(false);
+      setShowImageModal(false);
+      toast.success("Images generated successfully!");
+    }, 3000);
+  };
+
   const getContentTypeIcon = (type: string) => {
-    const contentType = contentTypes.find(ct => ct.id === type);
+    const contentType = contentTypes.find((ct) => ct.id === type);
     return contentType?.icon || <FileText className="h-5 w-5" />;
   };
 
@@ -266,15 +301,20 @@ const ContentCreator: React.FC = () => {
                 Hey there! 👋 Ready to create some amazing content?
               </h3>
               <p className="text-gray-600">
-                I'm your AI marketing assistant. Let's write content that makes your cultural experiences irresistible! 
-                Pick a content type below and I'll help you craft compelling copy that converts.
+                I'm your AI marketing assistant. Let's write content that makes
+                your cultural experiences irresistible! Pick a content type
+                below and I'll help you craft compelling copy that converts.
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
         <TabsList className="grid grid-cols-4 w-full max-w-2xl">
           <TabsTrigger value="create" className="flex items-center gap-2">
             <PenTool className="h-4 w-4" />
@@ -325,8 +365,12 @@ const ContentCreator: React.FC = () => {
                             {type.icon}
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-medium text-gray-900">{type.name}</h4>
-                            <p className="text-sm text-gray-600 mt-1">{type.description}</p>
+                            <h4 className="font-medium text-gray-900">
+                              {type.name}
+                            </h4>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {type.description}
+                            </p>
                             <div className="flex items-center gap-2 mt-2">
                               <Badge variant="outline" className="text-xs">
                                 {type.format}
@@ -350,10 +394,12 @@ const ContentCreator: React.FC = () => {
                 <CardHeader>
                   <CardTitle>Content Details</CardTitle>
                   <CardDescription>
-                    {selectedContentType ? 
-                      `Create ${contentTypes.find(t => t.id === selectedContentType)?.name}` : 
-                      "Select a content type to get started"
-                    }
+                    {selectedContentType
+                      ? `Create ${
+                          contentTypes.find((t) => t.id === selectedContentType)
+                            ?.name
+                        }`
+                      : "Select a content type to get started"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -372,12 +418,13 @@ const ContentCreator: React.FC = () => {
 
                       <div className="space-y-2">
                         <Label>Key Cultural Elements</Label>
-                        <Textarea 
+                        <Textarea
                           placeholder="Think: local dishes, traditions, hidden gems, cultural significance..."
                           className="min-h-[100px]"
                         />
                         <p className="text-xs text-gray-500">
-                          💡 Tip: Include specific cultural details, traditions, and what makes this experience unique
+                          💡 Tip: Include specific cultural details, traditions,
+                          and what makes this experience unique
                         </p>
                       </div>
 
@@ -389,11 +436,21 @@ const ContentCreator: React.FC = () => {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="cultural-travelers">Cultural Travelers</SelectItem>
-                              <SelectItem value="food-enthusiasts">Food Enthusiasts</SelectItem>
-                              <SelectItem value="art-lovers">Art Lovers</SelectItem>
-                              <SelectItem value="luxury-travelers">Luxury Travelers</SelectItem>
-                              <SelectItem value="adventure-seekers">Adventure Seekers</SelectItem>
+                              <SelectItem value="cultural-travelers">
+                                Cultural Travelers
+                              </SelectItem>
+                              <SelectItem value="food-enthusiasts">
+                                Food Enthusiasts
+                              </SelectItem>
+                              <SelectItem value="art-lovers">
+                                Art Lovers
+                              </SelectItem>
+                              <SelectItem value="luxury-travelers">
+                                Luxury Travelers
+                              </SelectItem>
+                              <SelectItem value="adventure-seekers">
+                                Adventure Seekers
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -404,32 +461,50 @@ const ContentCreator: React.FC = () => {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="friendly">Friendly & Approachable</SelectItem>
-                              <SelectItem value="luxury">Luxury & Premium</SelectItem>
-                              <SelectItem value="adventurous">Adventurous & Exciting</SelectItem>
-                              <SelectItem value="educational">Educational & Informative</SelectItem>
+                              <SelectItem value="friendly">
+                                Friendly & Approachable
+                              </SelectItem>
+                              <SelectItem value="luxury">
+                                Luxury & Premium
+                              </SelectItem>
+                              <SelectItem value="adventurous">
+                                Adventurous & Exciting
+                              </SelectItem>
+                              <SelectItem value="educational">
+                                Educational & Informative
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
 
-                      <Button 
-                        onClick={handleGenerateContent}
-                        disabled={isGenerating}
-                        className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90"
-                      >
-                        {isGenerating ? (
-                          <>
-                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                            Creating magic...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="mr-2 h-4 w-4" />
-                            Generate Content
-                          </>
-                        )}
-                      </Button>
+                      <div className="flex gap-3 mt-6">
+                        <Button
+                          onClick={handleGenerateContent}
+                          disabled={isGenerating}
+                          className="flex-1 bg-culturin-indigo hover:bg-culturin-indigo/90"
+                        >
+                          {isGenerating ? (
+                            <>
+                              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                              Creating magic...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="mr-2 h-4 w-4" />
+                              Generate Content
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="flex-1 border-culturin-indigo text-culturin-indigo hover:bg-culturin-indigo/10"
+                          onClick={() => setShowImageModal(true)}
+                        >
+                          <Wand2 className="mr-2 h-4 w-4" />
+                          Generate Images
+                        </Button>
+                      </div>
                     </>
                   ) : (
                     <div className="text-center py-8 text-gray-500">
@@ -452,22 +527,32 @@ const ContentCreator: React.FC = () => {
                     <div>
                       <CardTitle>{generatedContent.title}</CardTitle>
                       <CardDescription>
-                        {generatedContent.platform} • {generatedContent.wordCount} words • {generatedContent.tone} tone
+                        {generatedContent.platform} •{" "}
+                        {generatedContent.wordCount} words •{" "}
+                        {generatedContent.tone} tone
                       </CardDescription>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={handleCopyContent}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCopyContent}
+                    >
                       <Copy className="h-4 w-4 mr-1" />
                       Copy
                     </Button>
-                    <Button variant="outline" size="sm" onClick={handleSaveContent}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleSaveContent}
+                    >
                       <Save className="h-4 w-4 mr-1" />
                       Save
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => setShowPreview(!showPreview)}
                     >
                       <Eye className="h-4 w-4 mr-1" />
@@ -478,24 +563,42 @@ const ContentCreator: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <pre className="whitespace-pre-wrap text-sm">{generatedContent.content}</pre>
+                  <pre className="whitespace-pre-wrap text-sm">
+                    {generatedContent.content}
+                  </pre>
                 </div>
 
                 {/* Quick Edit Actions */}
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleQuickEdit("shorter")}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuickEdit("shorter")}
+                  >
                     <Minimize2 className="h-3 w-3 mr-1" />
                     Make Shorter
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleQuickEdit("more playful")}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuickEdit("more playful")}
+                  >
                     <Sparkles className="h-3 w-3 mr-1" />
                     More Playful
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleQuickEdit("add emojis")}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuickEdit("add emojis")}
+                  >
                     <Heart className="h-3 w-3 mr-1" />
                     Add Emojis
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleQuickEdit("focus on families")}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuickEdit("focus on families")}
+                  >
                     <Users className="h-3 w-3 mr-1" />
                     Family Focus
                   </Button>
@@ -510,18 +613,104 @@ const ContentCreator: React.FC = () => {
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
                           <div>
-                            <div className="font-medium text-sm">Your Business</div>
-                            <div className="text-xs text-gray-500">Sponsored</div>
+                            <div className="font-medium text-sm">
+                              Your Business
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              Sponsored
+                            </div>
                           </div>
                         </div>
                         <div className="bg-gray-200 h-48 rounded mb-3 flex items-center justify-center text-gray-500">
                           [Image Placeholder]
                         </div>
-                        <div className="text-sm">{generatedContent.content}</div>
+                        <div className="text-sm">
+                          {generatedContent.content}
+                        </div>
                       </div>
                     </div>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Generated Images Display */}
+          {generatedImages.length > 0 && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Wand2 className="h-5 w-5 text-culturin-indigo" />
+                    <div>
+                      <CardTitle>Generated Images</CardTitle>
+                      <CardDescription>
+                        {generatedImages.length} images generated • {imageStyle} style • {imageAspectRatio} ratio
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowImageModal(true)}
+                    >
+                      <RefreshCw className="h-4 w-4 mr-1" />
+                      Regenerate
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        // Save images to library
+                        toast.success("Images saved to library!");
+                      }}
+                    >
+                      <Save className="h-4 w-4 mr-1" />
+                      Save All
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {generatedImages.map((image, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={image}
+                        alt={`Generated image ${index + 1}`}
+                        className="w-full h-48 object-cover rounded-lg border"
+                      />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-white text-gray-900 hover:bg-gray-100"
+                          onClick={() => {
+                            // Download image
+                            toast.success("Image downloaded!");
+                          }}
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Download
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-white text-gray-900 hover:bg-gray-100"
+                          onClick={() => {
+                            // Copy image URL
+                            navigator.clipboard.writeText(image);
+                            toast.success("Image URL copied!");
+                          }}
+                        >
+                          <Copy className="h-4 w-4 mr-1" />
+                          Copy URL
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           )}
@@ -543,41 +732,68 @@ const ContentCreator: React.FC = () => {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label>Brand Tone</Label>
-                    <Select value={brandVoice.tone} onValueChange={(value) => setBrandVoice({...brandVoice, tone: value})}>
+                    <Select
+                      value={brandVoice.tone}
+                      onValueChange={(value) =>
+                        setBrandVoice({ ...brandVoice, tone: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="friendly">Friendly & Approachable</SelectItem>
+                        <SelectItem value="friendly">
+                          Friendly & Approachable
+                        </SelectItem>
                         <SelectItem value="luxury">Luxury & Premium</SelectItem>
-                        <SelectItem value="adventurous">Adventurous & Exciting</SelectItem>
-                        <SelectItem value="educational">Educational & Informative</SelectItem>
-                        <SelectItem value="professional">Professional & Trustworthy</SelectItem>
+                        <SelectItem value="adventurous">
+                          Adventurous & Exciting
+                        </SelectItem>
+                        <SelectItem value="educational">
+                          Educational & Informative
+                        </SelectItem>
+                        <SelectItem value="professional">
+                          Professional & Trustworthy
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
                     <Label>Writing Style</Label>
-                    <Select value={brandVoice.style} onValueChange={(value) => setBrandVoice({...brandVoice, style: value})}>
+                    <Select
+                      value={brandVoice.style}
+                      onValueChange={(value) =>
+                        setBrandVoice({ ...brandVoice, style: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="conversational">Conversational</SelectItem>
+                        <SelectItem value="conversational">
+                          Conversational
+                        </SelectItem>
                         <SelectItem value="formal">Formal</SelectItem>
                         <SelectItem value="casual">Casual</SelectItem>
-                        <SelectItem value="storytelling">Storytelling</SelectItem>
+                        <SelectItem value="storytelling">
+                          Storytelling
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
                     <Label>Brand Keywords</Label>
-                    <Input 
+                    <Input
                       placeholder="authentic, immersive, cultural, local..."
                       value={brandVoice.keywords.join(", ")}
-                      onChange={(e) => setBrandVoice({...brandVoice, keywords: e.target.value.split(", ")})}
+                      onChange={(e) =>
+                        setBrandVoice({
+                          ...brandVoice,
+                          keywords: e.target.value.split(", "),
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -588,7 +804,8 @@ const ContentCreator: React.FC = () => {
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                       <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                       <p className="text-sm text-gray-600">
-                        Upload 2-3 past posts or website copy to help AI learn your style
+                        Upload 2-3 past posts or website copy to help AI learn
+                        your style
                       </p>
                     </div>
                   </div>
@@ -621,7 +838,9 @@ const ContentCreator: React.FC = () => {
             <CardContent>
               <div className="text-center py-8 text-gray-500">
                 <BookOpen className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>No saved content yet. Generate some content to see it here!</p>
+                <p>
+                  No saved content yet. Generate some content to see it here!
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -638,12 +857,124 @@ const ContentCreator: React.FC = () => {
             <CardContent>
               <div className="text-center py-8 text-gray-500">
                 <TrendingUp className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>Analytics will appear here once you start using generated content</p>
+                <p>
+                  Analytics will appear here once you start using generated
+                  content
+                </p>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Image Generation Modal */}
+      <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wand2 className="h-5 w-5" />
+              Generate Marketing Images
+            </DialogTitle>
+            <DialogDescription>
+              Create stunning visuals for your content. Choose style, size, and customize the prompt.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* Style Selection */}
+            <div className="space-y-3">
+              <Label>Image Style</Label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { id: "realistic", name: "Realistic", icon: "📸" },
+                  { id: "illustration", name: "Illustration", icon: "🎨" },
+                  { id: "minimal", name: "Minimal", icon: "⚪" },
+                ].map((style) => (
+                  <button
+                    key={style.id}
+                    onClick={() => setImageStyle(style.id)}
+                    className={`p-3 rounded-lg border-2 transition-all ${
+                      imageStyle === style.id
+                        ? "border-culturin-indigo bg-culturin-indigo/10"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="text-2xl mb-1">{style.icon}</div>
+                    <div className="text-sm font-medium">{style.name}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Aspect Ratio Selection */}
+            <div className="space-y-3">
+              <Label>Aspect Ratio</Label>
+              <div className="grid grid-cols-4 gap-3">
+                {[
+                  { id: "1:1", name: "Square", icon: "⬜" },
+                  { id: "16:9", name: "Landscape", icon: "⬜" },
+                  { id: "9:16", name: "Portrait", icon: "⬜" },
+                  { id: "4:3", name: "Classic", icon: "⬜" },
+                ].map((ratio) => (
+                  <button
+                    key={ratio.id}
+                    onClick={() => setImageAspectRatio(ratio.id)}
+                    className={`p-3 rounded-lg border-2 transition-all ${
+                      imageAspectRatio === ratio.id
+                        ? "border-culturin-indigo bg-culturin-indigo/10"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="text-lg mb-1">{ratio.icon}</div>
+                    <div className="text-xs font-medium">{ratio.name}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Prompt */}
+            <div className="space-y-3">
+              <Label>Image Prompt</Label>
+              <Textarea
+                placeholder="Describe the image you want to generate... (e.g., 'A vibrant cooking class in Barcelona with local ingredients and traditional Spanish kitchen')"
+                value={imagePrompt}
+                onChange={(e) => setImagePrompt(e.target.value)}
+                className="min-h-[100px]"
+              />
+              <p className="text-xs text-gray-500">
+                💡 Tip: Be specific about style, mood, and cultural elements for better results
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowImageModal(false)}
+              disabled={isGeneratingImages}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleGenerateImages}
+              disabled={isGeneratingImages || !imagePrompt.trim()}
+              className="bg-culturin-indigo hover:bg-culturin-indigo/90"
+            >
+              {isGeneratingImages ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Wand2 className="mr-2 h-4 w-4" />
+                  Generate Images
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
