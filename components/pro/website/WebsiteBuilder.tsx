@@ -438,9 +438,9 @@ const WebsiteBuilder: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        {/* Sidebar Header */}
-        <div className="p-6 border-b border-gray-200">
+      <div className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
+        {/* Sidebar Header - Fixed */}
+        <div className="p-6 border-b border-gray-200 flex-shrink-0">
           <h2 className="text-xl font-semibold mb-2">Your Website</h2>
           <p className="text-sm text-gray-600 mb-4">
             Customize your tour operator website with real-time preview and booking functionality.
@@ -472,8 +472,8 @@ const WebsiteBuilder: React.FC = () => {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="p-6 border-b border-gray-200 space-y-4">
+        {/* Action Buttons - Fixed */}
+        <div className="p-6 border-b border-gray-200 space-y-4 flex-shrink-0">
           {/* Primary Action */}
           <Button
             onClick={handlePublish}
@@ -542,136 +542,139 @@ const WebsiteBuilder: React.FC = () => {
           </div>
         </div>
 
-        {/* Published URL Status */}
-        {publishedUrl && (
-          <div className="p-6 border-b border-gray-200">
-            <div className="bg-green-50 border border-green-200 rounded-md p-3">
-              <div className="flex items-center mb-2">
-                <div className="rounded-full bg-green-100 p-1">
-                  <Check className="h-4 w-4 text-green-600" />
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Published URL Status */}
+          {publishedUrl && (
+            <div className="p-6 border-b border-gray-200">
+              <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                <div className="flex items-center mb-2">
+                  <div className="rounded-full bg-green-100 p-1">
+                    <Check className="h-4 w-4 text-green-600" />
+                  </div>
+                  <span className="ml-2 text-sm font-medium text-green-800">
+                    Site Published
+                  </span>
                 </div>
-                <span className="ml-2 text-sm font-medium text-green-800">
-                  Site Published
-                </span>
-              </div>
-              <div className="text-xs text-green-700 mb-2">
-                <a
-                  href={`/${publishedUrl}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline hover:text-green-900 break-all"
+                <div className="text-xs text-green-700 mb-2">
+                  <a
+                    href={`/${publishedUrl}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline hover:text-green-900 break-all"
+                  >
+                    {typeof window !== "undefined" ? window.location.origin : ""}/
+                    {publishedUrl}
+                  </a>
+                </div>
+                {userData.websiteSettings.enableBooking && (
+                  <div className="flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                    <ShoppingCart className="h-3 w-3" />
+                    Booking Enabled
+                  </div>
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handlePreviewSite}
+                  className="w-full mt-2"
                 >
-                  {typeof window !== "undefined" ? window.location.origin : ""}/
-                  {publishedUrl}
-                </a>
+                  <Eye className="h-4 w-4 mr-1" />
+                  Visit Site
+                </Button>
               </div>
-              {userData.websiteSettings.enableBooking && (
-                <div className="flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                  <ShoppingCart className="h-3 w-3" />
-                  Booking Enabled
-                </div>
-              )}
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handlePreviewSite}
-                className="w-full mt-2"
-              >
-                <Eye className="h-4 w-4 mr-1" />
-                Visit Site
-              </Button>
+            </div>
+          )}
+
+          {/* Quick Actions */}
+          <div className="p-6 border-b border-gray-200">
+            <h3 className="text-sm font-medium mb-4 text-gray-900">Quick Actions</h3>
+            
+            {/* Brand Settings */}
+            <div className="mb-4">
+              <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">Brand Settings</h4>
+              <div className="space-y-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleQuickAction("resetColor")}
+                  className="w-full justify-start text-xs"
+                >
+                  <Palette className="h-3 w-3 mr-2" />
+                  Reset Brand Color
+                </Button>
+              </div>
+            </div>
+
+            {/* Booking Settings */}
+            <div className="mb-4">
+              <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">Booking Settings</h4>
+              <div className="space-y-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleQuickAction("toggleBooking")}
+                  className="w-full justify-start text-xs"
+                >
+                  <ShoppingCart className="h-3 w-3 mr-2" />
+                  {userData.websiteSettings.enableBooking ? "Disable" : "Enable"} Booking
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleQuickAction("configureBooking")}
+                  className="w-full justify-start text-xs"
+                >
+                  <Settings className="h-3 w-3 mr-2" />
+                  Configure Booking Flow
+                </Button>
+              </div>
+            </div>
+
+            {/* System Settings */}
+            <div>
+              <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">System</h4>
+              <div className="space-y-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleQuickAction("toggleAutoSave")}
+                  className={`w-full justify-start text-xs ${
+                    autoSaveEnabled ? "bg-green-50 border-green-200 text-green-700" : ""
+                  }`}
+                >
+                  <Zap className="h-3 w-3 mr-2" />
+                  {autoSaveEnabled ? "Auto-save On" : "Auto-save Off"}
+                </Button>
+              </div>
             </div>
           </div>
-        )}
 
-        {/* Quick Actions */}
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-sm font-medium mb-4 text-gray-900">Quick Actions</h3>
-          
-          {/* Brand Settings */}
-          <div className="mb-4">
-            <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">Brand Settings</h4>
-            <div className="space-y-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleQuickAction("resetColor")}
-                className="w-full justify-start text-xs"
-              >
-                <Palette className="h-3 w-3 mr-2" />
-                Reset Brand Color
-              </Button>
+          {/* Navigation Tabs */}
+          <div className="p-6">
+            <div className="mb-4">
+              <h3 className="text-sm font-medium text-gray-900 mb-1">Website Builder</h3>
+              <p className="text-xs text-gray-500">Customize your site's design and content</p>
             </div>
+            <Tabs
+              defaultValue="preview"
+              value={activeTab}
+              onValueChange={handleTabChange}
+              className="w-full"
+            >
+              <TabsList className="flex flex-col w-full h-auto bg-transparent">
+                <TabsTrigger value="preview" className="w-full justify-start h-10 text-sm">Preview</TabsTrigger>
+                <TabsTrigger value="builder" className="w-full justify-start h-10 text-sm">Builder</TabsTrigger>
+                <TabsTrigger value="themes" className="w-full justify-start h-10 text-sm">Themes</TabsTrigger>
+                <TabsTrigger value="content" className="w-full justify-start h-10 text-sm">Content</TabsTrigger>
+                <TabsTrigger value="header-footer" className="w-full justify-start h-10 text-sm">Header</TabsTrigger>
+                <TabsTrigger value="fonts" className="w-full justify-start h-10 text-sm">Fonts</TabsTrigger>
+                <TabsTrigger value="booking" className="w-full justify-start h-10 text-sm">Booking</TabsTrigger>
+                <TabsTrigger value="settings" className="w-full justify-start h-10 text-sm">Settings</TabsTrigger>
+                <TabsTrigger value="media-library" className="w-full justify-start h-10 text-sm">Media Library</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
-
-          {/* Booking Settings */}
-          <div className="mb-4">
-            <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">Booking Settings</h4>
-            <div className="space-y-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleQuickAction("toggleBooking")}
-                className="w-full justify-start text-xs"
-              >
-                <ShoppingCart className="h-3 w-3 mr-2" />
-                {userData.websiteSettings.enableBooking ? "Disable" : "Enable"} Booking
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleQuickAction("configureBooking")}
-                className="w-full justify-start text-xs"
-              >
-                <Settings className="h-3 w-3 mr-2" />
-                Configure Booking Flow
-              </Button>
-            </div>
-          </div>
-
-          {/* System Settings */}
-          <div>
-            <h4 className="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">System</h4>
-            <div className="space-y-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleQuickAction("toggleAutoSave")}
-                className={`w-full justify-start text-xs ${
-                  autoSaveEnabled ? "bg-green-50 border-green-200 text-green-700" : ""
-                }`}
-              >
-                <Zap className="h-3 w-3 mr-2" />
-                {autoSaveEnabled ? "Auto-save On" : "Auto-save Off"}
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="flex-1 p-6">
-          <div className="mb-4">
-            <h3 className="text-sm font-medium text-gray-900 mb-1">Website Builder</h3>
-            <p className="text-xs text-gray-500">Customize your site's design and content</p>
-          </div>
-          <Tabs
-            defaultValue="preview"
-            value={activeTab}
-            onValueChange={handleTabChange}
-            className="w-full"
-          >
-            <TabsList className="flex flex-col w-full h-auto bg-transparent">
-              <TabsTrigger value="preview" className="w-full justify-start h-10 text-sm">Preview</TabsTrigger>
-              <TabsTrigger value="builder" className="w-full justify-start h-10 text-sm">Builder</TabsTrigger>
-              <TabsTrigger value="themes" className="w-full justify-start h-10 text-sm">Themes</TabsTrigger>
-              <TabsTrigger value="content" className="w-full justify-start h-10 text-sm">Content</TabsTrigger>
-              <TabsTrigger value="header-footer" className="w-full justify-start h-10 text-sm">Header</TabsTrigger>
-              <TabsTrigger value="fonts" className="w-full justify-start h-10 text-sm">Fonts</TabsTrigger>
-              <TabsTrigger value="booking" className="w-full justify-start h-10 text-sm">Booking</TabsTrigger>
-              <TabsTrigger value="settings" className="w-full justify-start h-10 text-sm">Settings</TabsTrigger>
-              <TabsTrigger value="media-library" className="w-full justify-start h-10 text-sm">Media Library</TabsTrigger>
-            </TabsList>
-          </Tabs>
         </div>
       </div>
 
