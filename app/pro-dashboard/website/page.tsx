@@ -2,7 +2,7 @@
 
 import React from "react";
 import ProDashboardLayout from "../../../src/components/pro/ProDashboardLayout";
-import WebsiteBuilder from "../../../src/components/pro/website/WebsiteBuilder";
+import WebsiteBuilder from "../../../components/pro/website/WebsiteBuilder";
 
 // Force dynamic rendering to prevent SSR issues
 export const dynamic = "force-dynamic";
