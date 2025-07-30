@@ -351,9 +351,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto p-6">
       {/* Currency Selector */}
-      <div className="flex justify-end mb-6">
+      <div className="flex justify-end mb-4">
         <div className="flex items-center gap-2">
           <Globe className="h-4 w-4 text-gray-500" />
           <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
@@ -372,9 +372,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
       </div>
 
       {/* Booking Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-3">{tour.title}</h1>
-        <div className="flex items-center gap-4 text-gray-600 mb-3">
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-3">{tour.title}</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-gray-600 mb-3">
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
             <span>
@@ -390,7 +390,7 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
 
       {/* Booking Progress */}
       {step < 5 && (
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="flex items-center">
             {[
               { num: 1, label: "Date" },
@@ -438,7 +438,7 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
       {step === 1 && (
         <div>
           <h2 className="text-2xl font-semibold mb-6">Select a Date</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {availableDates.slice(0, 12).map((date) => (
               <Card
                 key={date}
@@ -447,12 +447,12 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                 }`}
                 onClick={() => handleDateSelect(date)}
               >
-                <CardContent className="flex items-center justify-between p-5">
-                  <div>
-                    <Calendar className="h-5 w-5 text-blue-600 mb-2" />
-                    <h3 className="font-medium">{formatDate(date)}</h3>
+                <CardContent className="flex items-center justify-between p-4">
+                  <div className="flex-1">
+                    <Calendar className="h-4 w-4 text-blue-600 mb-1" />
+                    <h3 className="font-medium text-sm">{formatDate(date)}</h3>
                   </div>
-                  <div className="text-blue-600">Select</div>
+                  <div className="text-blue-600 text-sm font-medium">Select</div>
                 </CardContent>
               </Card>
             ))}
@@ -470,7 +470,7 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {availableTimes.map((time) => (
               <Card
                 key={time}
@@ -479,12 +479,12 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                 }`}
                 onClick={() => handleTimeSelect(time)}
               >
-                <CardContent className="flex items-center justify-between p-5">
-                  <div>
-                    <Clock className="h-5 w-5 text-blue-600 mb-2" />
-                    <h3 className="font-medium">{time}</h3>
+                <CardContent className="flex items-center justify-between p-4">
+                  <div className="flex-1">
+                    <Clock className="h-4 w-4 text-blue-600 mb-1" />
+                    <h3 className="font-medium text-sm">{time}</h3>
                   </div>
-                  <div className="text-blue-600">Select</div>
+                  <div className="text-blue-600 text-sm font-medium">Select</div>
                 </CardContent>
               </Card>
             ))}
@@ -502,9 +502,9 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-2">
-              <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="firstName">First Name *</Label>
