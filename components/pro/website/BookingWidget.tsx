@@ -837,10 +837,7 @@ const BookingWidget: React.FC<BookingWidgetProps> = ({
                       className="mt-3"
                       onClick={() => {
                         // In a real implementation, this would connect to MetaMask/Coinbase Wallet
-                        toast({
-                          title: "Wallet Connection",
-                          description: "Connecting to your wallet...",
-                        });
+                        toast.info("Connecting to your wallet...");
                       }}
                     >
                       <Wallet className="mr-2 h-4 w-4" />

@@ -238,24 +238,26 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
   const { user } = useAuth();
 
   useEffect(() => {
-    // Load user data from localStorage on mount
+    // Load user data from localStorage on mount - only on client side
     const loadUserData = () => {
       try {
-        const storedData = localStorage.getItem("culturin_user_data");
-        if (storedData) {
-          const parsedData = JSON.parse(storedData);
-          setUserData({ ...defaultUserData, ...parsedData });
-        } else {
-          // Initialize with user auth data if available
-          if (user) {
-            setUserData((prev) => ({
-              ...prev,
-              email: user.email,
-              businessName:
-                (user.user_metadata?.full_name ||
-                  user.email?.split("@")[0] ||
-                  "User") + "'s Tours",
-            }));
+        if (typeof window !== 'undefined') {
+          const storedData = localStorage.getItem("culturin_user_data");
+          if (storedData) {
+            const parsedData = JSON.parse(storedData);
+            setUserData({ ...defaultUserData, ...parsedData });
+          } else {
+            // Initialize with user auth data if available
+            if (user) {
+              setUserData((prev) => ({
+                ...prev,
+                email: user.email,
+                businessName:
+                  (user.user_metadata?.full_name ||
+                    user.email?.split("@")[0] ||
+                    "User") + "'s Tours",
+              }));
+            }
           }
         }
       } catch (error) {
@@ -281,22 +283,27 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
     }));
 
     // Also update localStorage for website settings (for backward compatibility)
-    Object.entries(updates).forEach(([key, value]) => {
-      if (key === "companyName")
-        localStorage.setItem("websiteCompanyName", value as string);
-      if (key === "tagline")
-        localStorage.setItem("websiteTagline", value as string);
-      if (key === "description")
-        localStorage.setItem("websiteDescription", value as string);
-      if (key === "primaryColor")
-        localStorage.setItem("websitePrimaryColor", value as string);
-      if (key === "headerImage") {
-        if (value) localStorage.setItem("websiteHeaderImage", value as string);
+    if (typeof window !== 'undefined') {
+      if (updates.companyName !== undefined) {
+        localStorage.setItem("websiteCompanyName", updates.companyName as string);
+      }
+      if (updates.tagline !== undefined) {
+        localStorage.setItem("websiteTagline", updates.tagline as string);
+      }
+      if (updates.description !== undefined) {
+        localStorage.setItem("websiteDescription", updates.description as string);
+      }
+      if (updates.primaryColor !== undefined) {
+        localStorage.setItem("websitePrimaryColor", updates.primaryColor as string);
+      }
+      if (updates.headerImage !== undefined) {
+        if (updates.headerImage) localStorage.setItem("websiteHeaderImage", updates.headerImage as string);
         else localStorage.removeItem("websiteHeaderImage");
       }
-      if (key === "theme")
-        localStorage.setItem("selectedWebsiteTheme", value as string);
-    });
+      if (updates.theme !== undefined) {
+        localStorage.setItem("selectedWebsiteTheme", updates.theme as string);
+      }
+    }
   };
 
   const updateNotifications = (updates: Partial<UserData["notifications"]>) => {
@@ -307,10 +314,8 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const saveUserData = () => {
-    try {
+    if (typeof window !== 'undefined') {
       localStorage.setItem("culturin_user_data", JSON.stringify(userData));
-    } catch (error) {
-      console.error("Error saving user data:", error);
     }
   };
 

@@ -48,10 +48,7 @@ const WebsiteBuilder: React.FC = () => {
   const [publishLoading, setPublishLoading] = useState(false);
   const [refreshLoading, setRefreshLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
-  const [publishedUrl, setPublishedUrl] = useState(() => {
-    const storedUrl = localStorage.getItem("publishedWebsiteUrl");
-    return storedUrl || "tour/demo";
-  });
+  const [publishedUrl, setPublishedUrl] = useState("");
   const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
   const [previewKey, setPreviewKey] = useState(0);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
@@ -66,8 +63,12 @@ const WebsiteBuilder: React.FC = () => {
   const navigate = useNavigate();
   const { userData, updateWebsiteSettings, saveUserData } = useUserData();
 
-  // Initialize data
+  // Initialize data - only on client side
   useEffect(() => {
+    // Initialize published URL from localStorage
+    const storedUrl = localStorage.getItem("publishedWebsiteUrl");
+    setPublishedUrl(storedUrl || "tour/demo");
+
     // Get itineraries from localStorage or use sample data
     const storedItineraries = localStorage.getItem("culturinItineraries");
     if (storedItineraries) {
@@ -101,7 +102,7 @@ const WebsiteBuilder: React.FC = () => {
         itineraries: sampleItineraries,
       });
     }
-  }, []);
+  }, [userData.websiteSettings]);
 
   // Auto-refresh preview when user data changes
   useEffect(() => {

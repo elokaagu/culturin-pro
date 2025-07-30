@@ -81,7 +81,7 @@ const LoyaltyCardSettings: React.FC = () => {
   };
 
   const connectWallet = async () => {
-    if (typeof window.ethereum === "undefined") {
+    if (typeof window !== 'undefined' && !(window as any).ethereum) {
       toast({
         title: "MetaMask not found",
         description: "Please install MetaMask to connect your wallet.",
@@ -93,7 +93,7 @@ const LoyaltyCardSettings: React.FC = () => {
     setIsConnectingWallet(true);
 
     try {
-      const accounts = await window.ethereum.request({
+      const accounts = await (window as any).ethereum.request({
         method: "eth_requestAccounts",
       });
 

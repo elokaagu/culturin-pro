@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "../../lib/navigation";
 import { useAuth } from "../../src/components/auth/AuthProvider";
 import { cn } from "@/lib/utils";
@@ -64,33 +64,44 @@ const ProSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  const [userName, setUserName] = useState<string>("Cultural Host");
-  const [planType, setplanType] = useState<string>("Growth Plan");
-
-  useEffect(() => {
-    // Use authenticated user's name if available, otherwise fallback to localStorage
+  // Use authenticated user's name if available, otherwise fallback to localStorage
+  const userName = useMemo(() => {
     if (user?.user_metadata?.full_name) {
-      setUserName(user.user_metadata.full_name);
-    } else if (user?.email) {
-      setUserName(user.email.split("@")[0]);
-    } else {
+      return user.user_metadata.full_name;
+    }
+    
+    if (typeof window !== 'undefined') {
       const storedUserName = localStorage.getItem("userName");
       if (storedUserName) {
-        setUserName(storedUserName);
-      } else {
-        localStorage.setItem("userName", "Eloka Agu");
-        setUserName("Eloka Agu");
+        return storedUserName;
       }
+      // Set default if not found
+      localStorage.setItem("userName", "Eloka Agu");
+      return "Eloka Agu";
     }
-
-    const storedPlanType = localStorage.getItem("planType");
-    if (storedPlanType) {
-      setplanType(storedPlanType);
-    } else {
-      localStorage.setItem("planType", "Growth Plan");
-      setplanType("Growth Plan");
-    }
+    
+    return "User";
   }, [user]);
+
+  const planType = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      const storedPlanType = localStorage.getItem("planType");
+      if (storedPlanType) {
+        return storedPlanType;
+      }
+      // Set default if not found
+      localStorage.setItem("planType", "Growth Plan");
+      return "Growth Plan";
+    }
+    return "Growth Plan";
+  }, []);
+
+  useEffect(() => {
+    // Store the current route for navigation
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lastRoute', '/pro-dashboard');
+    }
+  }, [location.pathname]);
 
   return (
     <div className="w-64 bg-white h-full border-r border-gray-200 flex flex-col fixed left-0 top-0 bottom-0 font-sans">
