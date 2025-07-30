@@ -109,10 +109,10 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
       {/* Gradient overlay for readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10 transition-opacity duration-300 group-hover:opacity-90" />
       
-      {/* Progress Bar */}
+      {/* Progress Bar - Moved to bottom for better layout */}
       {completionPercentage > 0 && (
-        <div className="absolute top-0 left-0 right-0 z-20 p-3">
-          <div className="bg-black/50 rounded-lg p-2">
+        <div className="absolute bottom-0 left-0 right-0 z-20">
+          <div className="bg-black/50 p-2">
             <div className="flex items-center justify-between text-white text-xs mb-1">
               <span>Completion</span>
               <span>{completionPercentage}%</span>
@@ -170,7 +170,9 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
       </div>
 
       {/* Content overlayed at the bottom */}
-      <div className="absolute bottom-0 left-0 w-full z-20 p-4 flex flex-col gap-2 transition-transform duration-300 group-hover:translate-y-0">
+      <div className={`absolute left-0 w-full z-20 p-4 flex flex-col gap-2 transition-transform duration-300 group-hover:translate-y-0 ${
+        completionPercentage > 0 ? 'bottom-16' : 'bottom-0'
+      }`}>
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg text-white drop-shadow font-semibold transition-all duration-300 group-hover:text-xl">
             {title}
@@ -212,9 +214,9 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
         </div>
       </div>
 
-      {/* Theme badge */}
+      {/* Theme badge - positioned below status badge */}
       {themeType && (
-        <Badge className="absolute top-12 left-2 bg-black/70 text-white z-30 transition-all duration-300 group-hover:bg-black/90 group-hover:scale-110">
+        <Badge className="absolute top-10 left-2 bg-black/70 text-white z-30 transition-all duration-300 group-hover:bg-black/90 group-hover:scale-110">
           {themeType.charAt(0).toUpperCase() + themeType.slice(1)}
         </Badge>
       )}
