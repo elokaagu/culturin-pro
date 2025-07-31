@@ -210,7 +210,10 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
             </div>
           )}
 
-          <Button onClick={onCreateNewItinerary} className="w-full sm:w-auto text-sm bg-culturin-indigo hover:bg-culturin-indigo/90">
+          <Button 
+            onClick={onCreateNewItinerary} 
+            className="w-full sm:w-auto text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 shadow-md hover:shadow-lg transition-all duration-200"
+          >
             <Sparkles className="h-4 w-4 mr-2" />
             <span className="hidden sm:inline">Create New Itinerary</span>
             <span className="sm:hidden">Create New</span>
@@ -248,7 +251,10 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
           <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed mx-4 sm:mx-0">
             <h3 className="text-lg sm:text-xl font-medium mb-2">No Itineraries Yet</h3>
             <p className="text-gray-500 mb-6 text-sm sm:text-base px-4">Start creating your first itinerary</p>
-            <Button onClick={onCreateNewItinerary} className="text-sm bg-culturin-indigo hover:bg-culturin-indigo/90">
+            <Button 
+              onClick={onCreateNewItinerary} 
+              className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 shadow-md hover:shadow-lg transition-all duration-200"
+            >
               <Sparkles className="h-4 w-4 mr-2" />
               Create New Itinerary
             </Button>
