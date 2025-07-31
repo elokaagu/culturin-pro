@@ -58,7 +58,7 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
             <div className="flex justify-between items-start">
               <div className="max-w-2xl">
                 <h2 className="text-3xl font-bold mb-3">
-                  Save 10+ Hours a Week & Grow Bookings by 32% 🚀
+                  Save 10+ Hours a Week & Grow Bookings by 32%
                 </h2>
                 <p className="text-lg text-blue-100">
                   Join 1,000+ operators who've switched to Culturin Pro
@@ -149,8 +149,8 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
             {/* Trust Indicators */}
             <div className="mt-6 p-4 bg-gray-50 rounded-xl">
               <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>✅ Join 1,000+ cultural creators already on Pro</span>
-                <span>🔒 Secure payment via Stripe</span>
+                                 <span>Join 1,000+ cultural creators already on Pro</span>
+                 <span>Secure payment via Stripe</span>
               </div>
             </div>
           </div>
@@ -186,13 +186,13 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
 
             {/* CTA Buttons */}
             <div className="space-y-3">
-              <Button
-                onClick={handlePurchase}
-                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white w-full justify-center py-4 text-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200"
-              >
-                👉 Upgrade to Pro – Start Free Trial
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
+                             <Button
+                 onClick={handlePurchase}
+                 className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white w-full justify-center py-4 text-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-200"
+               >
+                 Upgrade to Pro – Start Free Trial
+                 <ArrowRight className="h-5 w-5 ml-2" />
+               </Button>
               
               <button
                 onClick={handleMaybeLater}
