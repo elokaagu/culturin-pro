@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 import {
   ArrowLeft,
   Edit,
@@ -25,6 +26,8 @@ import {
   Archive,
   Save,
   X,
+  ExternalLink,
+  Trash2,
 } from "lucide-react";
 import Image from "@/components/ui/image";
 import { sampleItineraries } from "@/data/itineraryData";
@@ -32,6 +35,7 @@ import { sampleItineraries } from "@/data/itineraryData";
 export default function ItineraryDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { toast } = useToast();
   const itineraryId = params.id as string;
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<any>(null);
@@ -59,7 +63,11 @@ export default function ItineraryDetailPage() {
     // Here you would typically save to your backend
     console.log("Saving itinerary:", formData);
     setIsEditing(false);
-    // You could show a success toast here
+    
+    toast({
+      title: "Changes Saved",
+      description: "Your itinerary has been updated successfully.",
+    });
   };
 
   const handleCancel = () => {
@@ -72,6 +80,82 @@ export default function ItineraryDetailPage() {
       ...prev,
       [field]: value,
     }));
+  };
+
+  // Quick Actions Functions
+  const handleViewOnWebsite = () => {
+    // Generate a public URL for the itinerary
+    const publicUrl = `${window.location.origin}/tour/${itineraryId}`;
+    window.open(publicUrl, '_blank');
+  };
+
+  const handleShareLink = async () => {
+    const shareUrl = `${window.location.origin}/tour/${itineraryId}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: itinerary.title,
+          text: itinerary.description,
+          url: shareUrl,
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast({
+          title: "Link Copied",
+          description: "Itinerary link has been copied to your clipboard.",
+        });
+      } catch (error) {
+        console.log('Error copying to clipboard:', error);
+        toast({
+          title: "Error",
+          description: "Failed to copy link to clipboard.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleDuplicate = () => {
+    // Create a duplicate of the current itinerary
+    const duplicateId = `duplicate-${Date.now()}`;
+    const duplicateItinerary = {
+      ...itinerary,
+      id: duplicateId,
+      title: `${itinerary.title} (Copy)`,
+      status: 'draft',
+      lastUpdated: new Date().toLocaleDateString(),
+    };
+    
+    // In a real app, you would save this to your backend
+    console.log('Duplicating itinerary:', duplicateItinerary);
+    
+    toast({
+      title: "Itinerary Duplicated",
+      description: "A copy of this itinerary has been created.",
+    });
+    
+    // Navigate to the new duplicate
+    router.push(`/pro-dashboard/itinerary/${duplicateId}`);
+  };
+
+  const handleArchive = () => {
+    if (confirm('Are you sure you want to archive this itinerary? This action can be undone later.')) {
+      // In a real app, you would update the status to 'archived' in your backend
+      console.log('Archiving itinerary:', itineraryId);
+      
+      toast({
+        title: "Itinerary Archived",
+        description: "The itinerary has been archived successfully.",
+      });
+      
+      router.push('/pro-dashboard/itinerary');
+    }
   };
 
   if (!itinerary) {
@@ -137,11 +221,11 @@ export default function ItineraryDetailPage() {
                 </>
               ) : (
                 <>
-                  <Button variant="outline">
+                  <Button variant="outline" onClick={handleShareLink}>
                     <Share2 className="h-4 w-4 mr-2" />
                     Share
                   </Button>
-                  <Button variant="outline">
+                  <Button variant="outline" onClick={handleDuplicate}>
                     <Copy className="h-4 w-4 mr-2" />
                     Duplicate
                   </Button>
@@ -341,19 +425,35 @@ export default function ItineraryDetailPage() {
                   <CardTitle>Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button className="w-full" variant="outline">
+                  <Button 
+                    className="w-full" 
+                    variant="outline"
+                    onClick={handleViewOnWebsite}
+                  >
                     <Globe className="h-4 w-4 mr-2" />
                     View on Website
                   </Button>
-                  <Button className="w-full" variant="outline">
+                  <Button 
+                    className="w-full" 
+                    variant="outline"
+                    onClick={handleShareLink}
+                  >
                     <Share2 className="h-4 w-4 mr-2" />
                     Share Link
                   </Button>
-                  <Button className="w-full" variant="outline">
+                  <Button 
+                    className="w-full" 
+                    variant="outline"
+                    onClick={handleDuplicate}
+                  >
                     <Copy className="h-4 w-4 mr-2" />
                     Duplicate
                   </Button>
-                  <Button className="w-full" variant="outline">
+                  <Button 
+                    className="w-full" 
+                    variant="outline"
+                    onClick={handleArchive}
+                  >
                     <Archive className="h-4 w-4 mr-2" />
                     Archive
                   </Button>
