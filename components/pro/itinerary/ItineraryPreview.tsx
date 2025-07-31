@@ -556,12 +556,26 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                   onDrop={(e) => handleDrop(e, day)}
                   onDragOver={handleDragOver}
                 >
-                  <div className="border-2 border-dashed rounded-lg p-4 mb-4 bg-gray-50 text-center">
-                    <p className="text-gray-500">
-                      {modules.filter((m) => m.day === day).length === 0
-                        ? "Drag modules here to build your itinerary"
-                        : "Drag more modules or rearrange existing ones"}
-                    </p>
+                  <div 
+                    className={`border-2 border-dashed rounded-lg p-8 mb-4 text-center transition-all duration-200 ${
+                      modules.filter((m) => m.day === day).length === 0
+                        ? "bg-blue-50 border-blue-200 hover:bg-blue-100"
+                        : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                    }`}
+                    onDrop={(e) => handleDrop(e, day)}
+                    onDragOver={handleDragOver}
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <Plus className="h-8 w-8 text-gray-400" />
+                      <p className="text-gray-600 font-medium">
+                        {modules.filter((m) => m.day === day).length === 0
+                          ? "Drag modules here to build your itinerary"
+                          : "Drag more modules or rearrange existing ones"}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Available modules: Accommodation, Meal, Attraction, Transportation, Activity, Photo, Break, Location
+                      </p>
+                    </div>
                   </div>
 
                   {modules
