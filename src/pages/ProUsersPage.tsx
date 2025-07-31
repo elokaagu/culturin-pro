@@ -23,6 +23,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import {
   Search,
   Download,
   Mail,
@@ -33,6 +55,7 @@ import {
   TrendingUp,
   UserCheck,
   UserPlus,
+  X,
 } from "lucide-react";
 
 interface User {
@@ -276,6 +299,22 @@ const ProUsersPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteForm, setInviteForm] = useState({
+    name: "",
+    email: "",
+    role: "operator" as "operator" | "traveler" | "admin",
+    location: "",
+  });
+  const { toast } = useToast();
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteForm, setInviteForm] = useState({
+    name: "",
+    email: "",
+    role: "operator" as "operator" | "traveler" | "admin",
+    location: "",
+  });
+  const { toast } = useToast();
 
   // Filter users based on search and filters
   useEffect(() => {
@@ -330,6 +369,112 @@ const ProUsersPage: React.FC = () => {
     }
   };
 
+
+  const handleExport = () => {
+    const csvContent = [
+      // CSV Headers
+      ["Name", "Email", "Role", "Status", "Location", "Join Date", "Last Active", "Activity"],
+      // CSV Data
+      ...filteredUsers.map(user => [
+        user.name,
+        user.email,
+        user.role,
+        user.status,
+        user.location,
+        new Date(user.joinDate).toLocaleDateString(),
+        new Date(user.lastActive).toLocaleDateString(),
+        user.role === "operator" 
+          ? `${user.experiencesCreated} experiences`
+          : `${user.bookingsMade} bookings`
+      ])
+    ].map(row => row.join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `culturin-users-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Export Successful",
+      description: `Exported ${filteredUsers.length} users to CSV file.`,
+    });
+  };
+
+  // Invite user functionality
+  const handleInviteUser = () => {
+    if (!inviteForm.name || !inviteForm.email || !inviteForm.role) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create new user
+    const newUser: User = {
+      id: `new-${Date.now()}`,
+      name: inviteForm.name,
+      email: inviteForm.email,
+      role: inviteForm.role,
+      status: "pending",
+      location: inviteForm.location || "Not specified",
+      joinDate: new Date().toISOString().split('T')[0],
+      lastActive: new Date().toISOString().split('T')[0],
+      experiencesCreated: inviteForm.role === "operator" ? 0 : undefined,
+      bookingsMade: inviteForm.role === "traveler" ? 0 : undefined,
+    };
+
+    setUsers(prev => [newUser, ...prev]);
+    setShowInviteModal(false);
+    setInviteForm({ name: "", email: "", role: "operator", location: "" });
+
+    toast({
+      title: "Invitation Sent",
+      description: `Invitation sent to ${inviteForm.name} (${inviteForm.email})`,
+    });
+  };
+
+  // Invite user functionality
+  const handleInviteUser = () => {
+    if (!inviteForm.name || !inviteForm.email || !inviteForm.role) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create new user
+    const newUser: User = {
+      id: `new-${Date.now()}`,
+      name: inviteForm.name,
+      email: inviteForm.email,
+      role: inviteForm.role,
+      status: "pending",
+      location: inviteForm.location || "Not specified",
+      joinDate: new Date().toISOString().split('T')[0],
+      lastActive: new Date().toISOString().split('T')[0],
+      experiencesCreated: inviteForm.role === "operator" ? 0 : undefined,
+      bookingsMade: inviteForm.role === "traveler" ? 0 : undefined,
+    };
+
+    setUsers(prev => [newUser, ...prev]);
+    setShowInviteModal(false);
+    setInviteForm({ name: "", email: "", role: "operator", location: "" });
+
+    toast({
+      title: "Invitation Sent",
+      description: `Invitation sent to ${inviteForm.name} (${inviteForm.email})`,
+    });
+  };
+
   const totalUsers = users.length;
   const activeUsers = users.filter((user) => user.status === "active").length;
   const operators = users.filter((user) => user.role === "operator").length;
@@ -343,14 +488,83 @@ const ProUsersPage: React.FC = () => {
       <div className="space-y-6">
         {/* Header Actions */}
         <div className="flex justify-end gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExport}>
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button size="sm">
-            <UserPlus className="h-4 w-4 mr-2" />
-            Invite User
-          </Button>
+          
+          <Dialog open={showInviteModal} onOpenChange={setShowInviteModal}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <UserPlus className="h-4 w-4 mr-2" />
+                Invite User
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Invite New User</DialogTitle>
+                <DialogDescription>
+                  Send an invitation to join the Culturin platform.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Full Name *</Label>
+                  <Input
+                    id="name"
+                    value={inviteForm.name}
+                    onChange={(e) => setInviteForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Enter full name"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email Address *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={inviteForm.email}
+                    onChange={(e) => setInviteForm(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="Enter email address"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="role">Role *</Label>
+                  <Select
+                    value={inviteForm.role}
+                    onValueChange={(value: "operator" | "traveler" | "admin") => 
+                      setInviteForm(prev => ({ ...prev, role: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="operator">Operator</SelectItem>
+                      <SelectItem value="traveler">Traveler</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    value={inviteForm.location}
+                    onChange={(e) => setInviteForm(prev => ({ ...prev, location: e.target.value }))}
+                    placeholder="Enter location (optional)"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setShowInviteModal(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleInviteUser}>
+                  Send Invitation
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Stats Cards */}
