@@ -295,6 +295,8 @@ const ProUsersPage: React.FC = () => {
     role: "operator" as "operator" | "traveler" | "admin",
     location: "",
   });
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showUserCard, setShowUserCard] = useState(false);
   const { toast } = useToast();
 
   // Filter users based on search and filters
@@ -434,6 +436,28 @@ const ProUsersPage: React.FC = () => {
     });
   };
 
+  // User card functionality
+  const handleUserClick = (user: User) => {
+    setSelectedUser(user);
+    setShowUserCard(true);
+  };
+
+  const handleCloseUserCard = () => {
+    setShowUserCard(false);
+    setSelectedUser(null);
+  };
+
+  const handleContactUser = (type: 'email' | 'phone', user?: User) => {
+    const targetUser = user || selectedUser;
+    if (!targetUser) return;
+    
+    if (type === 'email') {
+      window.open(`mailto:${targetUser.email}`, '_blank');
+    } else if (type === 'phone' && targetUser.phone) {
+      window.open(`tel:${targetUser.phone}`, '_blank');
+    }
+  };
+
   const totalUsers = users.length;
   const activeUsers = users.filter((user) => user.status === "active").length;
   const operators = users.filter((user) => user.role === "operator").length;
@@ -537,6 +561,138 @@ const ProUsersPage: React.FC = () => {
                   Cancel
                 </Button>
                 <Button onClick={handleInviteUser}>Send Invitation</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* User Detail Card Dialog */}
+          <Dialog open={showUserCard} onOpenChange={setShowUserCard}>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>User Details</DialogTitle>
+                <DialogDescription>
+                  View and manage user information
+                </DialogDescription>
+              </DialogHeader>
+              {selectedUser && (
+                <div className="space-y-6">
+                  {/* User Header */}
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src={selectedUser.avatar} alt={selectedUser.name} />
+                      <AvatarFallback className="text-lg">
+                        {selectedUser.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold">{selectedUser.name}</h3>
+                      <p className="text-gray-600">{selectedUser.email}</p>
+                      <div className="flex gap-2 mt-2">
+                        <Badge className={getRoleColor(selectedUser.role)}>
+                          {selectedUser.role}
+                        </Badge>
+                        <Badge className={getStatusColor(selectedUser.status)}>
+                          {selectedUser.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* User Details Grid */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm font-medium">Location</span>
+                      </div>
+                      <p className="text-sm text-gray-600">{selectedUser.location}</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm font-medium">Joined</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {new Date(selectedUser.joinDate).toLocaleDateString()}
+                      </p>
+                    </div>
+
+                    {selectedUser.phone && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-gray-400" />
+                          <span className="text-sm font-medium">Phone</span>
+                        </div>
+                        <p className="text-sm text-gray-600">{selectedUser.phone}</p>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm font-medium">Last Active</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {new Date(selectedUser.lastActive).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Activity Section */}
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Activity</h4>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      {selectedUser.role === "operator" && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600">Experiences Created</span>
+                          <span className="font-semibold">{selectedUser.experiencesCreated || 0}</span>
+                        </div>
+                      )}
+                      {selectedUser.role === "traveler" && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600">Bookings Made</span>
+                          <span className="font-semibold">{selectedUser.bookingsMade || 0}</span>
+                        </div>
+                      )}
+                      {selectedUser.totalSpent && (
+                        <div className="flex items-center justify-between mt-2">
+                          <span className="text-sm text-gray-600">Total Spent</span>
+                          <span className="font-semibold">${selectedUser.totalSpent.toLocaleString()}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-4">
+                    <Button 
+                      onClick={() => handleContactUser('email')}
+                      className="flex-1"
+                    >
+                      <Mail className="h-4 w-4 mr-2" />
+                      Send Email
+                    </Button>
+                    {selectedUser.phone && (
+                      <Button 
+                        onClick={() => handleContactUser('phone')}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        <Phone className="h-4 w-4 mr-2" />
+                        Call
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+              <DialogFooter>
+                <Button variant="outline" onClick={handleCloseUserCard}>
+                  Close
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -651,7 +807,11 @@ const ProUsersPage: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredUsers.map((user) => (
-                    <TableRow key={user.id} className="hover:bg-gray-50">
+                    <TableRow 
+                      key={user.id} 
+                      className="hover:bg-gray-50 cursor-pointer"
+                      onClick={() => handleUserClick(user)}
+                    >
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
@@ -707,11 +867,25 @@ const ProUsersPage: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleContactUser('email', user);
+                            }}
+                          >
                             <Mail className="h-3 w-3" />
                           </Button>
                           {user.phone && (
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleContactUser('phone', user);
+                              }}
+                            >
                               <Phone className="h-3 w-3" />
                             </Button>
                           )}
