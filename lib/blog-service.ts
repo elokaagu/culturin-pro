@@ -401,7 +401,28 @@ export async function getBlogPosts(filters?: {
     // If Supabase is not configured, return fallback data
     if (!isSupabaseConfigured()) {
       console.warn("Supabase not configured, using fallback blog posts");
-      return getFallbackBlogPosts();
+      const fallbackPosts = getFallbackBlogPosts();
+      
+      // Apply filters to fallback data
+      let filteredPosts = fallbackPosts;
+      
+      if (filters?.published !== undefined) {
+        filteredPosts = filteredPosts.filter(post => post.published === filters.published);
+      }
+      
+      if (filters?.category) {
+        filteredPosts = filteredPosts.filter(post => post.category === filters.category);
+      }
+      
+      if (filters?.limit) {
+        filteredPosts = filteredPosts.slice(0, filters.limit);
+      }
+      
+      if (filters?.offset) {
+        filteredPosts = filteredPosts.slice(filters.offset, filters.offset + (filters.limit || 10));
+      }
+      
+      return filteredPosts;
     }
 
     let query = supabase.from("blog_posts").select("*");

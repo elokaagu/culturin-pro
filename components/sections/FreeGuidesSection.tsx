@@ -77,7 +77,9 @@ const FreeGuidesSection = () => {
   useEffect(() => {
     const loadBlogPosts = async () => {
       try {
+        console.log("Loading blog posts for free guides...");
         const posts = await getBlogPosts({ published: true, limit: 3 });
+        console.log("Blog posts loaded:", posts);
         setBlogPosts(posts);
       } catch (error) {
         console.error("Error loading blog posts for free guides:", error);

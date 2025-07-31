@@ -14,17 +14,21 @@ export default function ItineraryDetailPage() {
   const params = useParams();
   const router = useRouter();
   const itineraryId = params.id as string;
-  
+
   // Find the itinerary from sample data
-  const itinerary = sampleItineraries.find(i => i.id === itineraryId);
-  
+  const itinerary = sampleItineraries.find((i) => i.id === itineraryId);
+
   if (!itinerary) {
     return (
       <ProDashboardLayout>
         <div className="p-6">
           <div className="text-center py-12">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Itinerary Not Found</h1>
-            <p className="text-gray-600 mb-6">The itinerary you're looking for doesn't exist.</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Itinerary Not Found
+            </h1>
+            <p className="text-gray-600 mb-6">
+              The itinerary you're looking for doesn't exist.
+            </p>
             <Button onClick={() => router.push("/pro-dashboard/itinerary")}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Itineraries
@@ -51,8 +55,12 @@ export default function ItineraryDetailPage() {
                 Back to Itineraries
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{itinerary.title}</h1>
-                <p className="text-gray-600">{itinerary.days} days • {itinerary.regions.join(", ")}</p>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {itinerary.title}
+                </h1>
+                <p className="text-gray-600">
+                  {itinerary.days} days • {itinerary.regions.join(", ")}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -86,7 +94,8 @@ export default function ItineraryDetailPage() {
                   />
                   <div className="absolute top-4 right-4">
                     <Badge className="bg-black/50 text-white">
-                      {itinerary.themeType.charAt(0).toUpperCase() + itinerary.themeType.slice(1)}
+                      {itinerary.themeType.charAt(0).toUpperCase() +
+                        itinerary.themeType.slice(1)}
                     </Badge>
                   </div>
                 </div>
@@ -117,16 +126,28 @@ export default function ItineraryDetailPage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Destinations</span>
-                      <span className="font-medium">{itinerary.regions.join(", ")}</span>
+                      <span className="font-medium">
+                        {itinerary.regions.join(", ")}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Theme</span>
-                      <span className="font-medium capitalize">{itinerary.themeType}</span>
+                      <span className="font-medium capitalize">
+                        {itinerary.themeType}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Status</span>
-                      <Badge className={itinerary.status === 'published' ? 'bg-green-500' : 'bg-yellow-500'}>
-                        {itinerary.status === 'published' ? 'Published' : 'Draft'}
+                      <Badge
+                        className={
+                          itinerary.status === "published"
+                            ? "bg-green-500"
+                            : "bg-yellow-500"
+                        }
+                      >
+                        {itinerary.status === "published"
+                          ? "Published"
+                          : "Draft"}
                       </Badge>
                     </div>
                   </div>
@@ -169,7 +190,9 @@ export default function ItineraryDetailPage() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">1.2k</div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        1.2k
+                      </div>
                       <div className="text-sm text-gray-600">Views</div>
                     </div>
                     <div className="text-center">
@@ -177,7 +200,9 @@ export default function ItineraryDetailPage() {
                       <div className="text-sm text-gray-600">Bookings</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">4.8</div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        4.8
+                      </div>
                       <div className="text-sm text-gray-600">Rating</div>
                     </div>
                   </div>
@@ -190,7 +215,9 @@ export default function ItineraryDetailPage() {
                   <CardTitle>Last Updated</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600">{itinerary.lastUpdated}</p>
+                  <p className="text-sm text-gray-600">
+                    {itinerary.lastUpdated}
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -199,4 +226,4 @@ export default function ItineraryDetailPage() {
       </div>
     </ProDashboardLayout>
   );
-} 
+}
