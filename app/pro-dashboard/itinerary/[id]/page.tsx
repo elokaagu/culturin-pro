@@ -2,7 +2,7 @@
 
 import React from "react";
 import ProDashboardLayout from "../../../../components/pro/ProDashboardLayout";
-import { useParams, useNavigate } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import { sampleItineraries } from "@/data/itineraryData";
 
 export default function ItineraryDetailPage() {
   const params = useParams();
-  const navigate = useNavigate();
+  const router = useRouter();
   const itineraryId = params.id as string;
   
   // Find the itinerary from sample data
@@ -25,7 +25,7 @@ export default function ItineraryDetailPage() {
           <div className="text-center py-12">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Itinerary Not Found</h1>
             <p className="text-gray-600 mb-6">The itinerary you're looking for doesn't exist.</p>
-            <Button onClick={() => navigate("/pro-dashboard/itinerary")}>
+            <Button onClick={() => router.push("/pro-dashboard/itinerary")}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Itineraries
             </Button>
@@ -44,7 +44,7 @@ export default function ItineraryDetailPage() {
             <div className="flex items-center gap-4">
               <Button
                 variant="outline"
-                onClick={() => navigate("/pro-dashboard/itinerary")}
+                onClick={() => router.push("/pro-dashboard/itinerary")}
                 className="flex items-center gap-2"
               >
                 <ArrowLeft className="h-4 w-4" />
