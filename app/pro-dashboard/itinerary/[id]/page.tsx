@@ -8,9 +8,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Edit, Globe, Share2, Copy, Archive, Save, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit,
+  Globe,
+  Share2,
+  Copy,
+  Archive,
+  Save,
+  X,
+} from "lucide-react";
 import Image from "@/components/ui/image";
 import { sampleItineraries } from "@/data/itineraryData";
 
@@ -100,7 +115,11 @@ export default function ItineraryDetailPage() {
                   {isEditing ? "Edit Itinerary" : itinerary.title}
                 </h1>
                 <p className="text-gray-600">
-                  {isEditing ? "Make changes to your itinerary" : `${itinerary.days} days • ${itinerary.regions.join(", ")}`}
+                  {isEditing
+                    ? "Make changes to your itinerary"
+                    : `${itinerary.days} days • ${itinerary.regions.join(
+                        ", "
+                      )}`}
                 </p>
               </div>
             </div>
@@ -170,7 +189,9 @@ export default function ItineraryDetailPage() {
                         <Input
                           id="title"
                           value={formData?.title || ""}
-                          onChange={(e) => handleInputChange("title", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("title", e.target.value)
+                          }
                           className="mt-1"
                         />
                       </div>
@@ -179,7 +200,9 @@ export default function ItineraryDetailPage() {
                         <Textarea
                           id="description"
                           value={formData?.description || ""}
-                          onChange={(e) => handleInputChange("description", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("description", e.target.value)
+                          }
                           className="mt-1"
                           rows={4}
                         />
@@ -207,18 +230,24 @@ export default function ItineraryDetailPage() {
                           id="days"
                           type="number"
                           value={formData?.days || ""}
-                          onChange={(e) => handleInputChange("days", parseInt(e.target.value))}
+                          onChange={(e) =>
+                            handleInputChange("days", parseInt(e.target.value))
+                          }
                           className="mt-1"
                           min="1"
                           max="30"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="regions">Destinations (comma-separated)</Label>
+                        <Label htmlFor="regions">
+                          Destinations (comma-separated)
+                        </Label>
                         <Input
                           id="regions"
                           value={formData?.regions || ""}
-                          onChange={(e) => handleInputChange("regions", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("regions", e.target.value)
+                          }
                           className="mt-1"
                           placeholder="e.g., Paris, Lyon, Nice"
                         />
@@ -227,7 +256,9 @@ export default function ItineraryDetailPage() {
                         <Label htmlFor="themeType">Theme</Label>
                         <Select
                           value={formData?.themeType || ""}
-                          onValueChange={(value) => handleInputChange("themeType", value)}
+                          onValueChange={(value) =>
+                            handleInputChange("themeType", value)
+                          }
                         >
                           <SelectTrigger className="mt-1">
                             <SelectValue placeholder="Select theme" />
@@ -236,7 +267,9 @@ export default function ItineraryDetailPage() {
                             <SelectItem value="cultural">Cultural</SelectItem>
                             <SelectItem value="adventure">Adventure</SelectItem>
                             <SelectItem value="culinary">Culinary</SelectItem>
-                            <SelectItem value="historical">Historical</SelectItem>
+                            <SelectItem value="historical">
+                              Historical
+                            </SelectItem>
                             <SelectItem value="nature">Nature</SelectItem>
                             <SelectItem value="urban">Urban</SelectItem>
                           </SelectContent>
@@ -246,7 +279,9 @@ export default function ItineraryDetailPage() {
                         <Label htmlFor="status">Status</Label>
                         <Select
                           value={formData?.status || ""}
-                          onValueChange={(value) => handleInputChange("status", value)}
+                          onValueChange={(value) =>
+                            handleInputChange("status", value)
+                          }
                         >
                           <SelectTrigger className="mt-1">
                             <SelectValue placeholder="Select status" />
@@ -262,7 +297,9 @@ export default function ItineraryDetailPage() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Duration</span>
-                        <span className="font-medium">{itinerary.days} days</span>
+                        <span className="font-medium">
+                          {itinerary.days} days
+                        </span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Destinations</span>

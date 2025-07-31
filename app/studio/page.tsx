@@ -71,9 +71,9 @@ function StudioContent() {
       
       {activeTab === "overview" ? (
         // Split Screen Layout for Overview
-        <div className="pt-24 min-h-screen flex">
+        <div className="min-h-screen flex">
           {/* Left Side - Welcome Content */}
-          <div className="w-1/2 flex items-center justify-center px-12">
+          <div className="w-1/2 flex items-center justify-center px-12 pt-24">
             <div className="max-w-lg">
               <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
                 Welcome to Culturin Studio
