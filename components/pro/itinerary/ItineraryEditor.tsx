@@ -5,6 +5,8 @@ import {
   ExternalLink,
   Image as ImageIcon,
   ShoppingCart,
+  Plus,
+  X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -15,6 +17,10 @@ import {
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "../../../lib/navigation";
 import ModuleLibrary from "@/components/pro/itinerary/ModuleLibrary";
 import ItineraryPreview from "@/components/pro/itinerary/ItineraryPreview";
@@ -172,6 +178,125 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
           </label>
         </div>
       </div>
+
+      {/* Itinerary Details Form */}
+      <div className="p-6 border-b border-gray-100">
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-lg font-semibold mb-4 text-culturin-indigo">Itinerary Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="title">Title *</Label>
+                <Input
+                  id="title"
+                  value={itinerary.title || ""}
+                  onChange={(e) => handlePropertyChange("title", e.target.value)}
+                  placeholder="Enter itinerary title"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="description">Description *</Label>
+                <Textarea
+                  id="description"
+                  value={itinerary.description || ""}
+                  onChange={(e) => handlePropertyChange("description", e.target.value)}
+                  placeholder="Describe your itinerary..."
+                  rows={4}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="regions">Destinations</Label>
+                <Input
+                  id="regions"
+                  value={Array.isArray(itinerary.regions) ? itinerary.regions.join(", ") : ""}
+                  onChange={(e) => handlePropertyChange("regions", e.target.value.split(", ").filter(Boolean))}
+                  placeholder="e.g., Paris, Lyon, Nice"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="themeType">Theme</Label>
+                <Select
+                  value={itinerary.themeType || "general"}
+                  onValueChange={(value) => handlePropertyChange("themeType", value)}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select theme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cultural">Cultural</SelectItem>
+                    <SelectItem value="adventure">Adventure</SelectItem>
+                    <SelectItem value="culinary">Culinary</SelectItem>
+                    <SelectItem value="historical">Historical</SelectItem>
+                    <SelectItem value="nature">Nature</SelectItem>
+                    <SelectItem value="urban">Urban</SelectItem>
+                    <SelectItem value="spiritual">Spiritual</SelectItem>
+                    <SelectItem value="arts">Arts</SelectItem>
+                    <SelectItem value="general">General</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="price">Price (USD)</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  value={itinerary.price || ""}
+                  onChange={(e) => handlePropertyChange("price", parseFloat(e.target.value) || 0)}
+                  placeholder="0.00"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="groupSize">Group Size</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    type="number"
+                    placeholder="Min"
+                    value={itinerary.groupSize?.min || ""}
+                    onChange={(e) => handlePropertyChange("groupSize", {
+                      ...itinerary.groupSize,
+                      min: parseInt(e.target.value) || 1
+                    })}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Max"
+                    value={itinerary.groupSize?.max || ""}
+                    onChange={(e) => handlePropertyChange("groupSize", {
+                      ...itinerary.groupSize,
+                      max: parseInt(e.target.value) || 10
+                    })}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="difficulty">Difficulty Level</Label>
+                <Select
+                  value={itinerary.difficulty || "easy"}
+                  onValueChange={(value) => handlePropertyChange("difficulty", value)}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select difficulty" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="easy">Easy</SelectItem>
+                    <SelectItem value="moderate">Moderate</SelectItem>
+                    <SelectItem value="challenging">Challenging</SelectItem>
+                    <SelectItem value="expert">Expert</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Editorial Layout */}
       <div className="flex flex-col md:flex-row gap-0 md:gap-6 p-0 md:p-8 transition-all duration-500">
         {/* Left: Module Library */}
@@ -249,9 +374,47 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                 <Button
                   variant="outline"
                   className="w-full mt-2 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10 transition-all duration-300"
+                  onClick={() => {
+                    const duplicateItinerary = {
+                      ...itinerary,
+                      id: `duplicate-${Date.now()}`,
+                      title: `${itinerary.title} (Copy)`,
+                      status: 'draft' as const,
+                      lastUpdated: "just now",
+                    };
+                    if (onItinerarySave) {
+                      onItinerarySave(duplicateItinerary);
+                    }
+                    toast({
+                      title: "Itinerary Duplicated",
+                      description: "A copy of this itinerary has been created.",
+                    });
+                    onEditorClose();
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-1" /> Duplicate Itinerary
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full mt-2 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10 transition-all duration-300"
                   onClick={() => router.push(`/pro-dashboard/booking`)}
                 >
                   <ShoppingCart className="h-4 w-4 mr-1" /> View Bookings
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full mt-2 text-red-600 border-red-600 hover:bg-red-50 transition-all duration-300"
+                  onClick={() => {
+                    if (confirm('Are you sure you want to delete this itinerary? This action cannot be undone.')) {
+                      toast({
+                        title: "Itinerary Deleted",
+                        description: "The itinerary has been deleted successfully.",
+                      });
+                      onEditorClose();
+                    }
+                  }}
+                >
+                  <X className="h-4 w-4 mr-1" /> Delete Itinerary
                 </Button>
               </div>
             </div>
