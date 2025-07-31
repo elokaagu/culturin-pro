@@ -5,8 +5,7 @@ import ProDashboardLayout from '@/components/pro/ProDashboardLayout';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ItineraryTabs from '@/components/pro/itinerary/ItineraryTabs';
 import ItineraryEditor from '@/components/pro/itinerary/ItineraryEditor';
-import ResourcesSection from '@/components/pro/itinerary/ResourcesSection';
-import { sampleItineraries, sampleTemplates, resourcesData, ItineraryType, ResourceType } from '@/data/itineraryData';
+import { sampleItineraries, sampleTemplates, ItineraryType } from '@/data/itineraryData';
 import { useToast } from '@/components/ui/use-toast';
 
 const ProItineraryPage = () => {
@@ -45,28 +44,7 @@ const ProItineraryPage = () => {
     setSelectedItinerary(null);
   };
 
-  const handleResourceClick = (resource: ResourceType) => {
-    if (resource.id === 'r1') {
-      // Open AI assistant
-      setShowAIAssistant(true);
-      
-      if (!showEditor && itineraries.length > 0) {
-        // If editor is not open yet, open it with the first itinerary
-        setSelectedItinerary(itineraries[0]);
-        setShowEditor(true);
-      }
-      
-      toast({
-        title: "AI Content Assistant",
-        description: "AI assistant is ready to help you create engaging content.",
-      });
-    } else {
-      toast({
-        title: resource.title,
-        description: `Opening ${resource.title.toLowerCase()} tool...`,
-      });
-    }
-  };
+
 
   const handleItinerarySave = (updatedItinerary: ItineraryType) => {
     // Fixed the type issue by ensuring we're only using ItineraryType
@@ -106,14 +84,7 @@ const ProItineraryPage = () => {
         </div>
       )}
       
-      {!showEditor && (
-        <div className="px-4 sm:px-0">
-          <ResourcesSection
-            resources={resourcesData}
-            onResourceClick={handleResourceClick}
-          />
-        </div>
-      )}
+
     </ProDashboardLayout>
   );
 };
