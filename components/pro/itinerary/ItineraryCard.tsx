@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "next/navigation";
 import {
   Card,
   CardHeader,
@@ -60,6 +61,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
   themeType,
   regions,
 }) => {
+  const navigate = useNavigate();
   const [showActions, setShowActions] = useState(false);
 
   const handleQuickAction = (action: string) => {
@@ -73,7 +75,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
   return (
     <Card
       className="relative h-64 overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer group"
-      onClick={onEdit}
+      onClick={() => navigate(`/pro-dashboard/itinerary/${id}`)}
     >
       {/* Background Image */}
       <Image
@@ -155,7 +157,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
               className="h-8 bg-white/90 text-gray-900 hover:bg-white transition-all duration-300 group-hover:bg-white group-hover:scale-105 group-hover:shadow-md"
               onClick={(e) => {
                 e.stopPropagation();
-                onEdit();
+                navigate(`/pro-dashboard/itinerary/${id}`);
               }}
             >
               <Edit className="h-3 w-3 mr-1" /> Edit
