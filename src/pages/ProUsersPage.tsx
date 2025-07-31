@@ -34,17 +34,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
-import {
   Search,
   Download,
   Mail,
@@ -307,14 +296,6 @@ const ProUsersPage: React.FC = () => {
     location: "",
   });
   const { toast } = useToast();
-  const [showInviteModal, setShowInviteModal] = useState(false);
-  const [inviteForm, setInviteForm] = useState({
-    name: "",
-    email: "",
-    role: "operator" as "operator" | "traveler" | "admin",
-    location: "",
-  });
-  const { toast } = useToast();
 
   // Filter users based on search and filters
   useEffect(() => {
@@ -369,13 +350,21 @@ const ProUsersPage: React.FC = () => {
     }
   };
 
-
   const handleExport = () => {
     const csvContent = [
       // CSV Headers
-      ["Name", "Email", "Role", "Status", "Location", "Join Date", "Last Active", "Activity"],
+      [
+        "Name",
+        "Email",
+        "Role",
+        "Status",
+        "Location",
+        "Join Date",
+        "Last Active",
+        "Activity",
+      ],
       // CSV Data
-      ...filteredUsers.map(user => [
+      ...filteredUsers.map((user) => [
         user.name,
         user.email,
         user.role,
@@ -383,17 +372,22 @@ const ProUsersPage: React.FC = () => {
         user.location,
         new Date(user.joinDate).toLocaleDateString(),
         new Date(user.lastActive).toLocaleDateString(),
-        user.role === "operator" 
+        user.role === "operator"
           ? `${user.experiencesCreated} experiences`
-          : `${user.bookingsMade} bookings`
-      ])
-    ].map(row => row.join(",")).join("\n");
+          : `${user.bookingsMade} bookings`,
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", `culturin-users-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      "download",
+      `culturin-users-${new Date().toISOString().split("T")[0]}.csv`
+    );
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
@@ -424,48 +418,13 @@ const ProUsersPage: React.FC = () => {
       role: inviteForm.role,
       status: "pending",
       location: inviteForm.location || "Not specified",
-      joinDate: new Date().toISOString().split('T')[0],
-      lastActive: new Date().toISOString().split('T')[0],
+      joinDate: new Date().toISOString().split("T")[0],
+      lastActive: new Date().toISOString().split("T")[0],
       experiencesCreated: inviteForm.role === "operator" ? 0 : undefined,
       bookingsMade: inviteForm.role === "traveler" ? 0 : undefined,
     };
 
-    setUsers(prev => [newUser, ...prev]);
-    setShowInviteModal(false);
-    setInviteForm({ name: "", email: "", role: "operator", location: "" });
-
-    toast({
-      title: "Invitation Sent",
-      description: `Invitation sent to ${inviteForm.name} (${inviteForm.email})`,
-    });
-  };
-
-  // Invite user functionality
-  const handleInviteUser = () => {
-    if (!inviteForm.name || !inviteForm.email || !inviteForm.role) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Create new user
-    const newUser: User = {
-      id: `new-${Date.now()}`,
-      name: inviteForm.name,
-      email: inviteForm.email,
-      role: inviteForm.role,
-      status: "pending",
-      location: inviteForm.location || "Not specified",
-      joinDate: new Date().toISOString().split('T')[0],
-      lastActive: new Date().toISOString().split('T')[0],
-      experiencesCreated: inviteForm.role === "operator" ? 0 : undefined,
-      bookingsMade: inviteForm.role === "traveler" ? 0 : undefined,
-    };
-
-    setUsers(prev => [newUser, ...prev]);
+    setUsers((prev) => [newUser, ...prev]);
     setShowInviteModal(false);
     setInviteForm({ name: "", email: "", role: "operator", location: "" });
 
@@ -492,7 +451,7 @@ const ProUsersPage: React.FC = () => {
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          
+
           <Dialog open={showInviteModal} onOpenChange={setShowInviteModal}>
             <DialogTrigger asChild>
               <Button size="sm">
@@ -513,7 +472,12 @@ const ProUsersPage: React.FC = () => {
                   <Input
                     id="name"
                     value={inviteForm.name}
-                    onChange={(e) => setInviteForm(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setInviteForm((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
                     placeholder="Enter full name"
                   />
                 </div>
@@ -523,7 +487,12 @@ const ProUsersPage: React.FC = () => {
                     id="email"
                     type="email"
                     value={inviteForm.email}
-                    onChange={(e) => setInviteForm(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) =>
+                      setInviteForm((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
                     placeholder="Enter email address"
                   />
                 </div>
@@ -531,8 +500,8 @@ const ProUsersPage: React.FC = () => {
                   <Label htmlFor="role">Role *</Label>
                   <Select
                     value={inviteForm.role}
-                    onValueChange={(value: "operator" | "traveler" | "admin") => 
-                      setInviteForm(prev => ({ ...prev, role: value }))
+                    onValueChange={(value: "operator" | "traveler" | "admin") =>
+                      setInviteForm((prev) => ({ ...prev, role: value }))
                     }
                   >
                     <SelectTrigger>
@@ -550,18 +519,24 @@ const ProUsersPage: React.FC = () => {
                   <Input
                     id="location"
                     value={inviteForm.location}
-                    onChange={(e) => setInviteForm(prev => ({ ...prev, location: e.target.value }))}
+                    onChange={(e) =>
+                      setInviteForm((prev) => ({
+                        ...prev,
+                        location: e.target.value,
+                      }))
+                    }
                     placeholder="Enter location (optional)"
                   />
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setShowInviteModal(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowInviteModal(false)}
+                >
                   Cancel
                 </Button>
-                <Button onClick={handleInviteUser}>
-                  Send Invitation
-                </Button>
+                <Button onClick={handleInviteUser}>Send Invitation</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
