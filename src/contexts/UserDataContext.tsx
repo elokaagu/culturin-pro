@@ -132,14 +132,14 @@ export interface UserData {
   // Loyalty Card Settings
   loyaltyCard: {
     cardId: string;
-    tier: 'bronze' | 'silver' | 'gold' | 'platinum';
+    tier: "bronze" | "silver" | "gold" | "platinum";
     balance: number;
     rewardsBalance: number;
     walletAddress: string;
-    status: 'active' | 'suspended' | 'pending';
+    status: "active" | "suspended" | "pending";
     memberSince: Date;
-    kycStatus: 'pending' | 'verified' | 'rejected';
-    amlCheck: 'passed' | 'failed' | 'pending';
+    kycStatus: "pending" | "verified" | "rejected";
+    amlCheck: "passed" | "failed" | "pending";
     annualFee: number;
     rewardsRate: number;
     benefits: string[];
@@ -241,16 +241,18 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
     // Load user data from localStorage on mount - only on client side
     const loadUserData = () => {
       try {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           const storedData = localStorage.getItem("culturin_user_data");
           if (storedData) {
             const parsedData = JSON.parse(storedData);
-            
+
             // Convert memberSince back to Date object if it exists
             if (parsedData.loyaltyCard && parsedData.loyaltyCard.memberSince) {
-              parsedData.loyaltyCard.memberSince = new Date(parsedData.loyaltyCard.memberSince);
+              parsedData.loyaltyCard.memberSince = new Date(
+                parsedData.loyaltyCard.memberSince
+              );
             }
-            
+
             setUserData({ ...defaultUserData, ...parsedData });
           } else {
             // Initialize with user auth data if available
@@ -289,21 +291,34 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
     }));
 
     // Also update localStorage for website settings (for backward compatibility)
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       if (updates.companyName !== undefined) {
-        localStorage.setItem("websiteCompanyName", updates.companyName as string);
+        localStorage.setItem(
+          "websiteCompanyName",
+          updates.companyName as string
+        );
       }
       if (updates.tagline !== undefined) {
         localStorage.setItem("websiteTagline", updates.tagline as string);
       }
       if (updates.description !== undefined) {
-        localStorage.setItem("websiteDescription", updates.description as string);
+        localStorage.setItem(
+          "websiteDescription",
+          updates.description as string
+        );
       }
       if (updates.primaryColor !== undefined) {
-        localStorage.setItem("websitePrimaryColor", updates.primaryColor as string);
+        localStorage.setItem(
+          "websitePrimaryColor",
+          updates.primaryColor as string
+        );
       }
       if (updates.headerImage !== undefined) {
-        if (updates.headerImage) localStorage.setItem("websiteHeaderImage", updates.headerImage as string);
+        if (updates.headerImage)
+          localStorage.setItem(
+            "websiteHeaderImage",
+            updates.headerImage as string
+          );
         else localStorage.removeItem("websiteHeaderImage");
       }
       if (updates.theme !== undefined) {
@@ -320,7 +335,7 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const saveUserData = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem("culturin_user_data", JSON.stringify(userData));
     }
   };
