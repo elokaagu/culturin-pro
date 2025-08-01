@@ -19,7 +19,7 @@ export default function CreateItineraryPage() {
     days: 3,
     lastUpdated: "just now",
     status: "draft" as const,
-    image: "/lovable-uploads/2e9a9e9e-af76-4913-8148-9fce248d55c9.png",
+    image: "/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
     themeType: "general",
     description: "Start building your cultural experience itinerary",
     regions: [],

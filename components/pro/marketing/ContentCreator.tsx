@@ -211,7 +211,7 @@ const ContentCreator: React.FC = () => {
         type: selectedContentType,
         title: "Generated Content",
         content:
-          "🌟 Experience the authentic flavors of Barcelona with our Traditional Cooking Class! 🇪🇸\n\nLearn to cook like a local in a charming family kitchen, using time-honored recipes passed down through generations. From paella to tapas, discover the secrets of Spanish cuisine while immersing yourself in the rich cultural traditions of Catalonia.\n\nPerfect for food lovers, culture enthusiasts, and anyone who wants to take home more than just memories! 🍷✨\n\nBook now and save 20% with code: CULTURE20",
+          "Experience the authentic flavors of Barcelona with our Traditional Cooking Class!\n\nLearn to cook like a local in a charming family kitchen, using time-honored recipes passed down through generations. From paella to tapas, discover the secrets of Spanish cuisine while immersing yourself in the rich cultural traditions of Catalonia.\n\nPerfect for food lovers, culture enthusiasts, and anyone who wants to take home more than just memories!\n\nBook now and save 20% with code: CULTURE20",
         wordCount: 89,
         tone: "friendly",
         createdAt: new Date().toISOString(),
@@ -246,7 +246,7 @@ const ContentCreator: React.FC = () => {
 
   const handleGenerateImages = async () => {
     setIsGeneratingImages(true);
-    
+
     // Mock image generation - replace with actual API call
     setTimeout(() => {
       const mockImages = [
@@ -298,7 +298,7 @@ const ContentCreator: React.FC = () => {
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-gray-900 mb-2">
-                Hey there! 👋 Ready to create some amazing content?
+                Hey there! Ready to create some amazing content?
               </h3>
               <p className="text-gray-600">
                 I'm your AI marketing assistant. Let's write content that makes
@@ -423,7 +423,7 @@ const ContentCreator: React.FC = () => {
                           className="min-h-[100px]"
                         />
                         <p className="text-xs text-gray-500">
-                          💡 Tip: Include specific cultural details, traditions,
+                          Tip: Include specific cultural details, traditions,
                           and what makes this experience unique
                         </p>
                       </div>
@@ -645,7 +645,8 @@ const ContentCreator: React.FC = () => {
                     <div>
                       <CardTitle>Generated Images</CardTitle>
                       <CardDescription>
-                        {generatedImages.length} images generated • {imageStyle} style • {imageAspectRatio} ratio
+                        {generatedImages.length} images generated • {imageStyle}{" "}
+                        style • {imageAspectRatio} ratio
                       </CardDescription>
                     </div>
                   </div>
@@ -876,19 +877,32 @@ const ContentCreator: React.FC = () => {
               Generate Marketing Images
             </DialogTitle>
             <DialogDescription>
-              Create stunning visuals for your content. Choose style, size, and customize the prompt.
+              Create stunning visuals for your content. Choose style, size, and
+              customize the prompt.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-6">
             {/* Style Selection */}
             <div className="space-y-3">
               <Label>Image Style</Label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { id: "realistic", name: "Realistic", icon: "📸" },
-                  { id: "illustration", name: "Illustration", icon: "🎨" },
-                  { id: "minimal", name: "Minimal", icon: "⚪" },
+                  {
+                    id: "realistic",
+                    name: "Realistic",
+                    icon: <FileText className="h-6 w-6" />,
+                  },
+                  {
+                    id: "illustration",
+                    name: "Illustration",
+                    icon: <Palette className="h-6 w-6" />,
+                  },
+                  {
+                    id: "minimal",
+                    name: "Minimal",
+                    icon: <Eye className="h-6 w-6" />,
+                  },
                 ].map((style) => (
                   <button
                     key={style.id}
@@ -911,10 +925,26 @@ const ContentCreator: React.FC = () => {
               <Label>Aspect Ratio</Label>
               <div className="grid grid-cols-4 gap-3">
                 {[
-                  { id: "1:1", name: "Square", icon: "⬜" },
-                  { id: "16:9", name: "Landscape", icon: "⬜" },
-                  { id: "9:16", name: "Portrait", icon: "⬜" },
-                  { id: "4:3", name: "Classic", icon: "⬜" },
+                  {
+                    id: "1:1",
+                    name: "Square",
+                    icon: <Target className="h-6 w-6" />,
+                  },
+                  {
+                    id: "16:9",
+                    name: "Landscape",
+                    icon: <Monitor className="h-6 w-6" />,
+                  },
+                  {
+                    id: "9:16",
+                    name: "Portrait",
+                    icon: <Smartphone className="h-6 w-6" />,
+                  },
+                  {
+                    id: "4:3",
+                    name: "Classic",
+                    icon: <Globe className="h-6 w-6" />,
+                  },
                 ].map((ratio) => (
                   <button
                     key={ratio.id}
@@ -942,7 +972,8 @@ const ContentCreator: React.FC = () => {
                 className="min-h-[100px]"
               />
               <p className="text-xs text-gray-500">
-                💡 Tip: Be specific about style, mood, and cultural elements for better results
+                Tip: Be specific about style, mood, and cultural elements for
+                better results
               </p>
             </div>
           </div>
