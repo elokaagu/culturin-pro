@@ -7,6 +7,7 @@ import {
   ShoppingCart,
   Plus,
   X,
+  Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -298,17 +299,17 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       </div>
 
       {/* Main Editorial Layout */}
-      <div className="flex flex-col md:flex-row gap-0 md:gap-6 p-0 md:p-8 transition-all duration-500">
+      <div className="flex flex-col lg:flex-row gap-6 p-6 transition-all duration-500">
         {/* Left: Module Library */}
-        <div className="w-full md:w-1/4 bg-white/80 rounded-b-2xl md:rounded-2xl shadow md:shadow-lg p-4 md:p-0 md:pt-4 md:pb-4 md:pl-0 md:pr-4 animate-slide-in-left">
+        <div className="w-full lg:w-1/4 bg-white rounded-xl shadow-lg p-6">
           <ModuleLibrary />
         </div>
         {/* Center: Itinerary Preview */}
-        <div className="w-full md:w-2/4 bg-white rounded-2xl shadow-lg p-4 md:p-8 animate-fade-in">
+        <div className="w-full lg:w-2/4 bg-white rounded-xl shadow-lg p-6">
           <ItineraryPreview itinerary={itinerary} onSaveChanges={() => {}} />
         </div>
         {/* Right: Properties/AI Assistant */}
-        <div className="w-full md:w-1/4 bg-white/80 rounded-b-2xl md:rounded-2xl shadow md:shadow-lg p-4 md:p-0 md:pt-4 md:pb-4 md:pl-4 animate-slide-in-right">
+        <div className="w-full lg:w-1/4 bg-white rounded-xl shadow-lg p-6">
           {showAIAssistant ? (
             <AIContentAssistant onClose={onAIAssistantClose} />
           ) : (
@@ -316,6 +317,29 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
               <h3 className="font-medium mb-4 text-culturin-indigo">
                 Properties
               </h3>
+              
+              {/* Natural Language Input */}
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h4 className="text-sm font-medium text-blue-900 mb-2">AI Assistant</h4>
+                <textarea
+                  placeholder="Describe your itinerary in natural language... (e.g., 'Create a 3-day cultural tour of Barcelona with cooking classes, museum visits, and local food experiences')"
+                  className="w-full p-3 text-sm border border-blue-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows={4}
+                />
+                <Button 
+                  className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2"
+                  onClick={() => {
+                    toast({
+                      title: "AI Processing",
+                      description: "Your itinerary request is being processed...",
+                    });
+                  }}
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate Itinerary
+                </Button>
+              </div>
+              
               <div className="space-y-4">
                 <div>
                   <label className="text-sm text-gray-500">Days</label>

@@ -551,11 +551,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
           <ScrollArea className="flex-1">
             {dayTabs.map((day) => (
               <TabsContent key={day} value={String(day)} className="m-0 p-0">
-                <div
-                  className="min-h-[400px] p-4"
-                  onDrop={(e) => handleDrop(e, day)}
-                  onDragOver={handleDragOver}
-                >
+                <div className="min-h-[400px] p-4">
                   <div 
                     className={`border-2 border-dashed rounded-lg p-8 mb-4 text-center transition-all duration-200 ${
                       modules.filter((m) => m.day === day).length === 0
