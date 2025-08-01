@@ -1,168 +1,90 @@
-# Stripe Billing Integration Setup
+# Stripe Setup for Culturin Pro
 
-This document outlines how to set up Stripe billing for subscription management in the Culturin Pro platform.
+This guide will help you set up Stripe payments for the Pro upgrade functionality.
 
-## Prerequisites
+## 🔧 Environment Variables
 
-1. A Stripe account (sign up at https://stripe.com)
-2. Node.js and npm installed
-3. Next.js application running
+Add these environment variables to your `.env.local` file:
 
-## Environment Variables
-
-Create a `.env.local` file in your project root with the following variables:
-
-```env
+```bash
 # Stripe Configuration
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+STRIPE_SECRET_KEY=sk_test_... # Your Stripe secret key
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_... # Your Stripe publishable key
+STRIPE_WEBHOOK_SECRET=whsec_... # Your Stripe webhook secret
 
-# Stripe Price IDs for subscription plans
-STRIPE_STARTER_PRICE_ID=price_starter_plan_id
-STRIPE_GROWTH_PRICE_ID=price_growth_plan_id
-STRIPE_PRO_PRICE_ID=price_pro_plan_id
+# App Configuration
+NEXT_PUBLIC_APP_URL=http://localhost:3000 # Your app URL
 ```
 
-## Stripe Dashboard Setup
+## 📊 Stripe Dashboard Setup
 
-### 1. Create Products and Prices
+### 1. Create a Stripe Account
+- Go to [stripe.com](https://stripe.com) and create an account
+- Complete the account setup and verification
 
-In your Stripe Dashboard:
+### 2. Get Your API Keys
+- In your Stripe Dashboard, go to **Developers** → **API Keys**
+- Copy your **Publishable key** and **Secret key**
+- Add them to your `.env.local` file
 
-1. Go to Products → Add Product
-2. Create three products:
+### 3. Create a Product and Price
+- Go to **Products** in your Stripe Dashboard
+- Create a new product called "Culturin Pro"
+- Add a recurring price of $99/month
+- Note the **Price ID** (starts with `price_`)
 
-   - **Starter Plan**: $29/month
-   - **Growth Plan**: $99/month
-   - **Pro Plan**: $199/month
+### 4. Set Up Webhooks
+- Go to **Developers** → **Webhooks**
+- Click **Add endpoint**
+- Set the endpoint URL to: `https://your-domain.com/api/webhooks/stripe`
+- Select these events:
+  - `checkout.session.completed`
+  - `customer.subscription.created`
+  - `customer.subscription.updated`
+  - `customer.subscription.deleted`
+  - `invoice.payment_succeeded`
+  - `invoice.payment_failed`
+- Copy the **Webhook signing secret** and add it to your `.env.local`
 
-3. For each product, create a recurring price:
-   - Set billing period to Monthly
-   - Copy the Price ID (starts with `price_`) for your environment variables
+## 🚀 Testing
 
-### 2. Set up Webhooks
+### Test Mode
+- Use test card numbers for testing:
+  - **Success**: `4242 4242 4242 4242`
+  - **Decline**: `4000 0000 0000 0002`
+  - **Expiry**: Any future date
+  - **CVC**: Any 3 digits
 
-1. Go to Developers → Webhooks
-2. Add endpoint: `https://yourdomain.com/api/stripe/webhook`
-3. Select events to listen for:
-   - `customer.subscription.created`
-   - `customer.subscription.updated`
-   - `customer.subscription.deleted`
-   - `invoice.payment_succeeded`
-   - `invoice.payment_failed`
-4. Copy the webhook signing secret for your environment variables
+### Live Mode
+- Switch to live mode in your Stripe Dashboard
+- Update your environment variables with live keys
+- Test with real cards
 
-### 3. Get API Keys
+## 🔍 Troubleshooting
 
-1. Go to Developers → API Keys
-2. Copy the Publishable key and Secret key
-3. Add them to your environment variables
+### Common Issues:
 
-## Features Implemented
+1. **Webhook not receiving events**
+   - Check your webhook endpoint URL
+   - Verify the webhook secret
+   - Check your server logs
 
-### Subscription Management
+2. **Payment failing**
+   - Verify your Stripe keys are correct
+   - Check the browser console for errors
+   - Verify your price ID exists
 
-- ✅ Create new subscriptions
-- ✅ Update existing subscriptions (upgrade/downgrade)
-- ✅ Cancel subscriptions
-- ✅ Handle subscription status changes via webhooks
+3. **User not getting Pro access**
+   - Check webhook handler logs
+   - Verify database updates are working
+   - Check user authentication
 
-### Payment Processing
+## 📝 Next Steps
 
-- ✅ Secure payment collection using Stripe Elements
-- ✅ Payment method management
-- ✅ Invoice generation and download
-- ✅ Failed payment handling
+1. Set up your environment variables
+2. Create your Stripe product and price
+3. Configure webhooks
+4. Test the payment flow
+5. Deploy to production
 
-### Customer Management
-
-- ✅ Automatic customer creation
-- ✅ Customer data synchronization
-- ✅ Payment method storage
-
-### UI Components
-
-- ✅ Subscription plan selection
-- ✅ Payment form with Stripe Elements
-- ✅ Billing history display
-- ✅ Payment method management
-
-## API Endpoints
-
-The following API endpoints are available:
-
-- `POST /api/stripe/create-customer` - Create or retrieve a Stripe customer
-- `POST /api/stripe/create-subscription` - Create a new subscription
-- `POST /api/stripe/update-subscription` - Update an existing subscription
-- `POST /api/stripe/cancel-subscription` - Cancel a subscription
-- `POST /api/stripe/webhook` - Handle Stripe webhooks
-
-## Usage
-
-### Creating a Subscription
-
-```typescript
-import { useStripeBilling } from "@/hooks/useStripe";
-
-const { createCustomer, createSubscription } = useStripeBilling();
-
-// Create customer first
-const customerId = await createCustomer(userEmail, userName);
-
-// Create subscription
-const subscriptionId = await createSubscription("growth", customerId);
-```
-
-### Using the Subscription Manager Component
-
-```tsx
-import { SubscriptionManager } from "@/components/stripe/SubscriptionManager";
-
-<SubscriptionManager
-  userEmail="user@example.com"
-  userName="John Doe"
-  currentPlan="growth"
-/>;
-```
-
-## Security Considerations
-
-1. **Environment Variables**: Never expose secret keys in client-side code
-2. **Webhook Verification**: Always verify webhook signatures
-3. **Customer Validation**: Validate customer ownership before operations
-4. **Error Handling**: Implement proper error handling for failed payments
-
-## Testing
-
-Use Stripe's test mode and test cards:
-
-- `4242424242424242` - Visa (succeeds)
-- `4000000000000002` - Visa (declined)
-- `4000000000009995` - Visa (insufficient funds)
-
-## Production Deployment
-
-1. Switch to live API keys in production
-2. Update webhook endpoints to production URLs
-3. Test all payment flows thoroughly
-4. Monitor webhook delivery and handle failures
-
-## Support
-
-For issues with the Stripe integration:
-
-1. Check Stripe Dashboard logs
-2. Review webhook delivery attempts
-3. Monitor application logs for errors
-4. Contact Stripe support for payment-related issues
-
-## Next Steps
-
-Future enhancements could include:
-
-- Proration handling for mid-cycle changes
-- Usage-based billing
-- Multiple payment methods per customer
-- Advanced subscription analytics
-- Dunning management for failed payments
+For more help, check the [Stripe documentation](https://stripe.com/docs) or reach out to the team!
