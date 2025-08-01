@@ -54,7 +54,11 @@ const ProItineraryPage = () => {
     console.log("Saving itinerary:", updatedItinerary.title);
 
     try {
-      if (updatedItinerary.id.startsWith("temp-")) {
+      if (
+        updatedItinerary.id.startsWith("temp-") ||
+        updatedItinerary.id.startsWith("new-") ||
+        updatedItinerary.id.startsWith("duplicate-")
+      ) {
         // Create new itinerary
         const { id, lastUpdated, ...itineraryData } = updatedItinerary;
         console.log("Creating new itinerary...");

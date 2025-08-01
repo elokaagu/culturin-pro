@@ -77,7 +77,8 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
 
       if (
         itinerary.id.startsWith("temp-") ||
-        itinerary.id.startsWith("duplicate-")
+        itinerary.id.startsWith("duplicate-") ||
+        itinerary.id.startsWith("new-")
       ) {
         // Create new itinerary
         const { id, lastUpdated, ...itineraryData } = itinerary;
@@ -103,9 +104,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       toast({
         title: "Error",
         description:
-          error instanceof Error
-            ? error.message
-            : "Failed to save itinerary",
+          error instanceof Error ? error.message : "Failed to save itinerary",
         variant: "destructive",
       });
     } finally {
@@ -151,7 +150,8 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
 
       if (
         itinerary.id.startsWith("temp-") ||
-        itinerary.id.startsWith("duplicate-")
+        itinerary.id.startsWith("duplicate-") ||
+        itinerary.id.startsWith("new-")
       ) {
         // Create new itinerary as published
         const { id, lastUpdated, ...itineraryData } = publishedItinerary;
