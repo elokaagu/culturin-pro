@@ -63,52 +63,84 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
 
   const handlePurchase = async () => {
     setIsProcessing(true);
-
+    
     try {
-      // Create Stripe checkout session
-      const response = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          priceId: "price_culturin_pro_monthly", // Your Stripe price ID
-          successUrl: `${window.location.origin}/pro-dashboard?success=true`,
-          cancelUrl: `${window.location.origin}/operator?canceled=true`,
-        }),
+      // Simulate payment processing (Stripe integration disabled)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Simulate successful payment
+      toast.success("Payment processed successfully!", {
+        description: "Welcome to Culturin Pro! Your 14-day free trial has started.",
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to create checkout session");
-      }
-
-      const { sessionId } = await response.json();
-
-      // Redirect to Stripe checkout
-      const stripe = await loadStripe(
-        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-      );
-      if (stripe) {
-        const { error } = await stripe.redirectToCheckout({ sessionId });
-        if (error) {
-          throw error;
-        }
-      }
+      
+      // Grant access and navigate
+      grantAccess();
+      setCurrentStep('success');
+      
+      // Navigate to pro dashboard after a brief delay
+      setTimeout(() => {
+        setOpen(false);
+        navigate("/pro-dashboard");
+      }, 1500);
+      
     } catch (error) {
-      console.error("Stripe checkout error:", error);
-      toast.error("Failed to start checkout", {
-        description: "Please try again or contact support.",
+      console.error('Payment error:', error);
+      toast.error("Payment failed", {
+        description: "Please try again or contact support if the issue persists.",
       });
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Load Stripe dynamically
-  const loadStripe = async (publishableKey: string) => {
-    const { loadStripe } = await import("@stripe/stripe-js");
-    return loadStripe(publishableKey);
-  };
+  // Stripe integration disabled for now
+  // const handleStripeCheckout = async () => {
+  //   setIsProcessing(true);
+  //   
+  //   try {
+  //     // Create Stripe checkout session
+  //     const response = await fetch('/api/create-checkout-session', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         priceId: 'price_culturin_pro_monthly', // Your Stripe price ID
+  //         successUrl: `${window.location.origin}/pro-dashboard?success=true`,
+  //         cancelUrl: `${window.location.origin}/operator?canceled=true`,
+  //       }),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error('Failed to create checkout session');
+  //     }
+
+  //     const { sessionId } = await response.json();
+  //     
+  //     // Redirect to Stripe checkout
+  //     const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+  //     if (stripe) {
+  //       const { error } = await stripe.redirectToCheckout({ sessionId });
+  //       if (error) {
+  //         throw error;
+  //       }
+  //     }
+  //     
+  //   } catch (error) {
+  //     console.error('Stripe checkout error:', error);
+  //     toast.error("Failed to start checkout", {
+  //       description: "Please try again or contact support.",
+  //     });
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
+
+  // Load Stripe dynamically (disabled)
+  // const loadStripe = async (publishableKey: string) => {
+  //   const { loadStripe } = await import('@stripe/stripe-js');
+  //   return loadStripe(publishableKey);
+  // };
 
   const renderPricingStep = () => (
     <div className="grid grid-cols-1 lg:grid-cols-3 min-h-[500px]">

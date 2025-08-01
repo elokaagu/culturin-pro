@@ -1,10 +1,12 @@
 # Stripe Setup for Culturin Pro
 
-This guide will help you set up Stripe payments for the Pro upgrade functionality.
+**⚠️ NOTE: Stripe integration is currently disabled for development purposes.**
+
+This guide will help you set up Stripe payments for the Pro upgrade functionality when you're ready to enable it.
 
 ## 🔧 Environment Variables
 
-Add these environment variables to your `.env.local` file:
+Add these environment variables to your `.env.local` file when you enable Stripe:
 
 ```bash
 # Stripe Configuration
@@ -82,6 +84,21 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000 # Your app URL
 4. **Build errors**
    - Ensure you're using the latest Stripe API version (`2025-07-30.basil`)
    - Update your Stripe package if needed: `npm install stripe@latest`
+
+## 🔄 Enabling Stripe Integration
+
+To re-enable Stripe integration:
+
+1. **Uncomment the Stripe code** in:
+   - `components/pro/ProAccessDialog.tsx` - Uncomment the Stripe checkout functions
+   - `app/api/create-checkout-session/route.ts` - Uncomment the entire file
+   - `app/api/webhooks/stripe/route.ts` - Uncomment the entire file
+
+2. **Set up environment variables** as described above
+
+3. **Test the integration** with test cards
+
+4. **Deploy to production** with live Stripe keys
 
 ## 📝 Next Steps
 
