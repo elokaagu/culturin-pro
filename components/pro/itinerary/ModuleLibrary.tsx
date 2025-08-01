@@ -85,7 +85,9 @@ const ModuleLibrary: React.FC<ModuleLibraryProps> = () => {
     };
     
     try {
-      e.dataTransfer.setData('moduleData', JSON.stringify(transferData));
+      const jsonData = JSON.stringify(transferData);
+      console.log("Setting drag data:", jsonData);
+      e.dataTransfer.setData('moduleData', jsonData);
       e.dataTransfer.effectAllowed = 'copy';
     } catch (error) {
       console.error('Error in drag start:', error);

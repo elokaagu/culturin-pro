@@ -108,9 +108,11 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, day: number) => {
     e.preventDefault();
+    console.log("Drop event triggered for day:", day);
 
     try {
       const moduleData = e.dataTransfer.getData("moduleData");
+      console.log("Module data received:", moduleData);
       if (!moduleData) {
         console.log("No module data found in drop event");
         return;
@@ -551,15 +553,17 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
           <ScrollArea className="flex-1">
             {dayTabs.map((day) => (
               <TabsContent key={day} value={String(day)} className="m-0 p-0">
-                <div className="min-h-[400px] p-4">
+                <div 
+                  className="min-h-[400px] p-4 hover:bg-blue-50/50 transition-colors duration-200"
+                  onDrop={(e) => handleDrop(e, day)}
+                  onDragOver={handleDragOver}
+                >
                   <div 
                     className={`border-2 border-dashed rounded-lg p-8 mb-4 text-center transition-all duration-200 ${
                       modules.filter((m) => m.day === day).length === 0
                         ? "bg-blue-50 border-blue-200 hover:bg-blue-100"
                         : "bg-gray-50 border-gray-200 hover:bg-gray-100"
                     }`}
-                    onDrop={(e) => handleDrop(e, day)}
-                    onDragOver={handleDragOver}
                   >
                     <div className="flex flex-col items-center gap-2">
                       <Plus className="h-8 w-8 text-gray-400" />
