@@ -1,21 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "../../lib/navigation";
-import { useToast } from "@/components/ui/use-toast";
-import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import OperatorCreateExperienceModal from "@/components/OperatorCreateExperienceModal";
-import DashboardOverviewTab from "@/components/operator/DashboardOverviewTab";
-import ExperiencesTab from "@/components/operator/ExperiencesTab";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Calendar,
+  Users,
+  TrendingUp,
+  DollarSign,
+  Crown,
+  Plus,
+  Eye,
+  Settings,
+  BarChart3,
+  Globe,
+  CreditCard,
+  MessageSquare,
+} from "lucide-react";
+import Header from "@/components/Header";
 import BookingsTab from "@/components/operator/BookingsTab";
 import GuestsTab from "@/components/operator/GuestsTab";
+import DashboardOverviewTab from "@/components/operator/DashboardOverviewTab";
+import ExperiencesTab from "@/components/operator/ExperiencesTab";
+import OperatorCreateExperienceModal from "@/components/OperatorCreateExperienceModal";
 import Image from "@/components/ui/image";
-import { Plus, Calendar, Crown, ArrowRight } from "lucide-react";
-import ProAccessDialog, {
-  useProAccess,
-} from "@/components/pro/ProAccessDialog";
 
 // Mock experiences data
 // Mock experiences data
@@ -96,11 +107,7 @@ const OperatorDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // State to control the Pro Access Dialog
-  const [proDialogOpen, setProDialogOpen] = useState(false);
-
-  // Remove automatic Pro dialog display
-  const { hasAccess } = useProAccess();
+  // Remove ProAccessDialog state and related code
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -111,10 +118,10 @@ const OperatorDashboard = () => {
   };
 
   const handleUpgradeClick = () => {
-    navigate("/sign-in");
+    navigate("/pricing");
     toast({
-      title: "Exploring Studio Features",
-      description: "Please sign in to access Culturin Studio...",
+      title: "Exploring Pro Features",
+      description: "Check out our pricing plans to unlock advanced features...",
     });
   };
 
@@ -137,97 +144,49 @@ const OperatorDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header type="operator" />
-      <OperatorCreateExperienceModal
-        open={createModalOpen}
-        onOpenChange={setCreateModalOpen}
-      />
 
-      {/* Hero Section */}
-      <section className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      {/* Main Content */}
+      <section className="pt-24 pb-8">
+        <div className="container mx-auto px-4">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
             <div>
-              <h1 className="text-3xl md:text-4xl font-medium text-gray-900 mb-4">
-                Welcome to Your Cultural Experience Dashboard
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Operator Dashboard
               </h1>
-              <p className="text-lg text-gray-600 mb-6">
-                Manage your offerings, track bookings, and grow your cultural
-                experience business.
+              <p className="text-gray-600">
+                Manage your cultural experiences and bookings
               </p>
-
-              <div className="flex flex-wrap gap-4">
-                <Button
-                  className="bg-black hover:bg-gray-800 text-white"
-                  onClick={handleCreateExperience}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create New Experience
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-gray-300"
-                  onClick={() => setActiveTab("bookings")}
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  View Bookings
-                </Button>
-              </div>
             </div>
-
-            <div className="hidden lg:block">
-              <div className="relative h-72 rounded-lg overflow-hidden shadow-lg">
-                <Image
-                  src="https://images.unsplash.com/photo-1466442929976-97f336a657be"
-                  alt="Cultural tour guide showing historical site to tourists"
-                  className="object-cover"
-                  fill={true}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-              </div>
+            <div className="flex gap-3 mt-4 md:mt-0">
+              <Button
+                onClick={handleCreateExperience}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create Experience
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleUpgradeClick}
+                className="border-amber-300 text-amber-700 hover:bg-amber-50"
+              >
+                <Crown className="h-4 w-4 mr-2" />
+                Upgrade to Pro
+              </Button>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Dashboard Content */}
-      <section className="py-10">
-        <div className="container mx-auto px-4">
-          <Tabs
-            defaultValue={activeTab}
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="space-y-8"
-          >
-            <div className="flex justify-between items-center border-b border-gray-200 pb-4">
-              <TabsList className="bg-transparent p-0">
-                <TabsTrigger
-                  value="overview"
-                  className="data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 rounded-lg px-4 py-2 text-gray-600"
-                >
-                  Dashboard Overview
-                </TabsTrigger>
-                <TabsTrigger
-                  value="experiences"
-                  className="data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 rounded-lg px-4 py-2 text-gray-600"
-                >
-                  My Experiences
-                </TabsTrigger>
-                <TabsTrigger
-                  value="bookings"
-                  className="data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 rounded-lg px-4 py-2 text-gray-600"
-                >
-                  Booking Management
-                </TabsTrigger>
-                <TabsTrigger
-                  value="guests"
-                  className="data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900 rounded-lg px-4 py-2 text-gray-600"
-                >
-                  Manage Guests
-                </TabsTrigger>
-              </TabsList>
-            </div>
+          {/* Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="experiences">Experiences</TabsTrigger>
+              <TabsTrigger value="bookings">Bookings</TabsTrigger>
+              <TabsTrigger value="guests">Guests</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
 
-            {/* Dashboard Overview Tab */}
             <TabsContent value="overview">
               <DashboardOverviewTab
                 onCreateExperience={handleCreateExperience}
@@ -271,18 +230,11 @@ const OperatorDashboard = () => {
         </div>
       </footer>
 
-      {/* Add the 'View Pro Features' toggle button */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <Button
-          variant="secondary"
-          className="shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold"
-          onClick={() => setProDialogOpen(true)}
-        >
-          View Pro Features
-        </Button>
-      </div>
-      {/* Toggleable Pro Access Dialog */}
-      <ProAccessDialog open={proDialogOpen} setOpen={setProDialogOpen} />
+      {/* Create Experience Modal */}
+      <OperatorCreateExperienceModal
+        open={createModalOpen}
+        onOpenChange={setCreateModalOpen}
+      />
     </div>
   );
 };
