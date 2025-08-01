@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ItineraryType } from "@/data/itineraryData";
 import { itineraryService } from "@/lib/itinerary-service";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -8,6 +8,7 @@ export const useItineraries = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  const isCreatingRef = useRef(false);
 
   // Load itineraries
   const loadItineraries = useCallback(async () => {
@@ -39,15 +40,28 @@ export const useItineraries = () => {
   // Create new itinerary
   const createItinerary = useCallback(
     async (itineraryData: Omit<ItineraryType, "id" | "lastUpdated">) => {
+      // Prevent duplicate calls
+      if (isCreatingRef.current) {
+        console.log("Create itinerary already in progress, skipping...");
+        return;
+      }
+
       try {
+        isCreatingRef.current = true;
+        console.log("Creating itinerary:", itineraryData.title);
+        
         const newItinerary = await itineraryService.createItinerary(
           itineraryData
         );
+        
+        console.log("Itinerary created successfully:", newItinerary.id);
         setItineraries((prev) => [newItinerary, ...prev]);
         return newItinerary;
       } catch (err) {
         console.error("Error creating itinerary:", err);
         throw err;
+      } finally {
+        isCreatingRef.current = false;
       }
     },
     []

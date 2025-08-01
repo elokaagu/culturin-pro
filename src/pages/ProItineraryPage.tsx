@@ -15,6 +15,7 @@ const ProItineraryPage = () => {
     useState<ItineraryType | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [isSavingInProgress, setIsSavingInProgress] = useState(false);
   const { toast } = useToast();
   const {
     itineraries,
@@ -58,10 +59,20 @@ const ProItineraryPage = () => {
   };
 
   const handleItinerarySave = async (updatedItinerary: ItineraryType) => {
+    // Prevent duplicate saves
+    if (isSavingInProgress) {
+      console.log("Save already in progress, skipping...");
+      return;
+    }
+
+    setIsSavingInProgress(true);
+    console.log("Saving itinerary:", updatedItinerary.title);
+
     try {
       if (updatedItinerary.id.startsWith("temp-")) {
         // Create new itinerary
         const { id, lastUpdated, ...itineraryData } = updatedItinerary;
+        console.log("Creating new itinerary...");
         await createItinerary(itineraryData);
         toast({
           title: "Itinerary Created",
@@ -69,6 +80,7 @@ const ProItineraryPage = () => {
         });
       } else {
         // Update existing itinerary
+        console.log("Updating existing itinerary...");
         await updateItinerary(updatedItinerary.id, updatedItinerary);
         toast({
           title: "Itinerary Updated",
@@ -83,6 +95,8 @@ const ProItineraryPage = () => {
           error instanceof Error ? error.message : "Failed to save itinerary",
         variant: "destructive",
       });
+    } finally {
+      setIsSavingInProgress(false);
     }
   };
 

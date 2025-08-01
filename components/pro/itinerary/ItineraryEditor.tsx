@@ -48,6 +48,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
   const [editingDescription, setEditingDescription] = useState(false);
+  const [isSavingInProgress, setIsSavingInProgress] = useState(false);
 
   // Update local state when selectedItinerary changes
   useEffect(() => {
@@ -66,8 +67,9 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   };
 
   const handleSaveChanges = async () => {
-    if (!itinerary) return;
+    if (!itinerary || isSavingInProgress) return;
 
+    setIsSavingInProgress(true);
     setIsSaving(true);
 
     try {
@@ -108,11 +110,12 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       });
     } finally {
       setIsSaving(false);
+      setIsSavingInProgress(false);
     }
   };
 
   const handlePublish = async () => {
-    if (!itinerary) return;
+    if (!itinerary || isSavingInProgress) return;
 
     // Validate required fields before publishing
     if (!itinerary.title || !itinerary.title.trim()) {
@@ -133,6 +136,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       return;
     }
 
+    setIsSavingInProgress(true);
     setIsPublishing(true);
 
     try {
@@ -184,12 +188,14 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       });
     } finally {
       setIsPublishing(false);
+      setIsSavingInProgress(false);
     }
   };
 
   const handleUnpublish = async () => {
-    if (!itinerary) return;
+    if (!itinerary || isSavingInProgress) return;
 
+    setIsSavingInProgress(true);
     setIsPublishing(true);
 
     try {
@@ -229,6 +235,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       });
     } finally {
       setIsPublishing(false);
+      setIsSavingInProgress(false);
     }
   };
 
