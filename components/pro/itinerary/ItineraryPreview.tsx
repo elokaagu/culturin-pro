@@ -108,13 +108,10 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, day: number) => {
     e.preventDefault();
-    console.log("Drop event triggered for day:", day);
 
     try {
       const moduleData = e.dataTransfer.getData("moduleData");
-      console.log("Module data received:", moduleData);
       if (!moduleData) {
-        console.log("No module data found in drop event");
         return;
       }
 
@@ -135,11 +132,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
         images: [],
       };
 
-      setModules((prev) => {
-        const newModules = [...prev, newModule];
-        console.log("Updated modules:", newModules);
-        return newModules;
-      });
+      setModules((prev) => [...prev, newModule]);
       toast({
         title: "Module Added",
         description: `Added ${moduleInfo.title} to Day ${day}`,
@@ -582,12 +575,10 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                     </div>
                   </div>
 
-                  {(() => {
-                    const dayModules = modules.filter((module) => module.day === day);
-                    console.log(`Modules for day ${day}:`, dayModules);
-                    return dayModules
-                      .sort((a, b) => (a.position || 0) - (b.position || 0))
-                      .map((module) => (
+                  {modules
+                    .filter((module) => module.day === day)
+                    .sort((a, b) => (a.position || 0) - (b.position || 0))
+                    .map((module) => (
                       <div
                         key={module.id}
                         className="border rounded-lg mb-4 overflow-hidden"
@@ -667,8 +658,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                           </div>
                         )}
                       </div>
-                      ));
-                  })()}
+                    ))}
                 </div>
               </TabsContent>
             ))}
