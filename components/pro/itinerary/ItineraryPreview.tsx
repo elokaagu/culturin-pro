@@ -135,7 +135,11 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
         images: [],
       };
 
-      setModules((prev) => [...prev, newModule]);
+      setModules((prev) => {
+        const newModules = [...prev, newModule];
+        console.log("Updated modules:", newModules);
+        return newModules;
+      });
       toast({
         title: "Module Added",
         description: `Added ${moduleInfo.title} to Day ${day}`,
@@ -578,10 +582,12 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                     </div>
                   </div>
 
-                  {modules
-                    .filter((module) => module.day === day)
-                    .sort((a, b) => (a.position || 0) - (b.position || 0))
-                    .map((module) => (
+                  {(() => {
+                    const dayModules = modules.filter((module) => module.day === day);
+                    console.log(`Modules for day ${day}:`, dayModules);
+                    return dayModules
+                      .sort((a, b) => (a.position || 0) - (b.position || 0))
+                      .map((module) => (
                       <div
                         key={module.id}
                         className="border rounded-lg mb-4 overflow-hidden"
@@ -661,7 +667,8 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                           </div>
                         )}
                       </div>
-                    ))}
+                      ));
+                  })()}
                 </div>
               </TabsContent>
             ))}
