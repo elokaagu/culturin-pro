@@ -10,7 +10,20 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, Users, TrendingUp, Star, Clock, Zap, MessageSquare, Shield, Trophy, X, Loader2 } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Users,
+  TrendingUp,
+  Star,
+  Clock,
+  Zap,
+  MessageSquare,
+  Shield,
+  Trophy,
+  X,
+  Loader2,
+} from "lucide-react";
 import { toast } from "sonner";
 
 // Helper: manages Culturin Pro access in localStorage
@@ -39,7 +52,9 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
   const navigate = useNavigate();
   const { hasAccess, grantAccess } = useProAccess();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [currentStep, setCurrentStep] = useState<'pricing' | 'payment' | 'success'>('pricing');
+  const [currentStep, setCurrentStep] = useState<
+    "pricing" | "payment" | "success"
+  >("pricing");
 
   const handleMaybeLater = () => {
     setOpen(false);
@@ -48,38 +63,39 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
 
   const handlePurchase = async () => {
     setIsProcessing(true);
-    
+
     try {
       // Create Stripe checkout session
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          priceId: 'price_culturin_pro_monthly', // Your Stripe price ID
+          priceId: "price_culturin_pro_monthly", // Your Stripe price ID
           successUrl: `${window.location.origin}/pro-dashboard?success=true`,
           cancelUrl: `${window.location.origin}/operator?canceled=true`,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create checkout session');
+        throw new Error("Failed to create checkout session");
       }
 
       const { sessionId } = await response.json();
-      
+
       // Redirect to Stripe checkout
-      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+      const stripe = await loadStripe(
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+      );
       if (stripe) {
         const { error } = await stripe.redirectToCheckout({ sessionId });
         if (error) {
           throw error;
         }
       }
-      
     } catch (error) {
-      console.error('Stripe checkout error:', error);
+      console.error("Stripe checkout error:", error);
       toast.error("Failed to start checkout", {
         description: "Please try again or contact support.",
       });
@@ -90,7 +106,7 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
 
   // Load Stripe dynamically
   const loadStripe = async (publishableKey: string) => {
-    const { loadStripe } = await import('@stripe/stripe-js');
+    const { loadStripe } = await import("@stripe/stripe-js");
     return loadStripe(publishableKey);
   };
 
@@ -153,9 +169,11 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
                 Recommended
               </Badge>
             </div>
-            
+
             <div className="mb-4">
-              <h3 className="text-xl font-semibold text-blue-900 mb-2">Pro Plan</h3>
+              <h3 className="text-xl font-semibold text-blue-900 mb-2">
+                Pro Plan
+              </h3>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold text-blue-900">$99</span>
                 <span className="text-lg text-blue-700">/month</span>
@@ -171,19 +189,28 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
             <ul className="space-y-3">
               <li className="text-sm text-gray-700 flex items-start gap-3">
                 <TrendingUp className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
-                <span><strong>Boost bookings</strong> with conversion insights</span>
+                <span>
+                  <strong>Boost bookings</strong> with conversion insights
+                </span>
               </li>
               <li className="text-sm text-gray-700 flex items-start gap-3">
                 <Zap className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
-                <span><strong>Automate reviews & follow-ups</strong> — save 10+ hours/week</span>
+                <span>
+                  <strong>Automate reviews & follow-ups</strong> — save 10+
+                  hours/week
+                </span>
               </li>
               <li className="text-sm text-gray-700 flex items-start gap-3">
                 <MessageSquare className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
-                <span><strong>Collaborate with your team</strong> in real time</span>
+                <span>
+                  <strong>Collaborate with your team</strong> in real time
+                </span>
               </li>
               <li className="text-sm text-gray-700 flex items-start gap-3">
                 <Shield className="h-5 w-5 text-blue-500 mt-0.5 shrink-0" />
-                <span><strong>Priority support</strong> when it matters most</span>
+                <span>
+                  <strong>Priority support</strong> when it matters most
+                </span>
               </li>
             </ul>
           </div>
@@ -209,14 +236,17 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
               </div>
               <div>
                 <p className="font-semibold text-sm">Maria Lopez</p>
-                <p className="text-xs text-blue-200">Founder, Oaxaca Food Tours</p>
+                <p className="text-xs text-blue-200">
+                  Founder, Oaxaca Food Tours
+                </p>
               </div>
             </div>
             <p className="text-sm text-white/90 leading-relaxed">
-              "Since upgrading to Pro, bookings are up 32% and we save 10+ hours/week on admin tasks!"
+              "Since upgrading to Pro, bookings are up 32% and we save 10+
+              hours/week on admin tasks!"
             </p>
           </div>
-          
+
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
             <p className="text-xs text-white/80">
               <strong>Early adopters</strong> lock in $99/month for life
@@ -246,7 +276,7 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
               </>
             )}
           </Button>
-          
+
           <button
             onClick={handleMaybeLater}
             disabled={isProcessing}
@@ -269,10 +299,11 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
           Welcome to Culturin Pro!
         </h3>
         <p className="text-gray-600">
-          Your 14-day free trial has started. You now have access to all Pro features.
+          Your 14-day free trial has started. You now have access to all Pro
+          features.
         </p>
       </div>
-      
+
       <div className="space-y-4">
         <div className="bg-blue-50 rounded-lg p-4">
           <h4 className="font-semibold text-blue-900 mb-2">What's Next?</h4>
@@ -283,7 +314,7 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
             <li>• Invite your team members</li>
           </ul>
         </div>
-        
+
         <Button
           onClick={() => {
             setOpen(false);
@@ -300,7 +331,7 @@ const ProAccessDialog: React.FC<ProAccessDialogProps> = ({ open, setOpen }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-5xl rounded-xl shadow-2xl p-0 overflow-hidden border-0">
-        {currentStep === 'pricing' ? renderPricingStep() : renderSuccessStep()}
+        {currentStep === "pricing" ? renderPricingStep() : renderSuccessStep()}
       </DialogContent>
     </Dialog>
   );

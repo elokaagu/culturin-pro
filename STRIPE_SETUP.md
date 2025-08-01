@@ -79,6 +79,10 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000 # Your app URL
    - Verify database updates are working
    - Check user authentication
 
+4. **Build errors**
+   - Ensure you're using the latest Stripe API version (`2025-07-30.basil`)
+   - Update your Stripe package if needed: `npm install stripe@latest`
+
 ## 📝 Next Steps
 
 1. Set up your environment variables
