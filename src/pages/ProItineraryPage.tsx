@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useNavigate } from "../../lib/navigation";
 import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ItineraryTabs from "@/components/pro/itinerary/ItineraryTabs";
@@ -10,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useItineraries } from "@/hooks/useItineraries";
 
 const ProItineraryPage = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("itineraries");
   const [selectedItinerary, setSelectedItinerary] =
     useState<ItineraryType | null>(null);
@@ -27,25 +29,8 @@ const ProItineraryPage = () => {
   } = useItineraries();
 
   const handleCreateNewItinerary = () => {
-    const newItinerary: ItineraryType = {
-      id: `temp-${Date.now()}`,
-      title: "New Itinerary",
-      days: 3,
-      lastUpdated: "just now",
-      status: "draft",
-      image: "/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
-      themeType: "general",
-      description: "Start building your cultural experience itinerary",
-      regions: [],
-      currency: "USD",
-      groupSize: { min: 1, max: 10 },
-      difficulty: "easy",
-      tags: [],
-      modules: [],
-    };
-
-    setSelectedItinerary(newItinerary);
-    setShowEditor(true);
+    // Navigate to the dedicated new itinerary page
+    navigate("/pro-dashboard/itinerary/new");
   };
 
   const handleEditItinerary = (itinerary: ItineraryType) => {
