@@ -13,6 +13,7 @@ interface ItineraryTabsProps {
   isLoading?: boolean;
   onCreateNewItinerary: () => void;
   onEditItinerary: (itinerary: ItineraryType) => void;
+  onDeleteItinerary?: (id: string) => void;
 }
 
 const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
@@ -21,6 +22,7 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
   isLoading = false,
   onCreateNewItinerary,
   onEditItinerary,
+  onDeleteItinerary,
 }) => {
   const navigate = useNavigate();
 
@@ -66,6 +68,7 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
                 key={itinerary.id}
                 {...itinerary}
                 onEdit={() => onEditItinerary(itinerary)}
+                onDelete={onDeleteItinerary}
               />
             ))}
           </div>

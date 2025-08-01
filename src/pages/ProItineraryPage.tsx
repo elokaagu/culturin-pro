@@ -85,6 +85,24 @@ const ProItineraryPage = () => {
     }
   };
 
+  const handleDeleteItinerary = async (id: string) => {
+    try {
+      await deleteItinerary(id);
+      toast({
+        title: "Itinerary Deleted",
+        description: "The itinerary has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting itinerary:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to delete itinerary",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (error) {
     return (
       <ProDashboardLayout
@@ -137,6 +155,7 @@ const ProItineraryPage = () => {
             isLoading={isLoading}
             onCreateNewItinerary={handleCreateNewItinerary}
             onEditItinerary={handleEditItinerary}
+            onDeleteItinerary={handleDeleteItinerary}
           />
         </Tabs>
       </div>
