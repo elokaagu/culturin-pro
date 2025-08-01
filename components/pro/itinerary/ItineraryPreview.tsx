@@ -258,6 +258,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
               onChange={(e) =>
                 handleModuleUpdate(module.id, { title: e.target.value })
               }
+              className="overflow-hidden text-ellipsis"
             />
           </div>
           <div>
@@ -269,6 +270,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
               onChange={(e) =>
                 handleModuleUpdate(module.id, { time: e.target.value })
               }
+              className="overflow-hidden text-ellipsis"
             />
           </div>
           <div>
@@ -282,6 +284,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                   duration: parseInt(e.target.value) || 60,
                 })
               }
+              className="overflow-hidden text-ellipsis"
             />
           </div>
           <div>
@@ -296,6 +299,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                   price: parseFloat(e.target.value) || 0,
                 })
               }
+              className="overflow-hidden text-ellipsis"
             />
           </div>
         </div>
@@ -308,6 +312,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
               handleModuleUpdate(module.id, { location: e.target.value })
             }
             placeholder="Enter location"
+            className="overflow-hidden text-ellipsis"
           />
         </div>
         <div>
@@ -320,6 +325,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
             }
             placeholder="Describe this activity..."
             rows={3}
+            className="resize-none overflow-y-auto"
           />
         </div>
         <div>
@@ -332,6 +338,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
             }
             placeholder="Additional notes or requirements..."
             rows={2}
+            className="resize-none overflow-y-auto"
           />
         </div>
       </CardContent>
