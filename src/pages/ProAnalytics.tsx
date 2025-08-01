@@ -8,9 +8,58 @@ import RevenueChart from "@/components/pro/analytics/RevenueChart";
 import BookingSourcesChart from "@/components/pro/analytics/BookingSourcesChart";
 import GuestDemographicsChart from "@/components/pro/analytics/GuestDemographicsChart";
 import RatingsTrendsChart from "@/components/pro/analytics/RatingsTrendsChart";
+import { useToast } from "@/components/ui/use-toast";
 
 const ProAnalytics = () => {
-  const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>("month");
+  const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>("90days");
+  const { toast } = useToast();
+  
+  const handleExport = () => {
+    // Generate comprehensive analytics report
+    const reportData = {
+      exportDate: new Date().toISOString(),
+      timeFrame: selectedTimeFrame,
+      reportType: "Analytics Dashboard Report",
+      data: {
+        revenue: {
+          total: 45600,
+          average: 3800,
+          trend: "+12%",
+          peak: "March - $9,800"
+        },
+        bookings: {
+          total: 456,
+          average: 38,
+          trend: "+8%",
+          conversion: "3.2%"
+        },
+        insights: [
+          "Spring Wellness Retreat success drove March peak",
+          "Upselling strategy increased average order value by 12%",
+          "Consider A/B testing landing page for better conversion"
+        ]
+      }
+    };
+    
+    // Create and download the report
+    const blob = new Blob([JSON.stringify(reportData, null, 2)], {
+      type: 'application/json'
+    });
+    
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `analytics-report-${selectedTimeFrame}-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Export Successful",
+      description: `Analytics report for ${selectedTimeFrame} has been downloaded.`,
+    });
+  };
   
   return (
     <ProDashboardLayout
@@ -21,7 +70,8 @@ const ProAnalytics = () => {
         {/* Filters */}
         <AnalyticsFilter 
           timeFrame={selectedTimeFrame} 
-          onTimeFrameChange={setSelectedTimeFrame} 
+          onTimeFrameChange={setSelectedTimeFrame}
+          onExport={handleExport}
         />
         
         {/* Analytics Overview Cards */}
@@ -32,9 +82,8 @@ const ProAnalytics = () => {
         
         {/* Revenue & Bookings Chart - Full Width */}
         <div className="w-full">
-          <h2 className="text-lg font-medium mb-4">Revenue & Bookings</h2>
           <div className="w-full bg-white rounded-lg shadow-soft p-6">
-            <RevenueChart />
+            <RevenueChart timeFrame={selectedTimeFrame} />
           </div>
         </div>
         
@@ -54,13 +103,6 @@ const ProAnalytics = () => {
         {/* Guest Ratings and Reviews - Full Width */}
         <div className="w-full bg-white rounded-lg shadow-soft p-6">
           <RatingsTrendsChart />
-        </div>
-        
-        {/* Export Section */}
-        <div className="flex justify-end pt-4">
-          <button className="px-4 py-2 text-sm bg-[#9b87f5] hover:bg-[#9b87f5]/90 text-white rounded-md transition-colors">
-            Export Analytics Report
-          </button>
         </div>
       </div>
     </ProDashboardLayout>

@@ -24,7 +24,7 @@ import {
 } from "recharts";
 
 // Sample data - in a real app, this would come from an API
-const data = [
+const fullData = [
   { month: "Jan", revenue: 2400, bookings: 24 },
   { month: "Feb", revenue: 1398, bookings: 13 },
   { month: "Mar", revenue: 9800, bookings: 98 },
@@ -39,11 +39,48 @@ const data = [
   { month: "Dec", revenue: 6800, bookings: 68 },
 ];
 
-const RevenueChart: React.FC = () => {
+interface RevenueChartProps {
+  timeFrame?: string;
+}
+
+const RevenueChart: React.FC<RevenueChartProps> = ({ timeFrame = "90days" }) => {
+  // Filter data based on timeFrame
+  const getFilteredData = () => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    
+    switch (timeFrame) {
+      case "7days":
+        // For 7 days, we'll show the last 7 data points (simulating daily data)
+        return fullData.slice(-7);
+      case "30days":
+        // For 30 days, we'll show the last 4 months
+        return fullData.slice(-4);
+      case "90days":
+        // For 90 days, we'll show the last 3 months
+        return fullData.slice(-3);
+      case "year":
+        // Show all data for the year
+        return fullData;
+      case "month":
+        // Show current month data
+        return fullData.slice(currentMonth, currentMonth + 1);
+      default:
+        return fullData.slice(-3); // Default to 90 days
+    }
+  };
+
+  const data = getFilteredData();
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-8">
-        <CardTitle>Revenue & Bookings</CardTitle>
+        <div>
+          <CardTitle>Revenue & Bookings</CardTitle>
+          <p className="text-sm text-gray-500 mt-1">
+            Track your growth metrics over time
+          </p>
+        </div>
         <Select defaultValue="year">
           <SelectTrigger className="w-[120px]">
             <SelectValue placeholder="Period" />
