@@ -127,6 +127,18 @@ const ItineraryListCard: React.FC<ItineraryListCardProps> = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
+                  {status !== 'published' && (
+                    <DropdownMenuItem onClick={() => handleQuickAction('publish')}>
+                      <Globe className="h-4 w-4 mr-2" />
+                      Publish
+                    </DropdownMenuItem>
+                  )}
+                  {status === 'published' && (
+                    <DropdownMenuItem onClick={() => handleQuickAction('unpublish')}>
+                      <Eye className="h-4 w-4 mr-2" />
+                      Unpublish
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={() => handleQuickAction('duplicate')}>
                     <Copy className="h-4 w-4 mr-2" />
                     Duplicate
@@ -188,11 +200,20 @@ const ItineraryListCard: React.FC<ItineraryListCardProps> = ({
 
           {/* Actions */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            {status === 'published' && (
+            {status === 'published' ? (
               <Badge className="bg-green-500/80 text-white text-xs">
                 <Globe className="h-3 w-3 mr-1" />
                 Live
               </Badge>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickAction('publish')}
+                className="text-green-600 border-green-600 hover:bg-green-50"
+              >
+                <Globe className="h-3 w-3 mr-1" /> Publish
+              </Button>
             )}
             <Button
               variant="outline"

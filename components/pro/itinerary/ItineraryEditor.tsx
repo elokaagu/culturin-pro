@@ -8,6 +8,8 @@ import {
   Plus,
   X,
   Sparkles,
+  Globe,
+  Eye,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -60,6 +62,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
     selectedItinerary
   );
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
   const [editingDescription, setEditingDescription] = useState(false);
 
@@ -81,7 +84,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   const handleSaveChanges = async () => {
     if (!itinerary) return;
 
-    setIsPublishing(true);
+    setIsSaving(true);
 
     try {
       let savedItinerary: ItineraryType;
@@ -101,24 +104,106 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
         );
       }
 
-      // Call the callback with the saved itinerary
       if (onItinerarySave) {
         onItinerarySave(savedItinerary);
       }
 
       toast({
-        title: "Changes Saved",
-        description: "Your itinerary has been successfully saved.",
+        title: "Itinerary Saved",
+        description: "Your changes have been saved successfully.",
       });
-
-      // Close the editor
-      onEditorClose();
     } catch (error) {
       console.error("Error saving itinerary:", error);
       toast({
         title: "Error",
         description:
-          error instanceof Error ? error.message : "Failed to save itinerary",
+          error instanceof Error
+            ? error.message
+            : "Failed to save itinerary",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!itinerary) return;
+
+    // Validate required fields before publishing
+    if (!itinerary.title || !itinerary.title.trim()) {
+      toast({
+        title: "Cannot Publish",
+        description: "Please add a title to your itinerary before publishing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!itinerary.description || !itinerary.description.trim()) {
+      toast({
+        title: "Cannot Publish",
+        description: "Please add a description to your itinerary before publishing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsPublishing(true);
+
+    try {
+      // Set status to published
+      const publishedItinerary = {
+        ...itinerary,
+        status: "published" as const,
+        lastUpdated: "just now",
+      };
+
+      let savedItinerary: ItineraryType;
+
+      if (
+        itinerary.id.startsWith("temp-") ||
+        itinerary.id.startsWith("duplicate-")
+      ) {
+        // Create new itinerary as published
+        const { id, lastUpdated, ...itineraryData } = publishedItinerary;
+        savedItinerary = await itineraryService.createItinerary(itineraryData);
+      } else {
+        // Update existing itinerary as published
+        savedItinerary = await itineraryService.updateItinerary(
+          itinerary.id,
+          publishedItinerary
+        );
+      }
+
+      // Update local state
+      setItinerary(savedItinerary);
+
+      if (onItinerarySave) {
+        onItinerarySave(savedItinerary);
+      }
+
+      toast({
+        title: "Itinerary Published! 🎉",
+        description: "Your itinerary is now live and visible to travelers.",
+      });
+
+      // Show success message with next steps
+      setTimeout(() => {
+        toast({
+          title: "Next Steps",
+          description: "Share your itinerary link with potential travelers or add it to your website.",
+        });
+      }, 2000);
+
+    } catch (error) {
+      console.error("Error publishing itinerary:", error);
+      toast({
+        title: "Publish Failed",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to publish itinerary. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -126,414 +211,400 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
     }
   };
 
-  // --- Editorial Cover Section ---
+  const handleUnpublish = async () => {
+    if (!itinerary) return;
+
+    setIsPublishing(true);
+
+    try {
+      // Set status back to draft
+      const draftItinerary = {
+        ...itinerary,
+        status: "draft" as const,
+        lastUpdated: "just now",
+      };
+
+      const savedItinerary = await itineraryService.updateItinerary(
+        itinerary.id,
+        draftItinerary
+      );
+
+      // Update local state
+      setItinerary(savedItinerary);
+
+      if (onItinerarySave) {
+        onItinerarySave(savedItinerary);
+      }
+
+      toast({
+        title: "Itinerary Unpublished",
+        description: "Your itinerary is now back to draft status.",
+      });
+
+    } catch (error) {
+      console.error("Error unpublishing itinerary:", error);
+      toast({
+        title: "Unpublish Failed",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to unpublish itinerary. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  const isPublished = itinerary.status === "published";
+
   return (
-    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 animate-fade-in">
-      {/* Cover Image with Overlay */}
-      <div className="relative h-64 md:h-80 w-full group">
-        {itinerary.image ? (
-          <img
-            src={itinerary.image}
-            alt="Cover"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-culturin-indigo/80 to-blue-200">
-            <ImageIcon className="w-16 h-16 text-white/60" />
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl h-full max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b">
+          <div className="flex items-center space-x-4">
+            <h2 className="text-xl font-semibold">Itinerary Editor</h2>
+            {isPublished && (
+              <Badge className="bg-green-100 text-green-800">
+                <Globe className="h-3 w-3 mr-1" />
+                Published
+              </Badge>
+            )}
           </div>
-        )}
-        {/* Overlay for title/description */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col justify-end p-8">
-          <div className="mb-2 flex items-center gap-2">
-            <Badge
-              variant="outline"
-              className="backdrop-blur bg-white/70 text-culturin-indigo font-semibold text-xs px-3 py-1"
-            >
-              {itinerary.status === "published" ? "Published" : "Draft"}
-            </Badge>
-            <span className="text-xs text-white/80">
-              {itinerary.lastUpdated}
-            </span>
-          </div>
-          {/* Inline editable title */}
-          {editingTitle ? (
-            <input
-              className="text-3xl md:text-5xl font-bold bg-white/80 rounded px-2 py-1 mb-2 text-culturin-indigo w-full outline-none border-none shadow"
-              value={itinerary.title}
-              onChange={(e) => handlePropertyChange("title", e.target.value)}
-              onBlur={() => setEditingTitle(false)}
-              autoFocus
-            />
-          ) : (
-            <h1
-              className="text-3xl md:text-5xl font-bold text-white drop-shadow cursor-pointer hover:underline"
-              onClick={() => setEditingTitle(true)}
-            >
-              {itinerary.title}
-            </h1>
-          )}
-          {/* Inline editable description */}
-          {editingDescription ? (
-            <textarea
-              className="mt-2 text-lg md:text-2xl bg-white/80 rounded px-2 py-1 text-culturin-indigo w-full outline-none border-none shadow resize-none"
-              value={itinerary.description}
-              onChange={(e) =>
-                handlePropertyChange("description", e.target.value)
-              }
-              onBlur={() => setEditingDescription(false)}
-              rows={2}
-              autoFocus
-            />
-          ) : (
-            <p
-              className="mt-2 text-lg md:text-2xl text-white/90 drop-shadow cursor-pointer hover:underline"
-              onClick={() => setEditingDescription(true)}
-            >
-              {itinerary.description || "Click to add a description..."}
-            </p>
-          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onEditorClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <X className="h-5 w-5" />
+          </Button>
         </div>
-        {/* Change Cover Button */}
-        <div className="absolute top-4 right-4">
-          <label className="inline-flex items-center gap-2 bg-white/80 hover:bg-white/90 text-culturin-indigo px-3 py-1 rounded shadow cursor-pointer text-sm font-medium transition-all duration-200">
-            <ImageIcon className="w-4 h-4" /> Change Cover
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onload = () => {
-                    handlePropertyChange("image", reader.result as string);
-                  };
-                  reader.readAsDataURL(file);
-                }
-              }}
-            />
-          </label>
-        </div>
-      </div>
 
-      {/* Itinerary Details Form */}
-      <div className="p-6 border-b border-gray-100">
-        <div className="max-w-4xl mx-auto">
-          <h3 className="text-lg font-semibold mb-4 text-culturin-indigo">
-            Itinerary Details
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="title">Title *</Label>
-                <Input
-                  id="title"
-                  value={itinerary.title || ""}
-                  onChange={(e) =>
-                    handlePropertyChange("title", e.target.value)
-                  }
-                  placeholder="Enter itinerary title"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="description">Description *</Label>
-                <Textarea
-                  id="description"
-                  value={itinerary.description || ""}
-                  onChange={(e) =>
-                    handlePropertyChange("description", e.target.value)
-                  }
-                  placeholder="Describe your itinerary..."
-                  rows={4}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="regions">Destinations</Label>
-                <Input
-                  id="regions"
-                  value={
-                    Array.isArray(itinerary.regions)
-                      ? itinerary.regions.join(", ")
-                      : ""
-                  }
-                  onChange={(e) =>
-                    handlePropertyChange(
-                      "regions",
-                      e.target.value.split(", ").filter(Boolean)
-                    )
-                  }
-                  placeholder="e.g., Paris, Lyon, Nice"
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="themeType">Theme</Label>
-                <Select
-                  value={itinerary.themeType || "general"}
-                  onValueChange={(value) =>
-                    handlePropertyChange("themeType", value)
-                  }
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select theme" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="cultural">Cultural</SelectItem>
-                    <SelectItem value="adventure">Adventure</SelectItem>
-                    <SelectItem value="culinary">Culinary</SelectItem>
-                    <SelectItem value="historical">Historical</SelectItem>
-                    <SelectItem value="nature">Nature</SelectItem>
-                    <SelectItem value="urban">Urban</SelectItem>
-                    <SelectItem value="spiritual">Spiritual</SelectItem>
-                    <SelectItem value="arts">Arts</SelectItem>
-                    <SelectItem value="general">General</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="price">Price (USD)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  value={itinerary.price || ""}
-                  onChange={(e) =>
-                    handlePropertyChange(
-                      "price",
-                      parseFloat(e.target.value) || 0
-                    )
-                  }
-                  placeholder="0.00"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="groupSize">Group Size</Label>
-                <div className="flex gap-2 mt-1">
-                  <Input
-                    type="number"
-                    placeholder="Min"
-                    value={itinerary.groupSize?.min || ""}
-                    onChange={(e) =>
-                      handlePropertyChange("groupSize", {
-                        ...itinerary.groupSize,
-                        min: parseInt(e.target.value) || 1,
-                      })
-                    }
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Max"
-                    value={itinerary.groupSize?.max || ""}
-                    onChange={(e) =>
-                      handlePropertyChange("groupSize", {
-                        ...itinerary.groupSize,
-                        max: parseInt(e.target.value) || 10,
-                      })
-                    }
-                  />
+        <ResizablePanelGroup direction="horizontal" className="h-full">
+          <ResizablePanel defaultSize={25} minSize={20}>
+                         <div className="p-6 h-full overflow-y-auto">
+               <ModuleLibrary />
+             </div>
+          </ResizablePanel>
+
+          <ResizableHandle />
+
+          <ResizablePanel defaultSize={50}>
+            <div className="p-6 h-full overflow-y-auto">
+              <div className="space-y-6">
+                {/* Title and Description */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Itinerary Title
+                    </label>
+                    {editingTitle ? (
+                      <div className="flex items-center space-x-2 mt-1">
+                        <Input
+                          value={itinerary.title}
+                          onChange={(e) =>
+                            handlePropertyChange("title", e.target.value)
+                          }
+                          onBlur={() => setEditingTitle(false)}
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") setEditingTitle(false);
+                          }}
+                          autoFocus
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className="flex items-center space-x-2 mt-1 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                        onClick={() => setEditingTitle(true)}
+                      >
+                        <h3 className="text-lg font-semibold">
+                          {itinerary.title || "Untitled Itinerary"}
+                        </h3>
+                        <Edit className="h-4 w-4 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Description
+                    </label>
+                    {editingDescription ? (
+                      <div className="mt-1">
+                        <Textarea
+                          value={itinerary.description || ""}
+                          onChange={(e) =>
+                            handlePropertyChange("description", e.target.value)
+                          }
+                          onBlur={() => setEditingDescription(false)}
+                          placeholder="Describe your itinerary..."
+                          rows={3}
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className="mt-1 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                        onClick={() => setEditingDescription(true)}
+                      >
+                        <p className="text-gray-600">
+                          {itinerary.description || "Add a description..."}
+                        </p>
+                        <Edit className="h-4 w-4 text-gray-400 mt-1" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Itinerary Content */}
+                <div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-4">
+                    Drag more modules or rearrange existing ones
+                  </h4>
+                  <p className="text-xs text-gray-500 mb-4">
+                    Available modules: Accommodation, Meal, Attraction,
+                    Transportation, Activity, Photo, Break, Location
+                  </p>
+
+                  {/* Sample modules - in a real app, these would be dynamic */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                          <span className="text-orange-600 text-sm">🍽️</span>
+                        </div>
+                        <div>
+                          <p className="font-medium">Local</p>
+                          <p className="text-sm text-gray-500">
+                            09:00 (1h) • Restaurant, cafe, food experience
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button size="sm" variant="ghost">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="text-red-500">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-blue-600 text-sm">✈️</span>
+                        </div>
+                        <div>
+                          <p className="font-medium">Activity</p>
+                          <p className="text-sm text-gray-500">
+                            09:00 (1h) • Tour, workshop, experience
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button size="sm" variant="ghost">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="text-red-500">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div>
-                <Label htmlFor="difficulty">Difficulty Level</Label>
-                <Select
-                  value={itinerary.difficulty || "easy"}
-                  onValueChange={(value) =>
-                    handlePropertyChange("difficulty", value)
-                  }
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select difficulty" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="easy">Easy</SelectItem>
-                    <SelectItem value="moderate">Moderate</SelectItem>
-                    <SelectItem value="challenging">Challenging</SelectItem>
-                    <SelectItem value="expert">Expert</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </ResizablePanel>
 
-      {/* Main Editorial Layout */}
-      <div className="flex flex-col lg:flex-row gap-6 p-6 transition-all duration-500">
-        {/* Left: Module Library */}
-        <div className="w-full lg:w-1/4 bg-white rounded-xl shadow-lg p-6">
-          <ModuleLibrary />
-        </div>
-        {/* Center: Itinerary Preview */}
-        <div className="w-full lg:w-2/4 bg-white rounded-xl shadow-lg p-6">
-          <ItineraryPreview itinerary={itinerary} onSaveChanges={() => {}} />
-        </div>
-        {/* Right: Properties/AI Assistant */}
-        <div className="w-full lg:w-1/4 bg-white rounded-xl shadow-lg p-6">
-          {showAIAssistant ? (
-            <AIContentAssistant onClose={onAIAssistantClose} />
-          ) : (
-            <div className="flex flex-col h-full">
-              <h3 className="font-medium mb-4 text-culturin-indigo">
-                Properties
-              </h3>
+          <ResizableHandle />
 
-              {/* Natural Language Input */}
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h4 className="text-sm font-medium text-blue-900 mb-2">
-                  AI Assistant
-                </h4>
-                <textarea
-                  placeholder="Describe your itinerary in natural language... (e.g., 'Create a 3-day cultural tour of Barcelona with cooking classes, museum visits, and local food experiences')"
-                  className="w-full p-3 text-sm border border-blue-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={4}
-                />
-                <Button
-                  className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2"
-                  onClick={() => {
-                    toast({
-                      title: "AI Processing",
-                      description:
-                        "Your itinerary request is being processed...",
-                    });
-                  }}
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Generate Itinerary
-                </Button>
-              </div>
-
-              <div className="space-y-4">
+          <ResizablePanel defaultSize={25}>
+            <div className="p-6 h-full overflow-y-auto">
+              <div className="space-y-6">
                 <div>
-                  <label className="text-sm text-gray-500">Days</label>
-                  <input
-                    type="number"
-                    className="w-full border p-2 rounded-md text-sm"
-                    value={itinerary.days || 1}
-                    onChange={(e) =>
-                      handlePropertyChange(
-                        "days",
-                        parseInt(e.target.value) || 1
-                      )
-                    }
-                    min={1}
-                    max={30}
-                  />
+                  <Button
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg py-3 rounded-xl shadow-lg transition-all duration-300"
+                    onClick={() => {
+                      toast({
+                        title: "AI Assistant",
+                        description:
+                          "Your itinerary request is being processed...",
+                      });
+                    }}
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Generate Itinerary
+                  </Button>
                 </div>
-                <div>
-                  <label className="text-sm text-gray-500">Status</label>
-                  <select
-                    className="w-full border p-2 rounded-md text-sm"
-                    value={itinerary.status}
-                    onChange={(e) =>
-                      handlePropertyChange(
-                        "status",
-                        e.target.value as "draft" | "published"
-                      )
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-gray-500">Days</label>
+                    <input
+                      type="number"
+                      className="w-full border p-2 rounded-md text-sm"
+                      value={itinerary.days || 1}
+                      onChange={(e) =>
+                        handlePropertyChange(
+                          "days",
+                          parseInt(e.target.value) || 1
+                        )
+                      }
+                      min={1}
+                      max={30}
+                    />
+                  </div>
+
+                  {/* Publish/Unpublish Button */}
+                  {isPublished ? (
+                    <Button
+                      variant="outline"
+                      className="w-full mt-4 bg-yellow-50 text-yellow-700 border-yellow-300 hover:bg-yellow-100 transition-all duration-300"
+                      onClick={handleUnpublish}
+                      disabled={isPublishing}
+                    >
+                      {isPublishing ? (
+                        "Unpublishing..."
+                      ) : (
+                        <>
+                          <Eye className="h-4 w-4 mr-2" />
+                          Unpublish Itinerary
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white text-lg py-3 rounded-xl shadow-lg transition-all duration-300"
+                      onClick={handlePublish}
+                      disabled={isPublishing}
+                    >
+                      {isPublishing ? (
+                        "Publishing..."
+                      ) : (
+                        <>
+                          <Globe className="h-5 w-5 mr-2" />
+                          Publish Itinerary
+                        </>
+                      )}
+                    </Button>
+                  )}
+
+                  {/* Save Changes Button */}
+                  <Button
+                    className="w-full mt-2 bg-culturin-indigo hover:bg-culturin-indigo/90 text-white py-3 rounded-xl shadow-lg transition-all duration-300"
+                    onClick={handleSaveChanges}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? (
+                      "Saving..."
+                    ) : (
+                      <>
+                        <Save className="h-5 w-5 mr-2" /> Save Changes
+                      </>
+                    )}
+                  </Button>
+
+                  {/* Status Display */}
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <label className="text-sm text-gray-500">Status</label>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-sm font-medium">
+                        {isPublished ? "Published" : "Draft"}
+                      </span>
+                      <Badge 
+                        variant={isPublished ? "default" : "secondary"}
+                        className={isPublished ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}
+                      >
+                        {isPublished ? "Live" : "Draft"}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    className="w-full mt-2 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10 transition-all duration-300"
+                    onClick={() =>
+                      router.push(`/product/booking-preview/${itinerary.id}`)
                     }
                   >
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                  </select>
-                </div>
-                <Button
-                  className="w-full mt-4 bg-culturin-indigo hover:bg-culturin-indigo/90 text-white text-lg py-3 rounded-xl shadow-lg transition-all duration-300"
-                  onClick={handleSaveChanges}
-                  disabled={isPublishing}
-                >
-                  {isPublishing ? (
-                    "Saving..."
-                  ) : (
-                    <>
-                      <Save className="h-5 w-5 mr-2" /> Save Changes
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full mt-2 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10 transition-all duration-300"
-                  onClick={() =>
-                    router.push(`/product/booking-preview/${itinerary.id}`)
-                  }
-                >
-                  <ExternalLink className="h-4 w-4 mr-1" /> Preview Booking
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full mt-2 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10 transition-all duration-300"
-                  onClick={() => {
-                    const duplicateItinerary = {
-                      ...itinerary,
-                      id: `duplicate-${Date.now()}`,
-                      title: `${itinerary.title} (Copy)`,
-                      status: "draft" as const,
-                      lastUpdated: "just now",
-                    };
-                    if (onItinerarySave) {
-                      onItinerarySave(duplicateItinerary);
-                    }
-                    toast({
-                      title: "Itinerary Duplicated",
-                      description: "A copy of this itinerary has been created.",
-                    });
-                    onEditorClose();
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-1" /> Duplicate Itinerary
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full mt-2 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10 transition-all duration-300"
-                  onClick={() => router.push(`/pro-dashboard/booking`)}
-                >
-                  <ShoppingCart className="h-4 w-4 mr-1" /> View Bookings
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full mt-2 text-red-600 border-red-600 hover:bg-red-50 transition-all duration-300"
-                  onClick={async () => {
-                    if (
-                      confirm(
-                        "Are you sure you want to delete this itinerary? This action cannot be undone."
-                      )
-                    ) {
-                      try {
-                        if (
-                          !itinerary.id.startsWith("temp-") &&
-                          !itinerary.id.startsWith("duplicate-")
-                        ) {
-                          await itineraryService.deleteItinerary(itinerary.id);
-                        }
-                        toast({
-                          title: "Itinerary Deleted",
-                          description:
-                            "The itinerary has been deleted successfully.",
-                        });
-                        onEditorClose();
-                      } catch (error) {
-                        console.error("Error deleting itinerary:", error);
-                        toast({
-                          title: "Error",
-                          description:
-                            error instanceof Error
-                              ? error.message
-                              : "Failed to delete itinerary",
-                          variant: "destructive",
-                        });
+                    <ExternalLink className="h-4 w-4 mr-1" /> Preview Booking
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full mt-2 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10 transition-all duration-300"
+                    onClick={() => {
+                      const duplicateItinerary = {
+                        ...itinerary,
+                        id: `duplicate-${Date.now()}`,
+                        title: `${itinerary.title} (Copy)`,
+                        status: "draft" as const,
+                        lastUpdated: "just now",
+                      };
+                      if (onItinerarySave) {
+                        onItinerarySave(duplicateItinerary);
                       }
-                    }
-                  }}
-                >
-                  <X className="h-4 w-4 mr-1" /> Delete Itinerary
-                </Button>
+                      toast({
+                        title: "Itinerary Duplicated",
+                        description: "A copy of this itinerary has been created.",
+                      });
+                      onEditorClose();
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-1" /> Duplicate Itinerary
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full mt-2 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10 transition-all duration-300"
+                    onClick={() => router.push(`/pro-dashboard/booking`)}
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-1" /> View Bookings
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full mt-2 text-red-600 border-red-600 hover:bg-red-50 transition-all duration-300"
+                    onClick={async () => {
+                      if (
+                        confirm(
+                          "Are you sure you want to delete this itinerary? This action cannot be undone."
+                        )
+                      ) {
+                        try {
+                          if (
+                            !itinerary.id.startsWith("temp-") &&
+                            !itinerary.id.startsWith("duplicate-")
+                          ) {
+                            await itineraryService.deleteItinerary(itinerary.id);
+                          }
+                          toast({
+                            title: "Itinerary Deleted",
+                            description:
+                              "The itinerary has been deleted successfully.",
+                          });
+                          onEditorClose();
+                        } catch (error) {
+                          console.error("Error deleting itinerary:", error);
+                          toast({
+                            title: "Error",
+                            description:
+                              error instanceof Error
+                                ? error.message
+                                : "Failed to delete itinerary",
+                            variant: "destructive",
+                          });
+                        }
+                      }
+                    }}
+                  >
+                    <X className="h-4 w-4 mr-1" /> Delete Itinerary
+                  </Button>
+                </div>
               </div>
             </div>
-          )}
-        </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
     </div>
   );
