@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from "react";
-import { Edit, Save, ExternalLink, Globe, Eye } from "lucide-react";
+import { Edit, Save, ExternalLink, Image as ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -46,6 +46,8 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   );
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [editingDescription, setEditingDescription] = useState(false);
 
   // Update local state when selectedItinerary changes
   useEffect(() => {
@@ -248,201 +250,266 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   const isPublished = itinerary.status === "published";
 
   return (
-    <Collapsible
-      open={true}
-      className="border rounded-lg overflow-hidden bg-white"
-    >
-      <CollapsibleTrigger asChild>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold">
-              Itinerary Editor: {selectedItinerary.title}
-            </h2>
-            <Badge variant="outline" className="text-xs">
-              {selectedItinerary.status}
-            </Badge>
+    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 animate-fade-in">
+      {/* Cover Image with Overlay */}
+      <div className="relative h-64 md:h-80 w-full group">
+        {itinerary.image ? (
+          <img
+            src={itinerary.image}
+            alt="Cover"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-culturin-indigo/80 to-blue-200">
+            <ImageIcon className="w-16 h-16 text-white/60" />
           </div>
-          <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" asChild>
-              <Link
-                to={`/product/booking-preview/${itinerary.id}`}
-                target="_blank"
-              >
-                <ExternalLink className="h-4 w-4 mr-1" /> Preview Booking
-              </Link>
-            </Button>
-            <Badge variant="outline">
+        )}
+        {/* Overlay for title/description */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col justify-end p-8">
+          <div className="mb-2 flex items-center gap-2">
+            <Badge
+              variant="outline"
+              className="backdrop-blur bg-white/70 text-culturin-indigo font-semibold text-xs px-3 py-1"
+            >
               {itinerary.status === "published" ? "Published" : "Draft"}
             </Badge>
+            <span className="text-xs text-white/80">
+              {itinerary.lastUpdated}
+            </span>
+          </div>
+          {/* Inline editable title */}
+          {editingTitle ? (
+            <input
+              className="text-3xl md:text-5xl font-bold bg-white/80 rounded px-2 py-1 mb-2 text-culturin-indigo w-full outline-none border-none shadow"
+              value={itinerary.title}
+              onChange={(e) => handlePropertyChange("title", e.target.value)}
+              onBlur={() => setEditingTitle(false)}
+              autoFocus
+            />
+          ) : (
+            <h1
+              className="text-3xl md:text-5xl font-bold text-white drop-shadow cursor-pointer hover:underline"
+              onClick={() => setEditingTitle(true)}
+            >
+              {itinerary.title}
+            </h1>
+          )}
+          {/* Inline editable description */}
+          {editingDescription ? (
+            <textarea
+              className="mt-2 text-lg md:text-2xl bg-white/80 rounded px-2 py-1 text-culturin-indigo w-full outline-none border-none shadow resize-none"
+              value={itinerary.description}
+              onChange={(e) =>
+                handlePropertyChange("description", e.target.value)
+              }
+              onBlur={() => setEditingDescription(false)}
+              rows={2}
+              autoFocus
+            />
+          ) : (
+            <p
+              className="mt-2 text-lg md:text-2xl text-white/90 drop-shadow cursor-pointer hover:underline"
+              onClick={() => setEditingDescription(true)}
+            >
+              {itinerary.description || "Click to add a description..."}
+            </p>
+          )}
+        </div>
+        {/* Change Cover Button */}
+        <div className="absolute top-4 right-4">
+          <label className="inline-flex items-center gap-2 bg-white/80 hover:bg-white/90 text-culturin-indigo px-3 py-1 rounded shadow cursor-pointer text-sm font-medium transition-all duration-200">
+            <ImageIcon className="w-4 h-4" /> Change Cover
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    handlePropertyChange("image", reader.result as string);
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+          </label>
+        </div>
+      </div>
+
+      {/* Itinerary Details Form */}
+      <div className="p-6 border-b border-gray-100">
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-lg font-semibold mb-4 text-culturin-indigo">
+            Itinerary Details
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700">Days</label>
+                <input
+                  type="number"
+                  className="w-full border p-2 rounded-md text-sm mt-1"
+                  value={itinerary.days || 1}
+                  onChange={(e) =>
+                    handlePropertyChange(
+                      "days",
+                      parseInt(e.target.value) || 1
+                    )
+                  }
+                  min={1}
+                  max={30}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Status</label>
+                <select
+                  className="w-full border p-2 rounded-md text-sm mt-1"
+                  value={itinerary.status}
+                  onChange={(e) =>
+                    handlePropertyChange(
+                      "status",
+                      e.target.value as "draft" | "published"
+                    )
+                  }
+                >
+                  <option value="draft">Draft</option>
+                  <option value="published">Published</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700">Theme</label>
+                <select
+                  className="w-full border p-2 rounded-md text-sm mt-1"
+                  value={itinerary.themeType || "cultural"}
+                  onChange={(e) =>
+                    handlePropertyChange("themeType", e.target.value)
+                  }
+                >
+                  <option value="cultural">Cultural</option>
+                  <option value="adventure">Adventure</option>
+                  <option value="culinary">Culinary</option>
+                  <option value="historical">Historical</option>
+                  <option value="nature">Nature</option>
+                  <option value="urban">Urban</option>
+                  <option value="spiritual">Spiritual</option>
+                  <option value="arts">Arts</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Price (USD)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  className="w-full border p-2 rounded-md text-sm mt-1"
+                  value={itinerary.price || ""}
+                  onChange={(e) =>
+                    handlePropertyChange(
+                      "price",
+                      parseFloat(e.target.value) || 0
+                    )
+                  }
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
           </div>
         </div>
-      </CollapsibleTrigger>
-      <Separator />
-      <CollapsibleContent>
-        <ResizablePanelGroup direction="horizontal" className="min-h-[600px]">
-          <ResizablePanel defaultSize={25}>
-            <ModuleLibrary />
-          </ResizablePanel>
+      </div>
 
-          <ResizableHandle withHandle />
+      {/* Main Editorial Layout */}
+      <div className="flex flex-col lg:flex-row gap-6 p-6 transition-all duration-500">
+        {/* Left: Module Library */}
+        <div className="w-full lg:w-1/4 bg-white rounded-xl shadow-lg p-6">
+          <ModuleLibrary />
+        </div>
+        {/* Center: Itinerary Preview */}
+        <div className="w-full lg:w-2/4 bg-white rounded-xl shadow-lg p-6">
+          <ItineraryPreview
+            itinerary={itinerary}
+            onSaveChanges={handlePreviewSaveChanges}
+          />
+        </div>
+        {/* Right: Properties/AI Assistant */}
+        <div className="w-full lg:w-1/4 bg-white rounded-xl shadow-lg p-6">
+          {showAIAssistant ? (
+            <AIContentAssistant onClose={onAIAssistantClose} />
+          ) : (
+            <div className="flex flex-col h-full">
+              <h3 className="font-medium mb-4 text-culturin-indigo">
+                Actions
+              </h3>
 
-          <ResizablePanel defaultSize={50}>
-            <ItineraryPreview
-              itinerary={itinerary}
-              onSaveChanges={handlePreviewSaveChanges}
-            />
-          </ResizablePanel>
-
-          <ResizableHandle withHandle />
-
-          <ResizablePanel defaultSize={25}>
-            {showAIAssistant ? (
-              <AIContentAssistant onClose={onAIAssistantClose} />
-            ) : (
-              <div className="flex flex-col h-full p-4 border-l">
-                <h3 className="font-medium mb-4">Properties</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm text-gray-500">Title</label>
-                    <input
-                      type="text"
-                      className="w-full border p-2 rounded-md text-sm"
-                      value={itinerary.title || ""}
-                      onChange={(e) =>
-                        handlePropertyChange("title", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-gray-500">Description</label>
-                    <textarea
-                      className="w-full border p-2 rounded-md text-sm"
-                      rows={3}
-                      value={itinerary.description || ""}
-                      onChange={(e) =>
-                        handlePropertyChange("description", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-gray-500">Days</label>
-                    <input
-                      type="number"
-                      className="w-full border p-2 rounded-md text-sm"
-                      value={itinerary.days || 1}
-                      onChange={(e) =>
-                        handlePropertyChange(
-                          "days",
-                          parseInt(e.target.value) || 1
-                        )
-                      }
-                      min={1}
-                      max={30}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm text-gray-500">Status</label>
-                    <select
-                      className="w-full border p-2 rounded-md text-sm"
-                      value={itinerary.status}
-                      onChange={(e) =>
-                        handlePropertyChange(
-                          "status",
-                          e.target.value as "draft" | "published"
-                        )
-                      }
-                    >
-                      <option value="draft">Draft</option>
-                      <option value="published">Published</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-sm text-gray-500">Cover Image</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="w-full border p-2 rounded-md text-sm"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          // Simulating image upload (in a real app, we would upload to a server)
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            handlePropertyChange(
-                              "image",
-                              reader.result as string
-                            );
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                    />
-                    {itinerary.image && (
-                      <div className="mt-2">
-                        <img
-                          src={itinerary.image}
-                          alt="Cover"
-                          className="w-full h-32 object-cover rounded-md"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Publish/Unpublish Button */}
-                  {isPublished ? (
-                    <Button
-                      variant="outline"
-                      className="w-full mt-4 bg-yellow-50 text-yellow-700 border-yellow-300 hover:bg-yellow-100"
-                      onClick={handleUnpublish}
-                      disabled={isPublishing}
-                    >
-                      {isPublishing ? (
-                        "Unpublishing..."
-                      ) : (
-                        <>
-                          <Eye className="h-4 w-4 mr-2" />
-                          Unpublish Itinerary
-                        </>
-                      )}
-                    </Button>
+              {/* Publish/Unpublish Button */}
+              {isPublished ? (
+                <Button
+                  variant="outline"
+                  className="w-full mb-4 bg-yellow-50 text-yellow-700 border-yellow-300 hover:bg-yellow-100"
+                  onClick={handleUnpublish}
+                  disabled={isPublishing}
+                >
+                  {isPublishing ? (
+                    "Unpublishing..."
                   ) : (
-                    <Button
-                      className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white"
-                      onClick={handlePublish}
-                      disabled={isPublishing}
-                    >
-                      {isPublishing ? (
-                        "Publishing..."
-                      ) : (
-                        <>
-                          <Globe className="h-4 w-4 mr-2" />
-                          Publish Itinerary
-                        </>
-                      )}
-                    </Button>
+                    <>
+                      <Edit className="h-4 w-4 mr-2" />
+                      Unpublish Itinerary
+                    </>
                   )}
+                </Button>
+              ) : (
+                <Button
+                  className="w-full mb-4 bg-green-600 hover:bg-green-700 text-white"
+                  onClick={handlePublish}
+                  disabled={isPublishing}
+                >
+                  {isPublishing ? (
+                    "Publishing..."
+                  ) : (
+                    <>
+                      <Edit className="h-4 w-4 mr-2" />
+                      Publish Itinerary
+                    </>
+                  )}
+                </Button>
+              )}
 
-                  {/* Save Changes Button */}
-                  <Button
-                    className="w-full mt-2"
-                    onClick={handleSaveChanges}
-                    disabled={isSaving}
-                  >
-                    {isSaving ? (
-                      "Saving..."
-                    ) : (
-                      <>
-                        <Save className="h-4 w-4 mr-1" /> Save Changes
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </CollapsibleContent>
-    </Collapsible>
+              {/* Save Changes Button */}
+              <Button
+                className="w-full mb-4"
+                onClick={handleSaveChanges}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  "Saving..."
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" /> Save Changes
+                  </>
+                )}
+              </Button>
+
+              {/* Preview Booking Button */}
+              <Button
+                variant="outline"
+                className="w-full mb-4 text-culturin-indigo border-culturin-indigo hover:bg-culturin-indigo/10"
+                asChild
+              >
+                <Link
+                  to={`/product/booking-preview/${itinerary.id}`}
+                  target="_blank"
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" /> Preview Booking
+                </Link>
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 
