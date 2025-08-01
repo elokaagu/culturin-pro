@@ -21,7 +21,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Link } from "../../../lib/navigation";
 import ModuleLibrary from "@/components/pro/itinerary/ModuleLibrary";
 import ItineraryPreview from "@/components/pro/itinerary/ItineraryPreview";
@@ -183,7 +189,9 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       {/* Itinerary Details Form */}
       <div className="p-6 border-b border-gray-100">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-lg font-semibold mb-4 text-culturin-indigo">Itinerary Details</h3>
+          <h3 className="text-lg font-semibold mb-4 text-culturin-indigo">
+            Itinerary Details
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
@@ -191,7 +199,9 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                 <Input
                   id="title"
                   value={itinerary.title || ""}
-                  onChange={(e) => handlePropertyChange("title", e.target.value)}
+                  onChange={(e) =>
+                    handlePropertyChange("title", e.target.value)
+                  }
                   placeholder="Enter itinerary title"
                   className="mt-1"
                 />
@@ -201,7 +211,9 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                 <Textarea
                   id="description"
                   value={itinerary.description || ""}
-                  onChange={(e) => handlePropertyChange("description", e.target.value)}
+                  onChange={(e) =>
+                    handlePropertyChange("description", e.target.value)
+                  }
                   placeholder="Describe your itinerary..."
                   rows={4}
                   className="mt-1"
@@ -211,8 +223,17 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                 <Label htmlFor="regions">Destinations</Label>
                 <Input
                   id="regions"
-                  value={Array.isArray(itinerary.regions) ? itinerary.regions.join(", ") : ""}
-                  onChange={(e) => handlePropertyChange("regions", e.target.value.split(", ").filter(Boolean))}
+                  value={
+                    Array.isArray(itinerary.regions)
+                      ? itinerary.regions.join(", ")
+                      : ""
+                  }
+                  onChange={(e) =>
+                    handlePropertyChange(
+                      "regions",
+                      e.target.value.split(", ").filter(Boolean)
+                    )
+                  }
                   placeholder="e.g., Paris, Lyon, Nice"
                   className="mt-1"
                 />
@@ -223,7 +244,9 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                 <Label htmlFor="themeType">Theme</Label>
                 <Select
                   value={itinerary.themeType || "general"}
-                  onValueChange={(value) => handlePropertyChange("themeType", value)}
+                  onValueChange={(value) =>
+                    handlePropertyChange("themeType", value)
+                  }
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select theme" />
@@ -248,7 +271,12 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                   type="number"
                   step="0.01"
                   value={itinerary.price || ""}
-                  onChange={(e) => handlePropertyChange("price", parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    handlePropertyChange(
+                      "price",
+                      parseFloat(e.target.value) || 0
+                    )
+                  }
                   placeholder="0.00"
                   className="mt-1"
                 />
@@ -260,19 +288,23 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                     type="number"
                     placeholder="Min"
                     value={itinerary.groupSize?.min || ""}
-                    onChange={(e) => handlePropertyChange("groupSize", {
-                      ...itinerary.groupSize,
-                      min: parseInt(e.target.value) || 1
-                    })}
+                    onChange={(e) =>
+                      handlePropertyChange("groupSize", {
+                        ...itinerary.groupSize,
+                        min: parseInt(e.target.value) || 1,
+                      })
+                    }
                   />
                   <Input
                     type="number"
                     placeholder="Max"
                     value={itinerary.groupSize?.max || ""}
-                    onChange={(e) => handlePropertyChange("groupSize", {
-                      ...itinerary.groupSize,
-                      max: parseInt(e.target.value) || 10
-                    })}
+                    onChange={(e) =>
+                      handlePropertyChange("groupSize", {
+                        ...itinerary.groupSize,
+                        max: parseInt(e.target.value) || 10,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -280,7 +312,9 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                 <Label htmlFor="difficulty">Difficulty Level</Label>
                 <Select
                   value={itinerary.difficulty || "easy"}
-                  onValueChange={(value) => handlePropertyChange("difficulty", value)}
+                  onValueChange={(value) =>
+                    handlePropertyChange("difficulty", value)
+                  }
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select difficulty" />
@@ -317,21 +351,24 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
               <h3 className="font-medium mb-4 text-culturin-indigo">
                 Properties
               </h3>
-              
+
               {/* Natural Language Input */}
               <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h4 className="text-sm font-medium text-blue-900 mb-2">AI Assistant</h4>
+                <h4 className="text-sm font-medium text-blue-900 mb-2">
+                  AI Assistant
+                </h4>
                 <textarea
                   placeholder="Describe your itinerary in natural language... (e.g., 'Create a 3-day cultural tour of Barcelona with cooking classes, museum visits, and local food experiences')"
                   className="w-full p-3 text-sm border border-blue-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   rows={4}
                 />
-                <Button 
+                <Button
                   className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white text-sm py-2"
                   onClick={() => {
                     toast({
                       title: "AI Processing",
-                      description: "Your itinerary request is being processed...",
+                      description:
+                        "Your itinerary request is being processed...",
                     });
                   }}
                 >
@@ -339,7 +376,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                   Generate Itinerary
                 </Button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="text-sm text-gray-500">Days</label>
@@ -403,7 +440,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                       ...itinerary,
                       id: `duplicate-${Date.now()}`,
                       title: `${itinerary.title} (Copy)`,
-                      status: 'draft' as const,
+                      status: "draft" as const,
                       lastUpdated: "just now",
                     };
                     if (onItinerarySave) {
@@ -429,10 +466,15 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                   variant="outline"
                   className="w-full mt-2 text-red-600 border-red-600 hover:bg-red-50 transition-all duration-300"
                   onClick={() => {
-                    if (confirm('Are you sure you want to delete this itinerary? This action cannot be undone.')) {
+                    if (
+                      confirm(
+                        "Are you sure you want to delete this itinerary? This action cannot be undone."
+                      )
+                    ) {
                       toast({
                         title: "Itinerary Deleted",
-                        description: "The itinerary has been deleted successfully.",
+                        description:
+                          "The itinerary has been deleted successfully.",
                       });
                       onEditorClose();
                     }

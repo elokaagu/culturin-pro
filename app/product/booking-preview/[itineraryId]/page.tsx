@@ -10,9 +10,12 @@ export default function BookingPreviewPage({
   params: { itineraryId: string };
 }) {
   // In a real app, fetch from API or DB. Here, use sample data.
-  const itinerary = sampleItineraries.find((i) => i.id === params.itineraryId);
+  let itinerary = sampleItineraries.find((i) => i.id === params.itineraryId);
 
-  if (!itinerary) return notFound();
+  // If itinerary not found, use the first sample itinerary as fallback
+  if (!itinerary) {
+    itinerary = sampleItineraries[0];
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-culturin-indigo/10 to-white animate-fade-in p-4">
