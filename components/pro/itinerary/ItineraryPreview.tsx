@@ -66,11 +66,11 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
   // Reset modules when itinerary changes
   useEffect(() => {
     console.log("Itinerary changed:", itinerary.id, itinerary.modules);
-    if (itinerary.id) {
-      setModules(itinerary.modules || []);
+    if (itinerary.id && itinerary.modules) {
+      setModules(itinerary.modules);
       setActiveDay(1);
     }
-  }, [itinerary.id, itinerary.modules]);
+  }, [itinerary.id]);
 
   // Create tabs for each day in the itinerary
   const dayTabs = Array.from({ length: itinerary.days || 3 }, (_, i) => i + 1);
@@ -583,10 +583,12 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                     </div>
                   </div>
 
-                  {modules
-                    .filter((module) => module.day === day)
-                    .sort((a, b) => (a.position || 0) - (b.position || 0))
-                    .map((module) => (
+                  {(() => {
+                    const dayModules = modules.filter((module) => module.day === day);
+                    console.log(`Rendering modules for day ${day}:`, dayModules);
+                    return dayModules
+                      .sort((a, b) => (a.position || 0) - (b.position || 0))
+                      .map((module) => (
                       <div
                         key={module.id}
                         className="border rounded-lg mb-4 overflow-hidden"
@@ -666,7 +668,8 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                           </div>
                         )}
                       </div>
-                    ))}
+                      ));
+                  })()}
                 </div>
               </TabsContent>
             ))}
