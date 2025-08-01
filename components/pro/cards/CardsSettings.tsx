@@ -1,76 +1,90 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 import {
-  Settings,
-  CreditCard,
+  Save,
   DollarSign,
   Shield,
-  Upload,
-  Save,
-  Building,
-  User,
-  Globe,
+  CreditCard,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
-import { toast } from "sonner";
+import { settingsService } from "@/lib/settings-service";
 
 const CardsSettings: React.FC = () => {
-  const [defaultMonthlyLimit, setDefaultMonthlyLimit] = useState("1000");
-  const [defaultDailyLimit, setDefaultDailyLimit] = useState("200");
-  const [defaultWeeklyLimit, setDefaultWeeklyLimit] = useState("500");
+  const [isLoading, setIsLoading] = useState(false);
+  const [defaultMonthlyLimit, setDefaultMonthlyLimit] = useState("1000.00");
+  const [defaultDailyLimit, setDefaultDailyLimit] = useState("200.00");
+  const [defaultWeeklyLimit, setDefaultWeeklyLimit] = useState("500.00");
   const [fundingSource, setFundingSource] = useState("culturin-wallet");
   const [autoFreezeOnLimit, setAutoFreezeOnLimit] = useState(true);
   const [requireApproval, setRequireApproval] = useState(false);
-  const [defaultBlockedCategories, setDefaultBlockedCategories] = useState<
-    string[]
-  >(["gambling", "jewelry"]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [defaultBlockedCategories, setDefaultBlockedCategories] = useState([
+    "gambling",
+    "jewelry",
+  ]);
+
+  // Load saved settings on component mount
+  useEffect(() => {
+    const loadSettings = () => {
+      try {
+        const savedSettings = localStorage.getItem('cards_settings');
+        if (savedSettings) {
+          const { settings } = JSON.parse(savedSettings);
+          if (settings) {
+            setDefaultMonthlyLimit(settings.defaultMonthlyLimit?.toString() || "1000.00");
+            setDefaultDailyLimit(settings.defaultDailyLimit?.toString() || "200.00");
+            setDefaultWeeklyLimit(settings.defaultWeeklyLimit?.toString() || "500.00");
+            setFundingSource(settings.fundingSource || "culturin-wallet");
+            setAutoFreezeOnLimit(settings.autoFreezeOnLimit ?? true);
+            setRequireApproval(settings.requireApproval ?? false);
+            setDefaultBlockedCategories(settings.defaultBlockedCategories || ["gambling", "jewelry"]);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading cards settings:', error);
+      }
+    };
+
+    loadSettings();
+  }, []);
 
   const merchantCategories = [
     {
-      id: "restaurants",
-      name: "Restaurants & Dining",
-      description: "Food and beverage establishments",
-    },
-    {
-      id: "entertainment",
-      name: "Entertainment",
-      description: "Movies, shows, and recreational activities",
-    },
-    {
       id: "gambling",
-      name: "Gambling",
-      description: "Casinos and betting establishments",
+      name: "Gambling & Casinos",
+      description: "Online gambling, casinos, and betting sites",
     },
     {
       id: "jewelry",
-      name: "Jewelry Stores",
-      description: "Luxury jewelry and watches",
+      name: "Jewelry & Luxury",
+      description: "High-value jewelry and luxury items",
     },
     {
       id: "electronics",
-      name: "Electronics Stores",
-      description: "Consumer electronics and gadgets",
+      name: "Electronics",
+      description: "Computers, phones, and electronic devices",
     },
     {
       id: "travel",
-      name: "Travel Services",
-      description: "Airlines, hotels, and travel agencies",
+      name: "Travel & Entertainment",
+      description: "Hotels, flights, and entertainment",
     },
     {
-      id: "gas",
+      id: "restaurants",
+      name: "Restaurants & Food",
+      description: "Dining out and food delivery",
+    },
+    {
+      id: "gasoline",
       name: "Gas Stations",
       description: "Fuel and convenience stores",
     },
@@ -84,8 +98,7 @@ const CardsSettings: React.FC = () => {
   const handleSaveSettings = async () => {
     setIsLoading(true);
     try {
-      // API call to save settings
-      console.log("Saving card settings:", {
+      const settings = {
         defaultMonthlyLimit: parseFloat(defaultMonthlyLimit),
         defaultDailyLimit: parseFloat(defaultDailyLimit),
         defaultWeeklyLimit: parseFloat(defaultWeeklyLimit),
@@ -93,14 +106,19 @@ const CardsSettings: React.FC = () => {
         autoFreezeOnLimit,
         requireApproval,
         defaultBlockedCategories,
+      };
+
+      // Save using the settings service
+      await settingsService.saveCardsSettings(settings);
+
+      toast.success("Settings saved successfully!", {
+        description: "Your card settings have been updated and will apply to new cards.",
       });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      toast.success("Settings saved successfully!");
     } catch (error) {
-      toast.error("Failed to save settings. Please try again.");
+      console.error('Error saving cards settings:', error);
+      toast.error("Failed to save settings", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -191,226 +209,114 @@ const CardsSettings: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Funding Source */}
+        {/* Security Settings */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Building className="h-5 w-5" />
-              Funding Source
+              <Shield className="h-5 w-5" />
+              Security Settings
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="autoFreeze">Auto-freeze on Limit</Label>
+                <p className="text-sm text-gray-500">
+                  Automatically freeze cards when they reach their limit
+                </p>
+              </div>
+              <Switch
+                id="autoFreeze"
+                checked={autoFreezeOnLimit}
+                onCheckedChange={setAutoFreezeOnLimit}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="requireApproval">Require Approval</Label>
+                <p className="text-sm text-gray-500">
+                  Require manual approval for large transactions
+                </p>
+              </div>
+              <Switch
+                id="requireApproval"
+                checked={requireApproval}
+                onCheckedChange={setRequireApproval}
+              />
+            </div>
+
             <div>
               <Label htmlFor="fundingSource">Default Funding Source</Label>
-              <Select value={fundingSource} onValueChange={setFundingSource}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select funding source" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="culturin-wallet">
-                    <div className="flex items-center gap-2">
-                      <CreditCard className="h-4 w-4" />
-                      Culturin Wallet
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="bank-account">
-                    <div className="flex items-center gap-2">
-                      <Building className="h-4 w-4" />
-                      Linked Bank Account
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="manual">
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      Manual Top-up
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="flex items-start gap-3">
-                <Shield className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div>
-                  <h4 className="font-medium text-blue-900">
-                    Security Features
-                  </h4>
-                  <div className="space-y-2 mt-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-blue-700">
-                        Auto-freeze on limit reached
-                      </span>
-                      <Switch
-                        checked={autoFreezeOnLimit}
-                        onCheckedChange={setAutoFreezeOnLimit}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-blue-700">
-                        Require approval for large transactions
-                      </span>
-                      <Switch
-                        checked={requireApproval}
-                        onCheckedChange={setRequireApproval}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Default Blocked Categories */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Default Blocked Merchant Categories
-            </CardTitle>
-            <p className="text-sm text-gray-600">
-              These categories will be blocked by default for all new cards
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {merchantCategories.map((category) => (
-                <div
-                  key={category.id}
-                  className="flex items-center space-x-3 p-3 border rounded-lg"
-                >
-                  <input
-                    type="checkbox"
-                    id={`category-${category.id}`}
-                    checked={defaultBlockedCategories.includes(category.id)}
-                    onChange={() => handleCategoryToggle(category.id)}
-                    className="h-4 w-4 text-culturin-indigo focus:ring-culturin-indigo border-gray-300 rounded"
-                  />
-                  <div className="flex-1">
-                    <Label
-                      htmlFor={`category-${category.id}`}
-                      className="text-sm font-medium cursor-pointer"
-                    >
-                      {category.name}
-                    </Label>
-                    <p className="text-xs text-gray-600">
-                      {category.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Branding Settings */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Globe className="h-5 w-5" />
-              Branding Settings
-            </CardTitle>
-            <p className="text-sm text-gray-600">
-              Customize the appearance of your cards (coming soon)
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <h4 className="font-medium">Company Logo</h4>
-                  <p className="text-sm text-gray-600">
-                    Upload your logo to appear on physical cards
-                  </p>
-                </div>
-                <Button variant="outline" disabled>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Logo
-                </Button>
-              </div>
-
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <h4 className="font-medium">Card Color Scheme</h4>
-                  <p className="text-sm text-gray-600">
-                    Choose colors for your branded cards
-                  </p>
-                </div>
-                <Badge variant="outline">Coming Soon</Badge>
-              </div>
-
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <h4 className="font-medium">Custom Card Design</h4>
-                  <p className="text-sm text-gray-600">
-                    Design your own card layout
-                  </p>
-                </div>
-                <Badge variant="outline">Coming Soon</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Compliance & Security */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Compliance & Security
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="bg-green-50 p-4 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <Shield className="h-5 w-5 text-green-600 mt-0.5" />
-                  <div>
-                    <h4 className="font-medium text-green-900">
-                      PCI Compliance
-                    </h4>
-                    <p className="text-sm text-green-700 mt-1">
-                      All card data is handled securely through our
-                      PCI-compliant partners. No sensitive card information is
-                      stored on our servers.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <User className="h-5 w-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <h4 className="font-medium text-blue-900">
-                      KYC/KYB Requirements
-                    </h4>
-                    <p className="text-sm text-blue-700 mt-1">
-                      All operators must complete Know Your Customer (KYC) and
-                      Know Your Business (KYB) verification before issuing
-                      cards. This is required for regulatory compliance.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="text-sm text-gray-600">
-                <h4 className="font-medium mb-2">Security Features:</h4>
-                <ul className="space-y-1">
-                  <li>• Real-time transaction monitoring</li>
-                  <li>• Instant card freeze/unfreeze capabilities</li>
-                  <li>• Merchant category blocking</li>
-                  <li>• Spending limit controls</li>
-                  <li>• Fraud detection and alerts</li>
-                </ul>
-              </div>
+              <select
+                id="fundingSource"
+                value={fundingSource}
+                onChange={(e) => setFundingSource(e.target.value)}
+                className="w-full mt-1 p-2 border rounded-md"
+              >
+                <option value="culturin-wallet">Culturin Wallet</option>
+                <option value="bank-account">Bank Account</option>
+                <option value="manual">Manual Funding</option>
+              </select>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Blocked Categories */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            Blocked Merchant Categories
+          </CardTitle>
+          <p className="text-sm text-gray-500">
+            Select categories that should be blocked by default on new cards
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {merchantCategories.map((category) => (
+              <div
+                key={category.id}
+                className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                  defaultBlockedCategories.includes(category.id)
+                    ? "border-red-200 bg-red-50"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
+                onClick={() => handleCategoryToggle(category.id)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-medium">{category.name}</h4>
+                      {defaultBlockedCategories.includes(category.id) ? (
+                        <XCircle className="h-4 w-4 text-red-500" />
+                      ) : (
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {category.description}
+                    </p>
+                  </div>
+                  <Badge
+                    variant={
+                      defaultBlockedCategories.includes(category.id)
+                        ? "destructive"
+                        : "secondary"
+                    }
+                  >
+                    {defaultBlockedCategories.includes(category.id)
+                      ? "Blocked"
+                      : "Allowed"}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

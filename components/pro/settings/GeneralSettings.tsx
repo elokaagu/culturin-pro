@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useUserData } from "../../../src/contexts/UserDataContext";
+import { settingsService } from "@/lib/settings-service";
 
 const formSchema = z.object({
   businessName: z.string().min(2, {
@@ -91,7 +92,7 @@ const GeneralSettings: React.FC = () => {
     setIsSaving(true);
 
     try {
-      // Update user data
+      // Update local state immediately for better UX
       updateUserData(values);
 
       // Also update website settings if business name changed
@@ -104,11 +105,11 @@ const GeneralSettings: React.FC = () => {
         });
       }
 
-      // Explicitly save to localStorage
-      saveUserData();
+      // Save to database using the settings service
+      await settingsService.saveGeneralSettings(values);
 
-      // Simulate a small delay to show loading state
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Also save to localStorage for immediate persistence
+      saveUserData();
 
       toast.success("Settings updated successfully", {
         description:
@@ -117,8 +118,7 @@ const GeneralSettings: React.FC = () => {
     } catch (error) {
       console.error("Error saving settings:", error);
       toast.error("Failed to save settings", {
-        description:
-          "Please try again. If the problem persists, contact support.",
+        description: error instanceof Error ? error.message : "Please try again. If the problem persists, contact support.",
       });
     } finally {
       setIsSaving(false);

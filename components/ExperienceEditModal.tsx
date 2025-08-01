@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, Users, DollarSign } from "lucide-react";
+import { settingsService } from "@/lib/settings-service";
 
 interface ExperienceEditModalProps {
   open: boolean;
@@ -33,6 +34,7 @@ interface ExperienceEditModalProps {
 
 const ExperienceEditModal = ({ open, onOpenChange, experience, onSave }: ExperienceEditModalProps) => {
   const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     title: experience?.title || "",
     location: experience?.location || "",
@@ -49,20 +51,41 @@ const ExperienceEditModal = ({ open, onOpenChange, experience, onSave }: Experie
     }));
   };
 
-  const handleSave = () => {
-    if (onSave && experience) {
-      onSave({
+  const handleSave = async () => {
+    if (!experience) return;
+    
+    setIsSaving(true);
+    
+    try {
+      const updatedExperience = {
         ...experience,
         ...formData
+      };
+
+      // Call the parent's onSave callback if provided
+      if (onSave) {
+        onSave(updatedExperience);
+      }
+
+      // Save to database using the settings service
+      await settingsService.saveExperienceSettings(updatedExperience);
+      
+      toast({
+        title: "Experience Updated",
+        description: `${formData.title} has been successfully updated and saved.`,
       });
+      
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error saving experience:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to save experience. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
     }
-    
-    toast({
-      title: "Experience Updated",
-      description: `${formData.title} has been successfully updated.`,
-    });
-    
-    onOpenChange(false);
   };
 
   if (!experience) return null;
@@ -172,8 +195,19 @@ const ExperienceEditModal = ({ open, onOpenChange, experience, onSave }: Experie
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} className="bg-black hover:bg-gray-800 text-white">
-            Save Changes
+          <Button 
+            onClick={handleSave} 
+            disabled={isSaving}
+            className="bg-black hover:bg-gray-800 text-white"
+          >
+            {isSaving ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Saving...
+              </>
+            ) : (
+              "Save Changes"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

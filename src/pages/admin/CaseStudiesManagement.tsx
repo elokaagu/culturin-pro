@@ -56,6 +56,7 @@ import {
   CaseStudiesContent,
 } from "@/data/caseStudiesData";
 import { toast } from "@/hooks/use-toast";
+import { settingsService } from "@/lib/settings-service";
 
 const CaseStudiesManagement = () => {
   const [studies, setStudies] = useState<CaseStudy[]>(caseStudies);
@@ -238,19 +239,31 @@ const CaseStudiesManagement = () => {
     );
   };
 
-  const handleSaveContent = () => {
-    // Handle hero image upload - in a real app, you'd upload to a server/storage
-    if (heroImageFile) {
-      const heroImageUrl = URL.createObjectURL(heroImageFile);
-      setContent((prev) => ({ ...prev, heroImage: heroImageUrl }));
-    }
+  const handleSaveContent = async () => {
+    try {
+      // Handle hero image upload - in a real app, you'd upload to a server/storage
+      if (heroImageFile) {
+        const heroImageUrl = URL.createObjectURL(heroImageFile);
+        setContent((prev) => ({ ...prev, heroImage: heroImageUrl }));
+      }
 
-    setIsEditingContent(false);
-    setHeroImageFile(null);
-    toast({
-      title: "Success",
-      description: "Case Studies content updated successfully.",
-    });
+      // Save using the settings service
+      await settingsService.saveCaseStudiesContent(content);
+
+      setIsEditingContent(false);
+      setHeroImageFile(null);
+      toast({
+        title: "Success",
+        description: "Case Studies content updated successfully and saved to database.",
+      });
+    } catch (error) {
+      console.error('Error saving case studies content:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to save content. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const stats = [

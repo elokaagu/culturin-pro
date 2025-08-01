@@ -54,6 +54,7 @@ import {
   Testimonial,
 } from "@/data/testimonialsData";
 import { toast } from "@/hooks/use-toast";
+import { settingsService } from "@/lib/settings-service";
 
 // Simple content interface for testimonials page
 interface TestimonialsContent {
@@ -240,12 +241,31 @@ const TestimonialsManagement = () => {
     );
   };
 
-  const handleSaveContent = () => {
-    setIsEditingContent(false);
-    toast({
-      title: "Success",
-      description: "Testimonials content updated successfully.",
-    });
+  const handleSaveContent = async () => {
+    try {
+      // Handle hero image upload - in a real app, you'd upload to a server/storage
+      if (newTestimonialImage) {
+        const heroImageUrl = URL.createObjectURL(newTestimonialImage);
+        setContent((prev) => ({ ...prev, heroImage: heroImageUrl }));
+      }
+
+      // Save using the settings service
+      await settingsService.saveTestimonialsContent(content);
+
+      setIsEditingContent(false);
+      setNewTestimonialImage(null);
+      toast({
+        title: "Success",
+        description: "Testimonials content updated successfully and saved to database.",
+      });
+    } catch (error) {
+      console.error('Error saving testimonials content:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to save content. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const stats = [

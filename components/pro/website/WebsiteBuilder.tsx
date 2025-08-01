@@ -39,6 +39,7 @@ import { useNavigate } from "../../../lib/navigation";
 import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
 import { useUserData } from "../../../src/contexts/UserDataContext";
 import MediaLibrary from "./MediaLibrary";
+import { settingsService } from "@/lib/settings-service";
 
 // History management for undo/redo functionality
 interface HistoryState {
@@ -317,20 +318,37 @@ const WebsiteBuilder: React.FC = () => {
       setSaveLoading(true);
       setSaveStatus('saving');
       
-      await handleAutoSave();
+      const websiteData = {
+        settings: userData.websiteSettings,
+        itineraries: itineraries,
+        blocks: userData.websiteSettings.placedBlocks || [],
+        theme: userData.websiteSettings.theme,
+        publishedUrl: publishedUrl,
+      };
+
+      // Save using the settings service
+      await settingsService.saveWebsiteData(websiteData);
+      
+      // Also save user data locally
+      saveUserData();
+      
+      setLastSaved(new Date());
+      setHasUnsavedChanges(false);
+      setSaveStatus('saved');
       
       toast.success("Website saved successfully", {
         description: "All changes have been saved",
       });
     } catch (error) {
+      console.error('Error saving website:', error);
       setSaveStatus('error');
       toast.error("Save failed", {
-        description: "Please try again",
+        description: error instanceof Error ? error.message : "Please try again",
       });
     } finally {
       setSaveLoading(false);
     }
-  }, [handleAutoSave]);
+  }, [userData.websiteSettings, itineraries, publishedUrl, saveUserData]);
 
   // Export website data
   const handleExportWebsite = useCallback(() => {

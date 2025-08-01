@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Upload, X, Eye, EyeOff } from "lucide-react";
 import { useUserData } from "../../../src/contexts/UserDataContext";
+import { settingsService } from "@/lib/settings-service";
 
 const WebsiteContent: React.FC = () => {
   const { userData, updateWebsiteSettings } = useUserData();
@@ -83,7 +84,7 @@ const WebsiteContent: React.FC = () => {
     }
   };
 
-  const handleQuickSave = (field: string, value: any) => {
+  const handleQuickSave = async (field: string, value: any) => {
     try {
       updateWebsiteSettings({ [field]: value });
       toast.success(`${field} updated`, {
@@ -128,20 +129,11 @@ const WebsiteContent: React.FC = () => {
         headerImage,
       };
 
-      // Update website settings
+      // Update local state immediately
       updateWebsiteSettings(updates);
 
-      // Also save to localStorage for immediate persistence
-      localStorage.setItem(
-        "culturin_user_data",
-        JSON.stringify({
-          ...userData,
-          websiteSettings: {
-            ...userData.websiteSettings,
-            ...updates,
-          },
-        })
-      );
+      // Save to database using the settings service
+      await settingsService.saveWebsiteSettings(updates);
 
       // Save published content for website preview
       const publishedContent = {
@@ -171,8 +163,7 @@ const WebsiteContent: React.FC = () => {
     } catch (error) {
       console.error("Save error:", error);
       toast.error("Failed to save content", {
-        description:
-          "Please try again or contact support if the issue persists",
+        description: error instanceof Error ? error.message : "Please try again or contact support if the issue persists",
       });
     } finally {
       setIsSaving(false);

@@ -76,6 +76,7 @@ import {
   Sparkle,
   Upload,
 } from "lucide-react";
+import { settingsService } from "@/lib/settings-service";
 
 interface ContentType {
   id: string;
@@ -233,9 +234,22 @@ const ContentCreator: React.FC = () => {
     // Here you would call the AI API to modify the content
   };
 
-  const handleSaveContent = () => {
+  const handleSaveContent = async () => {
     if (!generatedContent) return;
-    toast.success("Content saved to library!");
+    
+    try {
+      // Save using the settings service
+      await settingsService.saveMarketingContent(generatedContent);
+      
+      toast.success("Content saved to library!", {
+        description: "Your content has been saved and can be accessed from the library.",
+      });
+    } catch (error) {
+      console.error('Error saving marketing content:', error);
+      toast.error("Failed to save content", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    }
   };
 
   const handleCopyContent = () => {

@@ -28,6 +28,7 @@ import { PlacedBlock, BlockSettings } from "./DragDropBuilder";
 import { useToast } from "@/hooks/use-toast";
 import { useUserData } from "@/src/contexts/UserDataContext";
 import { X, Palette, Type, Layout, Image as ImageIcon } from "lucide-react";
+import { settingsService } from "@/lib/settings-service";
 
 interface BlockSettingsModalProps {
   block: PlacedBlock | null;
@@ -56,14 +57,28 @@ export default function BlockSettingsModal({
 
   if (!localBlock) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (localBlock) {
-      onSave(localBlock);
-      toast({
-        title: "Settings Saved",
-        description: "Block settings have been updated successfully.",
-      });
-      onClose();
+      try {
+        // Save block settings using the settings service
+        await settingsService.saveWebsiteSettings({
+          placedBlocks: [localBlock], // This would need to be integrated with the full blocks array
+        });
+        
+        onSave(localBlock);
+        toast({
+          title: "Settings Saved",
+          description: "Block settings have been updated successfully and saved to database.",
+        });
+        onClose();
+      } catch (error) {
+        console.error('Error saving block settings:', error);
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to save settings. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 

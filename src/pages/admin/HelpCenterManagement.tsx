@@ -54,6 +54,7 @@ import {
   HelpCenterContent,
 } from "@/data/helpCenterData";
 import { toast } from "@/hooks/use-toast";
+import { settingsService } from "@/lib/settings-service";
 
 const HelpCenterManagement = () => {
   const [faqsData, setFaqsData] = useState<FAQ[]>(faqItems);
@@ -162,19 +163,31 @@ const HelpCenterManagement = () => {
     );
   };
 
-  const handleSaveContent = () => {
-    // Handle hero image upload - in a real app, you'd upload to a server/storage
-    if (heroImageFile) {
-      const heroImageUrl = URL.createObjectURL(heroImageFile);
-      setContent((prev) => ({ ...prev, heroImage: heroImageUrl }));
-    }
+  const handleSaveContent = async () => {
+    try {
+      // Handle hero image upload - in a real app, you'd upload to a server/storage
+      if (heroImageFile) {
+        const heroImageUrl = URL.createObjectURL(heroImageFile);
+        setContent((prev) => ({ ...prev, heroImage: heroImageUrl }));
+      }
 
-    setIsEditingContent(false);
-    setHeroImageFile(null);
-    toast({
-      title: "Success",
-      description: "Help Center content updated successfully.",
-    });
+      // Save using the settings service
+      await settingsService.saveHelpCenterContent(content);
+
+      setIsEditingContent(false);
+      setHeroImageFile(null);
+      toast({
+        title: "Success",
+        description: "Help Center content updated successfully and saved to database.",
+      });
+    } catch (error) {
+      console.error('Error saving help center content:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to save content. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const stats = [
