@@ -29,6 +29,7 @@ import { toast } from "sonner";
 interface ItineraryTabsProps {
   activeTab: string;
   itineraries: ItineraryType[];
+  isLoading?: boolean;
   onCreateNewItinerary: () => void;
   onEditItinerary: (itinerary: ItineraryType) => void;
 }
@@ -38,6 +39,7 @@ type ViewMode = "card" | "list" | "calendar";
 const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
   activeTab,
   itineraries,
+  isLoading = false,
   onCreateNewItinerary,
   onEditItinerary,
 }) => {
@@ -216,8 +218,8 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
             </div>
           )}
 
-                    <Button 
-            onClick={() => router.push('/pro-dashboard/itinerary/new')} 
+          <Button
+            onClick={onCreateNewItinerary}
             className="w-full sm:w-auto text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 shadow-md hover:shadow-lg transition-all duration-200"
           >
             <Sparkles className="h-4 w-4 mr-2" />
@@ -226,114 +228,140 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
           </Button>
         </div>
 
-        {/* Trending Section */}
-        {trendingItineraries.length > 0 && (
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="h-5 w-5 text-orange-500" />
-              <h3 className="text-lg font-semibold">✨ Trending This Week</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {trendingItineraries.map((itinerary) => (
-                <div key={itinerary.id} className="relative">
-                  <ItineraryCard
-                    {...itinerary}
-                    onEdit={() => onEditItinerary(itinerary)}
-                    onQuickAction={handleQuickAction}
-                    completionPercentage={getCompletionPercentage(itinerary)}
-                    isTrending={true}
-                  />
-                  <Badge className="absolute top-2 left-2 bg-orange-500 text-white z-30">
-                    Trending
-                  </Badge>
-                </div>
-              ))}
-            </div>
+        {/* Loading State */}
+        {isLoading && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-culturin-indigo mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading itineraries...</p>
           </div>
         )}
 
-        {/* Main Content */}
-        {itineraries.length === 0 ? (
-          <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed mx-4 sm:mx-0">
-            <h3 className="text-lg sm:text-xl font-medium mb-2">
-              No Itineraries Yet
-            </h3>
-            <p className="text-gray-500 mb-6 text-sm sm:text-base px-4">
-              Start creating your first itinerary
-            </p>
-                        <Button 
-              onClick={() => router.push('/pro-dashboard/itinerary/new')} 
-              className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 shadow-md hover:shadow-lg transition-all duration-200"
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              Create New Itinerary
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {/* Bulk Select Header */}
-            {viewMode === "list" && (
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                <Checkbox
-                  checked={selectedItineraries.length === itineraries.length}
-                  onCheckedChange={handleSelectAll}
-                />
-                <span className="text-sm text-gray-600">
-                  {selectedItineraries.length === itineraries.length
-                    ? "Deselect All"
-                    : "Select All"}
-                </span>
+        {/* Content when not loading */}
+        {!isLoading && (
+          <>
+            {/* Trending Section */}
+            {trendingItineraries.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="h-5 w-5 text-orange-500" />
+                  <h3 className="text-lg font-semibold">
+                    ✨ Trending This Week
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {trendingItineraries.map((itinerary) => (
+                    <div key={itinerary.id} className="relative">
+                      <ItineraryCard
+                        {...itinerary}
+                        onEdit={() => onEditItinerary(itinerary)}
+                        onQuickAction={handleQuickAction}
+                        completionPercentage={getCompletionPercentage(
+                          itinerary
+                        )}
+                        isTrending={true}
+                      />
+                      <Badge className="absolute top-2 left-2 bg-orange-500 text-white z-30">
+                        Trending
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
-            {/* Content based on view mode */}
-            {viewMode === "card" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {itineraries.map((itinerary) => (
-                  <div key={itinerary.id} className="relative">
+            {/* Main Content */}
+            {itineraries.length === 0 ? (
+              <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed mx-4 sm:mx-0">
+                <h3 className="text-lg sm:text-xl font-medium mb-2">
+                  No Itineraries Yet
+                </h3>
+                <p className="text-gray-500 mb-6 text-sm sm:text-base px-4">
+                  Start creating your first itinerary
+                </p>
+                <Button
+                  onClick={onCreateNewItinerary}
+                  className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 shadow-md hover:shadow-lg transition-all duration-200"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Create New Itinerary
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Bulk Select Header */}
+                {viewMode === "list" && (
+                  <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
                     <Checkbox
-                      checked={selectedItineraries.includes(itinerary.id)}
-                      onCheckedChange={() => handleBulkSelect(itinerary.id)}
-                      className="absolute top-2 left-2 z-30 bg-white rounded"
+                      checked={
+                        selectedItineraries.length === itineraries.length
+                      }
+                      onCheckedChange={handleSelectAll}
                     />
-                    <ItineraryCard
-                      {...itinerary}
-                      onEdit={() => onEditItinerary(itinerary)}
-                      onQuickAction={handleQuickAction}
-                      completionPercentage={getCompletionPercentage(itinerary)}
-                    />
+                    <span className="text-sm text-gray-600">
+                      {selectedItineraries.length === itineraries.length
+                        ? "Deselect All"
+                        : "Select All"}
+                    </span>
                   </div>
-                ))}
+                )}
+
+                {/* Content based on view mode */}
+                {viewMode === "card" && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {itineraries.map((itinerary) => (
+                      <div key={itinerary.id} className="relative">
+                        <Checkbox
+                          checked={selectedItineraries.includes(itinerary.id)}
+                          onCheckedChange={() => handleBulkSelect(itinerary.id)}
+                          className="absolute top-2 left-2 z-30 bg-white rounded"
+                        />
+                        <ItineraryCard
+                          {...itinerary}
+                          onEdit={() => onEditItinerary(itinerary)}
+                          onQuickAction={handleQuickAction}
+                          completionPercentage={getCompletionPercentage(
+                            itinerary
+                          )}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {viewMode === "list" && (
+                  <div className="space-y-3">
+                    {itineraries.map((itinerary) => (
+                      <div
+                        key={itinerary.id}
+                        className="flex items-center gap-3"
+                      >
+                        <Checkbox
+                          checked={selectedItineraries.includes(itinerary.id)}
+                          onCheckedChange={() => handleBulkSelect(itinerary.id)}
+                        />
+                        <ItineraryListCard
+                          {...itinerary}
+                          onEdit={() => onEditItinerary(itinerary)}
+                          onQuickAction={handleQuickAction}
+                          completionPercentage={getCompletionPercentage(
+                            itinerary
+                          )}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {viewMode === "calendar" && (
+                  <ItineraryCalendarView
+                    itineraries={itineraries}
+                    onEditItinerary={onEditItinerary}
+                    onQuickAction={handleQuickAction}
+                  />
+                )}
               </div>
             )}
-
-            {viewMode === "list" && (
-              <div className="space-y-3">
-                {itineraries.map((itinerary) => (
-                  <div key={itinerary.id} className="flex items-center gap-3">
-                    <Checkbox
-                      checked={selectedItineraries.includes(itinerary.id)}
-                      onCheckedChange={() => handleBulkSelect(itinerary.id)}
-                    />
-                    <ItineraryListCard
-                      {...itinerary}
-                      onEdit={() => onEditItinerary(itinerary)}
-                      onQuickAction={handleQuickAction}
-                      completionPercentage={getCompletionPercentage(itinerary)}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {viewMode === "calendar" && (
-              <ItineraryCalendarView
-                itineraries={itineraries}
-                onEditItinerary={onEditItinerary}
-                onQuickAction={handleQuickAction}
-              />
-            )}
-          </div>
+          </>
         )}
       </TabsContent>
     </>

@@ -2,6 +2,8 @@
 DROP TABLE IF EXISTS public.blog_posts CASCADE;
 DROP TABLE IF EXISTS public.bookings CASCADE;
 DROP TABLE IF EXISTS public.tours CASCADE;
+DROP TABLE IF EXISTS public.itineraries CASCADE;
+DROP TABLE IF EXISTS public.itinerary_modules CASCADE;
 DROP TABLE IF EXISTS public.users CASCADE;
 
 -- Drop existing functions and triggers
@@ -107,6 +109,87 @@ CREATE POLICY "Tours are viewable by everyone" ON public.tours
 CREATE POLICY "Operators can manage their own tours" ON public.tours
   FOR ALL USING (auth.uid() = operator_id);
 
+-- Create itineraries table
+CREATE TABLE IF NOT EXISTS public.itineraries (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  title TEXT NOT NULL,
+  description TEXT,
+  days INTEGER DEFAULT 1,
+  status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived')),
+  image TEXT,
+  theme_type TEXT DEFAULT 'cultural',
+  regions TEXT[],
+  price DECIMAL(10,2),
+  currency TEXT DEFAULT 'USD',
+  group_size_min INTEGER DEFAULT 1,
+  group_size_max INTEGER DEFAULT 10,
+  difficulty TEXT DEFAULT 'easy' CHECK (difficulty IN ('easy', 'moderate', 'challenging', 'expert')),
+  tags TEXT[],
+  operator_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+  last_updated TEXT DEFAULT 'just now'
+);
+
+-- Create itinerary_modules table
+CREATE TABLE IF NOT EXISTS public.itinerary_modules (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  itinerary_id UUID REFERENCES public.itineraries(id) ON DELETE CASCADE,
+  day INTEGER NOT NULL,
+  type TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  time TEXT,
+  duration INTEGER, -- in minutes
+  location TEXT,
+  price DECIMAL(10,2),
+  notes TEXT,
+  images TEXT[],
+  position INTEGER DEFAULT 0,
+  properties JSONB,
+  coordinates JSONB, -- {lat: number, lng: number}
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS on itineraries
+ALTER TABLE public.itineraries ENABLE ROW LEVEL SECURITY;
+
+-- Enable RLS on itinerary_modules
+ALTER TABLE public.itinerary_modules ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Itineraries are viewable by everyone when published" ON public.itineraries;
+DROP POLICY IF EXISTS "Operators can manage their own itineraries" ON public.itineraries;
+DROP POLICY IF EXISTS "Itinerary modules are viewable by everyone when itinerary is published" ON public.itinerary_modules;
+DROP POLICY IF EXISTS "Operators can manage modules for their own itineraries" ON public.itinerary_modules;
+
+-- Create policies for itineraries
+CREATE POLICY "Itineraries are viewable by everyone when published" ON public.itineraries
+  FOR SELECT USING (status = 'published');
+
+CREATE POLICY "Operators can manage their own itineraries" ON public.itineraries
+  FOR ALL USING (auth.uid() = operator_id);
+
+-- Create policies for itinerary_modules
+CREATE POLICY "Itinerary modules are viewable by everyone when itinerary is published" ON public.itinerary_modules
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM public.itineraries 
+      WHERE itineraries.id = itinerary_modules.itinerary_id 
+      AND itineraries.status = 'published'
+    )
+  );
+
+CREATE POLICY "Operators can manage modules for their own itineraries" ON public.itinerary_modules
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM public.itineraries 
+      WHERE itineraries.id = itinerary_modules.itinerary_id 
+      AND itineraries.operator_id = auth.uid()
+    )
+  );
+
 -- Create bookings table
 CREATE TABLE IF NOT EXISTS public.bookings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -159,7 +242,7 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
   excerpt TEXT NOT NULL,
   content TEXT[] NOT NULL,
   category TEXT NOT NULL,
-  author_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  author_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
   author_name TEXT NOT NULL,
   author_email TEXT NOT NULL,
   featured_image_url TEXT,
@@ -189,12 +272,14 @@ CREATE POLICY "Authors can manage their own blog posts" ON public.blog_posts
 INSERT INTO storage.buckets (id, name, public) VALUES 
   ('blog-images', 'blog-images', true),
   ('tour-images', 'tour-images', true),
+  ('itinerary-images', 'itinerary-images', true),
   ('avatars', 'avatars', true)
 ON CONFLICT (id) DO NOTHING;
 
 -- Drop existing storage policies if they exist
 DROP POLICY IF EXISTS "Blog Images Public Access" ON storage.objects;
 DROP POLICY IF EXISTS "Tour Images Public Access" ON storage.objects;
+DROP POLICY IF EXISTS "Itinerary Images Public Access" ON storage.objects;
 DROP POLICY IF EXISTS "Avatars Public Access" ON storage.objects;
 DROP POLICY IF EXISTS "Authenticated users can upload" ON storage.objects;
 DROP POLICY IF EXISTS "Users can update their own uploads" ON storage.objects;
@@ -203,6 +288,7 @@ DROP POLICY IF EXISTS "Users can delete their own uploads" ON storage.objects;
 -- Create storage policies
 CREATE POLICY "Blog Images Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'blog-images');
 CREATE POLICY "Tour Images Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'tour-images');
+CREATE POLICY "Itinerary Images Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'itinerary-images');
 CREATE POLICY "Avatars Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
 
 CREATE POLICY "Authenticated users can upload" ON storage.objects FOR INSERT WITH CHECK (auth.role() = 'authenticated');
@@ -275,6 +361,10 @@ CREATE POLICY "Users can insert their own loyalty transactions" ON public.loyalt
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_tours_operator_id ON public.tours(operator_id);
 CREATE INDEX IF NOT EXISTS idx_tours_status ON public.tours(status);
+CREATE INDEX IF NOT EXISTS idx_itineraries_operator_id ON public.itineraries(operator_id);
+CREATE INDEX IF NOT EXISTS idx_itineraries_status ON public.itineraries(status);
+CREATE INDEX IF NOT EXISTS idx_itinerary_modules_itinerary_id ON public.itinerary_modules(itinerary_id);
+CREATE INDEX IF NOT EXISTS idx_itinerary_modules_day ON public.itinerary_modules(day);
 CREATE INDEX IF NOT EXISTS idx_bookings_user_id ON public.bookings(user_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_tour_id ON public.bookings(tour_id);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_author_id ON public.blog_posts(author_id);

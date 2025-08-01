@@ -37,6 +37,50 @@ export type Database = {
           website?: string | null;
         };
       };
+      users: {
+        Row: {
+          id: string;
+          email: string | null;
+          first_name: string | null;
+          last_name: string | null;
+          full_name: string | null;
+          avatar_url: string | null;
+          website: string | null;
+          bio: string | null;
+          role: string;
+          studio_access: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          email?: string | null;
+          first_name?: string | null;
+          last_name?: string | null;
+          full_name?: string | null;
+          avatar_url?: string | null;
+          website?: string | null;
+          bio?: string | null;
+          role?: string;
+          studio_access?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string | null;
+          first_name?: string | null;
+          last_name?: string | null;
+          full_name?: string | null;
+          avatar_url?: string | null;
+          website?: string | null;
+          bio?: string | null;
+          role?: string;
+          studio_access?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       tours: {
         Row: {
           id: string;
@@ -79,6 +123,127 @@ export type Database = {
           category?: string | null;
           max_participants?: number | null;
           status?: "active" | "inactive" | "draft";
+        };
+      };
+      itineraries: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          title: string;
+          description: string | null;
+          days: number;
+          status: "draft" | "published" | "archived";
+          image: string | null;
+          theme_type: string;
+          regions: string[] | null;
+          price: number | null;
+          currency: string;
+          group_size_min: number;
+          group_size_max: number;
+          difficulty: "easy" | "moderate" | "challenging" | "expert";
+          tags: string[] | null;
+          operator_id: string;
+          last_updated: string;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          title: string;
+          description?: string | null;
+          days?: number;
+          status?: "draft" | "published" | "archived";
+          image?: string | null;
+          theme_type?: string;
+          regions?: string[] | null;
+          price?: number | null;
+          currency?: string;
+          group_size_min?: number;
+          group_size_max?: number;
+          difficulty?: "easy" | "moderate" | "challenging" | "expert";
+          tags?: string[] | null;
+          operator_id: string;
+          last_updated?: string;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+          title?: string;
+          description?: string | null;
+          days?: number;
+          status?: "draft" | "published" | "archived";
+          image?: string | null;
+          theme_type?: string;
+          regions?: string[] | null;
+          price?: number | null;
+          currency?: string;
+          group_size_min?: number;
+          group_size_max?: number;
+          difficulty?: "easy" | "moderate" | "challenging" | "expert";
+          tags?: string[] | null;
+          operator_id?: string;
+          last_updated?: string;
+        };
+      };
+      itinerary_modules: {
+        Row: {
+          id: string;
+          itinerary_id: string;
+          day: number;
+          type: string;
+          title: string;
+          description: string | null;
+          time: string | null;
+          duration: number | null;
+          location: string | null;
+          price: number | null;
+          notes: string | null;
+          images: string[] | null;
+          position: number;
+          properties: any | null;
+          coordinates: any | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          itinerary_id: string;
+          day: number;
+          type: string;
+          title: string;
+          description?: string | null;
+          time?: string | null;
+          duration?: number | null;
+          location?: string | null;
+          price?: number | null;
+          notes?: string | null;
+          images?: string[] | null;
+          position?: number;
+          properties?: any | null;
+          coordinates?: any | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          itinerary_id?: string;
+          day?: number;
+          type?: string;
+          title?: string;
+          description?: string | null;
+          time?: string | null;
+          duration?: number | null;
+          location?: string | null;
+          price?: number | null;
+          notes?: string | null;
+          images?: string[] | null;
+          position?: number;
+          properties?: any | null;
+          coordinates?: any | null;
+          created_at?: string;
+          updated_at?: string;
         };
       };
       bookings: {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProDashboardLayout from "../../../../components/pro/ProDashboardLayout";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,8 @@ import {
 } from "lucide-react";
 import Image from "@/components/ui/image";
 import { sampleItineraries } from "@/data/itineraryData";
+import { itineraryService } from "@/lib/itinerary-service";
+import { ItineraryType } from "@/data/itineraryData";
 
 export default function ItineraryDetailPage() {
   const params = useParams();
@@ -39,9 +41,46 @@ export default function ItineraryDetailPage() {
   const itineraryId = params.id as string;
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<any>(null);
+  const [itinerary, setItinerary] = useState<ItineraryType | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Find the itinerary from sample data
-  const itinerary = sampleItineraries.find((i) => i.id === itineraryId);
+  // Load itinerary data
+  useEffect(() => {
+    const loadItinerary = async () => {
+      try {
+        setIsLoading(true);
+
+        // First try to load from database
+        const dbItinerary = await itineraryService.getItinerary(itineraryId);
+
+        if (dbItinerary) {
+          setItinerary(dbItinerary);
+        } else {
+          // Fallback to sample data
+          const sampleItinerary = sampleItineraries.find(
+            (i) => i.id === itineraryId
+          );
+          if (sampleItinerary) {
+            setItinerary(sampleItinerary);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading itinerary:", error);
+        // Fallback to sample data
+        const sampleItinerary = sampleItineraries.find(
+          (i) => i.id === itineraryId
+        );
+        if (sampleItinerary) {
+          setItinerary(sampleItinerary);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadItinerary();
+  }, [itineraryId]);
 
   // Initialize form data when entering edit mode
   const handleEditClick = () => {
@@ -54,20 +93,63 @@ export default function ItineraryDetailPage() {
         themeType: itinerary.themeType,
         status: itinerary.status,
         image: itinerary.image,
+        price: itinerary.price,
+        currency: itinerary.currency,
+        groupSizeMin: itinerary.groupSize?.min,
+        groupSizeMax: itinerary.groupSize?.max,
+        difficulty: itinerary.difficulty,
+        tags: itinerary.tags?.join(", "),
       });
       setIsEditing(true);
     }
   };
 
-  const handleSave = () => {
-    // Here you would typically save to your backend
-    console.log("Saving itinerary:", formData);
-    setIsEditing(false);
-    
-    toast({
-      title: "Changes Saved",
-      description: "Your itinerary has been updated successfully.",
-    });
+  const handleSave = async () => {
+    if (!itinerary || !formData) return;
+
+    setIsSaving(true);
+
+    try {
+      const updates: Partial<ItineraryType> = {
+        title: formData.title,
+        description: formData.description,
+        days: formData.days,
+        regions: formData.regions.split(", ").filter(Boolean),
+        themeType: formData.themeType,
+        status: formData.status,
+        image: formData.image,
+        price: formData.price,
+        currency: formData.currency,
+        groupSize: {
+          min: formData.groupSizeMin,
+          max: formData.groupSizeMax,
+        },
+        difficulty: formData.difficulty,
+        tags: formData.tags ? formData.tags.split(", ").filter(Boolean) : [],
+      };
+
+      const updatedItinerary = await itineraryService.updateItinerary(
+        itinerary.id,
+        updates
+      );
+      setItinerary(updatedItinerary);
+      setIsEditing(false);
+
+      toast({
+        title: "Changes Saved",
+        description: "Your itinerary has been updated successfully.",
+      });
+    } catch (error) {
+      console.error("Error saving itinerary:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to save itinerary",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
@@ -86,21 +168,21 @@ export default function ItineraryDetailPage() {
   const handleViewOnWebsite = () => {
     // Generate a public URL for the itinerary
     const publicUrl = `${window.location.origin}/tour/${itineraryId}`;
-    window.open(publicUrl, '_blank');
+    window.open(publicUrl, "_blank");
   };
 
   const handleShareLink = async () => {
     const shareUrl = `${window.location.origin}/tour/${itineraryId}`;
-    
+
     if (navigator.share) {
       try {
         await navigator.share({
-          title: itinerary.title,
-          text: itinerary.description,
+          title: itinerary?.title || "Itinerary",
+          text: itinerary?.description || "Check out this amazing itinerary",
           url: shareUrl,
         });
       } catch (error) {
-        console.log('Error sharing:', error);
+        console.log("Error sharing:", error);
       }
     } else {
       // Fallback: copy to clipboard
@@ -111,7 +193,7 @@ export default function ItineraryDetailPage() {
           description: "Itinerary link has been copied to your clipboard.",
         });
       } catch (error) {
-        console.log('Error copying to clipboard:', error);
+        console.log("Error copying to clipboard:", error);
         toast({
           title: "Error",
           description: "Failed to copy link to clipboard.",
@@ -121,42 +203,87 @@ export default function ItineraryDetailPage() {
     }
   };
 
-  const handleDuplicate = () => {
-    // Create a duplicate of the current itinerary
-    const duplicateId = `duplicate-${Date.now()}`;
-    const duplicateItinerary = {
-      ...itinerary,
-      id: duplicateId,
-      title: `${itinerary.title} (Copy)`,
-      status: 'draft',
-      lastUpdated: new Date().toLocaleDateString(),
-    };
-    
-    // In a real app, you would save this to your backend
-    console.log('Duplicating itinerary:', duplicateItinerary);
-    
-    toast({
-      title: "Itinerary Duplicated",
-      description: "A copy of this itinerary has been created.",
-    });
-    
-    // Navigate to the new duplicate
-    router.push(`/pro-dashboard/itinerary/${duplicateId}`);
-  };
+  const handleDuplicate = async () => {
+    if (!itinerary) return;
 
-  const handleArchive = () => {
-    if (confirm('Are you sure you want to archive this itinerary? This action can be undone later.')) {
-      // In a real app, you would update the status to 'archived' in your backend
-      console.log('Archiving itinerary:', itineraryId);
-      
+    try {
+      // Create a duplicate of the current itinerary
+      const { id, lastUpdated, ...itineraryData } = itinerary;
+      const duplicateItinerary = {
+        ...itineraryData,
+        title: `${itinerary.title} (Copy)`,
+        status: "draft" as const,
+      };
+
+      const newItinerary = await itineraryService.createItinerary(
+        duplicateItinerary
+      );
+
       toast({
-        title: "Itinerary Archived",
-        description: "The itinerary has been archived successfully.",
+        title: "Itinerary Duplicated",
+        description: "A copy of this itinerary has been created.",
       });
-      
-      router.push('/pro-dashboard/itinerary');
+
+      // Navigate to the new duplicate
+      router.push(`/pro-dashboard/itinerary/${newItinerary.id}`);
+    } catch (error) {
+      console.error("Error duplicating itinerary:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to duplicate itinerary",
+        variant: "destructive",
+      });
     }
   };
+
+  const handleArchive = async () => {
+    if (!itinerary) return;
+
+    if (
+      confirm(
+        "Are you sure you want to archive this itinerary? This action can be undone later."
+      )
+    ) {
+      try {
+        await itineraryService.updateItinerary(itinerary.id, {
+          status: "archived",
+        });
+
+        toast({
+          title: "Itinerary Archived",
+          description: "The itinerary has been archived successfully.",
+        });
+
+        router.push("/pro-dashboard/itinerary");
+      } catch (error) {
+        console.error("Error archiving itinerary:", error);
+        toast({
+          title: "Error",
+          description:
+            error instanceof Error
+              ? error.message
+              : "Failed to archive itinerary",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <ProDashboardLayout>
+        <div className="p-6">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-culturin-indigo mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading itinerary...</p>
+          </div>
+        </div>
+      </ProDashboardLayout>
+    );
+  }
 
   if (!itinerary) {
     return (
@@ -214,9 +341,18 @@ export default function ItineraryDetailPage() {
                     <X className="h-4 w-4 mr-2" />
                     Cancel
                   </Button>
-                  <Button onClick={handleSave}>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Changes
+                  <Button onClick={handleSave} disabled={isSaving}>
+                    {isSaving ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Changes
+                      </>
+                    )}
                   </Button>
                 </>
               ) : (
@@ -356,6 +492,9 @@ export default function ItineraryDetailPage() {
                             </SelectItem>
                             <SelectItem value="nature">Nature</SelectItem>
                             <SelectItem value="urban">Urban</SelectItem>
+                            <SelectItem value="spiritual">Spiritual</SelectItem>
+                            <SelectItem value="arts">Arts</SelectItem>
+                            <SelectItem value="general">General</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -375,6 +514,83 @@ export default function ItineraryDetailPage() {
                             <SelectItem value="published">Published</SelectItem>
                           </SelectContent>
                         </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="price">Price (USD)</Label>
+                        <Input
+                          id="price"
+                          type="number"
+                          step="0.01"
+                          value={formData?.price || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "price",
+                              parseFloat(e.target.value) || 0
+                            )
+                          }
+                          className="mt-1"
+                          placeholder="0.00"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="groupSize">Group Size</Label>
+                        <div className="flex gap-2 mt-1">
+                          <Input
+                            type="number"
+                            placeholder="Min"
+                            value={formData?.groupSizeMin || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "groupSizeMin",
+                                parseInt(e.target.value) || 1
+                              )
+                            }
+                          />
+                          <Input
+                            type="number"
+                            placeholder="Max"
+                            value={formData?.groupSizeMax || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "groupSizeMax",
+                                parseInt(e.target.value) || 10
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="difficulty">Difficulty Level</Label>
+                        <Select
+                          value={formData?.difficulty || ""}
+                          onValueChange={(value) =>
+                            handleInputChange("difficulty", value)
+                          }
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Select difficulty" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="easy">Easy</SelectItem>
+                            <SelectItem value="moderate">Moderate</SelectItem>
+                            <SelectItem value="challenging">
+                              Challenging
+                            </SelectItem>
+                            <SelectItem value="expert">Expert</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="tags">Tags (comma-separated)</Label>
+                        <Input
+                          id="tags"
+                          value={formData?.tags || ""}
+                          onChange={(e) =>
+                            handleInputChange("tags", e.target.value)
+                          }
+                          className="mt-1"
+                          placeholder="e.g., cultural, adventure, food"
+                        />
                       </div>
                     </div>
                   ) : (
@@ -411,6 +627,47 @@ export default function ItineraryDetailPage() {
                             : "Draft"}
                         </Badge>
                       </div>
+                      {itinerary.price && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600">Price</span>
+                          <span className="font-medium">
+                            ${itinerary.price} {itinerary.currency}
+                          </span>
+                        </div>
+                      )}
+                      {itinerary.groupSize && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600">Group Size</span>
+                          <span className="font-medium">
+                            {itinerary.groupSize.min}-{itinerary.groupSize.max}{" "}
+                            people
+                          </span>
+                        </div>
+                      )}
+                      {itinerary.difficulty && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600">Difficulty</span>
+                          <span className="font-medium capitalize">
+                            {itinerary.difficulty}
+                          </span>
+                        </div>
+                      )}
+                      {itinerary.tags && itinerary.tags.length > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600">Tags</span>
+                          <div className="flex gap-1 flex-wrap">
+                            {itinerary.tags.map((tag, index) => (
+                              <Badge
+                                key={index}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </CardContent>
@@ -425,32 +682,32 @@ export default function ItineraryDetailPage() {
                   <CardTitle>Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     variant="outline"
                     onClick={handleViewOnWebsite}
                   >
                     <Globe className="h-4 w-4 mr-2" />
                     View on Website
                   </Button>
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     variant="outline"
                     onClick={handleShareLink}
                   >
                     <Share2 className="h-4 w-4 mr-2" />
                     Share Link
                   </Button>
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     variant="outline"
                     onClick={handleDuplicate}
                   >
                     <Copy className="h-4 w-4 mr-2" />
                     Duplicate
                   </Button>
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     variant="outline"
                     onClick={handleArchive}
                   >

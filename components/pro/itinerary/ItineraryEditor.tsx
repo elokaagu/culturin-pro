@@ -35,6 +35,7 @@ import AIContentAssistant from "@/components/pro/itinerary/AIContentAssistant";
 import { ItineraryType } from "@/data/itineraryData";
 import Image from "@/components/ui/image";
 import { useRouter } from "next/navigation";
+import { itineraryService } from "@/lib/itinerary-service";
 
 interface ItineraryEditorProps {
   showEditor: boolean;
@@ -77,23 +78,52 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
     });
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
+    if (!itinerary) return;
+
     setIsPublishing(true);
-    setTimeout(() => {
-      if (itinerary && onItinerarySave) {
-        const updatedItinerary = {
-          ...itinerary,
-          lastUpdated: "just now",
-        };
-        onItinerarySave(updatedItinerary);
+
+    try {
+      let savedItinerary: ItineraryType;
+
+      if (
+        itinerary.id.startsWith("temp-") ||
+        itinerary.id.startsWith("duplicate-")
+      ) {
+        // Create new itinerary
+        const { id, lastUpdated, ...itineraryData } = itinerary;
+        savedItinerary = await itineraryService.createItinerary(itineraryData);
+      } else {
+        // Update existing itinerary
+        savedItinerary = await itineraryService.updateItinerary(
+          itinerary.id,
+          itinerary
+        );
       }
+
+      // Call the callback with the saved itinerary
+      if (onItinerarySave) {
+        onItinerarySave(savedItinerary);
+      }
+
       toast({
-        title: "Itinerary Published",
-        description: "Your itinerary has been successfully published.",
+        title: "Changes Saved",
+        description: "Your itinerary has been successfully saved.",
       });
-      setIsPublishing(false);
+
+      // Close the editor
       onEditorClose();
-    }, 1000);
+    } catch (error) {
+      console.error("Error saving itinerary:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to save itinerary",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   // --- Editorial Cover Section ---
@@ -416,10 +446,10 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                   disabled={isPublishing}
                 >
                   {isPublishing ? (
-                    "Publishing..."
+                    "Saving..."
                   ) : (
                     <>
-                      <Save className="h-5 w-5 mr-2" /> Publish Changes
+                      <Save className="h-5 w-5 mr-2" /> Save Changes
                     </>
                   )}
                 </Button>
@@ -465,18 +495,36 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                 <Button
                   variant="outline"
                   className="w-full mt-2 text-red-600 border-red-600 hover:bg-red-50 transition-all duration-300"
-                  onClick={() => {
+                  onClick={async () => {
                     if (
                       confirm(
                         "Are you sure you want to delete this itinerary? This action cannot be undone."
                       )
                     ) {
-                      toast({
-                        title: "Itinerary Deleted",
-                        description:
-                          "The itinerary has been deleted successfully.",
-                      });
-                      onEditorClose();
+                      try {
+                        if (
+                          !itinerary.id.startsWith("temp-") &&
+                          !itinerary.id.startsWith("duplicate-")
+                        ) {
+                          await itineraryService.deleteItinerary(itinerary.id);
+                        }
+                        toast({
+                          title: "Itinerary Deleted",
+                          description:
+                            "The itinerary has been deleted successfully.",
+                        });
+                        onEditorClose();
+                      } catch (error) {
+                        console.error("Error deleting itinerary:", error);
+                        toast({
+                          title: "Error",
+                          description:
+                            error instanceof Error
+                              ? error.message
+                              : "Failed to delete itinerary",
+                          variant: "destructive",
+                        });
+                      }
                     }
                   }}
                 >
