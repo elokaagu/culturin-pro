@@ -16,6 +16,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import {
   ArrowLeft,
@@ -44,6 +54,7 @@ export default function ItineraryDetailPage() {
   const [itinerary, setItinerary] = useState<ItineraryType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Load itinerary data
   useEffect(() => {
@@ -272,6 +283,31 @@ export default function ItineraryDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!itinerary) return;
+
+    try {
+      await itineraryService.deleteItinerary(itinerary.id);
+
+      toast({
+        title: "Itinerary Deleted",
+        description: "The itinerary has been deleted successfully.",
+      });
+
+      router.push("/pro-dashboard/itinerary");
+    } catch (error) {
+      console.error("Error deleting itinerary:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete itinerary",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <ProDashboardLayout>
@@ -364,6 +400,10 @@ export default function ItineraryDetailPage() {
                   <Button variant="outline" onClick={handleDuplicate}>
                     <Copy className="h-4 w-4 mr-2" />
                     Duplicate
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="text-red-600 border-red-600 hover:bg-red-50">
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
                   </Button>
                   <Button onClick={handleEditClick}>
                     <Edit className="h-4 w-4 mr-2" />
@@ -714,6 +754,14 @@ export default function ItineraryDetailPage() {
                     <Archive className="h-4 w-4 mr-2" />
                     Archive
                   </Button>
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={() => setShowDeleteDialog(true)}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Itinerary
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -759,6 +807,24 @@ export default function ItineraryDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Itinerary</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{itinerary?.title}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </ProDashboardLayout>
   );
 }
