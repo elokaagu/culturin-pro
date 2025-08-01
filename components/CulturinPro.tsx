@@ -24,8 +24,8 @@ const CulturinPro = () => {
         description: "Your access has been activated.",
       });
 
-      // Navigate to pro dashboard
-      navigate("/pro-dashboard");
+      // Navigate to pricing page
+      navigate("/pricing");
 
       setIsLoading(false);
     }, 1500);

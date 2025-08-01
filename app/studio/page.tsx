@@ -32,7 +32,7 @@ function StudioContent() {
   const [activeTab, setActiveTab] = useState<string>("overview");
 
   const handleLaunchDashboard = () => {
-    router.push("/pro-dashboard");
+    router.push("/pricing");
   };
 
   // Sample tour for booking preview - ensure we always have a valid ItineraryType
