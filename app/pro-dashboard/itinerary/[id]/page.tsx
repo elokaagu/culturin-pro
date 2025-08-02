@@ -58,6 +58,12 @@ export default function ItineraryDetailPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  // Modal states for quick actions
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+
   // Load itinerary data
   useEffect(() => {
     const loadItinerary = async () => {
@@ -222,12 +228,21 @@ export default function ItineraryDetailPage() {
 
   // Quick Actions Functions
   const handleViewOnWebsite = () => {
+    setShowViewModal(true);
+  };
+
+  const handleViewOnWebsiteConfirm = () => {
     // Generate a public URL for the itinerary
     const publicUrl = `${window.location.origin}/tour/${itineraryId}`;
     window.open(publicUrl, "_blank");
+    setShowViewModal(false);
   };
 
   const handleShareLink = async () => {
+    setShowShareModal(true);
+  };
+
+  const handleShareLinkConfirm = async () => {
     const shareUrl = `${window.location.origin}/tour/${itineraryId}`;
 
     if (navigator.share) {
@@ -257,9 +272,14 @@ export default function ItineraryDetailPage() {
         });
       }
     }
+    setShowShareModal(false);
   };
 
   const handleDuplicate = async () => {
+    setShowDuplicateModal(true);
+  };
+
+  const handleDuplicateConfirm = async () => {
     if (!itinerary) return;
 
     try {
@@ -293,39 +313,39 @@ export default function ItineraryDetailPage() {
         variant: "destructive",
       });
     }
+    setShowDuplicateModal(false);
   };
 
   const handleArchive = async () => {
+    setShowArchiveModal(true);
+  };
+
+  const handleArchiveConfirm = async () => {
     if (!itinerary) return;
 
-    if (
-      confirm(
-        "Are you sure you want to archive this itinerary? This action can be undone later."
-      )
-    ) {
-      try {
-        await itineraryService.updateItinerary(itinerary.id, {
-          status: "archived",
-        });
+    try {
+      await itineraryService.updateItinerary(itinerary.id, {
+        status: "archived",
+      });
 
-        toast({
-          title: "Itinerary Archived",
-          description: "The itinerary has been archived successfully.",
-        });
+      toast({
+        title: "Itinerary Archived",
+        description: "The itinerary has been archived successfully.",
+      });
 
-        router.push("/pro-dashboard/itinerary");
-      } catch (error) {
-        console.error("Error archiving itinerary:", error);
-        toast({
-          title: "Error",
-          description:
-            error instanceof Error
-              ? error.message
-              : "Failed to archive itinerary",
-          variant: "destructive",
-        });
-      }
+      router.push("/pro-dashboard/itinerary");
+    } catch (error) {
+      console.error("Error archiving itinerary:", error);
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to archive itinerary",
+        variant: "destructive",
+      });
     }
+    setShowArchiveModal(false);
   };
 
   const handleDelete = async () => {
@@ -916,6 +936,85 @@ export default function ItineraryDetailPage() {
               className="bg-red-600 hover:bg-red-700"
             >
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Share Link Modal */}
+      <AlertDialog open={showShareModal} onOpenChange={setShowShareModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Share Itinerary</AlertDialogTitle>
+            <AlertDialogDescription>
+              Share this itinerary with others. The link will be copied to your
+              clipboard.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleShareLinkConfirm}>
+              Share Link
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Duplicate Modal */}
+      <AlertDialog
+        open={showDuplicateModal}
+        onOpenChange={setShowDuplicateModal}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Duplicate Itinerary</AlertDialogTitle>
+            <AlertDialogDescription>
+              Create a copy of "{itinerary?.title}"? The duplicate will be saved
+              as a draft.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDuplicateConfirm}>
+              Duplicate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Archive Modal */}
+      <AlertDialog open={showArchiveModal} onOpenChange={setShowArchiveModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Archive Itinerary</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to archive "{itinerary?.title}"? This action
+              can be undone later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleArchiveConfirm}>
+              Archive
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* View on Website Modal */}
+      <AlertDialog open={showViewModal} onOpenChange={setShowViewModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>View on Website</AlertDialogTitle>
+            <AlertDialogDescription>
+              Open "{itinerary?.title}" in a new tab to see how it appears on
+              your website?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleViewOnWebsiteConfirm}>
+              Open Website
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
