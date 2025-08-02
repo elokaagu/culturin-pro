@@ -715,8 +715,8 @@ export default function ItineraryDetailPage() {
                         <Badge
                           className={
                             itinerary.status === "published"
-                              ? "bg-green-500 px-2 py-1 text-xs"
-                              : "bg-yellow-500 px-2 py-1 text-xs"
+                              ? "bg-green-500 px-2 py-1 text-xs w-fit"
+                              : "bg-yellow-500 px-2 py-1 text-xs w-fit"
                           }
                         >
                           {itinerary.status === "published"
