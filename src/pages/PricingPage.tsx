@@ -46,22 +46,6 @@ const PricingPage = () => {
       icon: TrendingUp,
       badge: "<250 ms Low latency",
     },
-    {
-      name: "Enterprise",
-      price: isAnnual ? "$150" : "$200",
-      period: "/mo",
-      description: "For teams who need full customization.",
-      buttonText: "Talk to Sales",
-      buttonIcon: null,
-      buttonVariant: "outline" as const,
-      features: [
-        "Admin dashboard with usage analytics",
-        "Team-wide knowledge and prompts",
-        "Post-call AI suggestions and coaching insights",
-      ],
-      popular: false,
-      icon: Shield,
-    },
   ];
 
   return (
@@ -107,15 +91,11 @@ const PricingPage = () => {
           </div>
 
           {/* Pricing Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto">
             {plans.map((plan, index) => (
               <div
                 key={plan.name}
-                className={`relative rounded-xl p-8 ${
-                  plan.name === "Enterprise"
-                    ? "bg-gray-900 text-white border-2 border-gray-800"
-                    : "bg-white text-gray-900 border border-gray-200"
-                } shadow-lg`}
+                className="relative rounded-xl p-8 bg-white text-gray-900 border border-gray-200 shadow-lg"
               >
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
@@ -123,7 +103,7 @@ const PricingPage = () => {
                     <span className="text-4xl font-bold">{plan.price}</span>
                     <span className="text-lg text-gray-500">{plan.period}</span>
                   </div>
-                  <p className={`text-sm ${plan.name === "Enterprise" ? "text-gray-300" : "text-gray-600"}`}>
+                  <p className="text-sm text-gray-600">
                     {plan.description}
                   </p>
                 </div>
@@ -132,15 +112,13 @@ const PricingPage = () => {
                   <Button
                     className={`w-full py-3 ${
                       plan.buttonVariant === "outline"
-                        ? plan.name === "Enterprise"
-                          ? "border-gray-400 text-white hover:bg-gray-800"
-                          : "border-gray-400 text-gray-900 hover:bg-gray-50"
+                        ? "border-gray-400 text-gray-900 hover:bg-gray-50"
                         : "bg-blue-600 hover:bg-blue-700 text-white"
                     }`}
                     variant={plan.buttonVariant}
                     asChild
                   >
-                    <Link to={plan.name === "Free" ? "/studio" : plan.name === "Pro" ? "/pro-dashboard" : "/contact"}>
+                    <Link to={plan.name === "Free" ? "/studio" : "/pro-dashboard"}>
                       {plan.buttonIcon && <span className="mr-2">{plan.buttonIcon}</span>}
                       {plan.buttonText}
                     </Link>
@@ -151,11 +129,9 @@ const PricingPage = () => {
                   {plan.features.map((feature, featureIndex) => (
                     <div key={featureIndex} className="flex items-start gap-3">
                       <CheckCircle 
-                        className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
-                          plan.name === "Enterprise" ? "text-green-400" : "text-green-600"
-                        }`} 
+                        className="h-5 w-5 mt-0.5 flex-shrink-0 text-green-600" 
                       />
-                      <span className={`text-sm ${plan.name === "Enterprise" ? "text-gray-300" : "text-gray-600"}`}>
+                      <span className="text-sm text-gray-600">
                         {feature}
                       </span>
                       {plan.badge && featureIndex === 1 && (
