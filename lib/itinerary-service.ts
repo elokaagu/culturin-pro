@@ -76,7 +76,6 @@ class SupabaseItineraryService implements ItineraryService {
     }
 
     const updateData: any = {
-      updated_at: new Date().toISOString(),
       last_updated: "just now",
     };
 
@@ -100,6 +99,8 @@ class SupabaseItineraryService implements ItineraryService {
       updateData.difficulty = updates.difficulty;
     if (updates.tags !== undefined) updateData.tags = updates.tags;
 
+    console.log("Updating itinerary with data:", updateData);
+    
     const { data, error } = await supabase
       .from("itineraries")
       .update(updateData)
@@ -110,6 +111,12 @@ class SupabaseItineraryService implements ItineraryService {
 
     if (error) {
       console.error("Error updating itinerary:", error);
+      console.error("Error details:", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      });
       throw new Error(`Failed to update itinerary: ${error.message}`);
     }
 

@@ -118,33 +118,58 @@ export default function ItineraryDetailPage() {
   };
 
   const handleSave = async () => {
-    if (!itinerary || !formData) return;
+    if (!itinerary || !formData) {
+      console.error("Missing itinerary or formData");
+      toast({
+        title: "Error",
+        description: "Missing itinerary data",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate required fields
+    if (!formData.title?.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Title is required",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsSaving(true);
 
     try {
+      console.log("Saving itinerary with formData:", formData);
+      
       const updates: Partial<ItineraryType> = {
-        title: formData.title,
-        description: formData.description,
-        days: formData.days,
-        regions: formData.regions.split(", ").filter(Boolean),
-        themeType: formData.themeType,
-        status: formData.status,
-        image: formData.image,
-        price: formData.price,
-        currency: formData.currency,
+        title: formData.title.trim(),
+        description: formData.description?.trim() || "",
+        days: formData.days || 1,
+        regions: formData.regions ? formData.regions.split(", ").filter(Boolean) : [],
+        themeType: formData.themeType || "cultural",
+        status: formData.status || "draft",
+        image: formData.image || null,
+        price: formData.price || null,
+        currency: formData.currency || "USD",
         groupSize: {
-          min: formData.groupSizeMin,
-          max: formData.groupSizeMax,
+          min: formData.groupSizeMin || 1,
+          max: formData.groupSizeMax || 10,
         },
-        difficulty: formData.difficulty,
+        difficulty: formData.difficulty || "easy",
         tags: formData.tags ? formData.tags.split(", ").filter(Boolean) : [],
       };
+
+      console.log("Updates to send:", updates);
 
       const updatedItinerary = await itineraryService.updateItinerary(
         itinerary.id,
         updates
       );
+      
+      console.log("Successfully updated itinerary:", updatedItinerary);
+      
       setItinerary(updatedItinerary);
       setIsEditing(false);
 
@@ -163,10 +188,15 @@ export default function ItineraryDetailPage() {
       });
     } catch (error) {
       console.error("Error saving itinerary:", error);
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      
       toast({
-        title: "Error",
+        title: "Save Failed",
         description:
-          error instanceof Error ? error.message : "Failed to save itinerary",
+          error instanceof Error ? error.message : "Failed to save itinerary. Please try again.",
         variant: "destructive",
       });
     } finally {
