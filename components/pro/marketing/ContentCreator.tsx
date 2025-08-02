@@ -306,9 +306,25 @@ Description 2: ${data.content.description2 || ""}`;
   };
 
   const handleGenerateImages = async () => {
-    if (!imagePrompt.trim()) {
-      toast.error("Please enter an image prompt");
-      return;
+    // If no custom prompt is provided, create a default prompt from form data
+    let promptToUse = imagePrompt.trim();
+    if (!promptToUse) {
+      const defaultPrompt = `Create a beautiful marketing image for ${formData.experienceTitle || "a cultural experience"} in ${formData.location || "a destination"}. 
+      
+Style: ${imageStyle === "realistic" ? "Photorealistic, high-quality photography" : imageStyle === "illustration" ? "Artistic illustration, vibrant colors" : "Minimalist design, clean lines"}
+Aspect ratio: ${imageAspectRatio}
+Cultural elements: ${formData.keyCulturalElements || "local traditions and authentic experiences"}
+Target audience: ${formData.targetAudience || "cultural travelers"}
+Tone: ${formData.tone || "friendly and approachable"}
+
+The image should be:
+- Visually stunning and professional
+- Show authentic cultural elements
+- Capture the essence of the experience
+- Perfect for marketing and promotion
+- High quality and engaging`;
+
+      promptToUse = defaultPrompt;
     }
 
     setIsGeneratingImages(true);
@@ -329,7 +345,7 @@ Description 2: ${data.content.description2 || ""}`;
           // Modal-specific settings
           imageStyle: imageStyle,
           imageAspectRatio: imageAspectRatio,
-          customPrompt: imagePrompt,
+          customPrompt: promptToUse,
         }),
       });
 
@@ -1101,8 +1117,8 @@ Description 2: ${data.content.description2 || ""}`;
             </Button>
             <Button
               onClick={handleGenerateImages}
-              disabled={isGeneratingImages || !imagePrompt.trim()}
-              className="bg-culturin-indigo hover:bg-culturin-indigo/90"
+              disabled={isGeneratingImages}
+              className="bg-culturin-indigo hover:bg-culturin-indigo/90 text-white font-medium px-6 py-2"
             >
               {isGeneratingImages ? (
                 <>
