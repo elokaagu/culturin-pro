@@ -152,7 +152,7 @@ export default function ItineraryDetailPage() {
       if (typeof window !== "undefined") {
         window.dispatchEvent(
           new CustomEvent("itineraryChanged", {
-            detail: { action: "updated", itinerary: updatedItinerary }
+            detail: { action: "updated", itinerary: updatedItinerary },
           })
         );
       }
@@ -304,7 +304,7 @@ export default function ItineraryDetailPage() {
       if (typeof window !== "undefined") {
         window.dispatchEvent(
           new CustomEvent("itineraryChanged", {
-            detail: { action: "deleted", itineraryId: itinerary.id }
+            detail: { action: "deleted", itineraryId: itinerary.id },
           })
         );
       }
@@ -715,8 +715,8 @@ export default function ItineraryDetailPage() {
                         <Badge
                           className={
                             itinerary.status === "published"
-                              ? "bg-green-500"
-                              : "bg-yellow-500"
+                              ? "bg-green-500 px-2 py-1 text-xs"
+                              : "bg-yellow-500 px-2 py-1 text-xs"
                           }
                         >
                           {itinerary.status === "published"
