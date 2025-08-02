@@ -302,9 +302,7 @@ export default function ItineraryDetailPage() {
       toast({
         title: "Error",
         description:
-          error instanceof Error
-            ? error.message
-            : "Failed to delete itinerary",
+          error instanceof Error ? error.message : "Failed to delete itinerary",
         variant: "destructive",
       });
     }
@@ -315,8 +313,8 @@ export default function ItineraryDetailPage() {
       <ProDashboardLayout>
         <div className="p-6">
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-culturin-indigo mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading itinerary...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
           </div>
         </div>
       </ProDashboardLayout>
@@ -403,7 +401,11 @@ export default function ItineraryDetailPage() {
                     <Copy className="h-4 w-4 mr-2" />
                     Duplicate
                   </Button>
-                  <Button variant="outline" onClick={() => setShowDeleteDialog(true)} className="text-red-600 border-red-600 hover:bg-red-50">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowDeleteDialog(true)}
+                    className="text-red-600 border-red-600 hover:bg-red-50"
+                  >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete
                   </Button>
@@ -424,8 +426,16 @@ export default function ItineraryDetailPage() {
               <Card className="overflow-hidden">
                 <div className="relative h-64">
                   <Image
-                    src={isEditing && formData?.image ? formData.image : itinerary.image}
-                    alt={isEditing && formData?.title ? formData.title : itinerary.title}
+                    src={
+                      isEditing && formData?.image
+                        ? formData.image
+                        : itinerary.image
+                    }
+                    alt={
+                      isEditing && formData?.title
+                        ? formData.title
+                        : itinerary.title
+                    }
                     className="w-full h-full object-cover"
                     fill
                   />
@@ -440,7 +450,9 @@ export default function ItineraryDetailPage() {
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                       <div className="text-center text-white">
                         <Camera className="h-8 w-8 mx-auto mb-2" />
-                        <p className="text-sm font-medium">Click to change image</p>
+                        <p className="text-sm font-medium">
+                          Click to change image
+                        </p>
                         <input
                           type="file"
                           accept="image/*"
@@ -799,17 +811,17 @@ export default function ItineraryDetailPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="text-center">
+                    <div className="text-left">
                       <div className="text-2xl font-bold text-gray-900">
                         1.2k
                       </div>
                       <div className="text-sm text-gray-600">Views</div>
                     </div>
-                    <div className="text-center">
+                    <div className="text-left">
                       <div className="text-2xl font-bold text-gray-900">12</div>
                       <div className="text-sm text-gray-600">Bookings</div>
                     </div>
-                    <div className="text-center">
+                    <div className="text-left">
                       <div className="text-2xl font-bold text-gray-900">
                         4.8
                       </div>
@@ -841,12 +853,16 @@ export default function ItineraryDetailPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Itinerary</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{itinerary?.title}"? This action cannot be undone.
+              Are you sure you want to delete "{itinerary?.title}"? This action
+              cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
