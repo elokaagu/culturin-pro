@@ -605,7 +605,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-medium">Website Preview</h2>
 
@@ -643,7 +643,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
       </div>
 
       <Card className="border border-gray-200 overflow-hidden bg-gray-50">
-        <CardContent className="p-4 flex justify-center">
+        <CardContent className="p-6 flex justify-center">
           <div
             className={cn(
               "rounded-md shadow-lg bg-white overflow-hidden transition-all",

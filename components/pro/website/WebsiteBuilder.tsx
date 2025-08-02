@@ -853,7 +853,7 @@ const WebsiteBuilder: React.FC = () => {
 
 
           {/* Navigation Tabs (scrollable) */}
-          <div className="p-6">
+          <div className="p-6 border-b border-gray-200">
             <Tabs value={activeTab} onValueChange={handleTabChange}>
               <TabsList className="flex flex-col w-full justify-start">
                 <TabsTrigger value="preview" className="w-full justify-start">
@@ -892,7 +892,7 @@ const WebsiteBuilder: React.FC = () => {
         {/* Content based on active tab (scrollable) */}
         <div className="flex-1 overflow-auto">
           <Tabs value={activeTab} onValueChange={handleTabChange} className="h-full">
-            <TabsContent value="preview" className="h-full">
+            <TabsContent value="preview" className="h-full p-6">
               <WebsitePreview
                 key={previewKey}
                 itineraries={itineraries}
@@ -938,7 +938,7 @@ const WebsiteBuilder: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 p-4 bg-gray-50 rounded-lg border border-gray-200">
                   <DragDropBuilder />
                 </div>
               </div>
