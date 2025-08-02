@@ -40,6 +40,8 @@ import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
 import { useUserData } from "../../../src/contexts/UserDataContext";
 import MediaLibrary from "./MediaLibrary";
 import { settingsService } from "@/lib/settings-service";
+import { itineraryService } from "@/lib/itinerary-service";
+import { supabase } from "@/lib/supabase";
 
 // History management for undo/redo functionality
 interface HistoryState {
@@ -90,21 +92,54 @@ const WebsiteBuilder: React.FC = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Load website data from localStorage
-    const loadWebsiteData = () => {
+    // Load website data from localStorage and database
+    const loadWebsiteData = async () => {
       try {
         // Load published URL
         const storedUrl = localStorage.getItem("publishedWebsiteUrl");
         setPublishedUrl(storedUrl || "tour/demo");
 
-        // Load itineraries
-        const storedItineraries = localStorage.getItem("culturinItineraries");
-        if (storedItineraries) {
-          const parsedItineraries = JSON.parse(storedItineraries);
-          setItineraries(parsedItineraries);
-        } else {
-          setItineraries(sampleItineraries);
-          localStorage.setItem("culturinItineraries", JSON.stringify(sampleItineraries));
+        // Load itineraries from database first, fallback to localStorage
+        try {
+          const { data: user } = await supabase.auth.getUser();
+          if (user.user) {
+            const dbItineraries = await itineraryService.getItineraries(user.user.id);
+            if (dbItineraries && dbItineraries.length > 0) {
+              setItineraries(dbItineraries);
+              localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
+            } else {
+              // Fallback to localStorage
+              const storedItineraries = localStorage.getItem("culturinItineraries");
+              if (storedItineraries) {
+                const parsedItineraries = JSON.parse(storedItineraries);
+                setItineraries(parsedItineraries);
+              } else {
+                setItineraries(sampleItineraries);
+                localStorage.setItem("culturinItineraries", JSON.stringify(sampleItineraries));
+              }
+            }
+          } else {
+            // No authenticated user, use localStorage
+            const storedItineraries = localStorage.getItem("culturinItineraries");
+            if (storedItineraries) {
+              const parsedItineraries = JSON.parse(storedItineraries);
+              setItineraries(parsedItineraries);
+            } else {
+              setItineraries(sampleItineraries);
+              localStorage.setItem("culturinItineraries", JSON.stringify(sampleItineraries));
+            }
+          }
+        } catch (error) {
+          console.error("Error loading itineraries from database:", error);
+          // Fallback to localStorage
+          const storedItineraries = localStorage.getItem("culturinItineraries");
+          if (storedItineraries) {
+            const parsedItineraries = JSON.parse(storedItineraries);
+            setItineraries(parsedItineraries);
+          } else {
+            setItineraries(sampleItineraries);
+            localStorage.setItem("culturinItineraries", JSON.stringify(sampleItineraries));
+          }
         }
 
         // Load last saved timestamp
@@ -122,7 +157,7 @@ const WebsiteBuilder: React.FC = () => {
         // Add initial state to history
         addToHistory({
           websiteSettings: userData.websiteSettings,
-          itineraries: storedItineraries ? JSON.parse(storedItineraries) : sampleItineraries,
+          itineraries: itineraries.length > 0 ? itineraries : sampleItineraries,
         });
 
         console.log("Website data loaded successfully");
@@ -186,6 +221,26 @@ const WebsiteBuilder: React.FC = () => {
       });
     };
 
+    const handleItineraryChange = async (event: CustomEvent) => {
+      try {
+        // Refresh itineraries from database when itinerary changes
+        const { data: user } = await supabase.auth.getUser();
+        if (user.user) {
+          const dbItineraries = await itineraryService.getItineraries(user.user.id);
+          if (dbItineraries && dbItineraries.length > 0) {
+            setItineraries(dbItineraries);
+            localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
+            setPreviewKey((prev) => prev + 1);
+            toast.success("Itineraries updated", {
+              description: "Website preview reflects latest itinerary changes",
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error updating itineraries:", error);
+      }
+    };
+
     if (typeof window !== "undefined") {
       window.addEventListener(
         "websiteSettingsChanged",
@@ -195,6 +250,10 @@ const WebsiteBuilder: React.FC = () => {
         "themeChanged",
         handleThemeChange as EventListener
       );
+      window.addEventListener(
+        "itineraryChanged",
+        handleItineraryChange as EventListener
+      );
       return () => {
         window.removeEventListener(
           "websiteSettingsChanged",
@@ -203,6 +262,10 @@ const WebsiteBuilder: React.FC = () => {
         window.removeEventListener(
           "themeChanged",
           handleThemeChange as EventListener
+        );
+        window.removeEventListener(
+          "itineraryChanged",
+          handleItineraryChange as EventListener
         );
       };
     }
@@ -503,20 +566,33 @@ const WebsiteBuilder: React.FC = () => {
     setRefreshLoading(true);
 
     try {
-      // Trigger a refresh for the preview
-      const storedItineraries = localStorage.getItem("culturinItineraries");
-      if (storedItineraries) {
-        try {
-          const parsedItineraries = JSON.parse(storedItineraries);
-          setItineraries(parsedItineraries);
-        } catch (e) {
-          console.error("Error parsing itineraries:", e);
+      // Refresh itineraries from database
+      try {
+        const { data: user } = await supabase.auth.getUser();
+        if (user.user) {
+          const dbItineraries = await itineraryService.getItineraries(user.user.id);
+          if (dbItineraries && dbItineraries.length > 0) {
+            setItineraries(dbItineraries);
+            localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
+          }
+        }
+      } catch (error) {
+        console.error("Error refreshing itineraries from database:", error);
+        // Fallback to localStorage
+        const storedItineraries = localStorage.getItem("culturinItineraries");
+        if (storedItineraries) {
+          try {
+            const parsedItineraries = JSON.parse(storedItineraries);
+            setItineraries(parsedItineraries);
+          } catch (e) {
+            console.error("Error parsing itineraries:", e);
+          }
         }
       }
 
       setPreviewKey((prev) => prev + 1);
       toast.success("Preview refreshed", {
-        description: "Website preview has been updated",
+        description: "Website preview has been updated with latest itineraries",
       });
     } catch (error) {
       toast.error("Failed to refresh preview", {

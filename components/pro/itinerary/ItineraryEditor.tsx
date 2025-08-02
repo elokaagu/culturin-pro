@@ -95,6 +95,15 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
         onItinerarySave(savedItinerary);
       }
 
+      // Dispatch event to notify website builder of itinerary changes
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("itineraryChanged", {
+            detail: { action: "saved", itinerary: savedItinerary }
+          })
+        );
+      }
+
       toast({
         title: "Itinerary Saved",
         description: "Your changes have been saved successfully.",
@@ -171,6 +180,15 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
         onItinerarySave(savedItinerary);
       }
 
+      // Dispatch event to notify website builder of itinerary changes
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("itineraryChanged", {
+            detail: { action: "published", itinerary: savedItinerary }
+          })
+        );
+      }
+
       toast({
         title: "Itinerary Published! 🎉",
         description: "Your itinerary is now live and visible to travelers.",
@@ -216,6 +234,15 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
 
       if (onItinerarySave) {
         onItinerarySave(savedItinerary);
+      }
+
+      // Dispatch event to notify website builder of itinerary changes
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("itineraryChanged", {
+            detail: { action: "unpublished", itinerary: savedItinerary }
+          })
+        );
       }
 
       toast({

@@ -148,6 +148,15 @@ export default function ItineraryDetailPage() {
       setItinerary(updatedItinerary);
       setIsEditing(false);
 
+      // Dispatch event to notify website builder of itinerary changes
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("itineraryChanged", {
+            detail: { action: "updated", itinerary: updatedItinerary }
+          })
+        );
+      }
+
       toast({
         title: "Changes Saved",
         description: "Your itinerary has been updated successfully.",
@@ -290,6 +299,15 @@ export default function ItineraryDetailPage() {
 
     try {
       await itineraryService.deleteItinerary(itinerary.id);
+
+      // Dispatch event to notify website builder of itinerary deletion
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("itineraryChanged", {
+            detail: { action: "deleted", itineraryId: itinerary.id }
+          })
+        );
+      }
 
       toast({
         title: "Itinerary Deleted",
