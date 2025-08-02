@@ -762,7 +762,7 @@ export default function ItineraryDetailPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button
-                    className="w-full"
+                    className="w-full justify-start"
                     variant="outline"
                     onClick={handleViewOnWebsite}
                   >
@@ -770,7 +770,7 @@ export default function ItineraryDetailPage() {
                     View on Website
                   </Button>
                   <Button
-                    className="w-full"
+                    className="w-full justify-start"
                     variant="outline"
                     onClick={handleShareLink}
                   >
@@ -778,7 +778,7 @@ export default function ItineraryDetailPage() {
                     Share Link
                   </Button>
                   <Button
-                    className="w-full"
+                    className="w-full justify-start"
                     variant="outline"
                     onClick={handleDuplicate}
                   >
@@ -786,7 +786,7 @@ export default function ItineraryDetailPage() {
                     Duplicate
                   </Button>
                   <Button
-                    className="w-full"
+                    className="w-full justify-start"
                     variant="outline"
                     onClick={handleArchive}
                   >
@@ -794,7 +794,7 @@ export default function ItineraryDetailPage() {
                     Archive
                   </Button>
                   <Button
-                    className="w-full"
+                    className="w-full justify-start"
                     variant="outline"
                     onClick={() => setShowDeleteDialog(true)}
                   >
