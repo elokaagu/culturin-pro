@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "../../../lib/navigation";
 import { cn } from "@/lib/utils";
-import { safeLocalStorage } from "../../../lib/localStorage";
+import { localStorageUtils } from "../../../lib/localStorage";
 import {
   LayoutDashboard,
   PencilRuler,
@@ -53,19 +53,19 @@ const ProSidebar: React.FC = () => {
   const [planType, setplanType] = useState<string>("Growth Plan");
 
   useEffect(() => {
-    const storedUserName = safeLocalStorage.getItem("userName");
+    const storedUserName = localStorage.getItem("userName");
     if (storedUserName) {
       setUserName(storedUserName);
     } else {
-      safeLocalStorage.setItem("userName", "Eloka Agu");
+      localStorage.setItem("userName", "Eloka Agu");
       setUserName("Eloka Agu");
     }
 
-    const storedPlanType = safeLocalStorage.getItem("planType");
+    const storedPlanType = localStorage.getItem("planType");
     if (storedPlanType) {
       setplanType(storedPlanType);
     } else {
-      safeLocalStorage.setItem("planType", "Growth Plan");
+      localStorage.setItem("planType", "Growth Plan");
       setplanType("Growth Plan");
     }
   }, []);

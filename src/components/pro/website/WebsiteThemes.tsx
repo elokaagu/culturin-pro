@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Lock, Check } from "lucide-react";
 import { toast } from "sonner";
-import { safeLocalStorage } from "../../../../lib/localStorage";
+import { localStorageUtils } from "../../../../lib/localStorage";
 import {
   Dialog,
   DialogContent,
@@ -59,7 +59,7 @@ const WebsiteThemes: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const saved = safeLocalStorage.getItem("selectedWebsiteTheme");
+    const saved = localStorage.getItem("selectedWebsiteTheme");
     if (saved) {
       const themeObj = themes.find(
         (t) => t.name.toLowerCase() === saved.toLowerCase()
@@ -74,17 +74,17 @@ const WebsiteThemes: React.FC = () => {
     setSelectedTheme(id);
     const themeName =
       themes.find((t) => t.id === id)?.name.toLowerCase() || "classic";
-    safeLocalStorage.setItem("selectedWebsiteTheme", themeName);
+    localStorage.setItem("selectedWebsiteTheme", themeName);
   };
 
   const handleApplyTheme = () => {
     const theme = themes.find((t) => t.id === selectedTheme);
     if (theme) {
-      safeLocalStorage.setItem(
+      localStorage.setItem(
         "selectedWebsiteTheme",
         theme.name.toLowerCase()
       );
-      safeLocalStorage.setItem("selectedWebsiteLayout", theme.layout);
+      localStorage.setItem("selectedWebsiteLayout", theme.layout);
       // Dispatch a custom event so WebsitePreview can refresh
       if (typeof window !== "undefined") {
         window.dispatchEvent(

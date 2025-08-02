@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Upload } from "lucide-react";
 import Image from "@/components/ui/image";
-import { safeLocalStorage } from "../../../../lib/localStorage";
+import { localStorageUtils } from "../../../../lib/localStorage";
 
 const WebsiteContent: React.FC = () => {
   const [companyName, setCompanyName] = useState("Culturin Tours");
@@ -24,20 +24,20 @@ const WebsiteContent: React.FC = () => {
   useEffect(() => {
     // Load values from localStorage safely
     setCompanyName(
-      safeLocalStorage.getItem("websiteCompanyName") || "Culturin Tours"
+      localStorage.getItem("websiteCompanyName") || "Culturin Tours"
     );
     setTagline(
-      safeLocalStorage.getItem("websiteTagline") ||
+      localStorage.getItem("websiteTagline") ||
         "Authentic cultural experiences in the heart of Catalonia"
     );
     setDescription(
-      safeLocalStorage.getItem("websiteDescription") ||
+      localStorage.getItem("websiteDescription") ||
         "We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots."
     );
     setPrimaryColor(
-      safeLocalStorage.getItem("websitePrimaryColor") || "#9b87f5"
+      localStorage.getItem("websitePrimaryColor") || "#9b87f5"
     );
-    setHeaderImage(safeLocalStorage.getItem("websiteHeaderImage"));
+    setHeaderImage(localStorage.getItem("websiteHeaderImage"));
   }, []);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,27 +61,27 @@ const WebsiteContent: React.FC = () => {
       const imageDataUrl = e.target?.result as string;
       setHeaderImage(imageDataUrl);
       // Store in localStorage immediately for instant preview
-      safeLocalStorage.setItem("websiteHeaderImage", imageDataUrl);
+      localStorage.setItem("websiteHeaderImage", imageDataUrl);
     };
     reader.readAsDataURL(file);
   };
 
   const handleRemoveImage = () => {
     setHeaderImage(null);
-    safeLocalStorage.removeItem("websiteHeaderImage");
+    localStorage.removeItem("websiteHeaderImage");
     toast.success("Header image removed");
   };
 
   const handleSave = () => {
-    safeLocalStorage.setItem("websiteCompanyName", companyName);
-    safeLocalStorage.setItem("websiteTagline", tagline);
-    safeLocalStorage.setItem("websiteDescription", description);
-    safeLocalStorage.setItem("websitePrimaryColor", primaryColor);
+    localStorage.setItem("websiteCompanyName", companyName);
+    localStorage.setItem("websiteTagline", tagline);
+    localStorage.setItem("websiteDescription", description);
+    localStorage.setItem("websitePrimaryColor", primaryColor);
 
     if (headerImage) {
-      safeLocalStorage.setItem("websiteHeaderImage", headerImage);
+      localStorage.setItem("websiteHeaderImage", headerImage);
     } else {
-      safeLocalStorage.removeItem("websiteHeaderImage");
+      localStorage.removeItem("websiteHeaderImage");
     }
 
     // Dispatch event for preview refresh

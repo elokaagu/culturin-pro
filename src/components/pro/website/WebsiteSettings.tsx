@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ItineraryType } from "@/data/itineraryData";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { safeLocalStorage } from "../../../../lib/localStorage";
+import { localStorageUtils } from "../../../../lib/localStorage";
 import Image from "@/components/ui/image";
 
 interface WebsiteSettingsProps {
@@ -48,7 +48,7 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
     );
 
     setItineraries(filteredItineraries);
-    safeLocalStorage.setItem(
+    localStorage.setItem(
       "culturinItineraries",
       JSON.stringify(filteredItineraries)
     );

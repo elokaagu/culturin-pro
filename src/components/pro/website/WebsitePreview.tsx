@@ -15,7 +15,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ItineraryType } from "@/data/itineraryData";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { safeLocalStorage } from "../../../../lib/localStorage";
+import { localStorageUtils } from "../../../../lib/localStorage";
 import Image from "@/components/ui/image";
 
 interface WebsitePreviewProps {
@@ -39,21 +39,17 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   useEffect(() => {
     // Load website settings from localStorage
     const loadSettings = () => {
-      setPrimaryColor(
-        safeLocalStorage.getItem("websitePrimaryColor") || "#9b87f5"
-      );
-      setHeaderImage(safeLocalStorage.getItem("websiteHeaderImage"));
+      setPrimaryColor(localStorage.getItem("websitePrimaryColor") || "#9b87f5");
+      setHeaderImage(localStorage.getItem("websiteHeaderImage"));
       setCompanyName(
-        safeLocalStorage.getItem("websiteCompanyName") || "Culturin Tours"
+        localStorage.getItem("websiteCompanyName") || "Culturin Tours"
       );
       setTagline(
-        safeLocalStorage.getItem("websiteTagline") ||
+        localStorage.getItem("websiteTagline") ||
           "Authentic cultural experiences curated by Eloka Agu"
       );
-      setTheme(safeLocalStorage.getItem("selectedWebsiteTheme") || "classic");
-      setLayout(
-        safeLocalStorage.getItem("selectedWebsiteLayout") || "hero-top"
-      );
+      setTheme(localStorage.getItem("selectedWebsiteTheme") || "classic");
+      setLayout(localStorage.getItem("selectedWebsiteLayout") || "hero-top");
     };
 
     loadSettings();
@@ -82,15 +78,13 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
 
   const handleRefresh = () => {
     // Force refresh by changing key
-    setPrimaryColor(
-      safeLocalStorage.getItem("websitePrimaryColor") || "#9b87f5"
-    );
-    setHeaderImage(safeLocalStorage.getItem("websiteHeaderImage"));
+    setPrimaryColor(localStorage.getItem("websitePrimaryColor") || "#9b87f5");
+    setHeaderImage(localStorage.getItem("websiteHeaderImage"));
     setCompanyName(
-      safeLocalStorage.getItem("websiteCompanyName") || "Culturin Tours"
+      localStorage.getItem("websiteCompanyName") || "Culturin Tours"
     );
     setTagline(
-      safeLocalStorage.getItem("websiteTagline") ||
+      localStorage.getItem("websiteTagline") ||
         "Authentic cultural experiences curated by Eloka Agu"
     );
     setRefreshKey((prev) => prev + 1);
@@ -389,7 +383,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
             <div className="border-t pt-3">
               <h3 className="font-medium mb-2">About Us</h3>
               <div className="h-16 bg-gray-100 rounded p-2 mb-2 text-xs overflow-hidden">
-                {safeLocalStorage.getItem("websiteDescription") ||
+                {localStorage.getItem("websiteDescription") ||
                   "We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots."}
               </div>
             </div>
