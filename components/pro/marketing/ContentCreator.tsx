@@ -127,6 +127,15 @@ const ContentCreator: React.FC = () => {
   const [imagePrompt, setImagePrompt] = useState("");
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
 
+  // Form data state
+  const [formData, setFormData] = useState({
+    experienceTitle: "",
+    location: "",
+    keyCulturalElements: "",
+    targetAudience: "cultural-travelers",
+    tone: "friendly",
+  });
+
   const contentTypes: ContentType[] = [
     {
       id: "instagram-caption",
@@ -203,28 +212,81 @@ const ContentCreator: React.FC = () => {
   ];
 
   const handleGenerateContent = async () => {
+    if (!selectedContentType || !formData.experienceTitle || !formData.location) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     setIsGenerating(true);
 
-    // Simulate AI generation
-    setTimeout(() => {
-      const mockContent: GeneratedContent = {
+    try {
+      const response = await fetch("/api/generate-content", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contentType: selectedContentType,
+          experienceTitle: formData.experienceTitle,
+          location: formData.location,
+          keyCulturalElements: formData.keyCulturalElements,
+          targetAudience: formData.targetAudience,
+          tone: formData.tone,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to generate content");
+      }
+
+      const data = await response.json();
+      
+      // Handle different content types
+      let content = "";
+      let wordCount = 0;
+      
+      if (selectedContentType === "google-ad-copy" && typeof data.content === "object") {
+        // For Google Ads, format the JSON response
+        content = `Headline 1: ${data.content.headline1 || ""}
+Headline 2: ${data.content.headline2 || ""}
+Headline 3: ${data.content.headline3 || ""}
+Description 1: ${data.content.description1 || ""}
+Description 2: ${data.content.description2 || ""}`;
+        wordCount = content.split(" ").length;
+      } else {
+        content = data.content;
+        wordCount = content.split(" ").length;
+      }
+
+      const generatedContent: GeneratedContent = {
         id: Date.now().toString(),
         type: selectedContentType,
-        title: "Generated Content",
-        content:
-          "Experience the authentic flavors of Barcelona with our Traditional Cooking Class!\n\nLearn to cook like a local in a charming family kitchen, using time-honored recipes passed down through generations. From paella to tapas, discover the secrets of Spanish cuisine while immersing yourself in the rich cultural traditions of Catalonia.\n\nPerfect for food lovers, culture enthusiasts, and anyone who wants to take home more than just memories!\n\nBook now and save 20% with code: CULTURE20",
-        wordCount: 89,
-        tone: "friendly",
+        title: `Generated ${getContentTypeName(selectedContentType)}`,
+        content: content,
+        wordCount: wordCount,
+        tone: formData.tone,
         createdAt: new Date().toISOString(),
-        platform: selectedContentType.includes("instagram")
-          ? "Instagram"
-          : "General",
+        platform: getPlatformName(selectedContentType),
       };
 
-      setGeneratedContent(mockContent);
+      setGeneratedContent(generatedContent);
+      
+      if (data.note) {
+        toast.success("Content generated successfully!", {
+          description: data.note,
+        });
+      } else {
+        toast.success("Content generated successfully!");
+      }
+    } catch (error) {
+      console.error("Error generating content:", error);
+      toast.error("Failed to generate content", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    } finally {
       setIsGenerating(false);
-      toast.success("Content generated successfully!");
-    }, 2000);
+    }
   };
 
   const handleQuickEdit = (action: string) => {
@@ -259,20 +321,65 @@ const ContentCreator: React.FC = () => {
   };
 
   const handleGenerateImages = async () => {
+    if (!selectedContentType || !formData.experienceTitle || !formData.location) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     setIsGeneratingImages(true);
 
-    // Mock image generation - replace with actual API call
-    setTimeout(() => {
-      const mockImages = [
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=400&fit=crop",
-      ];
-      setGeneratedImages(mockImages);
-      setIsGeneratingImages(false);
+    try {
+      const response = await fetch("/api/generate-images", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          experienceTitle: formData.experienceTitle,
+          location: formData.location,
+          keyCulturalElements: formData.keyCulturalElements,
+          targetAudience: formData.targetAudience,
+          tone: formData.tone,
+          contentType: selectedContentType,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to generate images");
+      }
+
+      const data = await response.json();
+      setGeneratedImages(data.images);
       setShowImageModal(false);
-      toast.success("Images generated successfully!");
-    }, 3000);
+      
+      if (data.note) {
+        toast.success("Images generated successfully!", {
+          description: data.note,
+        });
+      } else {
+        toast.success("Images generated successfully!");
+      }
+    } catch (error) {
+      console.error("Error generating images:", error);
+      toast.error("Failed to generate images", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    } finally {
+      setIsGeneratingImages(false);
+    }
+  };
+
+  const getContentTypeName = (type: string) => {
+    const contentType = contentTypes.find((ct) => ct.id === type);
+    return contentType?.name || "Content";
+  };
+
+  const getPlatformName = (type: string) => {
+    if (type.includes("instagram")) return "Instagram";
+    if (type.includes("tiktok")) return "TikTok";
+    if (type.includes("google")) return "Google Ads";
+    return "General";
   };
 
   const getContentTypeIcon = (type: string) => {
@@ -422,11 +529,19 @@ const ContentCreator: React.FC = () => {
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>Experience Title</Label>
-                          <Input placeholder="Traditional Cooking Class in Barcelona" />
+                          <Input 
+                            placeholder="Traditional Cooking Class in Barcelona"
+                            value={formData.experienceTitle}
+                            onChange={(e) => setFormData({ ...formData, experienceTitle: e.target.value })}
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label>Location</Label>
-                          <Input placeholder="Barcelona, Spain" />
+                          <Input 
+                            placeholder="Barcelona, Spain"
+                            value={formData.location}
+                            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                          />
                         </div>
                       </div>
 
@@ -435,6 +550,8 @@ const ContentCreator: React.FC = () => {
                         <Textarea
                           placeholder="Think: local dishes, traditions, hidden gems, cultural significance..."
                           className="min-h-[100px]"
+                          value={formData.keyCulturalElements}
+                          onChange={(e) => setFormData({ ...formData, keyCulturalElements: e.target.value })}
                         />
                         <p className="text-xs text-gray-500">
                           Tip: Include specific cultural details, traditions,
@@ -445,7 +562,10 @@ const ContentCreator: React.FC = () => {
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>Target Audience</Label>
-                          <Select defaultValue="cultural-travelers">
+                          <Select 
+                            value={formData.targetAudience}
+                            onValueChange={(value) => setFormData({ ...formData, targetAudience: value })}
+                          >
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
@@ -470,7 +590,10 @@ const ContentCreator: React.FC = () => {
                         </div>
                         <div className="space-y-2">
                           <Label>Tone</Label>
-                          <Select defaultValue="friendly">
+                          <Select 
+                            value={formData.tone}
+                            onValueChange={(value) => setFormData({ ...formData, tone: value })}
+                          >
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
