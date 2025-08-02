@@ -29,12 +29,17 @@ export default function CreateItineraryPage() {
     router.push("/pro-dashboard/itinerary");
   };
 
-  const handleItinerarySave = (updatedItinerary: ItineraryType) => {
-    // Here you would typically save to your backend
+  const handleItinerarySave = (savedItinerary: ItineraryType) => {
+    // The savedItinerary now contains the actual database record with proper ID
     toast({
       title: "Itinerary Created!",
-      description: `"${updatedItinerary.title}" has been created successfully.`,
+      description: `"${savedItinerary.title}" has been created successfully.`,
     });
+    
+    // Set a flag to indicate we're returning from creating a new itinerary
+    sessionStorage.setItem('returningFromCreate', 'true');
+    
+    // Navigate back to the itinerary list
     router.push("/pro-dashboard/itinerary");
   };
 

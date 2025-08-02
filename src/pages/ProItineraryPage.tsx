@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "../../lib/navigation";
 import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,7 +26,18 @@ const ProItineraryPage = () => {
     createItinerary,
     updateItinerary,
     deleteItinerary,
+    refreshItineraries,
   } = useItineraries();
+
+  // Refresh itineraries when component mounts and when returning from creating new itinerary
+  useEffect(() => {
+    // Check if we're returning from creating a new itinerary
+    const isReturningFromCreate = sessionStorage.getItem('returningFromCreate');
+    if (isReturningFromCreate === 'true') {
+      refreshItineraries();
+      sessionStorage.removeItem('returningFromCreate');
+    }
+  }, [refreshItineraries]);
 
   const handleCreateNewItinerary = () => {
     // Navigate to the dedicated new itinerary page
