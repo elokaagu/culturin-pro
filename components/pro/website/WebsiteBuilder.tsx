@@ -76,7 +76,7 @@ const WebsiteBuilder: React.FC = () => {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
-  const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'tablet'>('desktop');
 
   // History management
   const [history, setHistory] = useState<HistoryState[]>([]);

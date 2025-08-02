@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Mountain, Crown, Building2, Heart, Leaf, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { useUserData } from "../../../src/contexts/UserDataContext";
 
 interface Template {
   id: string;
@@ -14,6 +15,14 @@ interface Template {
   features: string[];
   isPopular?: boolean;
   isNew?: boolean;
+  themeSettings: {
+    primaryColor: string;
+    fontFamily: string;
+    heroClass: string;
+    headerStyle: string;
+    footerStyle: string;
+    animationStyle: string;
+  };
 }
 
 const templates: Template[] = [
@@ -24,7 +33,15 @@ const templates: Template[] = [
     category: "Adventure",
     image: "/lovable-uploads/2e9a9e9e-af76-4913-8148-9fce248d55c9.png",
     features: ["Hero video background", "Adventure gallery", "Trip difficulty levels", "Booking calendar"],
-    isPopular: true
+    isPopular: true,
+    themeSettings: {
+      primaryColor: "#059669",
+      fontFamily: "Inter",
+      heroClass: "bg-gradient-to-r from-green-600 to-green-800",
+      headerStyle: "modern",
+      footerStyle: "clean",
+      animationStyle: "smooth"
+    }
   },
   {
     id: "luxury",
@@ -33,7 +50,15 @@ const templates: Template[] = [
     category: "Luxury",
     image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
     features: ["Premium imagery", "Luxury amenities", "Concierge booking", "VIP testimonials"],
-    isNew: true
+    isNew: true,
+    themeSettings: {
+      primaryColor: "#7C3AED",
+      fontFamily: "Playfair Display",
+      heroClass: "bg-gradient-to-r from-purple-600 to-purple-800",
+      headerStyle: "elegant",
+      footerStyle: "sophisticated",
+      animationStyle: "subtle"
+    }
   },
   {
     id: "city-tours",
@@ -41,7 +66,15 @@ const templates: Template[] = [
     description: "Urban-focused design perfect for city tour operators and cultural experiences",
     category: "City Tours",
     image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
-    features: ["Interactive maps", "Local highlights", "Cultural insights", "Group bookings"]
+    features: ["Interactive maps", "Local highlights", "Cultural insights", "Group bookings"],
+    themeSettings: {
+      primaryColor: "#1E40AF",
+      fontFamily: "Inter",
+      heroClass: "bg-gradient-to-r from-blue-600 to-blue-800",
+      headerStyle: "urban",
+      footerStyle: "modern",
+      animationStyle: "dynamic"
+    }
   },
   {
     id: "cultural",
@@ -49,7 +82,15 @@ const templates: Template[] = [
     description: "Deep cultural experiences with rich storytelling and local connections",
     category: "Cultural",
     image: "/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png",
-    features: ["Story-driven content", "Local guides", "Cultural workshops", "Community impact"]
+    features: ["Story-driven content", "Local guides", "Cultural workshops", "Community impact"],
+    themeSettings: {
+      primaryColor: "#DC2626",
+      fontFamily: "Merriweather",
+      heroClass: "bg-gradient-to-r from-red-600 to-red-800",
+      headerStyle: "traditional",
+      footerStyle: "warm",
+      animationStyle: "gentle"
+    }
   },
   {
     id: "eco-tourism",
@@ -57,13 +98,22 @@ const templates: Template[] = [
     description: "Sustainable tourism focus with nature-inspired design and eco-friendly messaging",
     category: "Eco-Tourism",
     image: "/lovable-uploads/1b4ba777-0a40-4904-98a9-11b727de21a6.png",
-    features: ["Sustainability focus", "Nature photography", "Eco-certifications", "Conservation impact"]
+    features: ["Sustainability focus", "Nature photography", "Eco-certifications", "Conservation impact"],
+    themeSettings: {
+      primaryColor: "#16A34A",
+      fontFamily: "Inter",
+      heroClass: "bg-gradient-to-r from-green-500 to-green-700",
+      headerStyle: "natural",
+      footerStyle: "eco-friendly",
+      animationStyle: "organic"
+    }
   }
 ];
 
 const WebsiteThemes: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [applyingTemplate, setApplyingTemplate] = useState(false);
+  const { userData, updateWebsiteSettings } = useUserData();
 
   const handleTemplateSelect = (templateId: string) => {
     setSelectedTemplate(templateId);
@@ -72,13 +122,51 @@ const WebsiteThemes: React.FC = () => {
   const handleApplyTemplate = async (template: Template) => {
     setApplyingTemplate(true);
     
-    // Simulate template application
-    setTimeout(() => {
-      // Here you would actually apply the template settings
+    try {
+      // Apply the template settings to the website
+      const updatedSettings = {
+        ...userData.websiteSettings,
+        theme: template.id,
+        primaryColor: template.themeSettings.primaryColor,
+        fontSettings: {
+          ...userData.websiteSettings.fontSettings,
+          family: template.themeSettings.fontFamily,
+        },
+        headerSettings: {
+          ...userData.websiteSettings.headerSettings,
+          style: template.themeSettings.headerStyle,
+        },
+        footerSettings: {
+          ...userData.websiteSettings.footerSettings,
+          style: template.themeSettings.footerStyle,
+        },
+        animationSettings: {
+          ...userData.websiteSettings.animationSettings,
+          style: template.themeSettings.animationStyle,
+        },
+      };
+
+      // Update the website settings
+      updateWebsiteSettings(updatedSettings);
+
+      // Dispatch theme change event for preview update
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("themeChanged", {
+            detail: { theme: template.id, settings: template.themeSettings }
+          })
+        );
+      }
+
       toast.success(`${template.name} template applied successfully!`);
-      setApplyingTemplate(false);
       setSelectedTemplate(null);
-    }, 1500);
+    } catch (error) {
+      toast.error("Failed to apply template", {
+        description: "Please try again"
+      });
+    } finally {
+      setApplyingTemplate(false);
+    }
   };
 
   const getCategoryIcon = (category: string) => {

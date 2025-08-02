@@ -32,7 +32,7 @@ import { useUserData } from "../../../src/contexts/UserDataContext";
 interface WebsitePreviewProps {
   itineraries?: ItineraryType[];
   refreshKey?: number; // Add refresh key prop
-  viewMode?: 'desktop' | 'mobile';
+  viewMode?: 'desktop' | 'mobile' | 'tablet';
 }
 
 const WebsitePreview: React.FC<WebsitePreviewProps> = ({
@@ -40,7 +40,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   refreshKey: externalRefreshKey,
   viewMode: externalViewMode,
 }) => {
-  const [viewMode, setViewMode] = useState(externalViewMode || "desktop");
+  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'tablet'>(externalViewMode || "desktop");
   const [refreshKey, setRefreshKey] = useState(0);
   const [currentItineraries, setCurrentItineraries] =
     useState<ItineraryType[]>(itineraries);
@@ -77,7 +77,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   // Update viewMode when external viewMode changes
   useEffect(() => {
     if (externalViewMode) {
-      setViewMode(externalViewMode);
+      setViewMode(externalViewMode as 'desktop' | 'mobile' | 'tablet');
     }
   }, [externalViewMode]);
 
@@ -126,6 +126,51 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   // Get theme-based styling
   const getThemeStyles = () => {
     switch (theme?.toLowerCase()) {
+      case "adventure":
+        return {
+          heroClass: "bg-gradient-to-r from-green-600 to-green-800",
+          cardClass: "bg-white shadow-xl rounded-xl border border-green-200",
+          headerTextClass: "text-white",
+          buttonClass: "bg-green-600 hover:bg-green-700 text-white",
+          navClass: "bg-green-50",
+          fontFamily: "Inter",
+        };
+      case "luxury":
+        return {
+          heroClass: "bg-gradient-to-r from-purple-600 to-purple-800",
+          cardClass: "bg-white shadow-xl rounded-xl border border-purple-200",
+          headerTextClass: "text-white",
+          buttonClass: "bg-purple-600 hover:bg-purple-700 text-white",
+          navClass: "bg-purple-50",
+          fontFamily: "Playfair Display",
+        };
+      case "city-tours":
+        return {
+          heroClass: "bg-gradient-to-r from-blue-600 to-blue-800",
+          cardClass: "bg-white shadow-xl rounded-xl border border-blue-200",
+          headerTextClass: "text-white",
+          buttonClass: "bg-blue-600 hover:bg-blue-700 text-white",
+          navClass: "bg-blue-50",
+          fontFamily: "Inter",
+        };
+      case "cultural":
+        return {
+          heroClass: "bg-gradient-to-r from-red-600 to-red-800",
+          cardClass: "bg-white shadow-xl rounded-xl border border-red-200",
+          headerTextClass: "text-white",
+          buttonClass: "bg-red-600 hover:bg-red-700 text-white",
+          navClass: "bg-red-50",
+          fontFamily: "Merriweather",
+        };
+      case "eco-tourism":
+        return {
+          heroClass: "bg-gradient-to-r from-green-500 to-green-700",
+          cardClass: "bg-white shadow-xl rounded-xl border border-green-200",
+          headerTextClass: "text-white",
+          buttonClass: "bg-green-600 hover:bg-green-700 text-white",
+          navClass: "bg-green-50",
+          fontFamily: "Inter",
+        };
       case "modern":
         return {
           heroClass: "bg-gradient-to-r from-blue-500 to-purple-600",
@@ -569,7 +614,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
             <RefreshCw className="h-4 w-4 mr-1" />
             Refresh
           </Button>
-          <Select defaultValue={viewMode} onValueChange={setViewMode}>
+          <Select defaultValue={viewMode} onValueChange={(value) => setViewMode(value as 'desktop' | 'mobile' | 'tablet')}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="View mode" />
             </SelectTrigger>
