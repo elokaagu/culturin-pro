@@ -278,6 +278,85 @@ Description 2: ${data.content.description2 || ""}`;
     }
   };
 
+  const handleGenerateCopy = async () => {
+    if (!selectedContentType || !formData.experienceTitle || !formData.location) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setIsGenerating(true);
+
+    try {
+      const response = await fetch("/api/generate-content", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contentType: selectedContentType,
+          experienceTitle: formData.experienceTitle,
+          location: formData.location,
+          keyCulturalElements: formData.keyCulturalElements,
+          targetAudience: formData.targetAudience,
+          tone: formData.tone,
+          copyType: "marketing-copy", // Special flag for copy generation
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to generate copy");
+      }
+
+      const data = await response.json();
+      
+      // Handle different content types for copy
+      let content = "";
+      let wordCount = 0;
+      
+      if (selectedContentType === "google-ad-copy" && typeof data.content === "object") {
+        // For Google Ads, format the JSON response
+        content = `Headline 1: ${data.content.headline1 || ""}
+Headline 2: ${data.content.headline2 || ""}
+Headline 3: ${data.content.headline3 || ""}
+Description 1: ${data.content.description1 || ""}
+Description 2: ${data.content.description2 || ""}`;
+        wordCount = content.split(" ").length;
+      } else {
+        content = data.content;
+        wordCount = content.split(" ").length;
+      }
+
+      const generatedContent: GeneratedContent = {
+        id: Date.now().toString(),
+        type: selectedContentType,
+        title: `Generated Marketing Copy - ${getContentTypeName(selectedContentType)}`,
+        content: content,
+        wordCount: wordCount,
+        tone: formData.tone,
+        createdAt: new Date().toISOString(),
+        platform: getPlatformName(selectedContentType),
+      };
+
+      setGeneratedContent(generatedContent);
+      
+      if (data.note) {
+        toast.success("Marketing copy generated successfully!", {
+          description: data.note,
+        });
+      } else {
+        toast.success("Marketing copy generated successfully!");
+      }
+    } catch (error) {
+      console.error("Error generating copy:", error);
+      toast.error("Failed to generate copy", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleQuickEdit = (action: string) => {
     if (!generatedContent) return;
 
@@ -641,6 +720,15 @@ The image should be:
                               Generate Content
                             </>
                           )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="flex-1 border-culturin-indigo text-culturin-indigo hover:bg-culturin-indigo/10"
+                          onClick={handleGenerateCopy}
+                          disabled={isGenerating}
+                        >
+                          <Copy className="mr-2 h-4 w-4" />
+                          Generate Copy
                         </Button>
                         <Button
                           variant="outline"
