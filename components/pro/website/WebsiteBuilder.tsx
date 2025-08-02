@@ -791,46 +791,6 @@ const WebsiteBuilder: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-        {/* Preview Controls (fixed) */}
-        <div className="p-4 border-b border-gray-200 bg-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">Website Preview</h2>
-              <p className="text-sm text-gray-600">See your changes in real-time</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={handleReloadPreview}
-                disabled={refreshLoading}
-                variant="outline"
-                size="sm"
-              >
-                {refreshLoading ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                )}
-                Refresh
-              </Button>
-              <Button 
-                variant={viewMode === 'desktop' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => setViewMode('desktop')}
-              >
-                <Monitor className="h-4 w-4 mr-2" />
-                Desktop
-              </Button>
-              <Button 
-                variant={viewMode === 'mobile' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => setViewMode('mobile')}
-              >
-                <Tablet className="h-4 w-4 mr-2" />
-                Mobile
-              </Button>
-            </div>
-          </div>
-        </div>
 
         {/* Content based on active tab (scrollable) */}
         <div className="flex-1 overflow-auto">
