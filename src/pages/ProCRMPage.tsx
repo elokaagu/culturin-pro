@@ -36,6 +36,10 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import EmailAutomation from "@/components/pro/crm/EmailAutomation";
 import LoyaltyProgram from "@/components/pro/crm/LoyaltyProgram";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Mock data
 const initialGuests = [
@@ -609,6 +613,9 @@ const ProCRMPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [guests, setGuests] = useState(initialGuests);
   const [selectedGuest, setSelectedGuest] = useState(null);
+  const [showEmailCampaignModal, setShowEmailCampaignModal] = useState(false);
+  const [showGuestSegmentModal, setShowGuestSegmentModal] = useState(false);
+  const [showRewardsModal, setShowRewardsModal] = useState(false);
   const { toast } = useToast();
 
   const handleViewGuest = (guest) => {
@@ -617,6 +624,31 @@ const ProCRMPage = () => {
 
   const handleBackToList = () => {
     setSelectedGuest(null);
+  };
+
+  // Quick Actions Functions
+  const handleCreateEmailCampaign = () => {
+    setShowEmailCampaignModal(true);
+    toast({
+      title: "Email Campaign",
+      description: "Opening email campaign creator...",
+    });
+  };
+
+  const handleCreateGuestSegment = () => {
+    setShowGuestSegmentModal(true);
+    toast({
+      title: "Guest Segment",
+      description: "Opening guest segment creator...",
+    });
+  };
+
+  const handleManageRewards = () => {
+    setShowRewardsModal(true);
+    toast({
+      title: "Rewards Management",
+      description: "Opening rewards management...",
+    });
   };
 
   // Calculate CRM metrics
@@ -723,18 +755,21 @@ const ProCRMPage = () => {
                     <Button
                       variant="outline"
                       className="h-auto p-6 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
+                      onClick={handleCreateEmailCampaign}
                     >
                       <span className="font-medium">Create Email Campaign</span>
                     </Button>
                     <Button
                       variant="outline"
                       className="h-auto p-6 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
+                      onClick={handleCreateGuestSegment}
                     >
                       <span className="font-medium">Create Guest Segment</span>
                     </Button>
                     <Button
                       variant="outline"
                       className="h-auto p-6 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
+                      onClick={handleManageRewards}
                     >
                       <span className="font-medium">Manage Rewards</span>
                     </Button>
@@ -834,6 +869,181 @@ const ProCRMPage = () => {
             </TabsContent>
           </Tabs>
         )}
+
+        {/* Email Campaign Modal */}
+        <Dialog open={showEmailCampaignModal} onOpenChange={setShowEmailCampaignModal}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Create Email Campaign</DialogTitle>
+              <DialogDescription>
+                Create a targeted email campaign to engage your guests.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="campaign-name">Campaign Name</Label>
+                <Input id="campaign-name" placeholder="Enter campaign name" />
+              </div>
+              <div>
+                <Label htmlFor="subject-line">Subject Line</Label>
+                <Input id="subject-line" placeholder="Enter subject line" />
+              </div>
+              <div>
+                <Label htmlFor="target-segment">Target Segment</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select target segment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Guests</SelectItem>
+                    <SelectItem value="vip">VIP Guests</SelectItem>
+                    <SelectItem value="active">Active Guests</SelectItem>
+                    <SelectItem value="inactive">Inactive Guests</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="email-content">Email Content</Label>
+                <Textarea 
+                  id="email-content" 
+                  placeholder="Write your email content here..."
+                  rows={6}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowEmailCampaignModal(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                toast({
+                  title: "Campaign Created",
+                  description: "Your email campaign has been created successfully.",
+                });
+                setShowEmailCampaignModal(false);
+              }}>
+                Create Campaign
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Guest Segment Modal */}
+        <Dialog open={showGuestSegmentModal} onOpenChange={setShowGuestSegmentModal}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Create Guest Segment</DialogTitle>
+              <DialogDescription>
+                Define criteria to create a targeted guest segment.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="segment-name">Segment Name</Label>
+                <Input id="segment-name" placeholder="Enter segment name" />
+              </div>
+              <div>
+                <Label htmlFor="segment-criteria">Segment Criteria</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select criteria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="booking-frequency">Booking Frequency</SelectItem>
+                    <SelectItem value="total-spent">Total Amount Spent</SelectItem>
+                    <SelectItem value="last-activity">Last Activity Date</SelectItem>
+                    <SelectItem value="loyalty-tier">Loyalty Tier</SelectItem>
+                    <SelectItem value="location">Location</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="criteria-value">Criteria Value</Label>
+                <Input id="criteria-value" placeholder="Enter criteria value" />
+              </div>
+              <div>
+                <Label htmlFor="segment-description">Description</Label>
+                <Textarea 
+                  id="segment-description" 
+                  placeholder="Describe this segment..."
+                  rows={3}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowGuestSegmentModal(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                toast({
+                  title: "Segment Created",
+                  description: "Your guest segment has been created successfully.",
+                });
+                setShowGuestSegmentModal(false);
+              }}>
+                Create Segment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Rewards Management Modal */}
+        <Dialog open={showRewardsModal} onOpenChange={setShowRewardsModal}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Manage Rewards</DialogTitle>
+              <DialogDescription>
+                Configure and manage your loyalty rewards program.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="reward-name">Reward Name</Label>
+                <Input id="reward-name" placeholder="Enter reward name" />
+              </div>
+              <div>
+                <Label htmlFor="points-required">Points Required</Label>
+                <Input id="points-required" type="number" placeholder="Enter points required" />
+              </div>
+              <div>
+                <Label htmlFor="reward-description">Reward Description</Label>
+                <Textarea 
+                  id="reward-description" 
+                  placeholder="Describe the reward..."
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="reward-type">Reward Type</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select reward type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="discount">Discount</SelectItem>
+                    <SelectItem value="free-experience">Free Experience</SelectItem>
+                    <SelectItem value="upgrade">Upgrade</SelectItem>
+                    <SelectItem value="early-access">Early Access</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowRewardsModal(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                toast({
+                  title: "Reward Created",
+                  description: "Your reward has been created successfully.",
+                });
+                setShowRewardsModal(false);
+              }}>
+                Create Reward
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </ProDashboardLayout>
   );
