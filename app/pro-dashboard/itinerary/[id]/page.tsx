@@ -38,6 +38,8 @@ import {
   X,
   ExternalLink,
   Trash2,
+  Upload,
+  Camera,
 } from "lucide-react";
 import Image from "@/components/ui/image";
 import { sampleItineraries } from "@/data/itineraryData";
@@ -422,8 +424,8 @@ export default function ItineraryDetailPage() {
               <Card className="overflow-hidden">
                 <div className="relative h-64">
                   <Image
-                    src={itinerary.image}
-                    alt={itinerary.title}
+                    src={isEditing && formData?.image ? formData.image : itinerary.image}
+                    alt={isEditing && formData?.title ? formData.title : itinerary.title}
                     className="w-full h-full object-cover"
                     fill
                   />
@@ -433,6 +435,31 @@ export default function ItineraryDetailPage() {
                         itinerary.themeType.slice(1)}
                     </Badge>
                   </div>
+                  {/* Image Upload Overlay */}
+                  {isEditing && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                      <div className="text-center text-white">
+                        <Camera className="h-8 w-8 mx-auto mb-2" />
+                        <p className="text-sm font-medium">Click to change image</p>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (e) => {
+                                const result = e.target?.result as string;
+                                handleInputChange("image", result);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </Card>
 
@@ -635,25 +662,25 @@ export default function ItineraryDetailPage() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
                         <span className="text-gray-600">Duration</span>
                         <span className="font-medium">
                           {itinerary.days} days
                         </span>
                       </div>
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
                         <span className="text-gray-600">Destinations</span>
                         <span className="font-medium">
                           {itinerary.regions.join(", ")}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
                         <span className="text-gray-600">Theme</span>
                         <span className="font-medium capitalize">
                           {itinerary.themeType}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col">
                         <span className="text-gray-600">Status</span>
                         <Badge
                           className={
@@ -668,7 +695,7 @@ export default function ItineraryDetailPage() {
                         </Badge>
                       </div>
                       {itinerary.price && (
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
                           <span className="text-gray-600">Price</span>
                           <span className="font-medium">
                             ${itinerary.price} {itinerary.currency}
@@ -676,7 +703,7 @@ export default function ItineraryDetailPage() {
                         </div>
                       )}
                       {itinerary.groupSize && (
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
                           <span className="text-gray-600">Group Size</span>
                           <span className="font-medium">
                             {itinerary.groupSize.min}-{itinerary.groupSize.max}{" "}
@@ -685,7 +712,7 @@ export default function ItineraryDetailPage() {
                         </div>
                       )}
                       {itinerary.difficulty && (
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
                           <span className="text-gray-600">Difficulty</span>
                           <span className="font-medium capitalize">
                             {itinerary.difficulty}
@@ -693,7 +720,7 @@ export default function ItineraryDetailPage() {
                         </div>
                       )}
                       {itinerary.tags && itinerary.tags.length > 0 && (
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
                           <span className="text-gray-600">Tags</span>
                           <div className="flex gap-1 flex-wrap">
                             {itinerary.tags.map((tag, index) => (
