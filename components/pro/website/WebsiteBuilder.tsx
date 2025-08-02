@@ -530,24 +530,7 @@ const WebsiteBuilder: React.FC = () => {
     setActiveTab(value);
   };
 
-  const handleQuickAction = (action: string) => {
-    switch (action) {
-      case "reset-brand-color":
-        updateWebsiteSettings({ primaryColor: "#3B82F6" });
-        toast.success("Brand color reset", {
-          description: "Reset to default blue color",
-        });
-        break;
-      case "disable-booking":
-        updateWebsiteSettings({ enableBooking: false });
-        toast.success("Booking disabled", {
-          description: "Booking functionality has been turned off",
-        });
-        break;
-      default:
-        break;
-    }
-  };
+
 
   // Format last saved time
   const lastSavedText = useMemo(() => {
@@ -693,69 +676,7 @@ const WebsiteBuilder: React.FC = () => {
             </div>
           )}
 
-          {/* Quick Actions (scrollable) */}
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="font-medium text-gray-900 mb-4">Quick Actions</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">BRAND SETTINGS</h4>
-                <Button
-                  onClick={() => handleQuickAction("reset-brand-color")}
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                >
-                  <Palette className="h-4 w-4 mr-2" />
-                  Reset Brand Color
-                </Button>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">BOOKING SETTINGS</h4>
-                <Button
-                  onClick={() => handleQuickAction("disable-booking")}
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Disable Booking
-                </Button>
-              </div>
 
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">BACKUP & RESTORE</h4>
-                <div className="space-y-2">
-                  <Button
-                    onClick={handleExportWebsite}
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export Website
-                  </Button>
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept=".json"
-                      onChange={handleImportWebsite}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full justify-start"
-                    >
-                      <Upload className="h-4 w-4 mr-2" />
-                      Import Website
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Navigation Tabs (scrollable) */}
           <div className="p-6">
