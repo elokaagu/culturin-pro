@@ -142,12 +142,14 @@ export default function ItineraryDetailPage() {
 
     try {
       console.log("Saving itinerary with formData:", formData);
-      
+
       const updates: Partial<ItineraryType> = {
         title: formData.title.trim(),
         description: formData.description?.trim() || "",
         days: formData.days || 1,
-        regions: formData.regions ? formData.regions.split(", ").filter(Boolean) : [],
+        regions: formData.regions
+          ? formData.regions.split(", ").filter(Boolean)
+          : [],
         themeType: formData.themeType || "cultural",
         status: formData.status || "draft",
         image: formData.image || null,
@@ -167,9 +169,9 @@ export default function ItineraryDetailPage() {
         itinerary.id,
         updates
       );
-      
+
       console.log("Successfully updated itinerary:", updatedItinerary);
-      
+
       setItinerary(updatedItinerary);
       setIsEditing(false);
 
@@ -192,11 +194,13 @@ export default function ItineraryDetailPage() {
         message: error instanceof Error ? error.message : "Unknown error",
         stack: error instanceof Error ? error.stack : undefined,
       });
-      
+
       toast({
         title: "Save Failed",
         description:
-          error instanceof Error ? error.message : "Failed to save itinerary. Please try again.",
+          error instanceof Error
+            ? error.message
+            : "Failed to save itinerary. Please try again.",
         variant: "destructive",
       });
     } finally {
