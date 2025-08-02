@@ -33,47 +33,32 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
-  FileText,
-  PenTool,
-  Mail,
-  Globe,
-  Megaphone,
-  Copy,
-  Download,
-  Save,
-  RefreshCw,
-  Wand2,
-  BookOpen,
-  MessageSquare,
-  Star,
-  Users,
-  Target,
-  Zap,
-  Eye,
-  CheckCircle,
-  Edit,
   Sparkles,
+  FileText,
   Instagram,
   Facebook,
-  Twitter,
-  Youtube,
-  Linkedin,
+  Target,
+  BookOpen,
+  Mail,
+  MessageSquare,
+  Megaphone,
   Smartphone,
   Monitor,
+  Globe,
   Palette,
-  Settings,
-  Lightbulb,
-  TrendingUp,
-  Clock,
-  Heart,
-  ThumbsUp,
-  ThumbsDown,
-  RotateCcw,
-  Maximize2,
+  Eye,
+  Wand2,
+  Copy,
+  Save,
+  Eye as EyeIcon,
   Minimize2,
-  Plus,
-  ArrowRight,
+  Download,
+  Zap,
+  TrendingUp,
   Sparkle,
+  PenTool,
+  Heart,
+  Users,
   Upload,
 } from "lucide-react";
 import { settingsService } from "@/lib/settings-service";
@@ -321,8 +306,8 @@ Description 2: ${data.content.description2 || ""}`;
   };
 
   const handleGenerateImages = async () => {
-    if (!selectedContentType || !formData.experienceTitle || !formData.location) {
-      toast.error("Please fill in all required fields");
+    if (!imagePrompt.trim()) {
+      toast.error("Please enter an image prompt");
       return;
     }
 
@@ -335,12 +320,16 @@ Description 2: ${data.content.description2 || ""}`;
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          experienceTitle: formData.experienceTitle,
-          location: formData.location,
-          keyCulturalElements: formData.keyCulturalElements,
-          targetAudience: formData.targetAudience,
-          tone: formData.tone,
-          contentType: selectedContentType,
+          experienceTitle: formData.experienceTitle || "Cultural Experience",
+          location: formData.location || "Destination",
+          keyCulturalElements: formData.keyCulturalElements || "",
+          targetAudience: formData.targetAudience || "cultural-travelers",
+          tone: formData.tone || "friendly",
+          contentType: selectedContentType || "general",
+          // Modal-specific settings
+          imageStyle: imageStyle,
+          imageAspectRatio: imageAspectRatio,
+          customPrompt: imagePrompt,
         }),
       });
 
@@ -774,80 +763,67 @@ Description 2: ${data.content.description2 || ""}`;
 
           {/* Generated Images Display */}
           {generatedImages.length > 0 && (
-            <Card>
+            <Card className="mt-6">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Wand2 className="h-5 w-5 text-culturin-indigo" />
-                    <div>
-                      <CardTitle>Generated Images</CardTitle>
-                      <CardDescription>
-                        {generatedImages.length} images generated • {imageStyle}{" "}
-                        style • {imageAspectRatio} ratio
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowImageModal(true)}
-                    >
-                      <RefreshCw className="h-4 w-4 mr-1" />
-                      Regenerate
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        // Save images to library
-                        toast.success("Images saved to library!");
-                      }}
-                    >
-                      <Save className="h-4 w-4 mr-1" />
-                      Save All
-                    </Button>
-                  </div>
-                </div>
+                <CardTitle className="flex items-center gap-2">
+                  <Wand2 className="h-5 w-5" />
+                  Generated Images
+                </CardTitle>
+                <CardDescription>
+                  Your AI-generated marketing images are ready to use.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {generatedImages.map((image, index) => (
+                  {generatedImages.map((imageUrl, index) => (
                     <div key={index} className="relative group">
                       <img
-                        src={image}
-                        alt={`Generated image ${index + 1}`}
-                        className="w-full h-48 object-cover rounded-lg border"
+                        src={imageUrl}
+                        alt={`Generated marketing image ${index + 1}`}
+                        className="w-full h-48 object-cover rounded-lg border border-gray-200"
                       />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="bg-white text-gray-900 hover:bg-gray-100"
-                          onClick={() => {
-                            // Download image
-                            toast.success("Image downloaded!");
-                          }}
-                        >
-                          <Download className="h-4 w-4 mr-1" />
-                          Download
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="bg-white text-gray-900 hover:bg-gray-100"
-                          onClick={() => {
-                            // Copy image URL
-                            navigator.clipboard.writeText(image);
-                            toast.success("Image URL copied!");
-                          }}
-                        >
-                          <Copy className="h-4 w-4 mr-1" />
-                          Copy URL
-                        </Button>
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => {
+                              const link = document.createElement('a');
+                              link.href = imageUrl;
+                              link.download = `marketing-image-${index + 1}.jpg`;
+                              link.click();
+                            }}
+                          >
+                            <Download className="h-4 w-4 mr-1" />
+                            Download
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => {
+                              navigator.clipboard.writeText(imageUrl);
+                              toast.success("Image URL copied to clipboard!");
+                            }}
+                          >
+                            <Copy className="h-4 w-4 mr-1" />
+                            Copy URL
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}
+                </div>
+                <div className="mt-4 flex justify-between items-center">
+                  <p className="text-sm text-gray-500">
+                    {generatedImages.length} images generated
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setGeneratedImages([])}
+                  >
+                    Clear Images
+                  </Button>
                 </div>
               </CardContent>
             </Card>

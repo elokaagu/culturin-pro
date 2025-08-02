@@ -9,6 +9,9 @@ export async function POST(request: NextRequest) {
       targetAudience,
       tone,
       contentType,
+      imageStyle,
+      imageAspectRatio,
+      customPrompt,
     } = await request.json();
 
     // Validate required fields
@@ -29,12 +32,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create the prompt for DALL-E based on content type and details
+    // Create the prompt for DALL-E based on content type and modal settings
     let imagePrompt = "";
-
-    if (contentType === "instagram-caption") {
-      imagePrompt = `Create a stunning, high-quality Instagram-worthy image for a cultural experience: ${experienceTitle} in ${location}. 
-      
+    
+    // Use custom prompt if provided, otherwise generate from form data
+    if (customPrompt && customPrompt.trim()) {
+      imagePrompt = customPrompt;
+    } else {
+      // Fallback to generating prompt from form data
+      if (contentType === "instagram-caption") {
+        imagePrompt = `Create a stunning, high-quality Instagram-worthy image for a cultural experience: ${experienceTitle} in ${location}. 
+        
 Key cultural elements: ${keyCulturalElements || "local traditions, authentic experiences"}
 Target audience: ${targetAudience || "cultural travelers"}
 Tone: ${tone || "friendly and approachable"}
@@ -49,9 +57,9 @@ The image should be:
 - Perfect for social media engagement
 
 Style: Professional travel photography, vibrant colors, authentic cultural representation`;
-    } else if (contentType === "tiktok-hook") {
-      imagePrompt = `Create an attention-grabbing, dynamic image for TikTok content about: ${experienceTitle} in ${location}.
-      
+      } else if (contentType === "tiktok-hook") {
+        imagePrompt = `Create an attention-grabbing, dynamic image for TikTok content about: ${experienceTitle} in ${location}.
+        
 Key cultural elements: ${keyCulturalElements || "local traditions, authentic experiences"}
 Target audience: ${targetAudience || "young travelers"}
 Tone: ${tone || "energetic and fun"}
@@ -66,9 +74,9 @@ The image should be:
 - Perfect for short-form video content
 
 Style: Dynamic, energetic, TikTok-optimized, authentic cultural representation`;
-    } else if (contentType === "google-ad-copy") {
-      imagePrompt = `Create a professional, conversion-focused image for Google Ads about: ${experienceTitle} in ${location}.
-      
+      } else if (contentType === "google-ad-copy") {
+        imagePrompt = `Create a professional, conversion-focused image for Google Ads about: ${experienceTitle} in ${location}.
+        
 Key cultural elements: ${keyCulturalElements || "local traditions, authentic experiences"}
 Target audience: ${targetAudience || "travelers seeking authentic experiences"}
 Tone: ${tone || "professional and trustworthy"}
@@ -83,9 +91,9 @@ The image should be:
 - Clean, professional composition
 
 Style: Professional commercial photography, clean composition, authentic cultural representation`;
-    } else {
-      imagePrompt = `Create a beautiful, high-quality image for a cultural experience: ${experienceTitle} in ${location}.
-      
+      } else {
+        imagePrompt = `Create a beautiful, high-quality image for a cultural experience: ${experienceTitle} in ${location}.
+        
 Key cultural elements: ${keyCulturalElements || "local traditions, authentic experiences"}
 Target audience: ${targetAudience || "cultural travelers"}
 Tone: ${tone || "friendly and approachable"}
@@ -100,6 +108,40 @@ The image should be:
 - Perfect for marketing and promotion
 
 Style: Professional travel photography, vibrant colors, authentic cultural representation`;
+      }
+    }
+
+    // Enhance the prompt based on modal settings
+    if (imageStyle) {
+      switch (imageStyle) {
+        case "realistic":
+          imagePrompt += " Style: Photorealistic, high-quality photography, natural lighting, authentic representation.";
+          break;
+        case "illustration":
+          imagePrompt += " Style: Artistic illustration, vibrant colors, creative interpretation, hand-drawn aesthetic.";
+          break;
+        case "minimal":
+          imagePrompt += " Style: Minimalist design, clean lines, simple composition, elegant and modern.";
+          break;
+      }
+    }
+
+    // Set image size based on aspect ratio
+    let imageSize = "1024x1024"; // Default square
+    if (imageAspectRatio) {
+      switch (imageAspectRatio) {
+        case "16:9":
+          imageSize = "1792x1024"; // Landscape
+          break;
+        case "9:16":
+          imageSize = "1024x1792"; // Portrait
+          break;
+        case "4:3":
+          imageSize = "1408x1024"; // Classic
+          break;
+        default:
+          imageSize = "1024x1024"; // Square
+      }
     }
 
     // Call OpenAI DALL-E API
@@ -113,7 +155,7 @@ Style: Professional travel photography, vibrant colors, authentic cultural repre
         model: "dall-e-3",
         prompt: imagePrompt,
         n: 3, // Generate 3 images
-        size: "1024x1024",
+        size: imageSize,
         quality: "standard",
         style: "natural",
       }),
