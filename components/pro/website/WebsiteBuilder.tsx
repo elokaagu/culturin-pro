@@ -794,7 +794,7 @@ const WebsiteBuilder: React.FC = () => {
 
         {/* Content based on active tab (scrollable) */}
         <div className="flex-1 overflow-auto">
-          <Tabs value={activeTab} onValueChange={handleTabChange}>
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="h-full">
             <TabsContent value="preview" className="h-full">
               <WebsitePreview
                 key={previewKey}
@@ -803,8 +803,8 @@ const WebsiteBuilder: React.FC = () => {
               />
             </TabsContent>
 
-            <TabsContent value="builder" className="p-6">
-              <div className="space-y-6">
+            <TabsContent value="builder" className="h-full p-6">
+              <div className="space-y-6 h-full">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold">Building Blocks</h3>
@@ -841,23 +841,25 @@ const WebsiteBuilder: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-                <DragDropBuilder />
+                <div className="flex-1">
+                  <DragDropBuilder />
+                </div>
               </div>
             </TabsContent>
 
-            <TabsContent value="themes" className="p-6">
+            <TabsContent value="themes" className="h-full p-6">
               <WebsiteThemes />
             </TabsContent>
 
-            <TabsContent value="content" className="p-6">
+            <TabsContent value="content" className="h-full p-6">
               <WebsiteContent />
             </TabsContent>
 
-            <TabsContent value="booking" className="p-6">
+            <TabsContent value="booking" className="h-full p-6">
               <BookingFlowBuilder />
             </TabsContent>
 
-            <TabsContent value="media-library" className="p-6">
+            <TabsContent value="media-library" className="h-full p-6">
               <MediaLibrary />
             </TabsContent>
           </Tabs>
