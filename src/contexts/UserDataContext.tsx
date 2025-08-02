@@ -8,6 +8,7 @@ import React, {
   ReactNode,
 } from "react";
 import { useAuth } from "../components/auth/AuthProvider";
+import { localStorageUtils } from "../../lib/localStorage";
 
 export interface UserData {
   // General Settings
@@ -335,8 +336,41 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const saveUserData = () => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("culturin_user_data", JSON.stringify(userData));
+    if (typeof window !== "undefined" && localStorageUtils.isAvailable()) {
+      try {
+        // Use the localStorage utility with compression and quota handling
+        const success = localStorageUtils.saveWithCompression("culturin_user_data", userData);
+        
+        if (!success) {
+          console.warn("Failed to save user data, clearing space and retrying");
+          localStorageUtils.clearNonEssential();
+          
+          // Try saving essential data only
+          const essentialData = {
+            businessName: userData.businessName,
+            email: userData.email,
+            phone: userData.phone,
+            address: userData.address,
+            timezone: userData.timezone,
+            bio: userData.bio,
+            websiteSettings: {
+              companyName: userData.websiteSettings.companyName,
+              tagline: userData.websiteSettings.tagline,
+              description: userData.websiteSettings.description,
+              primaryColor: userData.websiteSettings.primaryColor,
+              theme: userData.websiteSettings.theme,
+              enableBooking: userData.websiteSettings.enableBooking,
+            },
+            notifications: userData.notifications,
+            billing: userData.billing,
+            loyaltyCard: userData.loyaltyCard,
+          };
+          
+          localStorageUtils.saveWithCompression("culturin_user_data", essentialData);
+        }
+      } catch (error) {
+        console.error("Failed to save user data:", error);
+      }
     }
   };
 

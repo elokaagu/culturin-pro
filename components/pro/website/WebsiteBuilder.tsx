@@ -42,6 +42,7 @@ import MediaLibrary from "./MediaLibrary";
 import { settingsService } from "@/lib/settings-service";
 import { itineraryService } from "@/lib/itinerary-service";
 import { supabase } from "@/lib/supabase";
+import { localStorageUtils } from "@/lib/localStorage";
 
 // History management for undo/redo functionality
 interface HistoryState {
@@ -345,26 +346,69 @@ const WebsiteBuilder: React.FC = () => {
       // Save user data
       saveUserData();
       
-      // Save website-specific data
+      // Save website-specific data with compression
       const websiteData: WebsiteData = {
-        settings: userData.websiteSettings,
-        itineraries: itineraries,
-        blocks: userData.websiteSettings.placedBlocks || [],
+        settings: {
+          ...userData.websiteSettings,
+          // Don't save large objects to localStorage
+          placedBlocks: undefined,
+          headerImage: userData.websiteSettings.headerImage ? 'saved' : null,
+        },
+        itineraries: itineraries.slice(0, 10), // Limit to 10 itineraries for localStorage
+        blocks: [], // Don't save blocks to localStorage
         theme: userData.websiteSettings.theme,
         publishedUrl: publishedUrl,
         lastModified: new Date(),
         version: '1.0.0'
       };
 
-      localStorage.setItem("websiteData", JSON.stringify(websiteData));
-      localStorage.setItem("websiteLastSaved", new Date().toISOString());
-      localStorage.setItem("websiteAutoSave", autoSaveEnabled.toString());
-      
-      setLastSaved(new Date());
-      setHasUnsavedChanges(false);
-      setSaveStatus('saved');
-      
-      console.log("Website auto-saved successfully");
+      try {
+        // Use localStorage utility for better quota handling
+        const success1 = localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
+        const success2 = localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
+        const success3 = localStorageUtils.setItem("websiteAutoSave", autoSaveEnabled.toString());
+        
+        if (success1 && success2 && success3) {
+          setLastSaved(new Date());
+          setHasUnsavedChanges(false);
+          setSaveStatus('saved');
+          console.log("Website auto-saved successfully");
+        } else {
+          throw new Error("Failed to save to localStorage");
+        }
+      } catch (storageError) {
+        console.error("localStorage quota exceeded, clearing space and retrying");
+        
+        // Clear some space and try again
+        try {
+          localStorageUtils.clearNonEssential();
+          
+          // Save minimal data
+          const minimalData = {
+            theme: userData.websiteSettings.theme,
+            publishedUrl: publishedUrl,
+            lastModified: new Date().toISOString(),
+          };
+          
+          const success = localStorageUtils.setItem("websiteData", JSON.stringify(minimalData));
+          localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
+          
+          if (success) {
+            setLastSaved(new Date());
+            setHasUnsavedChanges(false);
+            setSaveStatus('saved');
+            console.log("Website saved with minimal data");
+          } else {
+            throw new Error("Failed to save minimal data");
+          }
+        } catch (retryError) {
+          console.error("Failed to save even minimal data:", retryError);
+          setSaveStatus('error');
+          toast.error("Storage full", {
+            description: "Please clear browser data or save manually",
+          });
+        }
+      }
     } catch (error) {
       console.error("Auto-save failed:", error);
       setSaveStatus('error');
@@ -383,26 +427,66 @@ const WebsiteBuilder: React.FC = () => {
       setSaveStatus('saving');
       
       const websiteData = {
-        settings: userData.websiteSettings,
-        itineraries: itineraries,
-        blocks: userData.websiteSettings.placedBlocks || [],
+        settings: {
+          ...userData.websiteSettings,
+          // Don't save large objects to localStorage
+          placedBlocks: undefined,
+          headerImage: userData.websiteSettings.headerImage ? 'saved' : null,
+        },
+        itineraries: itineraries.slice(0, 10), // Limit itineraries for localStorage
+        blocks: [], // Don't save blocks to localStorage
         theme: userData.websiteSettings.theme,
         publishedUrl: publishedUrl,
       };
 
-      // Save using the settings service
-      await settingsService.saveWebsiteData(websiteData);
-      
-      // Also save user data locally
-      saveUserData();
-      
-      setLastSaved(new Date());
-      setHasUnsavedChanges(false);
-      setSaveStatus('saved');
-      
-      toast.success("Website saved successfully", {
-        description: "All changes have been saved",
-      });
+      try {
+        // Save using the settings service
+        await settingsService.saveWebsiteData(websiteData);
+        
+        // Also save user data locally
+        saveUserData();
+        
+        setLastSaved(new Date());
+        setHasUnsavedChanges(false);
+        setSaveStatus('saved');
+        
+        toast.success("Website saved successfully", {
+          description: "All changes have been saved",
+        });
+      } catch (storageError) {
+        console.error("Storage quota exceeded, trying minimal save");
+        
+        // Try saving minimal data
+        try {
+          const minimalData = {
+            settings: {
+              companyName: userData.websiteSettings.companyName,
+              tagline: userData.websiteSettings.tagline,
+              theme: userData.websiteSettings.theme,
+              enableBooking: userData.websiteSettings.enableBooking,
+            },
+            theme: userData.websiteSettings.theme,
+            publishedUrl: publishedUrl,
+          };
+          
+          await settingsService.saveWebsiteData(minimalData);
+          saveUserData();
+          
+          setLastSaved(new Date());
+          setHasUnsavedChanges(false);
+          setSaveStatus('saved');
+          
+          toast.success("Website saved with minimal data", {
+            description: "Some data was too large to save",
+          });
+        } catch (retryError) {
+          console.error("Failed to save even minimal data:", retryError);
+          setSaveStatus('error');
+          toast.error("Storage full", {
+            description: "Please clear browser data or try again",
+          });
+        }
+      }
     } catch (error) {
       console.error('Error saving website:', error);
       setSaveStatus('error');
