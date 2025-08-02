@@ -121,6 +121,10 @@ const ContentCreator: React.FC = () => {
     tone: "friendly",
   });
 
+  // Confirmation modal states
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [showGenerateConfirm, setShowGenerateConfirm] = useState(false);
+
   const contentTypes: ContentType[] = [
     {
       id: "instagram-caption",
@@ -1110,13 +1114,13 @@ The image should be:
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setShowImageModal(false)}
+              onClick={() => setShowCancelConfirm(true)}
               disabled={isGeneratingImages}
             >
               Cancel
             </Button>
             <Button
-              onClick={handleGenerateImages}
+              onClick={() => setShowGenerateConfirm(true)}
               disabled={isGeneratingImages}
               className="bg-culturin-indigo hover:bg-culturin-indigo/90 text-white font-medium px-6 py-2"
             >
@@ -1131,6 +1135,85 @@ The image should be:
                   Generate Images
                 </>
               )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel Confirmation Modal */}
+      <Dialog open={showCancelConfirm} onOpenChange={setShowCancelConfirm}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Cancel Image Generation?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel? Any unsaved changes will be lost.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowCancelConfirm(false)}
+            >
+              Keep Editing
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setShowCancelConfirm(false);
+                setShowImageModal(false);
+                setImagePrompt("");
+                setImageStyle("realistic");
+                setImageAspectRatio("1:1");
+              }}
+            >
+              Cancel Generation
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Generate Confirmation Modal */}
+      <Dialog open={showGenerateConfirm} onOpenChange={setShowGenerateConfirm}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Generate Images?</DialogTitle>
+            <DialogDescription>
+              This will generate 3 AI-powered images based on your settings. 
+              {!imagePrompt.trim() && " No custom prompt provided - using default settings."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium">Style:</span>
+              <span className="capitalize">{imageStyle}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium">Aspect Ratio:</span>
+              <span>{imageAspectRatio}</span>
+            </div>
+            {imagePrompt.trim() && (
+              <div className="flex items-start gap-2 text-sm">
+                <span className="font-medium">Custom Prompt:</span>
+                <span className="text-gray-600 line-clamp-2">{imagePrompt}</span>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowGenerateConfirm(false)}
+            >
+              Review Settings
+            </Button>
+            <Button
+              onClick={() => {
+                setShowGenerateConfirm(false);
+                handleGenerateImages();
+              }}
+              className="bg-culturin-indigo hover:bg-culturin-indigo/90"
+            >
+              <Wand2 className="mr-2 h-4 w-4" />
+              Generate Images
             </Button>
           </DialogFooter>
         </DialogContent>
