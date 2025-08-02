@@ -738,20 +738,6 @@ export default function DragDropBuilder() {
               <h1 className="text-xl font-semibold">Website Builder</h1>
               <Badge variant="secondary">{placedBlocks.length} blocks</Badge>
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <Eye className="h-4 w-4 mr-2" />
-                Preview
-              </Button>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-              <Button size="sm">
-                <Save className="h-4 w-4 mr-2" />
-                Save
-              </Button>
-            </div>
           </div>
         </div>
 

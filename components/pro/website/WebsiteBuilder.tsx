@@ -76,6 +76,7 @@ const WebsiteBuilder: React.FC = () => {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
+  const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
 
   // History management
   const [history, setHistory] = useState<HistoryState[]>([]);
@@ -735,11 +736,19 @@ const WebsiteBuilder: React.FC = () => {
                 )}
                 Refresh
               </Button>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant={viewMode === 'desktop' ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setViewMode('desktop')}
+              >
                 <Monitor className="h-4 w-4 mr-2" />
                 Desktop
               </Button>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant={viewMode === 'mobile' ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setViewMode('mobile')}
+              >
                 <Tablet className="h-4 w-4 mr-2" />
                 Mobile
               </Button>
@@ -754,6 +763,7 @@ const WebsiteBuilder: React.FC = () => {
               <WebsitePreview
                 key={previewKey}
                 itineraries={itineraries}
+                viewMode={viewMode}
               />
             </TabsContent>
 
@@ -765,16 +775,32 @@ const WebsiteBuilder: React.FC = () => {
                     <p className="text-sm text-gray-600">Drag blocks to build your website</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setActiveTab("preview")}
+                    >
                       <Eye className="h-4 w-4 mr-2" />
                       Preview
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={handleExportWebsite}
+                    >
                       <Download className="h-4 w-4 mr-2" />
                       Export
                     </Button>
-                    <Button size="sm">
-                      <Save className="h-4 w-4 mr-2" />
+                    <Button 
+                      size="sm"
+                      onClick={handleManualSave}
+                      disabled={saveLoading}
+                    >
+                      {saveLoading ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4 mr-2" />
+                      )}
                       Save
                     </Button>
                   </div>

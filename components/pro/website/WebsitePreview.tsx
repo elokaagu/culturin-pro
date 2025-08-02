@@ -32,13 +32,15 @@ import { useUserData } from "../../../src/contexts/UserDataContext";
 interface WebsitePreviewProps {
   itineraries?: ItineraryType[];
   refreshKey?: number; // Add refresh key prop
+  viewMode?: 'desktop' | 'mobile';
 }
 
 const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   itineraries = [],
   refreshKey: externalRefreshKey,
+  viewMode: externalViewMode,
 }) => {
-  const [viewMode, setViewMode] = useState("desktop");
+  const [viewMode, setViewMode] = useState(externalViewMode || "desktop");
   const [refreshKey, setRefreshKey] = useState(0);
   const [currentItineraries, setCurrentItineraries] =
     useState<ItineraryType[]>(itineraries);
@@ -71,6 +73,13 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   useEffect(() => {
     setCurrentItineraries(itineraries);
   }, [itineraries]);
+
+  // Update viewMode when external viewMode changes
+  useEffect(() => {
+    if (externalViewMode) {
+      setViewMode(externalViewMode);
+    }
+  }, [externalViewMode]);
 
   // Listen for theme changes
   useEffect(() => {
