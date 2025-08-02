@@ -100,7 +100,7 @@ const WebsiteBuilder: React.FC = () => {
         const storedUrl = localStorage.getItem("publishedWebsiteUrl");
         setPublishedUrl(storedUrl || "tour/demo");
 
-        // Load itineraries from database first, fallback to localStorage
+        // Load itineraries from database only - no sample data fallback
         try {
           const { data: user } = await supabase.auth.getUser();
           if (user.user) {
@@ -112,46 +112,19 @@ const WebsiteBuilder: React.FC = () => {
               localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
               console.log("Set itineraries from database:", dbItineraries.length, "items");
             } else {
-              console.log("No itineraries in database, checking localStorage");
-              // Fallback to localStorage
-              const storedItineraries = localStorage.getItem("culturinItineraries");
-              if (storedItineraries) {
-                const parsedItineraries = JSON.parse(storedItineraries);
-                setItineraries(parsedItineraries);
-                console.log("Set itineraries from localStorage:", parsedItineraries.length, "items");
-              } else {
-                console.log("No stored itineraries, using sample data");
-                setItineraries(sampleItineraries);
-                localStorage.setItem("culturinItineraries", JSON.stringify(sampleItineraries));
-              }
+              console.log("No itineraries in database - user needs to create some");
+              setItineraries([]);
+              localStorage.removeItem("culturinItineraries");
             }
           } else {
-            console.log("No authenticated user, using localStorage");
-            // No authenticated user, use localStorage
-            const storedItineraries = localStorage.getItem("culturinItineraries");
-            if (storedItineraries) {
-              const parsedItineraries = JSON.parse(storedItineraries);
-              setItineraries(parsedItineraries);
-              console.log("Set itineraries from localStorage (no auth):", parsedItineraries.length, "items");
-            } else {
-              console.log("No stored itineraries (no auth), using sample data");
-              setItineraries(sampleItineraries);
-              localStorage.setItem("culturinItineraries", JSON.stringify(sampleItineraries));
-            }
+            console.log("No authenticated user - cannot load itineraries");
+            setItineraries([]);
+            localStorage.removeItem("culturinItineraries");
           }
         } catch (error) {
           console.error("Error loading itineraries from database:", error);
-          // Fallback to localStorage
-          const storedItineraries = localStorage.getItem("culturinItineraries");
-          if (storedItineraries) {
-            const parsedItineraries = JSON.parse(storedItineraries);
-            setItineraries(parsedItineraries);
-            console.log("Set itineraries from localStorage (error fallback):", parsedItineraries.length, "items");
-          } else {
-            console.log("No stored itineraries (error fallback), using sample data");
-            setItineraries(sampleItineraries);
-            localStorage.setItem("culturinItineraries", JSON.stringify(sampleItineraries));
-          }
+          setItineraries([]);
+          localStorage.removeItem("culturinItineraries");
         }
 
         // Load last saved timestamp
@@ -169,15 +142,15 @@ const WebsiteBuilder: React.FC = () => {
         // Add initial state to history
         addToHistory({
           websiteSettings: userData.websiteSettings,
-          itineraries: itineraries.length > 0 ? itineraries : sampleItineraries,
+          itineraries: itineraries,
         });
 
         console.log("Website data loaded successfully");
       } catch (error) {
         console.error("Error loading website data:", error);
-        // Fallback to default data
-        setItineraries(sampleItineraries);
-        localStorage.setItem("culturinItineraries", JSON.stringify(sampleItineraries));
+        // No fallback - keep empty state
+        setItineraries([]);
+        localStorage.removeItem("culturinItineraries");
       }
     };
 
@@ -241,17 +214,28 @@ const WebsiteBuilder: React.FC = () => {
         if (user.user) {
           const dbItineraries = await itineraryService.getItineraries(user.user.id);
           console.log("Fetched itineraries from database:", dbItineraries);
+          
+          // Always update itineraries, even if empty
+          setItineraries(dbItineraries || []);
+          
           if (dbItineraries && dbItineraries.length > 0) {
-            setItineraries(dbItineraries);
             localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
-            setPreviewKey((prev) => prev + 1);
-            toast.success("Itineraries updated", {
-              description: "Website preview reflects latest itinerary changes",
-            });
+            console.log("Updated itineraries:", dbItineraries.length, "items");
+          } else {
+            localStorage.removeItem("culturinItineraries");
+            console.log("No itineraries found - cleared localStorage");
           }
+          
+          setPreviewKey((prev) => prev + 1);
+          toast.success("Itineraries updated", {
+            description: "Website preview reflects latest itinerary changes",
+          });
         }
       } catch (error) {
         console.error("Error updating itineraries:", error);
+        toast.error("Failed to update itineraries", {
+          description: "Please try refreshing the page",
+        });
       }
     };
 
@@ -664,27 +648,25 @@ const WebsiteBuilder: React.FC = () => {
 
     try {
       // Refresh itineraries from database
-      try {
-        const { data: user } = await supabase.auth.getUser();
-        if (user.user) {
-          const dbItineraries = await itineraryService.getItineraries(user.user.id);
-          if (dbItineraries && dbItineraries.length > 0) {
-            setItineraries(dbItineraries);
-            localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
-          }
+      const { data: user } = await supabase.auth.getUser();
+      if (user.user) {
+        const dbItineraries = await itineraryService.getItineraries(user.user.id);
+        console.log("Reloaded itineraries from database:", dbItineraries);
+        
+        // Always update itineraries, even if empty
+        setItineraries(dbItineraries || []);
+        
+        if (dbItineraries && dbItineraries.length > 0) {
+          localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
+          console.log("Updated itineraries:", dbItineraries.length, "items");
+        } else {
+          localStorage.removeItem("culturinItineraries");
+          console.log("No itineraries found - cleared localStorage");
         }
-      } catch (error) {
-        console.error("Error refreshing itineraries from database:", error);
-        // Fallback to localStorage
-        const storedItineraries = localStorage.getItem("culturinItineraries");
-        if (storedItineraries) {
-          try {
-            const parsedItineraries = JSON.parse(storedItineraries);
-            setItineraries(parsedItineraries);
-          } catch (e) {
-            console.error("Error parsing itineraries:", e);
-          }
-        }
+      } else {
+        console.log("No authenticated user - cannot refresh itineraries");
+        setItineraries([]);
+        localStorage.removeItem("culturinItineraries");
       }
 
       setPreviewKey((prev) => prev + 1);
@@ -692,6 +674,7 @@ const WebsiteBuilder: React.FC = () => {
         description: "Website preview has been updated with latest itineraries",
       });
     } catch (error) {
+      console.error("Error refreshing preview:", error);
       toast.error("Failed to refresh preview", {
         description: "Please try again",
       });
