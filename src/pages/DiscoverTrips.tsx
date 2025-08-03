@@ -277,7 +277,7 @@ const DiscoverTrips = () => {
     }
     
     // Here you would normally send this data to your backend
-    console.log("Booking submitted:", bookingForm);
+
     
     // Instead of closing, now proceed to payment
     handleProceedToPayment();

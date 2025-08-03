@@ -73,7 +73,7 @@ const GeneralSettings: React.FC = () => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     toast.success("Settings updated successfully");
-    console.log(values);
+
   }
 
   return (

@@ -128,7 +128,7 @@ const IssueNewCard: React.FC<IssueNewCardProps> = ({ onBack, onComplete }) => {
     setIsLoading(true);
     try {
       // API call to issue card
-      console.log("Issuing card with data:", {
+
         cardType,
         cardholderId: selectedCardholder,
         spendingLimit: parseFloat(spendingLimit),

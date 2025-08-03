@@ -47,7 +47,6 @@ const NotificationSettings: React.FC = () => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     toast.success("Notification preferences updated");
-    console.log(values);
   }
 
   return (

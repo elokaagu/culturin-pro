@@ -142,7 +142,7 @@ const ProductMarketingPage = () => {
       }
     } else {
       // For other content types, use the existing placeholder logic
-      console.log(`Generating content for: ${type}`);
+
     }
   };
 

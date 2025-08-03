@@ -104,20 +104,20 @@ const WebsiteBuilder: React.FC = () => {
         try {
           const { data: user } = await supabase.auth.getUser();
           if (user.user) {
-            console.log("Loading itineraries for user:", user.user.id);
+      
             const dbItineraries = await itineraryService.getItineraries(user.user.id);
-            console.log("Database itineraries:", dbItineraries);
+            
             if (dbItineraries && dbItineraries.length > 0) {
               setItineraries(dbItineraries);
               localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
-              console.log("Set itineraries from database:", dbItineraries.length, "items");
+              
             } else {
-              console.log("No itineraries in database - user needs to create some");
+              
               setItineraries([]);
               localStorage.removeItem("culturinItineraries");
             }
           } else {
-            console.log("No authenticated user - cannot load itineraries");
+
             setItineraries([]);
             localStorage.removeItem("culturinItineraries");
           }
@@ -145,7 +145,7 @@ const WebsiteBuilder: React.FC = () => {
           itineraries: itineraries,
         });
 
-        console.log("Website data loaded successfully");
+
       } catch (error) {
         console.error("Error loading website data:", error);
         // No fallback - keep empty state
@@ -207,23 +207,22 @@ const WebsiteBuilder: React.FC = () => {
     };
 
     const handleItineraryChange = async (event: CustomEvent) => {
-      console.log("Itinerary change event received:", event.detail);
+
       try {
         // Refresh itineraries from database when itinerary changes
         const { data: user } = await supabase.auth.getUser();
         if (user.user) {
           const dbItineraries = await itineraryService.getItineraries(user.user.id);
-          console.log("Fetched itineraries from database:", dbItineraries);
+          
           
           // Always update itineraries, even if empty
           setItineraries(dbItineraries || []);
           
           if (dbItineraries && dbItineraries.length > 0) {
             localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
-            console.log("Updated itineraries:", dbItineraries.length, "items");
+
           } else {
             localStorage.removeItem("culturinItineraries");
-            console.log("No itineraries found - cleared localStorage");
           }
           
           setPreviewKey((prev) => prev + 1);
@@ -369,7 +368,7 @@ const WebsiteBuilder: React.FC = () => {
           setLastSaved(new Date());
           setHasUnsavedChanges(false);
           setSaveStatus('saved');
-          console.log("Website auto-saved successfully");
+  
         } else {
           throw new Error("Failed to save to localStorage");
         }
@@ -394,7 +393,7 @@ const WebsiteBuilder: React.FC = () => {
             setLastSaved(new Date());
             setHasUnsavedChanges(false);
             setSaveStatus('saved');
-            console.log("Website saved with minimal data");
+
           } else {
             throw new Error("Failed to save minimal data");
           }
@@ -651,20 +650,19 @@ const WebsiteBuilder: React.FC = () => {
       const { data: user } = await supabase.auth.getUser();
       if (user.user) {
         const dbItineraries = await itineraryService.getItineraries(user.user.id);
-        console.log("Reloaded itineraries from database:", dbItineraries);
+
         
         // Always update itineraries, even if empty
         setItineraries(dbItineraries || []);
         
         if (dbItineraries && dbItineraries.length > 0) {
           localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
-          console.log("Updated itineraries:", dbItineraries.length, "items");
+
         } else {
           localStorage.removeItem("culturinItineraries");
-          console.log("No itineraries found - cleared localStorage");
         }
       } else {
-        console.log("No authenticated user - cannot refresh itineraries");
+
         setItineraries([]);
         localStorage.removeItem("culturinItineraries");
       }

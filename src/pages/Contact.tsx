@@ -59,7 +59,7 @@ const Contact = () => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    console.log("Form submitted:", data);
+
     toast.success("Message sent successfully! We'll get back to you soon.");
 
     reset();

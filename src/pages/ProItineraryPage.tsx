@@ -57,12 +57,12 @@ const ProItineraryPage = () => {
   const handleItinerarySave = async (updatedItinerary: ItineraryType) => {
     // Prevent duplicate saves
     if (isSavingInProgress) {
-      console.log("Save already in progress, skipping...");
+
       return;
     }
 
     setIsSavingInProgress(true);
-    console.log("Saving itinerary:", updatedItinerary.title);
+    
 
     try {
       if (
@@ -72,7 +72,7 @@ const ProItineraryPage = () => {
       ) {
         // Create new itinerary
         const { id, lastUpdated, ...itineraryData } = updatedItinerary;
-        console.log("Creating new itinerary...");
+
         await createItinerary(itineraryData);
         toast({
           title: "Itinerary Created",
@@ -80,7 +80,7 @@ const ProItineraryPage = () => {
         });
       } else {
         // Update existing itinerary
-        console.log("Updating existing itinerary...");
+
         await updateItinerary(updatedItinerary.id, updatedItinerary);
         toast({
           title: "Itinerary Updated",

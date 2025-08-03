@@ -65,7 +65,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
 
   // Reset modules when itinerary changes
   useEffect(() => {
-    console.log("Itinerary changed:", itinerary.id, itinerary.modules);
+
     if (itinerary.id && itinerary.modules) {
       setModules(itinerary.modules);
       setActiveDay(1);
@@ -109,13 +109,13 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, day: number) => {
     e.preventDefault();
-    console.log("Drop event triggered for day:", day);
+    
 
     try {
       const moduleData = e.dataTransfer.getData("moduleData");
-      console.log("Module data received:", moduleData);
+      
       if (!moduleData) {
-        console.log("No module data found");
+        
         return;
       }
 
@@ -138,7 +138,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
 
       setModules((prev) => {
         const newModules = [...prev, newModule];
-        console.log("Updated modules:", newModules);
+
         return newModules;
       });
       toast({
@@ -592,7 +592,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
 
                   {(() => {
                     const dayModules = modules.filter((module) => module.day === day);
-                    console.log(`Rendering modules for day ${day}:`, dayModules);
+              
                     return dayModules
                       .sort((a, b) => (a.position || 0) - (b.position || 0))
                       .map((module) => (

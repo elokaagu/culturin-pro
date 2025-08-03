@@ -28,7 +28,7 @@ const JoinCommunity = () => {
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle newsletter submission
-    console.log({ name, email, userType });
+
     setName("");
     setEmail("");
     setUserType("");

@@ -94,7 +94,7 @@ const ApplicationPage = () => {
     setFormState((prev) => ({ ...prev, submitted: true }));
 
     // In a real app, you'd send this data to your backend
-    console.log("Application submitted:", {
+    
       jobId,
       ...formState,
     });

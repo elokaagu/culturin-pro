@@ -97,7 +97,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
 
       // Dispatch event to notify website builder of itinerary changes
       if (typeof window !== "undefined") {
-        console.log("Dispatching itineraryChanged event:", { action: "saved", itinerary: savedItinerary });
+
         window.dispatchEvent(
           new CustomEvent("itineraryChanged", {
             detail: { action: "saved", itinerary: savedItinerary }

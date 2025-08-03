@@ -137,8 +137,6 @@ export default function ItineraryDetailPage() {
     setIsSaving(true);
 
     try {
-      console.log("Saving itinerary with formData:", formData);
-
       const updates: Partial<ItineraryType> = {
         title: formData.title.trim(),
         description: formData.description?.trim() || "",
@@ -159,14 +157,10 @@ export default function ItineraryDetailPage() {
         tags: formData.tags ? formData.tags.split(", ").filter(Boolean) : [],
       };
 
-      console.log("Updates to send:", updates);
-
       const updatedItinerary = await itineraryService.updateItinerary(
         itinerary.id,
         updates
       );
-
-      console.log("Successfully updated itinerary:", updatedItinerary);
 
       setItinerary(updatedItinerary);
       setIsEditing(false);
@@ -242,9 +236,7 @@ export default function ItineraryDetailPage() {
           text: itinerary?.description || "Check out this amazing itinerary",
           url: shareUrl,
         });
-      } catch (error) {
-        console.log("Error sharing:", error);
-      }
+      } catch (error) {}
     } else {
       // Fallback: copy to clipboard
       try {
@@ -254,7 +246,6 @@ export default function ItineraryDetailPage() {
           description: "Itinerary link has been copied to your clipboard.",
         });
       } catch (error) {
-        console.log("Error copying to clipboard:", error);
         toast({
           title: "Error",
           description: "Failed to copy link to clipboard.",

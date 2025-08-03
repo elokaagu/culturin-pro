@@ -53,7 +53,7 @@ const NotificationSettings: React.FC = () => {
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       // Here you would typically save to your backend
-      console.log("Saving notification preferences:", values);
+  
 
       toast.success("Notification preferences updated successfully", {
         description:

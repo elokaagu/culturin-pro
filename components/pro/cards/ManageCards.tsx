@@ -115,7 +115,7 @@ const ManageCards: React.FC = () => {
   const handleFreezeCard = async (cardId: string) => {
     try {
       // API call to freeze card
-      console.log(`Freezing card ${cardId}`);
+
       toast.success("Card frozen successfully");
     } catch (error) {
       toast.error("Failed to freeze card");
@@ -125,7 +125,7 @@ const ManageCards: React.FC = () => {
   const handleUnfreezeCard = async (cardId: string) => {
     try {
       // API call to unfreeze card
-      console.log(`Unfreezing card ${cardId}`);
+
       toast.success("Card unfrozen successfully");
     } catch (error) {
       toast.error("Failed to unfreeze card");
@@ -137,7 +137,7 @@ const ManageCards: React.FC = () => {
 
     try {
       // API call to update limit
-      console.log(`Updating limit for card ${selectedCard.id} to ${newLimit}`);
+
       toast.success("Card limit updated successfully");
       setIsLimitDialogOpen(false);
       setNewLimit("");
@@ -150,7 +150,7 @@ const ManageCards: React.FC = () => {
   const handleCancelCard = async (cardId: string) => {
     try {
       // API call to cancel card
-      console.log(`Cancelling card ${cardId}`);
+
       toast.success("Card cancelled successfully");
     } catch (error) {
       toast.error("Failed to cancel card");
@@ -289,7 +289,7 @@ const ManageCards: React.FC = () => {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           onClick={() =>
-                            console.log(`View transactions for ${card.id}`)
+                      
                           }
                         >
                           <Eye className="h-4 w-4 mr-2" />
