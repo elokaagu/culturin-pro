@@ -247,7 +247,7 @@ function StudioContent() {
               </div>
 
               {/* Booking Status Check */}
-              {!userData.websiteSettings.enableBooking ? (
+              {!userData?.websiteSettings?.enableBooking ? (
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 text-center">
                   <ShoppingCart className="h-12 w-12 text-orange-500 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-orange-800 mb-2">
@@ -278,11 +278,11 @@ function StudioContent() {
                   </div>
                   <BookingWidget
                     tour={sampleItinerary}
-                    primaryColor={userData.websiteSettings.primaryColor}
-                    companyName={
-                      userData.websiteSettings.companyName ||
-                      userData.businessName
-                    }
+                                    primaryColor={userData?.websiteSettings?.primaryColor || "#9b87f5"}
+                companyName={
+                  userData?.websiteSettings?.companyName ||
+                  userData?.businessName || "Your Business"
+                }
                   />
                 </div>
               )}

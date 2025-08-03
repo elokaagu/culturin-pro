@@ -117,10 +117,10 @@ const GeneralSettings: React.FC = () => {
       updateUserData(values);
 
       // Also update website settings if business name changed
-      if (values.businessName !== userData.businessName) {
+      if (values.businessName !== userData?.businessName) {
         updateUserData({
           websiteSettings: {
-            ...userData.websiteSettings,
+            ...userData?.websiteSettings,
             companyName: values.businessName,
           },
         });

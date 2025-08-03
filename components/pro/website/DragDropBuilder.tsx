@@ -431,7 +431,7 @@ export default function DragDropBuilder() {
       updateUserData({
         ...userData,
         websiteSettings: {
-          ...userData.websiteSettings,
+          ...userData?.websiteSettings,
           placedBlocks: updatedBlocks,
         },
       });
@@ -461,7 +461,7 @@ export default function DragDropBuilder() {
       updateUserData({
         ...userData,
         websiteSettings: {
-          ...userData.websiteSettings,
+          ...userData?.websiteSettings,
           placedBlocks: updatedBlocks,
         },
       });

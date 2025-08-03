@@ -125,23 +125,23 @@ const WebsiteThemes: React.FC = () => {
     try {
       // Apply the template settings to the website
       const updatedSettings = {
-        ...userData.websiteSettings,
+        ...userData?.websiteSettings,
         theme: template.id,
         primaryColor: template.themeSettings.primaryColor,
         fontSettings: {
-          ...userData.websiteSettings.fontSettings,
+          ...userData?.websiteSettings?.fontSettings,
           family: template.themeSettings.fontFamily,
         },
         headerSettings: {
-          ...userData.websiteSettings.headerSettings,
+          ...userData?.websiteSettings?.headerSettings,
           style: template.themeSettings.headerStyle,
         },
         footerSettings: {
-          ...userData.websiteSettings.footerSettings,
+          ...userData?.websiteSettings?.footerSettings,
           style: template.themeSettings.footerStyle,
         },
         animationSettings: {
-          ...userData.websiteSettings.animationSettings,
+          ...userData?.websiteSettings?.animationSettings,
           style: template.themeSettings.animationStyle,
         },
       };

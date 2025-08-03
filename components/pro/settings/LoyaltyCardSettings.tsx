@@ -38,7 +38,7 @@ const LoyaltyCardSettings: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
 
-  const [loyaltyCard, setLoyaltyCard] = useState(userData.loyaltyCard);
+  const [loyaltyCard, setLoyaltyCard] = useState(userData?.loyaltyCard);
 
   useEffect(() => {
     loadLoyaltyCard();

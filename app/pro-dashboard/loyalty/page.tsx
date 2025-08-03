@@ -64,7 +64,7 @@ const LoyaltyDashboard: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
 
-  const loyaltyCard = userData.loyaltyCard;
+  const loyaltyCard = userData?.loyaltyCard;
 
   useEffect(() => {
     loadTransactions();
