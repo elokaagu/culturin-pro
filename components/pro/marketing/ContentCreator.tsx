@@ -145,7 +145,7 @@ const ContentCreator: React.FC = () => {
       wordCount: "10-20 words",
     },
     {
-      id: "google-ad",
+      id: "google-ad-copy",
       name: "Google Ad Copy",
       icon: <Target className="h-5 w-5" />,
       description: "High-converting ad copy for Google Ads",

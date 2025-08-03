@@ -9,6 +9,7 @@ export async function POST(request: NextRequest) {
       keyCulturalElements,
       targetAudience,
       tone,
+      copyType,
     } = await request.json();
 
     // Validate required fields
@@ -105,6 +106,29 @@ Format as JSON with the following structure:
   "description1": "string",
   "description2": "string"
 }`;
+    } else if (copyType === "marketing-copy") {
+      systemPrompt = "You are an expert marketing copywriter specializing in cultural tourism. You create compelling marketing copy that drives conversions and inspires travelers to book authentic cultural experiences.";
+      prompt = `Create compelling marketing copy for a cultural experience with the following details:
+
+Experience Title: ${experienceTitle}
+Location: ${location}
+Key Cultural Elements: ${keyCulturalElements || "local traditions, authentic experiences"}
+Target Audience: ${targetAudience || "cultural travelers"}
+Tone: ${tone || "friendly and approachable"}
+
+Please create marketing copy that:
+- Is compelling and conversion-focused
+- Uses the specified tone
+- Describes the experience authentically
+- Includes a clear value proposition
+- Has a strong call to action
+- Incorporates cultural authenticity
+- Is optimized for the target audience
+- Uses persuasive language
+- Addresses pain points and desires
+- Creates urgency and excitement
+
+Format as plain text with proper structure and flow.`;
     } else {
       systemPrompt = "You are an expert marketing copywriter specializing in cultural tourism. You create compelling marketing content that inspires travelers to book authentic cultural experiences.";
       prompt = `Create engaging marketing content for a cultural experience with the following details:
