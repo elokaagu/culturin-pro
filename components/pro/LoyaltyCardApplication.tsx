@@ -39,21 +39,33 @@ import { toast } from "sonner";
 
 const LoyaltyCardApplication: React.FC = () => {
   const { user } = useAuth();
-  const { userData, updateUserData } = useUserData();
+  const { userData, updateUserData, isLoading: isUserDataLoading } = useUserData();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTier, setSelectedTier] = useState("bronze");
 
   const [formData, setFormData] = useState({
-    firstName: userData.businessName.split(" ")[0] || "",
-    lastName: userData.businessName.split(" ").slice(1).join(" ") || "",
-    email: userData.email,
-    phone: userData.phone,
-    address: userData.address,
+    firstName: userData?.businessName?.split(" ")[0] || "",
+    lastName: userData?.businessName?.split(" ").slice(1).join(" ") || "",
+    email: userData?.email || "",
+    phone: userData?.phone || "",
+    address: userData?.address || "",
     dateOfBirth: "",
     nationality: "",
     sourceOfFunds: "",
     annualIncome: "",
   });
+
+  // Show loading state while userData is being initialized
+  if (isUserDataLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading application form...</p>
+        </div>
+      </div>
+    );
+  }
 
   const tiers = [
     {

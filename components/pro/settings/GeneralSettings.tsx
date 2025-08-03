@@ -61,32 +61,53 @@ const timezones = [
 ];
 
 const GeneralSettings: React.FC = () => {
-  const { userData, updateUserData, saveUserData } = useUserData();
+  const { userData, updateUserData, saveUserData, isLoading } = useUserData();
   const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      businessName: userData.businessName,
-      email: userData.email,
-      phone: userData.phone,
-      address: userData.address,
-      timezone: userData.timezone,
-      bio: userData.bio,
+      businessName: userData?.businessName || "",
+      email: userData?.email || "",
+      phone: userData?.phone || "",
+      address: userData?.address || "",
+      timezone: userData?.timezone || "utc-8",
+      bio: userData?.bio || "",
     },
   });
 
   // Update form when userData changes
   useEffect(() => {
-    form.reset({
-      businessName: userData.businessName,
-      email: userData.email,
-      phone: userData.phone,
-      address: userData.address,
-      timezone: userData.timezone,
-      bio: userData.bio,
-    });
+    if (userData) {
+      form.reset({
+        businessName: userData.businessName || "",
+        email: userData.email || "",
+        phone: userData.phone || "",
+        address: userData.address || "",
+        timezone: userData.timezone || "utc-8",
+        bio: userData.bio || "",
+      });
+    }
   }, [userData, form]);
+
+  // Show loading state while userData is being initialized
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-semibold">General Settings</h2>
+          <p className="text-gray-500">
+            Manage your basic information and preferences. Changes here will
+            automatically update your website and other platform features.
+          </p>
+        </div>
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span className="ml-3 text-gray-600">Loading settings...</span>
+        </div>
+      </div>
+    );
+  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSaving(true);
