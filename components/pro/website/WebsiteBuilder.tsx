@@ -141,7 +141,7 @@ const WebsiteBuilder: React.FC = () => {
 
         // Add initial state to history
         addToHistory({
-          websiteSettings: userData.websiteSettings,
+          websiteSettings: userData?.websiteSettings || {},
           itineraries: itineraries,
         });
 
@@ -155,7 +155,7 @@ const WebsiteBuilder: React.FC = () => {
     };
 
     loadWebsiteData();
-  }, [userData.websiteSettings]);
+  }, [userData?.websiteSettings]);
 
   // Auto-refresh preview when user data changes
   useEffect(() => {
@@ -174,7 +174,7 @@ const WebsiteBuilder: React.FC = () => {
       }
     }
     setIsUndoRedoAction(false);
-  }, [userData.websiteSettings, autoSaveEnabled]);
+  }, [userData?.websiteSettings, autoSaveEnabled]);
 
   // Listen for website settings changes
   useEffect(() => {
@@ -187,7 +187,7 @@ const WebsiteBuilder: React.FC = () => {
       if (event.detail?.filteredItineraries) {
         setItineraries(event.detail.filteredItineraries);
         addToHistory({
-          websiteSettings: userData.websiteSettings,
+          websiteSettings: userData?.websiteSettings || {},
           itineraries: event.detail.filteredItineraries,
         });
       }
@@ -200,7 +200,7 @@ const WebsiteBuilder: React.FC = () => {
       setPreviewKey((prev) => prev + 1);
       setHasUnsavedChanges(true);
       setSaveStatus('saving');
-      addToHistory({ websiteSettings: userData.websiteSettings, itineraries });
+      addToHistory({ websiteSettings: userData?.websiteSettings || {}, itineraries });
       toast.success("Theme applied", {
         description: `Applied "${event.detail.theme}" theme to preview`,
       });
@@ -569,7 +569,7 @@ const WebsiteBuilder: React.FC = () => {
   }, [updateWebsiteSettings]);
 
   const handlePublish = async () => {
-    if (!userData.businessName) {
+    if (!userData?.businessName) {
       toast.error("Please complete your business profile first", {
         description: "Add your business name in the settings",
       });
@@ -583,7 +583,7 @@ const WebsiteBuilder: React.FC = () => {
       await handleManualSave();
 
       // Generate a unique slug for the website
-      const slug = `${userData.businessName
+      const slug = `${userData?.businessName
         .toLowerCase()
         .replace(/\s+/g, "-")}-${Date.now().toString(36)}`;
       const newPublishedUrl = `tour/${slug}`;
@@ -598,18 +598,18 @@ const WebsiteBuilder: React.FC = () => {
 
       // Save website content and theme to localStorage for the tour operator website
       const websiteContent = {
-        companyName: userData.websiteSettings.companyName,
-        tagline: userData.websiteSettings.tagline,
-        description: userData.websiteSettings.description,
-        primaryColor: userData.websiteSettings.primaryColor,
-        headerImage: userData.websiteSettings.headerImage,
-        enableBooking: userData.websiteSettings.enableBooking,
-        bookingSettings: userData.websiteSettings.bookingSettings,
+        companyName: userData?.websiteSettings?.companyName || "",
+        tagline: userData?.websiteSettings?.tagline || "",
+        description: userData?.websiteSettings?.description || "",
+        primaryColor: userData?.websiteSettings?.primaryColor || "#9b87f5",
+        headerImage: userData?.websiteSettings?.headerImage || null,
+        enableBooking: userData?.websiteSettings?.enableBooking || true,
+        bookingSettings: userData?.websiteSettings?.bookingSettings || {},
       };
 
       localStorage.setItem(
         "publishedWebsiteTheme",
-        userData.websiteSettings.theme
+        userData?.websiteSettings?.theme || "classic"
       );
       localStorage.setItem(
         "publishedWebsiteContent",
