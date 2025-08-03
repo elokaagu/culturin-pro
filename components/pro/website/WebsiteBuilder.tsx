@@ -346,14 +346,14 @@ const WebsiteBuilder: React.FC = () => {
       // Save website-specific data with compression
       const websiteData: WebsiteData = {
         settings: {
-          ...userData.websiteSettings,
+          ...userData?.websiteSettings,
           // Don't save large objects to localStorage
           placedBlocks: undefined,
-          headerImage: userData.websiteSettings.headerImage ? 'saved' : null,
+          headerImage: userData?.websiteSettings?.headerImage ? 'saved' : null,
         },
         itineraries: itineraries.slice(0, 10), // Limit to 10 itineraries for localStorage
         blocks: [], // Don't save blocks to localStorage
-        theme: userData.websiteSettings.theme,
+        theme: userData?.websiteSettings?.theme || "classic",
         publishedUrl: publishedUrl,
         lastModified: new Date(),
         version: '1.0.0'
@@ -382,7 +382,7 @@ const WebsiteBuilder: React.FC = () => {
           
           // Save minimal data
           const minimalData = {
-            theme: userData.websiteSettings.theme,
+            theme: userData?.websiteSettings?.theme || "classic",
             publishedUrl: publishedUrl,
             lastModified: new Date().toISOString(),
           };
@@ -415,7 +415,7 @@ const WebsiteBuilder: React.FC = () => {
     } finally {
       setSaveLoading(false);
     }
-  }, [saveUserData, userData.websiteSettings, itineraries, publishedUrl, autoSaveEnabled]);
+  }, [saveUserData, userData?.websiteSettings, itineraries, publishedUrl, autoSaveEnabled]);
 
   // Enhanced manual save function
   const handleManualSave = useCallback(async () => {
@@ -425,14 +425,14 @@ const WebsiteBuilder: React.FC = () => {
       
       const websiteData = {
         settings: {
-          ...userData.websiteSettings,
+          ...userData?.websiteSettings,
           // Don't save large objects to localStorage
           placedBlocks: undefined,
-          headerImage: userData.websiteSettings.headerImage ? 'saved' : null,
+          headerImage: userData?.websiteSettings?.headerImage ? 'saved' : null,
         },
         itineraries: itineraries.slice(0, 10), // Limit itineraries for localStorage
         blocks: [], // Don't save blocks to localStorage
-        theme: userData.websiteSettings.theme,
+        theme: userData?.websiteSettings?.theme || "classic",
         publishedUrl: publishedUrl,
       };
 
@@ -457,12 +457,12 @@ const WebsiteBuilder: React.FC = () => {
         try {
           const minimalData = {
             settings: {
-              companyName: userData.websiteSettings.companyName,
-              tagline: userData.websiteSettings.tagline,
-              theme: userData.websiteSettings.theme,
-              enableBooking: userData.websiteSettings.enableBooking,
+              companyName: userData?.websiteSettings?.companyName || "",
+              tagline: userData?.websiteSettings?.tagline || "",
+              theme: userData?.websiteSettings?.theme || "classic",
+              enableBooking: userData?.websiteSettings?.enableBooking || true,
             },
-            theme: userData.websiteSettings.theme,
+            theme: userData?.websiteSettings?.theme || "classic",
             publishedUrl: publishedUrl,
           };
           
@@ -493,16 +493,16 @@ const WebsiteBuilder: React.FC = () => {
     } finally {
       setSaveLoading(false);
     }
-  }, [userData.websiteSettings, itineraries, publishedUrl, saveUserData]);
+  }, [userData?.websiteSettings, itineraries, publishedUrl, saveUserData]);
 
   // Export website data
   const handleExportWebsite = useCallback(() => {
     try {
       const websiteData: WebsiteData = {
-        settings: userData.websiteSettings,
+        settings: userData?.websiteSettings || {},
         itineraries: itineraries,
-        blocks: userData.websiteSettings.placedBlocks || [],
-        theme: userData.websiteSettings.theme,
+        blocks: userData?.websiteSettings?.placedBlocks || [],
+        theme: userData?.websiteSettings?.theme || "classic",
         publishedUrl: publishedUrl,
         lastModified: new Date(),
         version: '1.0.0'
@@ -528,7 +528,7 @@ const WebsiteBuilder: React.FC = () => {
         description: "Please try again",
       });
     }
-  }, [userData.websiteSettings, itineraries, publishedUrl]);
+  }, [userData?.websiteSettings, itineraries, publishedUrl]);
 
   // Import website data
   const handleImportWebsite = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {

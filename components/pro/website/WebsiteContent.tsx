@@ -24,12 +24,14 @@ const WebsiteContent: React.FC = () => {
 
   // Initialize form with user data
   useEffect(() => {
-    setCompanyName(userData.websiteSettings.companyName);
-    setTagline(userData.websiteSettings.tagline);
-    setDescription(userData.websiteSettings.description);
-    setPrimaryColor(userData.websiteSettings.primaryColor);
-    setHeaderImage(userData.websiteSettings.headerImage);
-  }, [userData.websiteSettings]);
+    if (userData?.websiteSettings) {
+      setCompanyName(userData.websiteSettings.companyName || "");
+      setTagline(userData.websiteSettings.tagline || "");
+      setDescription(userData.websiteSettings.description || "");
+      setPrimaryColor(userData.websiteSettings.primaryColor || "#9b87f5");
+      setHeaderImage(userData.websiteSettings.headerImage || null);
+    }
+  }, [userData?.websiteSettings]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -142,7 +144,7 @@ const WebsiteContent: React.FC = () => {
         description: updates.description,
         primaryColor: updates.primaryColor,
         headerImage: updates.headerImage,
-        theme: userData.websiteSettings.theme || "classic",
+        theme: userData?.websiteSettings?.theme || "classic",
         lastUpdated: new Date().toISOString(),
       };
 
@@ -173,11 +175,11 @@ const WebsiteContent: React.FC = () => {
   const handleReset = () => {
     try {
       const defaultSettings = {
-        companyName: userData.businessName || "Your Business Name",
-        tagline: `Authentic cultural experiences curated by ${
-          userData.businessName || "Your Business"
-        }`,
-        description: userData.bio || "Add your business description here",
+        companyName: userData?.businessName || "Your Business Name",
+                  tagline: `Authentic cultural experiences curated by ${
+            userData?.businessName || "Your Business"
+          }`,
+                  description: userData?.bio || "Add your business description here",
         primaryColor: "#9b87f5",
         headerImage: null,
       };

@@ -320,7 +320,7 @@ export default function DragDropBuilder() {
   const { userData, updateUserData } = useUserData();
 
   const [placedBlocks, setPlacedBlocks] = useState<PlacedBlock[]>(
-    userData.websiteSettings.placedBlocks || []
+    userData?.websiteSettings?.placedBlocks || []
   );
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -378,7 +378,7 @@ export default function DragDropBuilder() {
         updateUserData({
           ...userData,
           websiteSettings: {
-            ...userData.websiteSettings,
+            ...userData?.websiteSettings,
             placedBlocks: updatedBlocks,
           },
         });
@@ -403,7 +403,7 @@ export default function DragDropBuilder() {
       updateUserData({
         ...userData,
         websiteSettings: {
-          ...userData.websiteSettings,
+          ...userData?.websiteSettings,
           placedBlocks: updatedBlocks,
         },
       });
