@@ -22,7 +22,7 @@ import {
 // Import our modular components
 import BookingFlowBuilder from "@/components/pro/website/BookingFlowBuilder";
 import BookingWidget from "@/components/pro/website/BookingWidget";
-import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
+import { ItineraryType } from "@/data/itineraryData";
 import { useUserData } from "@/src/contexts/UserDataContext";
 import Image from "@/components/ui/image";
 

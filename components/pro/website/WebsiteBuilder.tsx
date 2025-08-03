@@ -36,7 +36,7 @@ import {
   Image,
 } from "lucide-react";
 import { useNavigate } from "../../../lib/navigation";
-import { sampleItineraries, ItineraryType } from "@/data/itineraryData";
+import { ItineraryType } from "@/data/itineraryData";
 import { useUserData } from "../../../src/contexts/UserDataContext";
 import MediaLibrary from "./MediaLibrary";
 import { settingsService } from "@/lib/settings-service";

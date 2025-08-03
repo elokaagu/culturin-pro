@@ -6,7 +6,7 @@ import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ItineraryTabs from "@/components/pro/itinerary/ItineraryTabs";
 import ItineraryEditor from "@/components/pro/itinerary/ItineraryEditor";
-import { sampleTemplates, ItineraryType } from "@/data/itineraryData";
+import { ItineraryType } from "@/data/itineraryData";
 import { useToast } from "@/components/ui/use-toast";
 import { useItineraries } from "@/hooks/useItineraries";
 

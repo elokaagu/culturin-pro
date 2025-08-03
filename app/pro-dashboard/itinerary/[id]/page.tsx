@@ -42,7 +42,7 @@ import {
   Camera,
 } from "lucide-react";
 import Image from "@/components/ui/image";
-import { sampleItineraries } from "@/data/itineraryData";
+
 import { itineraryService } from "@/lib/itinerary-service";
 import { ItineraryType } from "@/data/itineraryData";
 
@@ -76,23 +76,13 @@ export default function ItineraryDetailPage() {
         if (dbItinerary) {
           setItinerary(dbItinerary);
         } else {
-          // Fallback to sample data
-          const sampleItinerary = sampleItineraries.find(
-            (i) => i.id === itineraryId
-          );
-          if (sampleItinerary) {
-            setItinerary(sampleItinerary);
-          }
+          // No itinerary found - set to null
+          setItinerary(null);
         }
       } catch (error) {
         console.error("Error loading itinerary:", error);
-        // Fallback to sample data
-        const sampleItinerary = sampleItineraries.find(
-          (i) => i.id === itineraryId
-        );
-        if (sampleItinerary) {
-          setItinerary(sampleItinerary);
-        }
+        // Error loading - set to null
+        setItinerary(null);
       } finally {
         setIsLoading(false);
       }
