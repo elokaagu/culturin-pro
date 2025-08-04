@@ -721,7 +721,7 @@ const WebsiteBuilder: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
+      <div className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden rounded-r-lg">
         {/* Sidebar Header - Fixed */}
         <div className="p-6 border-b border-gray-200 flex-shrink-0">
           <div className="mb-4">
@@ -751,9 +751,41 @@ const WebsiteBuilder: React.FC = () => {
           </div>
         </div>
 
-        {/* Scrollable Content Area - Everything below status indicators */}
+        {/* Navigation Tabs - Moved to top */}
+        <div className="p-6 border-b border-gray-200">
+          <Tabs value={activeTab} onValueChange={handleTabChange}>
+            <TabsList className="flex flex-col w-full justify-start">
+              <TabsTrigger value="preview" className="w-full justify-start">
+                <Eye className="h-4 w-4 mr-2" />
+                Preview
+              </TabsTrigger>
+              <TabsTrigger value="builder" className="w-full justify-start">
+                <Settings className="h-4 w-4 mr-2" />
+                Builder
+              </TabsTrigger>
+              <TabsTrigger value="themes" className="w-full justify-start">
+                <Palette className="h-4 w-4 mr-2" />
+                Themes
+              </TabsTrigger>
+              <TabsTrigger value="content" className="w-full justify-start">
+                <FileText className="h-4 w-4 mr-2" />
+                Content
+              </TabsTrigger>
+              <TabsTrigger value="booking" className="w-full justify-start">
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Booking
+              </TabsTrigger>
+              <TabsTrigger value="media-library" className="w-full justify-start">
+                <Image className="h-4 w-4 mr-2" />
+                Media Library
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
+        {/* Scrollable Content Area - Everything below navigation */}
         <div className="flex-1 overflow-y-auto">
-          {/* Action Buttons (now scrollable) */}
+          {/* Action Buttons - Save and Publish */}
           <div className="p-6 border-b border-gray-200 space-y-4">
             <div className="flex gap-2">
               <Button 
@@ -770,16 +802,16 @@ const WebsiteBuilder: React.FC = () => {
                 Save
               </Button>
               <Button 
-                onClick={handleReloadPreview}
-                disabled={refreshLoading}
-                variant="outline"
-                size="icon"
+                onClick={handlePublish}
+                disabled={publishLoading}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
               >
-                {refreshLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                {publishLoading ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
-                  <RefreshCw className="h-4 w-4" />
+                  <Globe className="h-4 w-4 mr-2" />
                 )}
+                Publish
               </Button>
             </div>
             
@@ -799,6 +831,18 @@ const WebsiteBuilder: React.FC = () => {
                 size="icon"
               >
                 <Redo className="h-4 w-4" />
+              </Button>
+              <Button 
+                onClick={handleReloadPreview}
+                disabled={refreshLoading}
+                variant="outline"
+                size="icon"
+              >
+                {refreshLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
               </Button>
             </div>
           </div>
@@ -830,40 +874,6 @@ const WebsiteBuilder: React.FC = () => {
               </div>
             </div>
           )}
-
-
-
-          {/* Navigation Tabs (scrollable) */}
-          <div className="p-6 border-b border-gray-200">
-            <Tabs value={activeTab} onValueChange={handleTabChange}>
-              <TabsList className="flex flex-col w-full justify-start">
-                <TabsTrigger value="preview" className="w-full justify-start">
-                  <Eye className="h-4 w-4 mr-2" />
-                  Preview
-                </TabsTrigger>
-                <TabsTrigger value="builder" className="w-full justify-start">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Builder
-                </TabsTrigger>
-                <TabsTrigger value="themes" className="w-full justify-start">
-                  <Palette className="h-4 w-4 mr-2" />
-                  Themes
-                </TabsTrigger>
-                <TabsTrigger value="content" className="w-full justify-start">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Content
-                </TabsTrigger>
-                <TabsTrigger value="booking" className="w-full justify-start">
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Booking
-                </TabsTrigger>
-                <TabsTrigger value="media-library" className="w-full justify-start">
-                  <Image className="h-4 w-4 mr-2" />
-                  Media Library
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
         </div>
       </div>
 
@@ -944,27 +954,7 @@ const WebsiteBuilder: React.FC = () => {
         </div>
       </div>
 
-      {/* Publish Button - Fixed at bottom */}
-      <div className="fixed bottom-6 right-6">
-        <Button
-          onClick={handlePublish}
-          disabled={publishLoading}
-          size="lg"
-          className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
-        >
-          {publishLoading ? (
-            <>
-              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-              Publishing...
-            </>
-          ) : (
-            <>
-              <Globe className="h-5 w-5 mr-2" />
-              Publish Changes
-            </>
-          )}
-        </Button>
-      </div>
+
     </div>
   );
 };
