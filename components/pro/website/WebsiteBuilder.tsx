@@ -956,7 +956,7 @@ const WebsiteBuilder: React.FC = () => {
           )}
 
           {activeTab === "builder" && (
-            <div className="h-full p-6">
+            <div className="h-full p-6 pl-8">
               <div className="space-y-6 h-full">
                 <div className="flex items-center justify-between">
                   <div>
@@ -1002,25 +1002,25 @@ const WebsiteBuilder: React.FC = () => {
           )}
 
           {activeTab === "themes" && (
-            <div className="h-full p-6">
+            <div className="h-full p-6 pl-8">
               <WebsiteThemes />
             </div>
           )}
 
           {activeTab === "content" && (
-            <div className="h-full p-6">
+            <div className="h-full p-6 pl-8">
               <WebsiteContent />
             </div>
           )}
 
           {activeTab === "booking" && (
-            <div className="h-full p-6">
+            <div className="h-full p-6 pl-8">
               <BookingFlowBuilder />
             </div>
           )}
 
           {activeTab === "media-library" && (
-            <div className="h-full p-6">
+            <div className="h-full p-6 pl-8">
               <MediaLibrary />
             </div>
           )}
