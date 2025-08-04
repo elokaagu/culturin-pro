@@ -742,16 +742,16 @@ const WebsiteBuilder: React.FC = () => {
       <div className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden rounded-r-lg">
         {/* Sidebar Header - Fixed */}
         <div className="p-6 border-b border-gray-200 flex-shrink-0">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Your Website</h2>
-            <p className="text-sm text-gray-600">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Your Website</h2>
+            <p className="text-sm text-gray-600 leading-relaxed">
               Customize your tour operator website with real-time preview and booking functionality.
             </p>
           </div>
           
           {/* Status Indicators */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 text-sm">
               {getSaveStatusIcon()}
               <span className={saveStatus === 'error' ? 'text-red-600' : 'text-gray-600'}>
                 {saveStatus === 'saving' ? 'Saving...' : 
@@ -759,7 +759,7 @@ const WebsiteBuilder: React.FC = () => {
                  hasUnsavedChanges ? 'Unsaved changes' : 'All changes saved'}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-3 text-sm text-gray-600">
               <Zap className="h-3 w-3" />
               Auto-save: {autoSaveEnabled ? 'On' : 'Off'}
             </div>
@@ -772,29 +772,29 @@ const WebsiteBuilder: React.FC = () => {
         {/* Navigation Tabs - Moved to top */}
         <div className="p-6 border-b border-gray-200">
           <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="flex flex-col w-full justify-start">
-              <TabsTrigger value="preview" className="w-full justify-start">
-                <Eye className="h-4 w-4 mr-2" />
+            <TabsList className="flex flex-col w-full justify-start space-y-2">
+              <TabsTrigger value="preview" className="w-full justify-start py-3">
+                <Eye className="h-4 w-4 mr-3" />
                 Preview
               </TabsTrigger>
-              <TabsTrigger value="builder" className="w-full justify-start">
-                <Settings className="h-4 w-4 mr-2" />
+              <TabsTrigger value="builder" className="w-full justify-start py-3">
+                <Settings className="h-4 w-4 mr-3" />
                 Builder
               </TabsTrigger>
-              <TabsTrigger value="themes" className="w-full justify-start">
-                <Palette className="h-4 w-4 mr-2" />
+              <TabsTrigger value="themes" className="w-full justify-start py-3">
+                <Palette className="h-4 w-4 mr-3" />
                 Themes
               </TabsTrigger>
-              <TabsTrigger value="content" className="w-full justify-start">
-                <FileText className="h-4 w-4 mr-2" />
+              <TabsTrigger value="content" className="w-full justify-start py-3">
+                <FileText className="h-4 w-4 mr-3" />
                 Content
               </TabsTrigger>
-              <TabsTrigger value="booking" className="w-full justify-start">
-                <ShoppingCart className="h-4 w-4 mr-2" />
+              <TabsTrigger value="booking" className="w-full justify-start py-3">
+                <ShoppingCart className="h-4 w-4 mr-3" />
                 Booking
               </TabsTrigger>
-              <TabsTrigger value="media-library" className="w-full justify-start">
-                <Image className="h-4 w-4 mr-2" />
+              <TabsTrigger value="media-library" className="w-full justify-start py-3">
+                <Image className="h-4 w-4 mr-3" />
                 Media Library
               </TabsTrigger>
             </TabsList>
@@ -804,12 +804,12 @@ const WebsiteBuilder: React.FC = () => {
         {/* Scrollable Content Area - Everything below navigation */}
         <div className="flex-1 overflow-y-auto">
           {/* Action Buttons - Save and Publish */}
-          <div className="p-6 border-b border-gray-200 space-y-4">
-            <div className="flex gap-2">
+          <div className="p-6 border-b border-gray-200 space-y-6">
+            <div className="flex gap-3">
               <Button 
                 onClick={handleManualSave}
                 disabled={saveLoading}
-                className="flex-1"
+                className="flex-1 py-3"
                 variant="default"
               >
                 {saveLoading ? (
@@ -822,7 +822,7 @@ const WebsiteBuilder: React.FC = () => {
               <Button 
                 onClick={handlePublish}
                 disabled={publishLoading}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3"
               >
                 {publishLoading ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -833,12 +833,13 @@ const WebsiteBuilder: React.FC = () => {
               </Button>
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button 
                 onClick={undo}
                 disabled={historyIndex <= 0}
                 variant="outline"
                 size="icon"
+                className="flex-1"
               >
                 <Undo className="h-4 w-4" />
               </Button>
@@ -847,6 +848,7 @@ const WebsiteBuilder: React.FC = () => {
                 disabled={historyIndex >= history.length - 1}
                 variant="outline"
                 size="icon"
+                className="flex-1"
               >
                 <Redo className="h-4 w-4" />
               </Button>
@@ -855,6 +857,7 @@ const WebsiteBuilder: React.FC = () => {
                 disabled={refreshLoading}
                 variant="outline"
                 size="icon"
+                className="flex-1"
               >
                 {refreshLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -868,15 +871,15 @@ const WebsiteBuilder: React.FC = () => {
           {/* Published URL Status (scrollable) */}
           {publishedUrl && (
             <div className="p-6 border-b border-gray-200">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-2">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-5">
+                <div className="flex items-center gap-3 mb-3">
                   <Check className="h-4 w-4 text-green-600" />
                   <span className="font-medium text-green-800">Site Published</span>
                 </div>
-                <div className="text-sm text-green-700 mb-3">
+                <div className="text-sm text-green-700 mb-4">
                   {publishedUrl}
                 </div>
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-3 mb-4">
                   <ShoppingCart className="h-3 w-3 text-green-600" />
                   <span className="text-sm text-green-700">Booking Enabled</span>
                 </div>
@@ -884,7 +887,7 @@ const WebsiteBuilder: React.FC = () => {
                   onClick={handlePreviewSite}
                   variant="outline"
                   size="sm"
-                  className="w-full"
+                  className="w-full py-2"
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   Visit Site
