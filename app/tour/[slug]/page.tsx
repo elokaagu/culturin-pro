@@ -258,6 +258,155 @@ export default function TourOperatorPage({
 
   // Layout rendering for published site
   const renderLayout = () => {
+    // Get the actual website builder content
+    const websiteDataStr = localStorage.getItem("websiteData");
+    const websiteData = websiteDataStr ? JSON.parse(websiteDataStr) : null;
+    
+    // If we have custom website data, render it instead of the default template
+    if (websiteData?.settings) {
+      return (
+        <div className="min-h-screen bg-white">
+          {/* Render custom website content based on website builder data */}
+          <div className="w-full">
+            {/* Custom header/hero section if exists */}
+            {websiteData.settings.headerImage && (
+              <div 
+                className="relative h-96 flex items-center justify-center text-white"
+                style={{
+                  background: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${websiteData.settings.headerImage})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                <div className="text-center max-w-4xl px-4">
+                  <h1 className="text-5xl font-bold mb-4">{websiteData.settings.companyName || operatorData?.name}</h1>
+                  <p className="text-xl mb-6">{websiteData.settings.tagline || operatorData?.tagline}</p>
+                  {websiteData.settings.enableBooking && (
+                    <Button
+                      size="lg"
+                      className="bg-white text-gray-900 hover:bg-gray-100 rounded-md"
+                    >
+                      Book Now
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Custom content sections */}
+            <div className="container mx-auto px-4 py-12">
+              {/* About section if description exists */}
+              {websiteData.settings.description && (
+                <div className="mb-16">
+                  <div className="max-w-3xl mx-auto text-center">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                      About Us
+                    </h2>
+                    <p className="text-lg text-gray-600 leading-relaxed">
+                      {websiteData.settings.description}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Tours/Itineraries section */}
+              {operatorData?.tours && operatorData.tours.length > 0 && (
+                <div className="mb-16">
+                  <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+                    Our Tours
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {operatorData.tours.map((tour) => (
+                      <Card
+                        key={tour.id}
+                        className="overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
+                      >
+                        <div className="aspect-video relative">
+                          <img
+                            src={tour.image}
+                            alt={tour.name}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute top-4 right-4">
+                            <Badge className="bg-white text-gray-900">
+                              €{tour.price}
+                            </Badge>
+                          </div>
+                        </div>
+                        <CardContent className="p-6">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="flex items-center">
+                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                              <span className="text-sm font-medium ml-1">
+                                {tour.rating}
+                              </span>
+                            </div>
+                            <span className="text-sm text-gray-500">
+                              ({tour.reviews} reviews)
+                            </span>
+                          </div>
+                          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                            {tour.name}
+                          </h3>
+                          <p className="text-gray-600 mb-4 line-clamp-2">
+                            {tour.description}
+                          </p>
+                          <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{tour.duration}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Users className="h-4 w-4" />
+                              <span>Small group</span>
+                            </div>
+                          </div>
+                          <div className="mb-4">
+                            <h4 className="font-medium text-gray-900 mb-2">
+                              Highlights:
+                            </h4>
+                            <ul className="space-y-1">
+                              {tour.highlights.slice(0, 3).map((highlight, index) => (
+                                <li
+                                  key={index}
+                                  className="flex items-center gap-2 text-sm text-gray-600"
+                                >
+                                  <Check className="h-3 w-3 text-green-500 flex-shrink-0" />
+                                  <span>{highlight}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <Button
+                            className="w-full rounded-md"
+                            style={{ backgroundColor: websiteData.settings.primaryColor || operatorData?.primaryColor }}
+                            onClick={() => handleBookNow(tour.id)}
+                          >
+                            Book Now - €{tour.price}
+                            <ChevronRight className="h-4 w-4 ml-2" />
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <footer className="bg-gray-900 text-white py-12">
+              <div className="container mx-auto px-4 text-center">
+                <h3 className="text-2xl font-bold mb-4">{websiteData.settings.companyName || operatorData?.name}</h3>
+                <p className="text-gray-400 mb-6">{websiteData.settings.tagline || operatorData?.tagline}</p>
+                <p className="text-sm text-gray-500">
+                  © {new Date().getFullYear()} {websiteData.settings.companyName || operatorData?.name}. All rights reserved.
+                </p>
+              </div>
+            </footer>
+          </div>
+        </div>
+      );
+    }
     if (layout === "hero-side") {
       return (
         <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-r from-gray-100 to-blue-200 border-4 border-blue-400">
