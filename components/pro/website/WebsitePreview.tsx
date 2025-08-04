@@ -646,7 +646,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
         <CardContent className="p-6 flex justify-center h-full">
           <div
             className={cn(
-              "rounded-md shadow-lg bg-white overflow-hidden transition-all h-full ml-8",
+              "rounded-md shadow-lg bg-white overflow-hidden transition-all h-full",
               viewMode === "desktop" && "w-full",
               viewMode === "tablet" && "w-[768px]",
               viewMode === "mobile" && "w-[375px]"
