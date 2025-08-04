@@ -342,7 +342,7 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
         const success = localStorageUtils.saveWithCompression("culturin_user_data", userData);
         
         if (!success) {
-          console.warn("Failed to save user data, clearing space and retrying");
+  
           localStorageUtils.clearNonEssential();
           
           // Try saving essential data only

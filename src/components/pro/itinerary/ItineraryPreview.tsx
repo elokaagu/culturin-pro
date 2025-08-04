@@ -114,7 +114,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
     try {
       const moduleData = e.dataTransfer.getData("moduleData");
       if (!moduleData) {
-        console.log("No module data found in drop event");
+
         return;
       }
 

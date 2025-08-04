@@ -115,7 +115,7 @@ export default function ItineraryDetailPage() {
 
   const handleSave = async () => {
     if (!itinerary || !formData) {
-      console.error("Missing itinerary or formData");
+      
       toast({
         title: "Error",
         description: "Missing itinerary data",
@@ -180,10 +180,6 @@ export default function ItineraryDetailPage() {
       });
     } catch (error) {
       console.error("Error saving itinerary:", error);
-      console.error("Error details:", {
-        message: error instanceof Error ? error.message : "Unknown error",
-        stack: error instanceof Error ? error.stack : undefined,
-      });
 
       toast({
         title: "Save Failed",

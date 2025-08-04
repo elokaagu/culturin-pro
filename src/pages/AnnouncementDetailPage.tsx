@@ -73,7 +73,7 @@ const AnnouncementDetailPage = () => {
           text: announcement.description,
           url: window.location.href,
         })
-        .catch((error) => console.log("Error sharing", error));
+        .catch((error) => {});
     } else {
       navigator.clipboard.writeText(window.location.href);
       toast({
