@@ -113,32 +113,32 @@ const WebsiteBuilder: React.FC = () => {
             
             if (dbItineraries && dbItineraries.length > 0) {
               setItineraries(dbItineraries);
-              localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
+              localStorageUtils.setItem("culturinItineraries", JSON.stringify(dbItineraries));
               
             } else {
               
               setItineraries([]);
-              localStorage.removeItem("culturinItineraries");
+              localStorageUtils.removeItem("culturinItineraries");
             }
           } else {
 
             setItineraries([]);
-            localStorage.removeItem("culturinItineraries");
+            localStorageUtils.removeItem("culturinItineraries");
           }
         } catch (error) {
           console.error("Error loading itineraries from database:", error);
           setItineraries([]);
-          localStorage.removeItem("culturinItineraries");
+          localStorageUtils.removeItem("culturinItineraries");
         }
 
         // Load last saved timestamp
-        const lastSavedStr = localStorage.getItem("websiteLastSaved");
+        const lastSavedStr = localStorageUtils.getItem("websiteLastSaved");
         if (lastSavedStr) {
           setLastSaved(new Date(lastSavedStr));
         }
 
         // Load auto-save preference
-        const autoSavePref = localStorage.getItem("websiteAutoSave");
+        const autoSavePref = localStorageUtils.getItem("websiteAutoSave");
         if (autoSavePref !== null) {
           setAutoSaveEnabled(autoSavePref === 'true');
         }
@@ -172,7 +172,7 @@ const WebsiteBuilder: React.FC = () => {
         console.error("Error loading website data:", error);
         // No fallback - keep empty state
         setItineraries([]);
-        localStorage.removeItem("culturinItineraries");
+        localStorageUtils.removeItem("culturinItineraries");
       }
     };
 
@@ -241,10 +241,10 @@ const WebsiteBuilder: React.FC = () => {
           setItineraries(dbItineraries || []);
           
           if (dbItineraries && dbItineraries.length > 0) {
-            localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
+            localStorageUtils.setItem("culturinItineraries", JSON.stringify(dbItineraries));
 
           } else {
-            localStorage.removeItem("culturinItineraries");
+            localStorageUtils.removeItem("culturinItineraries");
           }
           
           setPreviewKey((prev) => prev + 1);
@@ -318,7 +318,7 @@ const WebsiteBuilder: React.FC = () => {
       // Restore state
       updateWebsiteSettings(previousState.websiteSettings);
       setItineraries(previousState.itineraries);
-      localStorage.setItem(
+      localStorageUtils.setItem(
         "culturinItineraries",
         JSON.stringify(previousState.itineraries)
       );
@@ -571,8 +571,8 @@ const WebsiteBuilder: React.FC = () => {
           }
           
           // Save the imported data
-          localStorage.setItem("websiteData", JSON.stringify(websiteData));
-          localStorage.setItem("culturinItineraries", JSON.stringify(websiteData.itineraries));
+          localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
+          localStorageUtils.setItem("culturinItineraries", JSON.stringify(websiteData.itineraries));
           
           toast.success("Website imported", {
             description: "Your website data has been restored",
@@ -615,7 +615,7 @@ const WebsiteBuilder: React.FC = () => {
       setPublishedUrl(newPublishedUrl);
 
       // Save the published URL to localStorage
-      localStorage.setItem("publishedWebsiteUrl", newPublishedUrl);
+      localStorageUtils.setItem("publishedWebsiteUrl", newPublishedUrl);
 
       // Save website content and theme to localStorage for the tour operator website
       const websiteContent = {
@@ -628,15 +628,15 @@ const WebsiteBuilder: React.FC = () => {
         bookingSettings: userData?.websiteSettings?.bookingSettings || {},
       };
 
-      localStorage.setItem(
+      localStorageUtils.setItem(
         "publishedWebsiteTheme",
         userData?.websiteSettings?.theme || "classic"
       );
-      localStorage.setItem(
+      localStorageUtils.setItem(
         "publishedWebsiteContent",
         JSON.stringify(websiteContent)
       );
-      localStorage.setItem("publishedItineraries", JSON.stringify(itineraries));
+      localStorageUtils.setItem("publishedItineraries", JSON.stringify(itineraries));
 
       setHasUnsavedChanges(false);
       toast.success("Website published successfully!", {
@@ -678,15 +678,15 @@ const WebsiteBuilder: React.FC = () => {
         setItineraries(dbItineraries || []);
         
         if (dbItineraries && dbItineraries.length > 0) {
-          localStorage.setItem("culturinItineraries", JSON.stringify(dbItineraries));
+          localStorageUtils.setItem("culturinItineraries", JSON.stringify(dbItineraries));
 
         } else {
-          localStorage.removeItem("culturinItineraries");
+          localStorageUtils.removeItem("culturinItineraries");
         }
       } else {
 
         setItineraries([]);
-        localStorage.removeItem("culturinItineraries");
+        localStorageUtils.removeItem("culturinItineraries");
       }
 
       setPreviewKey((prev) => prev + 1);
