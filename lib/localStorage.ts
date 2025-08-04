@@ -104,6 +104,27 @@ export const localStorageUtils = {
     return localStorageUtils.setItem(key, compressed);
   },
 
+  // Safe removeItem
+  removeItem: (key: string): boolean => {
+    try {
+      localStorage.removeItem(key);
+      return true;
+    } catch (error) {
+      console.error(`Failed to remove "${key}" from localStorage:`, error);
+      return false;
+    }
+  },
+
+  // Safe getItem
+  getItem: (key: string): string | null => {
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      console.error(`Failed to get "${key}" from localStorage:`, error);
+      return null;
+    }
+  },
+
   // Clear all non-essential data
   clearNonEssential: (): void => {
     try {
