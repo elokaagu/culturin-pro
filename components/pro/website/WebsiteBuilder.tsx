@@ -38,6 +38,8 @@ import {
   Share,
   HelpCircle,
   MessageCircle,
+  Maximize,
+  Minimize,
 } from "lucide-react";
 import { useNavigate } from "../../../lib/navigation";
 import { ItineraryType } from "@/data/itineraryData";
@@ -84,6 +86,7 @@ const WebsiteBuilder: React.FC = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'tablet'>('desktop');
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   // History management
   const [history, setHistory] = useState<HistoryState[]>([]);
@@ -707,6 +710,13 @@ const WebsiteBuilder: React.FC = () => {
     setActiveTab(value);
   };
 
+  const handleToggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
+    toast.success(isFullScreen ? "Exited full-screen mode" : "Entered full-screen mode", {
+      description: isFullScreen ? "Website builder returned to normal view" : "Website builder now takes full page",
+    });
+  };
+
 
 
   // Format last saved time
@@ -741,9 +751,9 @@ const WebsiteBuilder: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className={`flex ${isFullScreen ? 'fixed inset-0 z-50' : 'h-screen'} bg-gray-50`}>
       {/* Sidebar */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col overflow-hidden rounded-r-lg">
+      <div className={`${isFullScreen ? 'w-96' : 'w-80'} bg-white border-r border-gray-200 flex flex-col overflow-hidden rounded-r-lg transition-all duration-300`}>
         {/* Sidebar Header - Fixed */}
         <div className="p-6 border-b border-gray-200 flex-shrink-0">
           <div className="mb-6">
@@ -975,10 +985,14 @@ const WebsiteBuilder: React.FC = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={handleExportWebsite}
+                      onClick={handleToggleFullScreen}
                     >
-                      <Download className="h-4 w-4 mr-2" />
-                      Export
+                      {isFullScreen ? (
+                        <Minimize className="h-4 w-4 mr-2" />
+                      ) : (
+                        <Maximize className="h-4 w-4 mr-2" />
+                      )}
+                      {isFullScreen ? "Collapse" : "Expand"}
                     </Button>
                     <Button 
                       size="sm"
