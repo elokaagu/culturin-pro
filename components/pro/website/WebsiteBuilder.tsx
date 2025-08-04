@@ -367,20 +367,19 @@ const WebsiteBuilder: React.FC = () => {
       // Save user data
       saveUserData();
       
-      // Save website-specific data with compression
-      const websiteData: WebsiteData = {
+      // Save minimal website data to avoid quota issues
+      const websiteData = {
         settings: {
-          ...userData?.websiteSettings,
-          // Don't save large objects to localStorage
-          placedBlocks: undefined,
-          headerImage: userData?.websiteSettings?.headerImage ? 'saved' : null,
+          companyName: userData?.websiteSettings?.companyName,
+          tagline: userData?.websiteSettings?.tagline,
+          description: userData?.websiteSettings?.description,
+          primaryColor: userData?.websiteSettings?.primaryColor,
+          theme: userData?.websiteSettings?.theme || "classic",
+          enableBooking: userData?.websiteSettings?.enableBooking,
         },
-        itineraries: itineraries.slice(0, 10), // Limit to 10 itineraries for localStorage
-        blocks: [], // Don't save blocks to localStorage
-        theme: userData?.websiteSettings?.theme || "classic",
+        itineraries: itineraries.slice(0, 5), // Limit to 5 itineraries
         publishedUrl: publishedUrl,
-        lastModified: new Date(),
-        version: '1.0.0'
+        lastModified: new Date().toISOString(),
       };
 
       try {
@@ -461,19 +460,35 @@ const WebsiteBuilder: React.FC = () => {
       };
 
       try {
-        // Save using the settings service
-        await settingsService.saveWebsiteData(websiteData);
+        // Save minimal data to localStorage only (no authentication required)
+        const minimalWebsiteData = {
+          settings: {
+            companyName: userData?.websiteSettings?.companyName,
+            tagline: userData?.websiteSettings?.tagline,
+            description: userData?.websiteSettings?.description,
+            primaryColor: userData?.websiteSettings?.primaryColor,
+            theme: userData?.websiteSettings?.theme || "classic",
+            enableBooking: userData?.websiteSettings?.enableBooking,
+          },
+          itineraries: itineraries.slice(0, 5), // Limit to 5 itineraries
+          publishedUrl: publishedUrl,
+          lastModified: new Date().toISOString(),
+        };
+
+        const success1 = localStorageUtils.setItem("websiteData", JSON.stringify(minimalWebsiteData));
+        const success2 = localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
         
-        // Also save user data locally
-        saveUserData();
-        
-        setLastSaved(new Date());
-        setHasUnsavedChanges(false);
-        setSaveStatus('saved');
-        
-        toast.success("Website saved successfully", {
-          description: "All changes have been saved",
-        });
+        if (success1 && success2) {
+          setLastSaved(new Date());
+          setHasUnsavedChanges(false);
+          setSaveStatus('saved');
+          
+          toast.success("Website saved successfully", {
+            description: "All changes have been saved",
+          });
+        } else {
+          throw new Error("Failed to save to localStorage");
+        }
       } catch (storageError) {
         console.error("Storage quota exceeded, trying minimal save");
         
