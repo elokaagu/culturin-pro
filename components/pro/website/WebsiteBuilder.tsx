@@ -83,7 +83,7 @@ const WebsiteBuilder: React.FC = () => {
 
   // History management
   const [history, setHistory] = useState<HistoryState[]>([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [historyIndex, setHistoryIndex] = useState(0);
   const [isUndoRedoAction, setIsUndoRedoAction] = useState(false);
 
   const navigate = useNavigate();
@@ -147,6 +147,21 @@ const WebsiteBuilder: React.FC = () => {
         };
         setHistory([initialHistory]);
         setHistoryIndex(0);
+        
+        // Set hasUnsavedChanges to false initially
+        setHasUnsavedChanges(false);
+        
+        // Ensure we have some default website settings if none exist
+        if (!userData?.websiteSettings?.companyName) {
+          updateWebsiteSettings({
+            companyName: "Your Tour Company",
+            tagline: "Discover amazing cultural experiences",
+            description: "We specialize in authentic cultural tours that connect travelers with local traditions and experiences.",
+            primaryColor: "#3B82F6",
+            theme: "classic",
+            enableBooking: true,
+          });
+        }
 
 
       } catch (error) {
@@ -795,7 +810,7 @@ const WebsiteBuilder: React.FC = () => {
                 onClick={handleManualSave}
                 disabled={saveLoading}
                 className="flex-1"
-                variant={hasUnsavedChanges ? "default" : "outline"}
+                variant="default"
               >
                 {saveLoading ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -821,7 +836,7 @@ const WebsiteBuilder: React.FC = () => {
             <div className="flex gap-2">
               <Button 
                 onClick={undo}
-                disabled={historyIndex <= 0 || history.length === 0}
+                disabled={historyIndex <= 0}
                 variant="outline"
                 size="icon"
               >
@@ -829,7 +844,7 @@ const WebsiteBuilder: React.FC = () => {
               </Button>
               <Button 
                 onClick={redo}
-                disabled={historyIndex >= history.length - 1 || history.length === 0}
+                disabled={historyIndex >= history.length - 1}
                 variant="outline"
                 size="icon"
               >
@@ -885,7 +900,7 @@ const WebsiteBuilder: React.FC = () => {
         {/* Content based on active tab */}
         <div className="flex-1 overflow-auto">
           {activeTab === "preview" && (
-            <div className="h-full p-6">
+            <div className="h-full">
               <WebsitePreview
                 key={previewKey}
                 itineraries={itineraries}
