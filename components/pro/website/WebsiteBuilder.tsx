@@ -838,73 +838,34 @@ const WebsiteBuilder: React.FC = () => {
           {/* Action Buttons - Save and Publish */}
           <div className="p-6 border-b border-gray-200">
             <h4 className="text-sm font-medium text-gray-700 mb-3">Actions</h4>
-            <div className="space-y-3">
-              <div className="flex gap-2">
-                <Button 
-                  onClick={handleManualSave}
-                  disabled={saveLoading}
-                  className="flex-1"
-                  variant="default"
-                  size="sm"
-                >
-                  {saveLoading ? (
-                    <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-                  ) : (
-                    <Save className="h-3 w-3 mr-2" />
-                  )}
-                  Save
-                </Button>
-                <Button 
-                  onClick={handlePublish}
-                  disabled={publishLoading}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                  size="sm"
-                >
-                  {publishLoading ? (
-                    <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-                  ) : (
-                    <Globe className="h-3 w-3 mr-2" />
-                  )}
-                  Publish
-                </Button>
-              </div>
-              
-              <div className="flex gap-2">
-                <Button 
-                  onClick={undo}
-                  disabled={historyIndex <= 0}
-                  variant="outline"
-                  size="sm"
-                  className="flex-1"
-                >
-                  <Undo className="h-3 w-3 mr-2" />
-                  Undo
-                </Button>
-                <Button 
-                  onClick={redo}
-                  disabled={historyIndex >= history.length - 1}
-                  variant="outline"
-                  size="sm"
-                  className="flex-1"
-                >
-                  <Redo className="h-3 w-3 mr-2" />
-                  Redo
-                </Button>
-                <Button 
-                  onClick={handleReloadPreview}
-                  disabled={refreshLoading}
-                  variant="outline"
-                  size="sm"
-                  className="flex-1"
-                >
-                  {refreshLoading ? (
-                    <Loader2 className="h-3 w-3 mr-2 animate-spin" />
-                  ) : (
-                    <RefreshCw className="h-3 w-3 mr-2" />
-                  )}
-                  Refresh
-                </Button>
-              </div>
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleManualSave}
+                disabled={saveLoading}
+                className="flex-1"
+                variant="default"
+                size="sm"
+              >
+                {saveLoading ? (
+                  <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                ) : (
+                  <Save className="h-3 w-3 mr-2" />
+                )}
+                Save
+              </Button>
+              <Button 
+                onClick={handlePublish}
+                disabled={publishLoading}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                size="sm"
+              >
+                {publishLoading ? (
+                  <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                ) : (
+                  <Globe className="h-3 w-3 mr-2" />
+                )}
+                Publish
+              </Button>
             </div>
           </div>
 
