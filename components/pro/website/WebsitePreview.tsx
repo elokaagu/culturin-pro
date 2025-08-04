@@ -655,7 +655,8 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
           >
             <div className="h-full overflow-auto">
               <div className="p-0 bg-white h-full overflow-auto">
-                {/* Header/Hero section preview */}
+                {/* Header/Hero section preview - Removed default elements */}
+                {/* 
                 <div
                   className={cn(
                     "w-full relative",
@@ -736,6 +737,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                     </div>
                   </div>
                 </div>
+                */}
 
                 {/* Placed Blocks from Drag & Drop Builder */}
                 {renderPlacedBlocks()}
@@ -797,7 +799,8 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                     )}
                   </div>
 
-                  {/* Interactive CTAs */}
+                  {/* Interactive CTAs - Removed default elements */}
+                  {/* 
                   <div className="space-y-3">
                     <div
                       className={cn(
@@ -836,6 +839,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                       </div>
                     </div>
                   </div>
+                  */}
 
                   {/* Customizable Footer */}
                   {footerSettings && (
