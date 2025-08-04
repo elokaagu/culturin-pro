@@ -605,8 +605,8 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="h-full flex flex-col">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-medium">Website Preview</h2>
 
         <div className="flex items-center gap-2">
@@ -642,18 +642,18 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
         </div>
       </div>
 
-      <Card className="border border-gray-200 overflow-hidden bg-gray-50">
-        <CardContent className="p-6 flex justify-center">
+      <Card className="border border-gray-200 overflow-hidden bg-gray-50 flex-1">
+        <CardContent className="p-6 flex justify-center h-full">
           <div
             className={cn(
-              "rounded-md shadow-lg bg-white overflow-hidden transition-all",
+              "rounded-md shadow-lg bg-white overflow-hidden transition-all h-full",
               viewMode === "desktop" && "w-full",
               viewMode === "tablet" && "w-[768px]",
               viewMode === "mobile" && "w-[375px]"
             )}
             key={refreshKey}
           >
-            <AspectRatio ratio={16 / 9} className="overflow-visible">
+            <div className="h-full overflow-auto">
               <div className="p-0 bg-white h-full overflow-auto">
                 {/* Header/Hero section preview */}
                 <div
@@ -943,7 +943,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                   )}
                 </div>
               </div>
-            </AspectRatio>
+            </div>
           </div>
         </CardContent>
       </Card>

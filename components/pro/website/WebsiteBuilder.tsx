@@ -950,7 +950,7 @@ const WebsiteBuilder: React.FC = () => {
           onClick={handlePublish}
           disabled={publishLoading}
           size="lg"
-          className="bg-culturin-indigo hover:bg-culturin-indigo/90 shadow-lg"
+          className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
         >
           {publishLoading ? (
             <>
