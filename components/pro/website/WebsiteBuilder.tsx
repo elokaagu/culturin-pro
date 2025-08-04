@@ -49,6 +49,7 @@ import { settingsService } from "@/lib/settings-service";
 import { itineraryService } from "@/lib/itinerary-service";
 import { supabase } from "@/lib/supabase";
 import { localStorageUtils } from "@/lib/localStorage";
+import { useAuth } from "../../../src/components/auth/AuthProvider";
 
 // History management for undo/redo functionality
 interface HistoryState {
@@ -95,6 +96,7 @@ const WebsiteBuilder: React.FC = () => {
 
   const navigate = useNavigate();
   const { userData, updateWebsiteSettings, saveUserData } = useUserData();
+  const { user, isLoggedIn } = useAuth();
 
   // Initialize data - only on client side
   useEffect(() => {
@@ -107,11 +109,38 @@ const WebsiteBuilder: React.FC = () => {
         const storedUrl = localStorage.getItem("publishedWebsiteUrl");
         setPublishedUrl(storedUrl || "tour/demo");
 
-        // Load itineraries from database only - no sample data fallback
+        // Load user-specific website data from Supabase
         try {
           const { data: user } = await supabase.auth.getUser();
           if (user.user) {
-      
+            // Load user-specific website settings from database
+            const { data: userSettings, error } = await supabase
+              .from('user_settings')
+              .select('website_settings')
+              .eq('user_id', user.user.id)
+              .single();
+
+            if (userSettings?.website_settings) {
+              const settings = userSettings.website_settings;
+              
+              // Update website settings with user-specific data
+              if (settings.settings) {
+                updateWebsiteSettings(settings.settings);
+              }
+              
+              // Update itineraries if available
+              if (settings.itineraries) {
+                setItineraries(settings.itineraries);
+                localStorageUtils.setItem("culturinItineraries", JSON.stringify(settings.itineraries));
+              }
+              
+              // Update published URL if available
+              if (settings.publishedUrl) {
+                setPublishedUrl(settings.publishedUrl);
+              }
+            }
+
+            // Load itineraries from database
             const dbItineraries = await itineraryService.getItineraries(user.user.id);
             
             if (dbItineraries && dbItineraries.length > 0) {
@@ -129,7 +158,7 @@ const WebsiteBuilder: React.FC = () => {
             localStorageUtils.removeItem("culturinItineraries");
           }
         } catch (error) {
-          console.error("Error loading itineraries from database:", error);
+          console.error("Error loading user data from database:", error);
           setItineraries([]);
           localStorageUtils.removeItem("culturinItineraries");
         }
@@ -359,15 +388,22 @@ const WebsiteBuilder: React.FC = () => {
     setSaveStatus('saving');
   }, []);
 
-  // Enhanced auto-save function
+  // Enhanced auto-save function with authentication
   const handleAutoSave = useCallback(async () => {
     try {
       setSaveLoading(true);
       
+      if (!isLoggedIn || !user) {
+        // Fallback to localStorage for non-authenticated users
+        saveUserData();
+        setSaveStatus('saved');
+        return;
+      }
+
       // Save user data
       saveUserData();
       
-      // Save minimal website data to avoid quota issues
+      // Save website data to Supabase for authenticated users
       const websiteData = {
         settings: {
           companyName: userData?.websiteSettings?.companyName,
@@ -383,50 +419,75 @@ const WebsiteBuilder: React.FC = () => {
       };
 
       try {
-        // Use localStorage utility for better quota handling
-        const success1 = localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
-        const success2 = localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
-        const success3 = localStorageUtils.setItem("websiteAutoSave", autoSaveEnabled.toString());
-        
-        if (success1 && success2 && success3) {
-          setLastSaved(new Date());
-          setHasUnsavedChanges(false);
-          setSaveStatus('saved');
-  
-        } else {
-          throw new Error("Failed to save to localStorage");
+        // Save to Supabase user_settings table
+        const { error } = await supabase
+          .from('user_settings')
+          .upsert({
+            user_id: user.id,
+            website_settings: websiteData,
+            updated_at: new Date().toISOString(),
+          });
+
+        if (error) {
+          throw new Error(`Supabase save failed: ${error.message}`);
         }
-      } catch (storageError) {
-        console.error("localStorage quota exceeded, clearing space and retrying");
+
+        // Also save to localStorage as backup
+        localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
+        localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
+        localStorageUtils.setItem("websiteAutoSave", autoSaveEnabled.toString());
         
-        // Clear some space and try again
+        setLastSaved(new Date());
+        setHasUnsavedChanges(false);
+        setSaveStatus('saved');
+        
+      } catch (dbError) {
+        console.error("Database save failed, falling back to localStorage:", dbError);
+        
+        // Fallback to localStorage
         try {
-          localStorageUtils.clearNonEssential();
+          const success1 = localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
+          const success2 = localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
+          const success3 = localStorageUtils.setItem("websiteAutoSave", autoSaveEnabled.toString());
           
-          // Save minimal data
-          const minimalData = {
-            theme: userData?.websiteSettings?.theme || "classic",
-            publishedUrl: publishedUrl,
-            lastModified: new Date().toISOString(),
-          };
-          
-          const success = localStorageUtils.setItem("websiteData", JSON.stringify(minimalData));
-          localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
-          
-          if (success) {
+          if (success1 && success2 && success3) {
             setLastSaved(new Date());
             setHasUnsavedChanges(false);
             setSaveStatus('saved');
-
           } else {
-            throw new Error("Failed to save minimal data");
+            throw new Error("Failed to save to localStorage");
           }
-        } catch (retryError) {
-          console.error("Failed to save even minimal data:", retryError);
-          setSaveStatus('error');
-          toast.error("Storage full", {
-            description: "Please clear browser data or save manually",
-          });
+        } catch (storageError) {
+          console.error("localStorage quota exceeded, clearing space and retrying");
+          
+          // Clear some space and try again
+          try {
+            localStorageUtils.clearNonEssential();
+            
+            // Save minimal data
+            const minimalData = {
+              theme: userData?.websiteSettings?.theme || "classic",
+              publishedUrl: publishedUrl,
+              lastModified: new Date().toISOString(),
+            };
+            
+            const success = localStorageUtils.setItem("websiteData", JSON.stringify(minimalData));
+            localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
+            
+            if (success) {
+              setLastSaved(new Date());
+              setHasUnsavedChanges(false);
+              setSaveStatus('saved');
+            } else {
+              throw new Error("Failed to save minimal data");
+            }
+          } catch (retryError) {
+            console.error("Failed to save even minimal data:", retryError);
+            setSaveStatus('error');
+            toast.error("Storage full", {
+              description: "Please clear browser data or save manually",
+            });
+          }
         }
       }
     } catch (error) {
@@ -438,29 +499,16 @@ const WebsiteBuilder: React.FC = () => {
     } finally {
       setSaveLoading(false);
     }
-  }, [saveUserData, userData?.websiteSettings, itineraries, publishedUrl, autoSaveEnabled]);
+  }, [saveUserData, userData?.websiteSettings, itineraries, publishedUrl, autoSaveEnabled, isLoggedIn, user]);
 
-  // Enhanced manual save function
+  // Enhanced manual save function with authentication
   const handleManualSave = useCallback(async () => {
     try {
       setSaveLoading(true);
       setSaveStatus('saving');
       
-      const websiteData = {
-        settings: {
-          ...userData?.websiteSettings,
-          // Don't save large objects to localStorage
-          placedBlocks: undefined,
-          headerImage: userData?.websiteSettings?.headerImage ? 'saved' : null,
-        },
-        itineraries: itineraries.slice(0, 10), // Limit itineraries for localStorage
-        blocks: [], // Don't save blocks to localStorage
-        theme: userData?.websiteSettings?.theme || "classic",
-        publishedUrl: publishedUrl,
-      };
-
-      try {
-        // Save minimal data to localStorage only (no authentication required)
+      if (!isLoggedIn || !user) {
+        // Fallback to localStorage for non-authenticated users
         const minimalWebsiteData = {
           settings: {
             companyName: userData?.websiteSettings?.companyName,
@@ -475,52 +523,155 @@ const WebsiteBuilder: React.FC = () => {
           lastModified: new Date().toISOString(),
         };
 
-        const success1 = localStorageUtils.setItem("websiteData", JSON.stringify(minimalWebsiteData));
-        const success2 = localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
-        
-        if (success1 && success2) {
-          setLastSaved(new Date());
-          setHasUnsavedChanges(false);
-          setSaveStatus('saved');
-          
-          toast.success("Website saved successfully", {
-            description: "All changes have been saved",
-          });
-        } else {
-          throw new Error("Failed to save to localStorage");
-        }
-      } catch (storageError) {
-        console.error("Storage quota exceeded, trying minimal save");
-        
-        // Try saving minimal data
         try {
-          const minimalData = {
-            settings: {
-              companyName: userData?.websiteSettings?.companyName || "",
-              tagline: userData?.websiteSettings?.tagline || "",
+          const success1 = localStorageUtils.setItem("websiteData", JSON.stringify(minimalWebsiteData));
+          const success2 = localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
+          
+          if (success1 && success2) {
+            setLastSaved(new Date());
+            setHasUnsavedChanges(false);
+            setSaveStatus('saved');
+            
+            toast.success("Website saved successfully", {
+              description: "All changes have been saved locally",
+            });
+          } else {
+            throw new Error("Failed to save to localStorage");
+          }
+        } catch (storageError) {
+          console.error("Storage quota exceeded, trying minimal save");
+          
+          // Try saving minimal data
+          try {
+            const minimalData = {
+              settings: {
+                companyName: userData?.websiteSettings?.companyName || "",
+                tagline: userData?.websiteSettings?.tagline || "",
+                theme: userData?.websiteSettings?.theme || "classic",
+                enableBooking: userData?.websiteSettings?.enableBooking || true,
+              },
               theme: userData?.websiteSettings?.theme || "classic",
-              enableBooking: userData?.websiteSettings?.enableBooking || true,
-            },
-            theme: userData?.websiteSettings?.theme || "classic",
-            publishedUrl: publishedUrl,
-          };
-          
-          await settingsService.saveWebsiteData(minimalData);
-          saveUserData();
-          
-          setLastSaved(new Date());
-          setHasUnsavedChanges(false);
-          setSaveStatus('saved');
-          
-          toast.success("Website saved with minimal data", {
-            description: "Some data was too large to save",
+              publishedUrl: publishedUrl,
+            };
+            
+            await settingsService.saveWebsiteData(minimalData);
+            saveUserData();
+            
+            setLastSaved(new Date());
+            setHasUnsavedChanges(false);
+            setSaveStatus('saved');
+            
+            toast.success("Website saved with minimal data", {
+              description: "Some data was too large to save",
+            });
+          } catch (retryError) {
+            console.error("Failed to save even minimal data:", retryError);
+            setSaveStatus('error');
+            toast.error("Storage full", {
+              description: "Please clear browser data or try again",
+            });
+          }
+        }
+        return;
+      }
+
+      // Save website data to Supabase for authenticated users
+      const websiteData = {
+        settings: {
+          companyName: userData?.websiteSettings?.companyName,
+          tagline: userData?.websiteSettings?.tagline,
+          description: userData?.websiteSettings?.description,
+          primaryColor: userData?.websiteSettings?.primaryColor,
+          theme: userData?.websiteSettings?.theme || "classic",
+          enableBooking: userData?.websiteSettings?.enableBooking,
+        },
+        itineraries: itineraries.slice(0, 5), // Limit to 5 itineraries
+        publishedUrl: publishedUrl,
+        lastModified: new Date().toISOString(),
+      };
+
+      try {
+        // Save to Supabase user_settings table
+        const { error } = await supabase
+          .from('user_settings')
+          .upsert({
+            user_id: user.id,
+            website_settings: websiteData,
+            updated_at: new Date().toISOString(),
           });
-        } catch (retryError) {
-          console.error("Failed to save even minimal data:", retryError);
-          setSaveStatus('error');
-          toast.error("Storage full", {
-            description: "Please clear browser data or try again",
-          });
+
+        if (error) {
+          throw new Error(`Supabase save failed: ${error.message}`);
+        }
+
+        // Also save to localStorage as backup
+        localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
+        localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
+        
+        setLastSaved(new Date());
+        setHasUnsavedChanges(false);
+        setSaveStatus('saved');
+        
+        toast.success("Website saved successfully", {
+          description: "All changes have been saved to your account",
+        });
+        
+      } catch (dbError) {
+        console.error("Database save failed, falling back to localStorage:", dbError);
+        
+        // Fallback to localStorage
+        try {
+          const success1 = localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
+          const success2 = localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
+          
+          if (success1 && success2) {
+            setLastSaved(new Date());
+            setHasUnsavedChanges(false);
+            setSaveStatus('saved');
+            
+            toast.success("Website saved locally", {
+              description: "Database save failed, but changes are saved locally",
+            });
+          } else {
+            throw new Error("Failed to save to localStorage");
+          }
+        } catch (storageError) {
+          console.error("localStorage quota exceeded, trying minimal save");
+          
+          // Try saving minimal data
+          try {
+            const minimalData = {
+              settings: {
+                companyName: userData?.websiteSettings?.companyName || "",
+                tagline: userData?.websiteSettings?.tagline || "",
+                theme: userData?.websiteSettings?.theme || "classic",
+                enableBooking: userData?.websiteSettings?.enableBooking || true,
+              },
+              theme: userData?.websiteSettings?.theme || "classic",
+              publishedUrl: publishedUrl,
+            };
+            
+            const success = localStorageUtils.setItem("websiteData", JSON.stringify(minimalData));
+            localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
+            
+            if (success) {
+              setLastSaved(new Date());
+              setHasUnsavedChanges(false);
+              setSaveStatus('saved');
+              
+              toast.success("Website saved with minimal data", {
+                description: "Some data was too large to save",
+              });
+            } else {
+              throw new Error("Failed to save minimal data");
+            }
+          } catch (retryError) {
+            console.error("Failed to save even minimal data:", retryError);
+            setSaveStatus('error');
+            toast.error("Storage full", {
+              description: "Please clear browser data or try again",
+            });
+          }
         }
       }
     } catch (error) {
@@ -532,7 +683,7 @@ const WebsiteBuilder: React.FC = () => {
     } finally {
       setSaveLoading(false);
     }
-  }, [userData?.websiteSettings, itineraries, publishedUrl, saveUserData]);
+  }, [userData?.websiteSettings, itineraries, publishedUrl, saveUserData, isLoggedIn, user]);
 
   // Export website data
   const handleExportWebsite = useCallback(() => {
