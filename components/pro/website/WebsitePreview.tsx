@@ -606,7 +606,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 pl-8">
         <h2 className="text-lg font-medium">Website Preview</h2>
 
         <div className="flex items-center gap-2">
