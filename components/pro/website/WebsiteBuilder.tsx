@@ -34,6 +34,10 @@ import {
   Upload,
   FileText,
   Image,
+  Copy,
+  Share,
+  HelpCircle,
+  MessageCircle,
 } from "lucide-react";
 import { useNavigate } from "../../../lib/navigation";
 import { ItineraryType } from "@/data/itineraryData";
@@ -896,9 +900,43 @@ const WebsiteBuilder: React.FC = () => {
           )}
 
           {/* Additional spacing to ensure scroll works */}
-          <div className="p-6">
+          <div className="p-6 space-y-4">
             <div className="text-xs text-gray-400 text-center">
               Website Builder v1.0
+            </div>
+            
+            {/* Quick Actions Section */}
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Actions</h4>
+              <div className="space-y-2">
+                <Button variant="ghost" size="sm" className="w-full justify-start text-xs">
+                  <Download className="h-3 w-3 mr-2" />
+                  Export Website
+                </Button>
+                <Button variant="ghost" size="sm" className="w-full justify-start text-xs">
+                  <Copy className="h-3 w-3 mr-2" />
+                  Copy URL
+                </Button>
+                <Button variant="ghost" size="sm" className="w-full justify-start text-xs">
+                  <Share className="h-3 w-3 mr-2" />
+                  Share Site
+                </Button>
+              </div>
+            </div>
+            
+            {/* Help Section */}
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Help & Support</h4>
+              <div className="space-y-2">
+                <Button variant="ghost" size="sm" className="w-full justify-start text-xs">
+                  <HelpCircle className="h-3 w-3 mr-2" />
+                  Documentation
+                </Button>
+                <Button variant="ghost" size="sm" className="w-full justify-start text-xs">
+                  <MessageCircle className="h-3 w-3 mr-2" />
+                  Contact Support
+                </Button>
+              </div>
             </div>
           </div>
         </div>
