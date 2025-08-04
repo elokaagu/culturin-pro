@@ -115,7 +115,6 @@ export default function ItineraryDetailPage() {
 
   const handleSave = async () => {
     if (!itinerary || !formData) {
-      
       toast({
         title: "Error",
         description: "Missing itinerary data",

@@ -16,14 +16,14 @@ const PricingPage = () => {
       name: "Free",
       price: "$0",
       period: "/mo",
-      description: "All essential features to get you started.",
+      description: "Perfect for cultural tour operators just getting started.",
       buttonText: "Get Started Free",
       buttonIcon: null,
       buttonVariant: "outline" as const,
       features: [
+        "Create up to 3 cultural itineraries",
         "Basic booking management",
-        "Limited analytics",
-        "Standard support",
+        "Standard customer support",
       ],
       popular: false,
       icon: Check,
@@ -32,15 +32,15 @@ const PricingPage = () => {
       name: "Pro",
       price: isAnnual ? "$79" : "$99",
       period: "/mo",
-      description: "Unlimited access to all of Culturin.",
+      description: "Everything you need to scale your cultural tourism business.",
       buttonText: "Subscribe",
       buttonIcon: null,
       buttonVariant: "default" as const,
       features: [
-        "Boost bookings with conversion insights",
-        "Automate reviews & follow-ups — save 10+ hours/week",
-        "Collaborate with your team in real time",
-        "Priority support when it matters most",
+        "Unlimited cultural itineraries & experiences",
+        "AI-powered content generation for marketing",
+        "Advanced analytics & booking insights",
+        "Priority support & dedicated account manager",
       ],
       popular: true,
       icon: TrendingUp,
@@ -60,7 +60,7 @@ const PricingPage = () => {
               Pricing
             </h1>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Whether you're using Culturin for meetings, homework, sales calls, or just curious, it's fully free to start.
+              Whether you're a cultural tour operator, experience creator, or just passionate about authentic travel, it's fully free to start.
             </p>
           </div>
 
@@ -148,9 +148,9 @@ const PricingPage = () => {
 
           {/* Additional Info */}
           <div className="text-center">
-            <p className="text-gray-500 text-sm">
-              All plans include 24/7 support and a 14-day free trial
-            </p>
+                    <p className="text-gray-500 text-sm">
+          All plans include 24/7 support and a 14-day free trial for cultural tour operators
+        </p>
           </div>
         </div>
       </main>
