@@ -769,40 +769,39 @@ const WebsiteBuilder: React.FC = () => {
           </div>
         </div>
 
-        {/* Navigation Tabs - Moved to top */}
-        <div className="p-6 border-b border-gray-200">
-          <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="flex flex-col w-full justify-start space-y-2">
-              <TabsTrigger value="preview" className="w-full justify-start py-3">
-                <Eye className="h-4 w-4 mr-3" />
-                Preview
-              </TabsTrigger>
-              <TabsTrigger value="builder" className="w-full justify-start py-3">
-                <Settings className="h-4 w-4 mr-3" />
-                Builder
-              </TabsTrigger>
-              <TabsTrigger value="themes" className="w-full justify-start py-3">
-                <Palette className="h-4 w-4 mr-3" />
-                Themes
-              </TabsTrigger>
-              <TabsTrigger value="content" className="w-full justify-start py-3">
-                <FileText className="h-4 w-4 mr-3" />
-                Content
-              </TabsTrigger>
-              <TabsTrigger value="booking" className="w-full justify-start py-3">
-                <ShoppingCart className="h-4 w-4 mr-3" />
-                Booking
-              </TabsTrigger>
-              <TabsTrigger value="media-library" className="w-full justify-start py-3">
-                <Image className="h-4 w-4 mr-3" />
-                Media Library
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {/* Scrollable Content Area - Everything below navigation */}
+        {/* Scrollable Content Area - Everything below header */}
         <div className="flex-1 overflow-y-auto">
+          {/* Navigation Tabs */}
+          <div className="p-6 border-b border-gray-200">
+            <Tabs value={activeTab} onValueChange={handleTabChange}>
+              <TabsList className="flex flex-col w-full justify-start space-y-2">
+                <TabsTrigger value="preview" className="w-full justify-start py-3">
+                  <Eye className="h-4 w-4 mr-3" />
+                  Preview
+                </TabsTrigger>
+                <TabsTrigger value="builder" className="w-full justify-start py-3">
+                  <Settings className="h-4 w-4 mr-3" />
+                  Builder
+                </TabsTrigger>
+                <TabsTrigger value="themes" className="w-full justify-start py-3">
+                  <Palette className="h-4 w-4 mr-3" />
+                  Themes
+                </TabsTrigger>
+                <TabsTrigger value="content" className="w-full justify-start py-3">
+                  <FileText className="h-4 w-4 mr-3" />
+                  Content
+                </TabsTrigger>
+                <TabsTrigger value="booking" className="w-full justify-start py-3">
+                  <ShoppingCart className="h-4 w-4 mr-3" />
+                  Booking
+                </TabsTrigger>
+                <TabsTrigger value="media-library" className="w-full justify-start py-3">
+                  <Image className="h-4 w-4 mr-3" />
+                  Media Library
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
           {/* Action Buttons - Save and Publish */}
           <div className="p-6 border-b border-gray-200 space-y-6">
             <div className="flex gap-3">
@@ -895,6 +894,13 @@ const WebsiteBuilder: React.FC = () => {
               </div>
             </div>
           )}
+
+          {/* Additional spacing to ensure scroll works */}
+          <div className="p-6">
+            <div className="text-xs text-gray-400 text-center">
+              Website Builder v1.0
+            </div>
+          </div>
         </div>
       </div>
 
