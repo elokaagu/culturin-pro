@@ -141,5 +141,40 @@ export const localStorageUtils = {
     } catch (error) {
       console.error('Failed to clear localStorage:', error);
     }
+  },
+
+  // Clean up large itineraries data
+  cleanupItineraries: (): void => {
+    try {
+      const itinerariesStr = localStorage.getItem('culturinItineraries');
+      if (itinerariesStr && itinerariesStr.length > 1024 * 1024) { // 1MB
+        console.warn('Itineraries data is too large, cleaning up...');
+        
+        const itineraries = JSON.parse(itinerariesStr);
+        
+        // Keep only essential fields and limit to 5 itineraries
+        const cleanedItineraries = itineraries.slice(0, 5).map((itinerary: any) => ({
+          id: itinerary.id,
+          title: itinerary.title,
+          description: itinerary.description?.substring(0, 500), // Limit description
+          days: itinerary.days,
+          image: itinerary.image,
+          highlights: itinerary.highlights?.slice(0, 3), // Limit highlights
+          // Remove large objects
+          activities: undefined,
+          accommodations: undefined,
+          transportation: undefined,
+          meals: undefined,
+          notes: undefined,
+        }));
+        
+        localStorage.setItem('culturinItineraries', JSON.stringify(cleanedItineraries));
+        console.log('Cleaned up itineraries data');
+      }
+    } catch (error) {
+      console.error('Failed to cleanup itineraries:', error);
+      // If cleanup fails, remove the data entirely
+      localStorage.removeItem('culturinItineraries');
+    }
   }
 };

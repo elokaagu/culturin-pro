@@ -243,6 +243,9 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
     const loadUserData = () => {
       try {
         if (typeof window !== "undefined") {
+          // Clean up large itineraries data first
+          localStorageUtils.cleanupItineraries();
+          
           const storedData = localStorage.getItem("culturin_user_data");
           if (storedData) {
             const parsedData = JSON.parse(storedData);

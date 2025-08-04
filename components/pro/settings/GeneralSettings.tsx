@@ -80,12 +80,12 @@ const GeneralSettings: React.FC = () => {
   useEffect(() => {
     if (userData) {
       form.reset({
-        businessName: userData.businessName || "",
-        email: userData.email || "",
-        phone: userData.phone || "",
-        address: userData.address || "",
-        timezone: userData.timezone || "utc-8",
-        bio: userData.bio || "",
+        businessName: userData?.businessName || "",
+        email: userData?.email || "",
+        phone: userData?.phone || "",
+        address: userData?.address || "",
+        timezone: userData?.timezone || "utc-8",
+        bio: userData?.bio || "",
       });
     }
   }, [userData, form]);
