@@ -94,10 +94,6 @@ const ApplicationPage = () => {
     setFormState((prev) => ({ ...prev, submitted: true }));
 
     // In a real app, you'd send this data to your backend
-    
-      jobId,
-      ...formState,
-    });
 
     // Reset form after "submission"
     setTimeout(() => {

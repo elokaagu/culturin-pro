@@ -129,15 +129,6 @@ const IssueNewCard: React.FC<IssueNewCardProps> = ({ onBack, onComplete }) => {
     try {
       // API call to issue card
 
-        cardType,
-        cardholderId: selectedCardholder,
-        spendingLimit: parseFloat(spendingLimit),
-        dailyLimit: dailyLimit ? parseFloat(dailyLimit) : undefined,
-        weeklyLimit: weeklyLimit ? parseFloat(weeklyLimit) : undefined,
-        monthlyLimit: monthlyLimit ? parseFloat(monthlyLimit) : undefined,
-        blockedCategories,
-      });
-
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
 

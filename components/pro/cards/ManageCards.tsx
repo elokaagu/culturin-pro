@@ -287,11 +287,7 @@ const ManageCards: React.FC = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() =>
-                      
-                          }
-                        >
+                        <DropdownMenuItem>
                           <Eye className="h-4 w-4 mr-2" />
                           View Transactions
                         </DropdownMenuItem>

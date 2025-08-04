@@ -38,9 +38,6 @@ const BlogPage = () => {
       setBlogPosts([]);
     } finally {
       setLoading(false);
-      
-        
-      );
     }
   };
 
