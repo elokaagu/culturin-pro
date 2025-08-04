@@ -24,11 +24,21 @@ const Index = () => {
       <main className="flex-1">
         {/* Hero Section - Full View Height */}
         <section className="h-full flex flex-col justify-center items-center text-center px-4 relative bg-gradient-to-br from-blue-50 to-indigo-100">
-          {/* Background Image */}
-          <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-               style={{
-                 backgroundImage: "url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=2000&auto=format&fit=crop')"
-               }}>
+          {/* Background Video */}
+          <div className="absolute inset-0 overflow-hidden">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover opacity-30"
+              style={{ filter: 'brightness(0.7)' }}
+            >
+              <source src="https://player.vimeo.com/external/434045526.sd.mp4?s=c27eecc69a27dbc4ff2b87d38afc35f1a9e7c02d&profile_id=139&oauth2_token_id=57447761" type="video/mp4" />
+              <source src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0fd273d2c6d9a064f3ae355a1a7b53d&profile_id=139&oauth2_token_id=57447761" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            <div className="absolute inset-0 bg-black bg-opacity-20"></div>
           </div>
           
           {/* Content */}
