@@ -19,22 +19,22 @@ const Index = () => {
   }, []);
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       <Header type="traveler" />
       <main className="flex-1">
         {/* Hero Section - Full View Height */}
-        <section className="min-h-screen flex flex-col justify-center items-center text-center px-4 relative bg-gradient-to-br from-blue-50 to-indigo-100">
+        <section className="h-full flex flex-col justify-center items-center text-center px-4 relative bg-gradient-to-br from-blue-50 to-indigo-100">
           {/* Background Image */}
-          <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+          <div className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
                style={{
-                 backgroundImage: "url('https://images.unsplash.com/photo-1466442929976-97f336a657be?q=80&w=2000&auto=format&fit=crop')"
+                 backgroundImage: "url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=2000&auto=format&fit=crop')"
                }}>
           </div>
           
           {/* Content */}
           <div className="relative z-10 max-w-4xl mx-auto">
             {/* Main Headline */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
               Own your bookings.
               <br />
               Tell richer stories.
@@ -43,7 +43,7 @@ const Index = () => {
             </h1>
             
             {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
               Get more direct bookings, build guest loyalty, and craft unforgettable cultural journeys.
             </p>
             
@@ -51,11 +51,11 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 size="lg" 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 text-base font-semibold"
                 asChild
               >
                 <Link to="/how-it-works">
-                  <Play className="h-5 w-5 mr-2" />
+                  <Play className="h-4 w-4 mr-2" />
                   How It Works
                 </Link>
               </Button>
@@ -63,12 +63,12 @@ const Index = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="border-2 border-gray-300 hover:border-gray-400 text-gray-700 px-8 py-4 text-lg font-semibold"
+                className="border-2 border-gray-300 hover:border-gray-400 text-gray-700 px-6 py-3 text-base font-semibold"
                 asChild
               >
                 <Link to="/sign-in">
                   Login
-                  <ArrowRight className="h-5 w-5 ml-2" />
+                  <ArrowRight className="h-4 w-4 ml-2" />
                 </Link>
               </Button>
             </div>
