@@ -140,9 +140,10 @@ const WebsiteBuilder: React.FC = () => {
         }
 
         // Add initial state to history
-        const initialHistory = {
+        const initialHistory: HistoryState = {
           websiteSettings: userData?.websiteSettings || {},
           itineraries: itineraries,
+          timestamp: Date.now(),
         };
         setHistory([initialHistory]);
         setHistoryIndex(0);
