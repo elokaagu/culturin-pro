@@ -642,7 +642,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
         </div>
       </div>
 
-      <Card className="overflow-hidden bg-gray-50 flex-1 pl-8">
+      <Card className="overflow-hidden bg-gray-50 flex-1 pl-8 border-0">
         <CardContent className="p-6 flex justify-center h-full">
           <div
             className={cn(
