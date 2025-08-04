@@ -140,10 +140,12 @@ const WebsiteBuilder: React.FC = () => {
         }
 
         // Add initial state to history
-        addToHistory({
+        const initialHistory = {
           websiteSettings: userData?.websiteSettings || {},
           itineraries: itineraries,
-        });
+        };
+        setHistory([initialHistory]);
+        setHistoryIndex(0);
 
 
       } catch (error) {
@@ -790,7 +792,7 @@ const WebsiteBuilder: React.FC = () => {
             <div className="flex gap-2">
               <Button 
                 onClick={handleManualSave}
-                disabled={saveLoading || !hasUnsavedChanges}
+                disabled={saveLoading}
                 className="flex-1"
                 variant={hasUnsavedChanges ? "default" : "outline"}
               >
@@ -818,7 +820,7 @@ const WebsiteBuilder: React.FC = () => {
             <div className="flex gap-2">
               <Button 
                 onClick={undo}
-                disabled={historyIndex <= 0}
+                disabled={historyIndex <= 0 || history.length === 0}
                 variant="outline"
                 size="icon"
               >
@@ -826,7 +828,7 @@ const WebsiteBuilder: React.FC = () => {
               </Button>
               <Button 
                 onClick={redo}
-                disabled={historyIndex >= history.length - 1}
+                disabled={historyIndex >= history.length - 1 || history.length === 0}
                 variant="outline"
                 size="icon"
               >
@@ -879,19 +881,20 @@ const WebsiteBuilder: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
-
-        {/* Content based on active tab (scrollable) */}
+        {/* Content based on active tab */}
         <div className="flex-1 overflow-auto">
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="h-full">
-            <TabsContent value="preview" className="h-full p-6">
+          {activeTab === "preview" && (
+            <div className="h-full p-6">
               <WebsitePreview
                 key={previewKey}
                 itineraries={itineraries}
                 viewMode={viewMode}
               />
-            </TabsContent>
+            </div>
+          )}
 
-            <TabsContent value="builder" className="h-full p-6">
+          {activeTab === "builder" && (
+            <div className="h-full p-6">
               <div className="space-y-6 h-full">
                 <div className="flex items-center justify-between">
                   <div>
@@ -933,24 +936,32 @@ const WebsiteBuilder: React.FC = () => {
                   <DragDropBuilder />
                 </div>
               </div>
-            </TabsContent>
+            </div>
+          )}
 
-            <TabsContent value="themes" className="h-full p-6">
+          {activeTab === "themes" && (
+            <div className="h-full p-6">
               <WebsiteThemes />
-            </TabsContent>
+            </div>
+          )}
 
-            <TabsContent value="content" className="h-full p-6">
+          {activeTab === "content" && (
+            <div className="h-full p-6">
               <WebsiteContent />
-            </TabsContent>
+            </div>
+          )}
 
-            <TabsContent value="booking" className="h-full p-6">
+          {activeTab === "booking" && (
+            <div className="h-full p-6">
               <BookingFlowBuilder />
-            </TabsContent>
+            </div>
+          )}
 
-            <TabsContent value="media-library" className="h-full p-6">
+          {activeTab === "media-library" && (
+            <div className="h-full p-6">
               <MediaLibrary />
-            </TabsContent>
-          </Tabs>
+            </div>
+          )}
         </div>
       </div>
 
