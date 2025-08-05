@@ -15,6 +15,12 @@ import {
   Sparkles,
   CheckCircle,
   Loader2,
+  Upload,
+  Paperclip,
+  Image,
+  File,
+  X,
+  Eye,
 } from "lucide-react";
 import { settingsService } from "@/lib/settings-service";
 
@@ -26,6 +32,16 @@ interface ChatMessage {
   options?: string[];
   selectedOption?: string;
   isGenerating?: boolean;
+  attachments?: UploadedFile[];
+}
+
+interface UploadedFile {
+  id: string;
+  name: string;
+  type: 'image' | 'document' | 'url';
+  url?: string;
+  file?: File;
+  preview?: string;
 }
 
 interface ConversationState {
@@ -57,7 +73,12 @@ const ContentCreator: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
   const [inputValue, setInputValue] = useState('');
+  const [attachments, setAttachments] = useState<UploadedFile[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showUploadMenu, setShowUploadMenu] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const urlInputRef = useRef<HTMLInputElement>(null);
 
   // Scroll to bottom when new messages are added
   useEffect(() => {
@@ -80,26 +101,95 @@ const ContentCreator: React.FC = () => {
     }
   }, []);
 
-  const addBotMessage = (content: string, options?: string[], isGenerating: boolean = false) => {
+  const addBotMessage = (content: string, options?: string[], isGenerating: boolean = false, attachments?: UploadedFile[]) => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'bot',
       content,
       timestamp: new Date(),
       options,
-      isGenerating
+      isGenerating,
+      attachments
     };
     setMessages(prev => [...prev, newMessage]);
   };
 
-  const addUserMessage = (content: string) => {
+  const addUserMessage = (content: string, userAttachments?: UploadedFile[]) => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'user',
       content,
-      timestamp: new Date()
+      timestamp: new Date(),
+      attachments: userAttachments
     };
     setMessages(prev => [...prev, newMessage]);
+  };
+
+  const handleFileUpload = async (files: FileList) => {
+    setIsUploading(true);
+    const newAttachments: UploadedFile[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileId = Date.now() + i;
+      
+      // Create preview for images
+      let preview: string | undefined;
+      if (file.type.startsWith('image/')) {
+        preview = URL.createObjectURL(file);
+      }
+
+      const attachment: UploadedFile = {
+        id: fileId.toString(),
+        name: file.name,
+        type: file.type.startsWith('image/') ? 'image' : 'document',
+        file,
+        preview
+      };
+
+      newAttachments.push(attachment);
+    }
+
+    setAttachments(prev => [...prev, ...newAttachments]);
+    setIsUploading(false);
+    setShowUploadMenu(false);
+    
+    // Add message with attachments
+    addUserMessage(`I've uploaded ${newAttachments.length} reference file${newAttachments.length > 1 ? 's' : ''} for you to analyze.`, newAttachments);
+    
+    // Get AI response about the uploaded files
+    const fileNames = newAttachments.map(f => f.name).join(', ');
+    const aiResponse = await callOpenAI(`I've uploaded these reference files: ${fileNames}. Can you analyze them and help me create content based on what you see?`, messages);
+    addBotMessage(aiResponse);
+  };
+
+  const handleUrlUpload = async (url: string) => {
+    if (!url.trim()) return;
+    
+    setIsUploading(true);
+    const urlId = Date.now().toString();
+    
+    const attachment: UploadedFile = {
+      id: urlId,
+      name: url,
+      type: 'url',
+      url: url
+    };
+
+    setAttachments(prev => [...prev, attachment]);
+    setIsUploading(false);
+    setShowUploadMenu(false);
+    
+    // Add message with URL
+    addUserMessage(`I've shared this reference URL: ${url}`, [attachment]);
+    
+    // Get AI response about the URL
+    const aiResponse = await callOpenAI(`I've shared this reference URL: ${url}. Can you analyze it and help me create content based on what you find?`, messages);
+    addBotMessage(aiResponse);
+  };
+
+  const removeAttachment = (attachmentId: string) => {
+    setAttachments(prev => prev.filter(att => att.id !== attachmentId));
   };
 
   const callOpenAI = async (userInput: string, conversationHistory: ChatMessage[]) => {
@@ -113,9 +203,11 @@ const ContentCreator: React.FC = () => {
           userInput,
           conversationHistory: conversationHistory.map(msg => ({
             role: msg.type === 'user' ? 'user' : 'assistant',
-            content: msg.content
+            content: msg.content,
+            attachments: msg.attachments
           })),
-          isConversation: true
+          isConversation: true,
+          attachments: attachments
         }),
       });
 
@@ -287,6 +379,7 @@ Description 2: ${data.content.description2 || ""}`;
     setGeneratedContent(null);
     setConversationState({ step: 'welcome' });
     setMessages([]);
+    setAttachments([]);
     addBotMessage("Ahoy! I'm Rigo, your AI marketing assistant inspired by the great explorer Amerigo Vespucci! 🌍 Ready to discover amazing content together? What kind of marketing content would you like to create today?", [
       "Instagram Caption",
       "TikTok Hook", 
@@ -341,6 +434,50 @@ Description 2: ${data.content.description2 || ""}`;
                       )}
                       <p className="text-sm">{message.content}</p>
                     </div>
+                    
+                    {/* Attachments */}
+                    {message.attachments && message.attachments.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {message.attachments.map((attachment) => (
+                          <div key={attachment.id} className="flex items-center gap-2 p-2 bg-white/50 rounded border">
+                            {attachment.type === 'image' && attachment.preview ? (
+                              <div className="relative">
+                                <img 
+                                  src={attachment.preview} 
+                                  alt={attachment.name}
+                                  className="w-12 h-12 object-cover rounded"
+                                />
+                                <button
+                                  onClick={() => removeAttachment(attachment.id)}
+                                  className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                {attachment.type === 'image' ? <Image className="h-6 w-6 text-gray-500" /> : <File className="h-6 w-6 text-gray-500" />}
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium truncate">{attachment.name}</p>
+                              <p className="text-xs text-gray-500">{attachment.type}</p>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                if (attachment.preview) {
+                                  window.open(attachment.preview, '_blank');
+                                }
+                              }}
+                            >
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     
                     {/* Options */}
                     {message.options && (
@@ -401,9 +538,90 @@ Description 2: ${data.content.description2 || ""}`;
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Upload Menu */}
+        {showUploadMenu && (
+          <div className="border-t border-gray-200 p-4 bg-gray-50">
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Upload Files
+                </label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*,.pdf,.doc,.docx,.txt"
+                  onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+                  className="hidden"
+                />
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  variant="outline"
+                  className="w-full"
+                  disabled={isUploading}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  {isUploading ? "Uploading..." : "Choose Files"}
+                </Button>
+              </div>
+              
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-500 sm:text-sm">🔗</span>
+                </div>
+                <input
+                  ref={urlInputRef}
+                  type="url"
+                  placeholder="Paste a URL reference..."
+                  className="block w-full pl-10 pr-12 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      const url = (e.target as HTMLInputElement).value;
+                      handleUrlUpload(url);
+                      (e.target as HTMLInputElement).value = '';
+                    }
+                  }}
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center">
+                  <Button
+                    onClick={() => {
+                      const url = urlInputRef.current?.value;
+                      if (url) {
+                        handleUrlUpload(url);
+                        urlInputRef.current!.value = '';
+                      }
+                    }}
+                    size="sm"
+                    disabled={isUploading}
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+              
+              <Button
+                onClick={() => setShowUploadMenu(false)}
+                variant="ghost"
+                size="sm"
+                className="w-full"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Input */}
         <div className="border-t border-gray-200 p-4">
           <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowUploadMenu(!showUploadMenu)}
+              className="flex-shrink-0"
+            >
+              <Paperclip className="h-4 w-4" />
+            </Button>
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -424,6 +642,34 @@ Description 2: ${data.content.description2 || ""}`;
               <Send className="h-4 w-4" />
             </Button>
           </div>
+          
+          {/* Current Attachments */}
+          {attachments.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {attachments.map((attachment) => (
+                <div key={attachment.id} className="flex items-center gap-2 p-2 bg-gray-100 rounded border">
+                  {attachment.type === 'image' && attachment.preview ? (
+                    <img 
+                      src={attachment.preview} 
+                      alt={attachment.name}
+                      className="w-6 h-6 object-cover rounded"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 bg-gray-200 rounded flex items-center justify-center">
+                      {attachment.type === 'image' ? <Image className="h-4 w-4 text-gray-500" /> : <File className="h-4 w-4 text-gray-500" />}
+                    </div>
+                  )}
+                  <span className="text-xs font-medium truncate max-w-20">{attachment.name}</span>
+                  <button
+                    onClick={() => removeAttachment(attachment.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

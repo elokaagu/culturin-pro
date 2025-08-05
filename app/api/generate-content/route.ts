@@ -235,7 +235,7 @@ Format as plain text with proper structure and flow.`;
 }
 
 async function handleConversation(body: any) {
-  const { userInput, conversationHistory } = body;
+  const { userInput, conversationHistory, attachments } = body;
 
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json(
@@ -263,6 +263,7 @@ Your expertise:
 - Target audience analysis
 - Tone and voice development
 - Content optimization for different platforms
+- Analyzing reference materials (images, documents, URLs) to create tailored content
 
 When helping users:
 1. Ask clarifying questions to understand their needs
@@ -271,6 +272,8 @@ When helping users:
 4. Guide them through the content creation process
 5. Provide examples and best practices
 6. Be encouraging and supportive
+7. When users upload reference materials, analyze them and provide insights
+8. Use the context from uploaded files to create more relevant and personalized content
 
 Keep responses conversational and under 150 words unless the user specifically asks for longer content.`;
 
@@ -286,6 +289,28 @@ Keep responses conversational and under 150 words unless the user specifically a
       content: userInput,
     },
   ];
+
+  // Add context about attachments if present
+  let enhancedUserInput = userInput;
+  if (attachments && attachments.length > 0) {
+    const attachmentContext = attachments.map(att => {
+      if (att.type === 'url') {
+        return `Reference URL: ${att.name}`;
+      } else if (att.type === 'image') {
+        return `Reference image: ${att.name} (image file)`;
+      } else {
+        return `Reference document: ${att.name} (${att.type} file)`;
+      }
+    }).join(', ');
+    
+    enhancedUserInput = `${userInput}\n\nReference materials: ${attachmentContext}`;
+    
+    // Update the last message with enhanced context
+    messages[messages.length - 1] = {
+      role: "user",
+      content: enhancedUserInput,
+    };
+  }
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
