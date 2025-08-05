@@ -132,7 +132,7 @@ const ContentCreator: React.FC = () => {
       icon: <Instagram className="h-5 w-5" />,
       description: "Engaging captions for Instagram posts",
       category: "social",
-      format: "Short, catchy with emojis",
+      format: "Short, catchy content",
       wordCount: "50-100 words",
     },
     {
@@ -476,142 +476,88 @@ The image should be:
   };
 
   return (
-    <div className="space-y-6">
-      {/* Hero Header */}
-      <div className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <Sparkles className="h-8 w-8 text-culturin-indigo" />
-          <h1 className="text-3xl font-bold text-gray-900">Marketing HQ</h1>
-        </div>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Your personal AI copywriter for tours, social media, and campaigns
-        </p>
-        <div className="flex items-center justify-center gap-4">
-          <Badge variant="outline" className="bg-blue-50 text-blue-700">
-            <Zap className="h-3 w-3 mr-1" />
-            AI Powered
-          </Badge>
-          <Badge variant="outline" className="bg-green-50 text-green-700">
-            <TrendingUp className="h-3 w-3 mr-1" />
-            Performance Optimized
-          </Badge>
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6 pl-8">
+        <h2 className="text-lg font-medium">Marketing HQ</h2>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm">
+            <Eye className="h-4 w-4 mr-2" />
+            Preview
+          </Button>
+          <Button variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+          <Button size="sm" onClick={handleGenerateContent} disabled={isGenerating}>
+            <Save className="h-4 w-4 mr-2" />
+            Generate
+          </Button>
         </div>
       </div>
 
-      {/* AI Assistant Welcome */}
-      <Card className="bg-gradient-to-r from-culturin-indigo/5 to-purple-50 border-culturin-indigo/20">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <div className="p-2 bg-culturin-indigo/10 rounded-full">
-              <Sparkle className="h-5 w-5 text-culturin-indigo" />
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full flex">
+          {/* Left Sidebar - Content Types */}
+          <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-sm font-medium text-gray-900 mb-2">Content Types</h3>
+              <p className="text-xs text-gray-500">Select the type of content you want to create</p>
             </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Hey there! Ready to create some amazing content?
-              </h3>
-              <p className="text-gray-600">
-                I'm your AI marketing assistant. Let's write content that makes
-                your cultural experiences irresistible! Pick a content type
-                below and I'll help you craft compelling copy that converts.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="space-y-6"
-      >
-        <TabsList className="grid grid-cols-4 w-full max-w-2xl">
-          <TabsTrigger value="create" className="flex items-center gap-2">
-            <PenTool className="h-4 w-4" />
-            Create
-          </TabsTrigger>
-          <TabsTrigger value="brand-voice" className="flex items-center gap-2">
-            <Palette className="h-4 w-4" />
-            Brand Voice
-          </TabsTrigger>
-          <TabsTrigger value="library" className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4" />
-            Library
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Analytics
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="create" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Content Type Selection */}
-            <div className="lg:col-span-1">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Wand2 className="h-5 w-5" />
-                    Choose Content Type
-                  </CardTitle>
-                  <CardDescription>
-                    Select the type of content you want to create
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 gap-3">
-                    {contentTypes.map((type) => (
-                      <div
-                        key={type.id}
-                        className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                          selectedContentType === type.id
-                            ? "border-culturin-indigo bg-culturin-indigo/5"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                        onClick={() => setSelectedContentType(type.id)}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="p-2 bg-gray-100 rounded-lg">
-                            {type.icon}
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900">
-                              {type.name}
-                            </h4>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {type.description}
-                            </p>
-                            <div className="flex items-center gap-2 mt-2">
-                              <Badge variant="outline" className="text-xs">
-                                {type.format}
-                              </Badge>
-                              <Badge variant="outline" className="text-xs">
-                                {type.wordCount}
-                              </Badge>
-                            </div>
-                          </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="space-y-2">
+                {contentTypes.map((type) => (
+                  <div
+                    key={type.id}
+                    className={`p-3 border rounded-lg cursor-pointer transition-all ${
+                      selectedContentType === type.id
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                    onClick={() => setSelectedContentType(type.id)}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="p-1.5 bg-gray-100 rounded">
+                        {type.icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-gray-900 text-sm">
+                          {type.name}
+                        </h4>
+                        <p className="text-xs text-gray-600 mt-1">
+                          {type.description}
+                        </p>
+                        <div className="flex items-center gap-1 mt-2">
+                          <Badge variant="outline" className="text-xs">
+                            {type.format}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {type.wordCount}
+                          </Badge>
                         </div>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                ))}
+              </div>
             </div>
+          </div>
 
-            {/* Content Creation Form */}
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Content Details</CardTitle>
-                  <CardDescription>
+          {/* Main Content Area */}
+          <div className="flex-1 bg-gray-50">
+            <div className="h-full p-6">
+              <div className="bg-white rounded-lg border border-gray-200 h-full">
+                <div className="p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Content Details</h3>
+                  <p className="text-sm text-gray-500 mb-6">
                     {selectedContentType
                       ? `Create ${
                           contentTypes.find((t) => t.id === selectedContentType)
                             ?.name
                         }`
                       : "Select a content type to get started"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                  </p>
+
                   {selectedContentType ? (
                     <>
                       <div className="grid grid-cols-2 gap-4">
@@ -707,23 +653,23 @@ The image should be:
                         <Button
                           onClick={handleGenerateContent}
                           disabled={isGenerating}
-                          className="flex-1 bg-culturin-indigo hover:bg-culturin-indigo/90"
+                          className="flex-1"
                         >
                           {isGenerating ? (
                             <>
                               <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                              Creating magic...
+                              Generating...
                             </>
                           ) : (
                             <>
-                              <Sparkles className="mr-2 h-4 w-4" />
+                              <FileText className="mr-2 h-4 w-4" />
                               Generate Content
                             </>
                           )}
                         </Button>
                         <Button
                           variant="outline"
-                          className="flex-1 border-culturin-indigo text-culturin-indigo hover:bg-culturin-indigo/10"
+                          className="flex-1"
                           onClick={handleGenerateCopy}
                           disabled={isGenerating}
                         >
@@ -732,7 +678,7 @@ The image should be:
                         </Button>
                         <Button
                           variant="outline"
-                          className="flex-1 border-culturin-indigo text-culturin-indigo hover:bg-culturin-indigo/10"
+                          className="flex-1"
                           onClick={() => setShowImageModal(true)}
                         >
                           <Wand2 className="mr-2 h-4 w-4" />
@@ -742,352 +688,147 @@ The image should be:
                     </>
                   ) : (
                     <div className="text-center py-8 text-gray-500">
-                      <Wand2 className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                      <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                       <p>Select a content type to start creating</p>
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
 
-          {/* Generated Content Display */}
-          {generatedContent && (
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {getContentTypeIcon(generatedContent.type)}
-                    <div>
-                      <CardTitle>{generatedContent.title}</CardTitle>
-                      <CardDescription>
-                        {generatedContent.platform} •{" "}
-                        {generatedContent.wordCount} words •{" "}
-                        {generatedContent.tone} tone
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleCopyContent}
-                    >
-                      <Copy className="h-4 w-4 mr-1" />
-                      Copy
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleSaveContent}
-                    >
-                      <Save className="h-4 w-4 mr-1" />
-                      Save
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowPreview(!showPreview)}
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      Preview
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <pre className="whitespace-pre-wrap text-sm">
-                    {generatedContent.content}
-                  </pre>
-                </div>
-
-                {/* Quick Edit Actions */}
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleQuickEdit("shorter")}
-                  >
-                    <Minimize2 className="h-3 w-3 mr-1" />
-                    Make Shorter
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleQuickEdit("more playful")}
-                  >
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    More Playful
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleQuickEdit("add emojis")}
-                  >
-                    <Heart className="h-3 w-3 mr-1" />
-                    Add Emojis
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleQuickEdit("focus on families")}
-                  >
-                    <Users className="h-3 w-3 mr-1" />
-                    Family Focus
-                  </Button>
-                </div>
-
-                {/* Live Preview */}
-                {showPreview && (
-                  <div className="border rounded-lg p-4 bg-white">
-                    <h4 className="font-medium mb-3">Live Preview</h4>
-                    <div className="bg-gray-100 p-4 rounded-lg">
-                      <div className="bg-white p-3 rounded border">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                  {/* Generated Content Display */}
+                  {generatedContent && (
+                    <div className="mt-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          {getContentTypeIcon(generatedContent.type)}
                           <div>
-                            <div className="font-medium text-sm">
-                              Your Business
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              Sponsored
+                            <h4 className="font-medium text-gray-900">{generatedContent.title}</h4>
+                            <p className="text-sm text-gray-500">
+                              {generatedContent.platform} • {generatedContent.wordCount} words • {generatedContent.tone} tone
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button variant="outline" size="sm" onClick={handleCopyContent}>
+                            <Copy className="h-4 w-4 mr-1" />
+                            Copy
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={handleSaveContent}>
+                            <Save className="h-4 w-4 mr-1" />
+                            Save
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => setShowPreview(!showPreview)}>
+                            <Eye className="h-4 w-4 mr-1" />
+                            Preview
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <pre className="whitespace-pre-wrap text-sm">{generatedContent.content}</pre>
+                      </div>
+
+                      {/* Quick Edit Actions */}
+                      <div className="flex flex-wrap gap-2">
+                        <Button variant="outline" size="sm" onClick={() => handleQuickEdit("shorter")}>
+                          <Minimize2 className="h-3 w-3 mr-1" />
+                          Make Shorter
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleQuickEdit("more playful")}>
+                          <FileText className="h-3 w-3 mr-1" />
+                          More Playful
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleQuickEdit("add emojis")}>
+                          <Heart className="h-3 w-3 mr-1" />
+                          Add Emojis
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleQuickEdit("focus on families")}>
+                          <Users className="h-3 w-3 mr-1" />
+                          Family Focus
+                        </Button>
+                      </div>
+
+                      {/* Live Preview */}
+                      {showPreview && (
+                        <div className="border rounded-lg p-4 bg-white">
+                          <h4 className="font-medium mb-3">Live Preview</h4>
+                          <div className="bg-gray-100 p-4 rounded-lg">
+                            <div className="bg-white p-3 rounded border">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                                <div>
+                                  <div className="font-medium text-sm">Your Business</div>
+                                  <div className="text-xs text-gray-500">Sponsored</div>
+                                </div>
+                              </div>
+                              <div className="bg-gray-200 h-48 rounded mb-3 flex items-center justify-center text-gray-500">
+                                [Image Placeholder]
+                              </div>
+                              <div className="text-sm">{generatedContent.content}</div>
                             </div>
                           </div>
                         </div>
-                        <div className="bg-gray-200 h-48 rounded mb-3 flex items-center justify-center text-gray-500">
-                          [Image Placeholder]
-                        </div>
-                        <div className="text-sm">
-                          {generatedContent.content}
-                        </div>
-                      </div>
+                      )}
                     </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
+                  )}
 
-          {/* Generated Images Display */}
-          {generatedImages.length > 0 && (
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Wand2 className="h-5 w-5" />
-                  Generated Images
-                </CardTitle>
-                <CardDescription>
-                  Your AI-generated marketing images are ready to use.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {generatedImages.map((imageUrl, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={imageUrl}
-                        alt={`Generated marketing image ${index + 1}`}
-                        className="w-full h-48 object-cover rounded-lg border border-gray-200"
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => {
-                              const link = document.createElement('a');
-                              link.href = imageUrl;
-                              link.download = `marketing-image-${index + 1}.jpg`;
-                              link.click();
-                            }}
-                          >
-                            <Download className="h-4 w-4 mr-1" />
-                            Download
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => {
-                              navigator.clipboard.writeText(imageUrl);
-                              toast.success("Image URL copied to clipboard!");
-                            }}
-                          >
-                            <Copy className="h-4 w-4 mr-1" />
-                            Copy URL
-                          </Button>
-                        </div>
+                            {/* Generated Images Display */}
+                  {generatedImages.length > 0 && (
+                    <div className="mt-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-gray-900">Generated Images</h4>
+                        <Button variant="outline" size="sm" onClick={() => setGeneratedImages([])}>
+                          Clear Images
+                        </Button>
                       </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 flex justify-between items-center">
-                  <p className="text-sm text-gray-500">
-                    {generatedImages.length} images generated
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setGeneratedImages([])}
-                  >
-                    Clear Images
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="brand-voice" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5" />
-                Teach AI Your Brand Voice
-              </CardTitle>
-              <CardDescription>
-                Help the AI understand your brand's personality and tone
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Brand Tone</Label>
-                    <Select
-                      value={brandVoice.tone}
-                      onValueChange={(value) =>
-                        setBrandVoice({ ...brandVoice, tone: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="friendly">
-                          Friendly & Approachable
-                        </SelectItem>
-                        <SelectItem value="luxury">Luxury & Premium</SelectItem>
-                        <SelectItem value="adventurous">
-                          Adventurous & Exciting
-                        </SelectItem>
-                        <SelectItem value="educational">
-                          Educational & Informative
-                        </SelectItem>
-                        <SelectItem value="professional">
-                          Professional & Trustworthy
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Writing Style</Label>
-                    <Select
-                      value={brandVoice.style}
-                      onValueChange={(value) =>
-                        setBrandVoice({ ...brandVoice, style: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="conversational">
-                          Conversational
-                        </SelectItem>
-                        <SelectItem value="formal">Formal</SelectItem>
-                        <SelectItem value="casual">Casual</SelectItem>
-                        <SelectItem value="storytelling">
-                          Storytelling
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Brand Keywords</Label>
-                    <Input
-                      placeholder="authentic, immersive, cultural, local..."
-                      value={brandVoice.keywords.join(", ")}
-                      onChange={(e) =>
-                        setBrandVoice({
-                          ...brandVoice,
-                          keywords: e.target.value.split(", "),
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Upload Past Content (Optional)</Label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                      <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                      <p className="text-sm text-gray-600">
-                        Upload 2-3 past posts or website copy to help AI learn
-                        your style
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {generatedImages.map((imageUrl, index) => (
+                          <div key={index} className="relative group">
+                            <img
+                              src={imageUrl}
+                              alt={`Generated marketing image ${index + 1}`}
+                              className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="secondary"
+                                  onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = imageUrl;
+                                    link.download = `marketing-image-${index + 1}.jpg`;
+                                    link.click();
+                                  }}
+                                >
+                                  <Download className="h-4 w-4 mr-1" />
+                                  Download
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="secondary"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(imageUrl);
+                                    toast.success("Image URL copied to clipboard!");
+                                  }}
+                                >
+                                  <Copy className="h-4 w-4 mr-1" />
+                                  Copy URL
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-sm text-gray-500">
+                        {generatedImages.length} images generated
                       </p>
                     </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Brand Voice Preview</Label>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-600">
-                        Based on your settings, your content will sound:{" "}
-                        <span className="font-medium text-gray-900">
-                          {brandVoice.tone} and {brandVoice.style}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="library" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Content Library</CardTitle>
-              <CardDescription>
-                Your saved and generated content
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                <BookOpen className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>
-                  No saved content yet. Generate some content to see it here!
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="analytics" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Content Performance</CardTitle>
-              <CardDescription>
-                Track how your generated content performs
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                <TrendingUp className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>
-                  Analytics will appear here once you start using generated
-                  content
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Image Generation Modal */}
       <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
