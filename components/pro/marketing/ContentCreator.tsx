@@ -10,7 +10,6 @@ import {
   Copy,
   Save,
   Send,
-  Bot,
   User,
   Sparkles,
   CheckCircle,
@@ -21,6 +20,7 @@ import {
   File,
   X,
   Eye,
+  MessageSquare,
 } from "lucide-react";
 import { settingsService } from "@/lib/settings-service";
 
@@ -88,7 +88,7 @@ const ContentCreator: React.FC = () => {
   // Initialize chat on component mount
   useEffect(() => {
     if (messages.length === 0) {
-      addBotMessage("Ahoy! I'm Rigo, your AI marketing assistant inspired by the great explorer Amerigo Vespucci! 🌍 Ready to discover amazing content together? What kind of marketing content would you like to create today?", [
+      addBotMessage("Ahoy! I'm Rigo, your AI marketing assistant. Ready to discover amazing content together? What kind of marketing content would you like to create today?", [
         "Instagram Caption",
         "TikTok Hook", 
         "Google Ad Copy",
@@ -380,7 +380,7 @@ Description 2: ${data.content.description2 || ""}`;
     setConversationState({ step: 'welcome' });
     setMessages([]);
     setAttachments([]);
-    addBotMessage("Ahoy! I'm Rigo, your AI marketing assistant inspired by the great explorer Amerigo Vespucci! 🌍 Ready to discover amazing content together? What kind of marketing content would you like to create today?", [
+    addBotMessage("Ahoy! I'm Rigo, your AI marketing assistant. Ready to discover amazing content together? What kind of marketing content would you like to create today?", [
       "Instagram Caption",
       "TikTok Hook", 
       "Google Ad Copy",
@@ -421,7 +421,7 @@ Description 2: ${data.content.description2 || ""}`;
                       ? 'bg-blue-500 text-white' 
                       : 'bg-gray-100 text-gray-600'
                   }`}>
-                    {message.type === 'user' ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                    {message.type === 'user' ? <User className="h-4 w-4" /> : <MessageSquare className="h-4 w-4" />}
                   </div>
                   <div className={`rounded-lg px-4 py-3 ${
                     message.type === 'user'
