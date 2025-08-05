@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { ItineraryType } from "@/data/itineraryData";
 import { itineraryService } from "@/lib/itinerary-service";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { localStorageUtils } from "@/lib/localStorage";
 
 export const useItineraries = () => {
   const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
@@ -10,27 +11,74 @@ export const useItineraries = () => {
   const { user } = useAuth();
   const isCreatingRef = useRef(false);
 
+  // Load itineraries from localStorage as fallback
+  const loadItinerariesFromLocalStorage = useCallback(() => {
+    try {
+      const itinerariesStr = localStorageUtils.getItem('culturinItineraries');
+      if (!itinerariesStr) {
+        return [];
+      }
+
+      const itineraries = JSON.parse(itinerariesStr);
+      
+      // Convert localStorage format to ItineraryType format
+      return itineraries.map((itinerary: any) => ({
+        id: itinerary.id || `local-${Date.now()}-${Math.random()}`,
+        title: itinerary.title || 'Untitled Itinerary',
+        description: itinerary.description || '',
+        days: itinerary.days || 1,
+        lastUpdated: itinerary.lastUpdated || 'just now',
+        status: itinerary.status || 'draft',
+        image: itinerary.image || '',
+        themeType: itinerary.themeType || 'cultural',
+        regions: itinerary.regions || [],
+        price: itinerary.price || 0,
+        currency: itinerary.currency || 'USD',
+        groupSize: itinerary.groupSize || { min: 1, max: 10 },
+        difficulty: itinerary.difficulty || 'easy',
+        tags: itinerary.tags || [],
+        modules: itinerary.modules || [],
+      }));
+    } catch (error) {
+      console.error("Error loading itineraries from localStorage:", error);
+      return [];
+    }
+  }, []);
+
   // Load itineraries
   const loadItineraries = useCallback(async () => {
-    if (!user) {
-      setIsLoading(false);
-      return;
-    }
-
     try {
       setIsLoading(true);
       setError(null);
-      const data = await itineraryService.getItineraries(user.id);
+      
+      let data: ItineraryType[] = [];
+      
+      // Try to load from Supabase if user is available
+      if (user) {
+        try {
+          data = await itineraryService.getItineraries(user.id);
+        } catch (err) {
+          console.error("Error loading from Supabase, falling back to localStorage:", err);
+          data = loadItinerariesFromLocalStorage();
+        }
+      } else {
+        // No user, load from localStorage
+        data = loadItinerariesFromLocalStorage();
+      }
+      
       setItineraries(data);
     } catch (err) {
       console.error("Error loading itineraries:", err);
       setError(
         err instanceof Error ? err.message : "Failed to load itineraries"
       );
+      // Even if there's an error, try localStorage as last resort
+      const localData = loadItinerariesFromLocalStorage();
+      setItineraries(localData);
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, loadItinerariesFromLocalStorage]);
 
   // Load itineraries on mount and when user changes
   useEffect(() => {
