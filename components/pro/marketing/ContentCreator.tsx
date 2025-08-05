@@ -997,32 +997,37 @@ Description 2: ${data.content.description2 || ""}`;
       </div>
 
       {/* Recent Projects */}
-      <div className="space-y-2">
-        {filteredProjects.map((project) => (
-          <div
-            key={project.id}
-            className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-            onClick={handleStartChat}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                {getPlatformIcon(project.platform)}
+      <div className="relative">
+        <div className="space-y-2 max-h-96 overflow-hidden">
+          {filteredProjects.map((project) => (
+            <div
+              key={project.id}
+              className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+              onClick={handleStartChat}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                  {getPlatformIcon(project.platform)}
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">{project.title}</h3>
+                  <p className="text-sm text-gray-500">{project.timestamp}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-medium text-gray-900">{project.title}</h3>
-                <p className="text-sm text-gray-500">{project.timestamp}</p>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm">
+                  <Download className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm">
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm">
-                <Download className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm">
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        
+        {/* Fade overlay at the bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none"></div>
       </div>
     </div>
   );
