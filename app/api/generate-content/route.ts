@@ -244,16 +244,27 @@ async function handleConversation(body: any) {
     );
   }
 
+  // Check if user is requesting image generation
+  const isImageRequest = userInput.toLowerCase().includes('generate') && 
+    (userInput.toLowerCase().includes('image') || 
+     userInput.toLowerCase().includes('picture') || 
+     userInput.toLowerCase().includes('photo'));
+
+  if (isImageRequest) {
+    return handleImageGeneration(userInput, conversationHistory, attachments);
+  }
+
   // Create conversation context for Rigo
   const systemPrompt = `You are Rigo, an AI marketing assistant. You help users create amazing marketing content for cultural tourism experiences.
 
 Your personality:
-- You're enthusiastic and knowledgeable about cultural tourism and marketing
-- You're friendly, helpful, and encouraging
-- You speak in a conversational, engaging tone
+- You're knowledgeable and helpful about cultural tourism and marketing
+- You're friendly but casual and relaxed
+- You speak in a natural, conversational tone
 - You ask clarifying questions to better understand the user's needs
 - You provide specific, actionable advice
 - You can suggest content types, help refine ideas, and guide users through the content creation process
+- You're not overly excited or enthusiastic - keep it chill and professional
 
 Your expertise:
 - Instagram captions, TikTok hooks, Google Ads, Facebook ads, blog posts, email newsletters, WhatsApp scripts, event flyers
@@ -262,6 +273,7 @@ Your expertise:
 - Tone and voice development
 - Content optimization for different platforms
 - Analyzing reference materials (images, documents, URLs) to create tailored content
+- Image generation for marketing materials
 
 When helping users:
 1. Ask clarifying questions to understand their needs
@@ -269,11 +281,12 @@ When helping users:
 3. Help them define their target audience and tone
 4. Guide them through the content creation process
 5. Provide examples and best practices
-6. Be encouraging and supportive
+6. Be helpful and supportive but not overly enthusiastic
 7. When users upload reference materials, analyze them and provide insights
 8. Use the context from uploaded files to create more relevant and personalized content
+9. When users ask for images, offer to generate custom marketing images
 
-Important: Do not use emojis in your responses. Keep your tone professional and conversational.
+Important: Do not use emojis in your responses. Keep your tone casual and professional, not overly excited.
 
 Keep responses conversational and under 150 words unless the user specifically asks for longer content.`;
 
@@ -351,6 +364,97 @@ Keep responses conversational and under 150 words unless the user specifically a
     console.error("Error in conversation:", error);
     return NextResponse.json(
       { error: "Failed to get response from Rigo. Please try again." },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleImageGeneration(userInput: string, conversationHistory: any[], attachments: any[]) {
+  try {
+    // Create a prompt for image generation based on the conversation context
+    let imagePrompt = "Create a professional marketing image for cultural tourism";
+    
+    // Extract context from conversation history
+    const recentMessages = conversationHistory.slice(-5); // Last 5 messages
+    const contextKeywords = recentMessages
+      .filter(msg => msg.role === 'user')
+      .map(msg => msg.content)
+      .join(' ')
+      .toLowerCase();
+    
+    // Build image prompt based on context
+    if (contextKeywords.includes('barcelona')) {
+      imagePrompt = "Professional marketing image of Barcelona cultural experiences, vibrant colors, authentic local atmosphere";
+    } else if (contextKeywords.includes('cooking') || contextKeywords.includes('food')) {
+      imagePrompt = "Professional marketing image of traditional cooking class, local ingredients, cultural culinary experience";
+    } else if (contextKeywords.includes('instagram')) {
+      imagePrompt = "Instagram-worthy marketing image for cultural tourism, vibrant, engaging, professional quality";
+    } else if (contextKeywords.includes('facebook')) {
+      imagePrompt = "Facebook ad image for cultural tourism, professional, engaging, clear call-to-action";
+    } else if (contextKeywords.includes('google')) {
+      imagePrompt = "Google Ads image for cultural tourism, professional, conversion-focused, clear value proposition";
+    }
+
+    // Add attachment context if available
+    if (attachments && attachments.length > 0) {
+      const attachmentContext = attachments.map(att => {
+        if (att.type === 'image') {
+          return "similar style to uploaded reference image";
+        } else if (att.type === 'url') {
+          return "inspired by reference URL content";
+        }
+        return "";
+      }).filter(ctx => ctx).join(', ');
+      
+      if (attachmentContext) {
+        imagePrompt += `, ${attachmentContext}`;
+      }
+    }
+
+    // Call DALL-E API for image generation
+    const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: imagePrompt,
+        n: 1,
+        size: "1024x1024",
+        quality: "standard",
+        style: "natural",
+      }),
+    });
+
+    if (!imageResponse.ok) {
+      const errorData = await imageResponse.json();
+      console.error("DALL-E API error:", errorData);
+      return NextResponse.json(
+        { error: "Failed to generate image. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    const imageData = await imageResponse.json();
+    const imageUrl = imageData.data[0]?.url;
+
+    if (!imageUrl) {
+      return NextResponse.json(
+        { error: "No image generated. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ 
+      response: `I've generated a custom marketing image for you based on our conversation. Here's what I created:`,
+      generatedImage: imageUrl,
+      imagePrompt: imagePrompt
+    });
+  } catch (error) {
+    console.error("Error generating image:", error);
+    return NextResponse.json(
+      { error: "Failed to generate image. Please try again." },
       { status: 500 }
     );
   }

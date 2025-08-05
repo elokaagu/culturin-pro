@@ -21,6 +21,7 @@ import {
   X,
   Eye,
   MessageSquare,
+  Download,
 } from "lucide-react";
 import { settingsService } from "@/lib/settings-service";
 
@@ -33,6 +34,8 @@ interface ChatMessage {
   selectedOption?: string;
   isGenerating?: boolean;
   attachments?: UploadedFile[];
+  generatedImage?: string;
+  imagePrompt?: string;
 }
 
 interface UploadedFile {
@@ -101,7 +104,7 @@ const ContentCreator: React.FC = () => {
     }
   }, []);
 
-  const addBotMessage = (content: string, options?: string[], isGenerating: boolean = false, attachments?: UploadedFile[]) => {
+  const addBotMessage = (content: string, options?: string[], isGenerating: boolean = false, attachments?: UploadedFile[], generatedImage?: string, imagePrompt?: string) => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'bot',
@@ -109,7 +112,9 @@ const ContentCreator: React.FC = () => {
       timestamp: new Date(),
       options,
       isGenerating,
-      attachments
+      attachments,
+      generatedImage,
+      imagePrompt
     };
     setMessages(prev => [...prev, newMessage]);
   };
@@ -215,8 +220,8 @@ const ContentCreator: React.FC = () => {
         throw new Error("Failed to get response from Rigo");
       }
 
-      const data = await response.json();
-      return data.response;
+          const data = await response.json();
+    return data;
     } catch (error) {
       console.error("Error calling OpenAI:", error);
       return "I apologize, but I'm having trouble connecting right now. Let's try again!";
@@ -241,7 +246,12 @@ const ContentCreator: React.FC = () => {
     
     // Remove thinking message and add real response
     setMessages(prev => prev.filter(msg => msg.id !== thinkingMessageId));
-    addBotMessage(aiResponse);
+    
+    if (aiResponse.generatedImage) {
+      addBotMessage(aiResponse.response, undefined, false, undefined, aiResponse.generatedImage, aiResponse.imagePrompt);
+    } else {
+      addBotMessage(aiResponse.response || aiResponse);
+    }
   };
 
   const handleUserInput = async (input: string) => {
@@ -265,7 +275,12 @@ const ContentCreator: React.FC = () => {
     
     // Remove thinking message and add real response
     setMessages(prev => prev.filter(msg => msg.id !== thinkingMessageId));
-    addBotMessage(aiResponse);
+    
+    if (aiResponse.generatedImage) {
+      addBotMessage(aiResponse.response, undefined, false, undefined, aiResponse.generatedImage, aiResponse.imagePrompt);
+    } else {
+      addBotMessage(aiResponse.response || aiResponse);
+    }
   };
 
   const handleGenerateContent = async () => {
@@ -434,6 +449,50 @@ Description 2: ${data.content.description2 || ""}`;
                       )}
                       <p className="text-sm">{message.content}</p>
                     </div>
+                    
+                    {/* Generated Image */}
+                    {message.generatedImage && (
+                      <div className="mt-3">
+                        <div className="bg-white p-3 rounded border">
+                          <img 
+                            src={message.generatedImage} 
+                            alt="Generated marketing image"
+                            className="w-full h-auto rounded-lg"
+                          />
+                          {message.imagePrompt && (
+                            <p className="text-xs text-gray-500 mt-2">
+                              Generated based on: {message.imagePrompt}
+                            </p>
+                          )}
+                          <div className="flex gap-2 mt-3">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = message.generatedImage!;
+                                link.download = 'marketing-image.png';
+                                link.click();
+                              }}
+                            >
+                              <Download className="h-3 w-3 mr-1" />
+                              Download
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => {
+                                navigator.clipboard.writeText(message.generatedImage!);
+                                toast.success("Image URL copied to clipboard!");
+                              }}
+                            >
+                              <Copy className="h-3 w-3 mr-1" />
+                              Copy URL
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Attachments */}
                     {message.attachments && message.attachments.length > 0 && (
