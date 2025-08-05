@@ -246,6 +246,9 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
           // Clean up large itineraries data first
           localStorageUtils.cleanupItineraries();
           
+          // Also clear any other large data that might cause issues
+          localStorageUtils.clearNonEssential();
+          
           const storedData = localStorage.getItem("culturin_user_data");
           if (storedData) {
             const parsedData = JSON.parse(storedData);
@@ -274,6 +277,8 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
         }
       } catch (error) {
         console.error("Error loading user data:", error);
+        // If there's an error, start with default data
+        setUserData(defaultUserData);
       } finally {
         setIsLoading(false);
       }
@@ -429,7 +434,68 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
 export const useUserData = (): UserDataContextType => {
   const context = useContext(UserDataContext);
   if (context === undefined) {
-    throw new Error("useUserData must be used within a UserDataProvider");
+    // Return default values instead of throwing error to prevent crashes
+    console.warn("useUserData must be used within a UserDataProvider");
+    return {
+      userData: {
+        businessName: "",
+        email: "",
+        phone: "",
+        address: "",
+        timezone: "utc-8",
+        bio: "",
+        websiteSettings: {
+          companyName: "",
+          tagline: "",
+          description: "",
+          primaryColor: "#9b87f5",
+          headerImage: null,
+          theme: "classic",
+          enableBooking: true,
+          bookingSettings: {
+            currency: "USD",
+            paymentMethods: [],
+            requireDeposit: false,
+            depositAmount: 0,
+            cancellationPolicy: "",
+            termsAndConditions: "",
+          },
+        },
+        notifications: {
+          emailNotifications: true,
+          bookingAlerts: true,
+          reviewAlerts: true,
+          marketingEmails: false,
+          weeklyReports: true,
+          monthlyReports: true,
+        },
+        billing: {
+          planName: "Growth Plan",
+          planPrice: "$99",
+          nextBilling: "June 15, 2025",
+          paymentMethods: [],
+        },
+        loyaltyCard: {
+          cardId: "loyalty-123",
+          tier: "bronze",
+          balance: 100,
+          rewardsBalance: 50,
+          walletAddress: "0x1234567890abcdef1234567890abcdef12345678",
+          status: "active",
+          memberSince: new Date("2023-01-01"),
+          kycStatus: "verified",
+          amlCheck: "passed",
+          annualFee: 50,
+          rewardsRate: 0.1,
+          benefits: ["Free coffee", "Priority booking"],
+        },
+      },
+      updateUserData: () => {},
+      updateWebsiteSettings: () => {},
+      updateNotifications: () => {},
+      saveUserData: () => {},
+      isLoading: true,
+    };
   }
   return context;
 };

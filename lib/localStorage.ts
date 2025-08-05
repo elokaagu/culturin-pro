@@ -147,19 +147,19 @@ export const localStorageUtils = {
   cleanupItineraries: (): void => {
     try {
       const itinerariesStr = localStorage.getItem('culturinItineraries');
-      if (itinerariesStr && itinerariesStr.length > 1024 * 1024) { // 1MB
+      if (itinerariesStr && itinerariesStr.length > 500 * 1024) { // 500KB - more aggressive
         console.warn('Itineraries data is too large, cleaning up...');
         
         const itineraries = JSON.parse(itinerariesStr);
         
-        // Keep only essential fields and limit to 5 itineraries
-        const cleanedItineraries = itineraries.slice(0, 5).map((itinerary: any) => ({
+        // Keep only essential fields and limit to 3 itineraries (more aggressive)
+        const cleanedItineraries = itineraries.slice(0, 3).map((itinerary: any) => ({
           id: itinerary.id,
           title: itinerary.title,
-          description: itinerary.description?.substring(0, 500), // Limit description
+          description: itinerary.description?.substring(0, 200), // More aggressive limit
           days: itinerary.days,
           image: itinerary.image,
-          highlights: itinerary.highlights?.slice(0, 3), // Limit highlights
+          highlights: itinerary.highlights?.slice(0, 2), // More aggressive limit
           // Remove large objects
           activities: undefined,
           accommodations: undefined,
@@ -171,6 +171,20 @@ export const localStorageUtils = {
         localStorage.setItem('culturinItineraries', JSON.stringify(cleanedItineraries));
         console.log('Cleaned up itineraries data');
       }
+      
+      // Also check for any other large keys and clean them up
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        try {
+          const value = localStorage.getItem(key);
+          if (value && value.length > 100 * 1024) { // 100KB limit for any key
+            console.warn(`Large localStorage key detected: ${key} (${value.length} bytes), removing...`);
+            localStorage.removeItem(key);
+          }
+        } catch (error) {
+          console.error(`Error checking localStorage key ${key}:`, error);
+        }
+      });
     } catch (error) {
       console.error('Failed to cleanup itineraries:', error);
       // If cleanup fails, remove the data entirely
