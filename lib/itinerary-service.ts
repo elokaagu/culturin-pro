@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { ItineraryType, ItineraryModule } from "@/data/itineraryData";
+import { localStorageUtils } from "./localStorage";
 
 export interface ItineraryService {
   // Itinerary CRUD operations
@@ -148,26 +149,72 @@ class SupabaseItineraryService implements ItineraryService {
   }
 
   async getItineraries(operatorId: string): Promise<ItineraryType[]> {
-    const { data, error } = await supabase
-      .from("itineraries")
-      .select("*")
-      .eq("operator_id", operatorId)
-      .order("updated_at", { ascending: false });
+    try {
+      // First try to get from Supabase
+      const { data, error } = await supabase
+        .from("itineraries")
+        .select("*")
+        .eq("operator_id", operatorId)
+        .order("updated_at", { ascending: false });
 
-    if (error) {
+      if (error) {
+        console.error("Error fetching itineraries from Supabase:", error);
+        // Fall back to localStorage
+        return this.getItinerariesFromLocalStorage();
+      }
+
+      if (data && data.length > 0) {
+        // Fetch modules for each itinerary
+        const itinerariesWithModules = await Promise.all(
+          data.map(async (itinerary) => {
+            const modules = await this.getItineraryModules(itinerary.id);
+            return this.mapDatabaseToItinerary(itinerary, modules);
+          })
+        );
+
+        return itinerariesWithModules;
+      } else {
+        // No itineraries in Supabase, try localStorage
+        return this.getItinerariesFromLocalStorage();
+      }
+    } catch (error) {
       console.error("Error fetching itineraries:", error);
-      throw new Error(`Failed to fetch itineraries: ${error.message}`);
+      // Fall back to localStorage
+      return this.getItinerariesFromLocalStorage();
     }
+  }
 
-    // Fetch modules for each itinerary
-    const itinerariesWithModules = await Promise.all(
-      data.map(async (itinerary) => {
-        const modules = await this.getItineraryModules(itinerary.id);
-        return this.mapDatabaseToItinerary(itinerary, modules);
-      })
-    );
+  private getItinerariesFromLocalStorage(): ItineraryType[] {
+    try {
+      const itinerariesStr = localStorageUtils.getItem('culturinItineraries');
+      if (!itinerariesStr) {
+        return [];
+      }
 
-    return itinerariesWithModules;
+      const itineraries = JSON.parse(itinerariesStr);
+      
+      // Convert localStorage format to ItineraryType format
+      return itineraries.map((itinerary: any) => ({
+        id: itinerary.id || `local-${Date.now()}-${Math.random()}`,
+        title: itinerary.title || 'Untitled Itinerary',
+        description: itinerary.description || '',
+        days: itinerary.days || 1,
+        lastUpdated: itinerary.lastUpdated || 'just now',
+        status: itinerary.status || 'draft',
+        image: itinerary.image || '',
+        themeType: itinerary.themeType || 'cultural',
+        regions: itinerary.regions || [],
+        price: itinerary.price || 0,
+        currency: itinerary.currency || 'USD',
+        groupSize: itinerary.groupSize || { min: 1, max: 10 },
+        difficulty: itinerary.difficulty || 'easy',
+        tags: itinerary.tags || [],
+        modules: itinerary.modules || [],
+      }));
+    } catch (error) {
+      console.error("Error loading itineraries from localStorage:", error);
+      return [];
+    }
   }
 
   async deleteItinerary(id: string): Promise<void> {
