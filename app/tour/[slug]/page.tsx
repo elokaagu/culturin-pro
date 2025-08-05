@@ -237,21 +237,149 @@ export default function TourOperatorPage({
             <div className="container mx-auto px-4 py-12">
               {/* Render custom content blocks if they exist */}
               {websiteData.settings.placedBlocks && websiteData.settings.placedBlocks.length > 0 ? (
-                websiteData.settings.placedBlocks.map((block: any, index: number) => (
-                  <div key={index} className="mb-8">
-                    {block.type === 'text' && (
-                      <div className="max-w-3xl mx-auto text-center">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-6">{block.title}</h2>
-                        <p className="text-lg text-gray-600 leading-relaxed">{block.content}</p>
-                      </div>
-                    )}
-                    {block.type === 'image' && (
-                      <div className="max-w-4xl mx-auto">
-                        <img src={block.src} alt={block.alt} className="w-full h-auto rounded-lg" />
-                      </div>
-                    )}
-                  </div>
-                ))
+                websiteData.settings.placedBlocks
+                  .sort((a: any, b: any) => a.position - b.position)
+                  .map((block: any) => {
+                    const style: React.CSSProperties = {
+                      textAlign: block.settings?.textAlign as "left" | "center" | "right" | "justify",
+                      fontSize: block.settings?.fontSize,
+                      fontWeight: block.settings?.fontWeight,
+                      color: block.settings?.color,
+                      backgroundColor: block.settings?.backgroundColor,
+                      padding: block.settings?.padding,
+                      margin: block.settings?.margin,
+                      width: block.settings?.width,
+                      height: block.settings?.height,
+                      borderRadius: block.settings?.borderRadius,
+                      border: block.settings?.border,
+                      boxShadow: block.settings?.shadow,
+                    };
+
+                    switch (block.blockType) {
+                      case "header":
+                        return (
+                          <header
+                            key={block.id}
+                            style={style}
+                            className="flex justify-between items-center"
+                          >
+                            <div className="font-bold text-xl">
+                              {block.content?.logo || "Your Logo"}
+                            </div>
+                            <nav className="flex gap-4">
+                              {block.content?.navigation?.map((item: string, index: number) => (
+                                <a key={index} href="#" className="hover:text-blue-600">
+                                  {item}
+                                </a>
+                              )) || ["Home", "About", "Tours", "Contact"].map((item, index) => (
+                                <a key={index} href="#" className="hover:text-blue-600">
+                                  {item}
+                                </a>
+                              ))}
+                            </nav>
+                            <Button size="sm">{block.content?.cta || "Book Now"}</Button>
+                          </header>
+                        );
+
+                      case "hero":
+                        return (
+                          <section
+                            key={block.id}
+                            style={style}
+                            className="flex flex-col items-center justify-center min-h-[400px]"
+                          >
+                            <h1 className="text-4xl font-bold mb-4">
+                              {block.content?.title || "Discover Amazing Experiences"}
+                            </h1>
+                            <p className="text-xl mb-6">{block.content?.subtitle || "Explore unique cultural tours and adventures"}</p>
+                            <Button size="lg">{block.content?.ctaText || "Start Exploring"}</Button>
+                          </section>
+                        );
+
+                      case "text":
+                        return (
+                          <div key={block.id} style={style} className="max-w-3xl mx-auto text-center">
+                            <p>{block.content?.text || "Add your content here"}</p>
+                          </div>
+                        );
+
+                      case "heading":
+                        return (
+                          <div key={block.id} style={style} className="max-w-3xl mx-auto text-center">
+                            {block.content?.level === "h1" && (
+                              <h1 className="text-3xl font-bold text-gray-900 mb-6">{block.content?.text || "Heading"}</h1>
+                            )}
+                            {block.content?.level === "h2" && (
+                              <h2 className="text-2xl font-bold text-gray-900 mb-4">{block.content?.text || "Heading"}</h2>
+                            )}
+                            {block.content?.level === "h3" && (
+                              <h3 className="text-xl font-bold text-gray-900 mb-3">{block.content?.text || "Heading"}</h3>
+                            )}
+                          </div>
+                        );
+
+                      case "image":
+                        return (
+                          <div key={block.id} style={style} className="max-w-4xl mx-auto">
+                            <img
+                              src={block.content?.src || "https://via.placeholder.com/400x300?text=Add+Image"}
+                              alt={block.content?.alt || "Image"}
+                              className="w-full h-auto rounded-lg"
+                            />
+                            {block.content?.caption && (
+                              <p className="text-sm text-gray-600 mt-2 text-center">
+                                {block.content.caption}
+                              </p>
+                            )}
+                          </div>
+                        );
+
+                      case "grid":
+                        return (
+                          <div
+                            key={block.id}
+                            style={style}
+                            className={`grid grid-cols-${block.content?.columns || 2} gap-4 max-w-4xl mx-auto`}
+                          >
+                            {block.content?.items?.map((item: any, index: number) => (
+                              <div key={index} className="p-4 border rounded">
+                                <h3 className="font-bold">{item.title}</h3>
+                                <p>{item.content}</p>
+                              </div>
+                            )) || (
+                              <div className="p-4 border rounded">
+                                <h3 className="font-bold">Sample Item</h3>
+                                <p>Add your content here</p>
+                              </div>
+                            )}
+                          </div>
+                        );
+
+                      case "quote":
+                        return (
+                          <blockquote
+                            key={block.id}
+                            style={style}
+                            className="text-center max-w-3xl mx-auto"
+                          >
+                            <p className="mb-4 text-xl italic">"{block.content?.text || "Add your quote here"}"</p>
+                            <footer>
+                              <cite className="font-bold">{block.content?.author || "Author"}</cite>
+                              {block.content?.role && (
+                                <span className="text-gray-600">, {block.content.role}</span>
+                              )}
+                            </footer>
+                          </blockquote>
+                        );
+
+                      default:
+                        return (
+                          <div key={block.id} style={style} className="max-w-3xl mx-auto text-center">
+                            <p>{block.content?.text || "Content block"}</p>
+                          </div>
+                        );
+                    }
+                  })
               ) : (
                 // Fallback to basic content if no placed blocks
                 <>
