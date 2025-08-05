@@ -124,7 +124,7 @@ export default function TourOperatorPage({
         price: Math.floor(Math.random() * 50) + 40,
         image: itinerary.image || "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
         description: itinerary.description || `Experience the best of ${itinerary.title}.`,
-        highlights: itinerary.highlights || [
+        highlights: [
           "Expert local guides",
           "Small groups of max 10 people",
           "Authentic cultural experiences",
