@@ -40,7 +40,19 @@ export const useAuth = () => {
         resetPassword: async () => ({ error: null }),
       };
     }
-    throw new Error("useAuth must be used within an AuthProvider");
+    // Return default values instead of throwing to prevent crashes
+    console.warn("useAuth must be used within an AuthProvider, returning default values");
+    return {
+      user: null,
+      isLoggedIn: false,
+      login: async () => ({ error: null }),
+      signUp: async () => ({ error: null }),
+      logout: async () => ({ error: null }),
+      hasStudioAccess: false,
+      isAdmin: false,
+      isLoading: false,
+      resetPassword: async () => ({ error: null }),
+    };
   }
   return context;
 };

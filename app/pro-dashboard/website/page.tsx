@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import ProDashboardLayout from "../../../src/components/pro/ProDashboardLayout";
+import ProDashboardLayout from "../../../components/pro/ProDashboardLayout";
 import WebsiteBuilder from "../../../components/pro/website/WebsiteBuilder";
 
 // Force dynamic rendering to prevent SSR issues
