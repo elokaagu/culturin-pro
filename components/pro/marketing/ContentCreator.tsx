@@ -22,6 +22,10 @@ import {
   Eye,
   MessageSquare,
   Download,
+  Volume2,
+  VolumeX,
+  Play,
+  Pause,
 } from "lucide-react";
 import { settingsService } from "@/lib/settings-service";
 
@@ -36,6 +40,7 @@ interface ChatMessage {
   attachments?: UploadedFile[];
   generatedImage?: string;
   imagePrompt?: string;
+  audioUrl?: string;
 }
 
 interface UploadedFile {
@@ -79,6 +84,9 @@ const ContentCreator: React.FC = () => {
   const [attachments, setAttachments] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [showUploadMenu, setShowUploadMenu] = useState(false);
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
@@ -104,7 +112,7 @@ const ContentCreator: React.FC = () => {
     }
   }, []);
 
-  const addBotMessage = (content: string, options?: string[], isGenerating: boolean = false, attachments?: UploadedFile[], generatedImage?: string, imagePrompt?: string) => {
+  const addBotMessage = (content: string, options?: string[], isGenerating: boolean = false, attachments?: UploadedFile[], generatedImage?: string, imagePrompt?: string, audioUrl?: string) => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'bot',
@@ -114,7 +122,8 @@ const ContentCreator: React.FC = () => {
       isGenerating,
       attachments,
       generatedImage,
-      imagePrompt
+      imagePrompt,
+      audioUrl
     };
     setMessages(prev => [...prev, newMessage]);
   };
@@ -128,6 +137,62 @@ const ContentCreator: React.FC = () => {
       attachments: userAttachments
     };
     setMessages(prev => [...prev, newMessage]);
+  };
+
+  const generateSpeech = async (text: string): Promise<string | null> => {
+    try {
+      const response = await fetch("/api/generate-speech", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text,
+          voice: "rigo", // We'll use a specific voice for Rigo
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate speech");
+      }
+
+      const data = await response.json();
+      return data.audioUrl;
+    } catch (error) {
+      console.error("Error generating speech:", error);
+      return null;
+    }
+  };
+
+  const playAudio = async (audioUrl: string) => {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+
+    const audio = new Audio(audioUrl);
+    audio.onended = () => {
+      setIsPlaying(false);
+      setCurrentAudio(null);
+    };
+    audio.onerror = () => {
+      setIsPlaying(false);
+      setCurrentAudio(null);
+      toast.error("Failed to play audio");
+    };
+
+    setCurrentAudio(audio);
+    setIsPlaying(true);
+    audio.play();
+  };
+
+  const stopAudio = () => {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      setIsPlaying(false);
+      setCurrentAudio(null);
+    }
   };
 
   const handleFileUpload = async (files: FileList) => {
@@ -220,8 +285,8 @@ const ContentCreator: React.FC = () => {
         throw new Error("Failed to get response from Rigo");
       }
 
-          const data = await response.json();
-    return data;
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error("Error calling OpenAI:", error);
       return "I apologize, but I'm having trouble connecting right now. Let's try again!";
@@ -250,7 +315,27 @@ const ContentCreator: React.FC = () => {
     if (aiResponse.generatedImage) {
       addBotMessage(aiResponse.response, undefined, false, undefined, aiResponse.generatedImage, aiResponse.imagePrompt);
     } else {
-      addBotMessage(aiResponse.response || aiResponse);
+      const responseText = aiResponse.response || aiResponse;
+      addBotMessage(responseText);
+      
+      // Generate speech if voice is enabled
+      if (isVoiceEnabled && responseText) {
+        const audioUrl = await generateSpeech(responseText);
+        if (audioUrl) {
+          // Update the last message with audio
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const lastMessage = newMessages[newMessages.length - 1];
+            if (lastMessage && lastMessage.type === 'bot') {
+              lastMessage.audioUrl = audioUrl;
+            }
+            return newMessages;
+          });
+          
+          // Auto-play the audio
+          playAudio(audioUrl);
+        }
+      }
     }
   };
 
@@ -279,7 +364,27 @@ const ContentCreator: React.FC = () => {
     if (aiResponse.generatedImage) {
       addBotMessage(aiResponse.response, undefined, false, undefined, aiResponse.generatedImage, aiResponse.imagePrompt);
     } else {
-      addBotMessage(aiResponse.response || aiResponse);
+      const responseText = aiResponse.response || aiResponse;
+      addBotMessage(responseText);
+      
+      // Generate speech if voice is enabled
+      if (isVoiceEnabled && responseText) {
+        const audioUrl = await generateSpeech(responseText);
+        if (audioUrl) {
+          // Update the last message with audio
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const lastMessage = newMessages[newMessages.length - 1];
+            if (lastMessage && lastMessage.type === 'bot') {
+              lastMessage.audioUrl = audioUrl;
+            }
+            return newMessages;
+          });
+          
+          // Auto-play the audio
+          playAudio(audioUrl);
+        }
+      }
     }
   };
 
@@ -344,7 +449,7 @@ Description 2: ${data.content.description2 || ""}`;
       setGeneratedContent(generatedContent);
       setConversationState(prev => ({ ...prev, step: 'result' }));
       
-      addBotMessage("🎉 Here's your content! What would you like to do with it?", [
+      addBotMessage("Here's your content! What would you like to do with it?", [
         "Copy to Clipboard",
         "Save to Library",
         "Create Another",
@@ -375,7 +480,7 @@ Description 2: ${data.content.description2 || ""}`;
   const handleCopyContent = () => {
     if (!generatedContent) return;
     navigator.clipboard.writeText(generatedContent.content);
-    addBotMessage("✅ Content copied to clipboard!");
+    addBotMessage("Content copied to clipboard!");
   };
 
   const handleSaveContent = async () => {
@@ -383,10 +488,10 @@ Description 2: ${data.content.description2 || ""}`;
     
     try {
       await settingsService.saveMarketingContent(generatedContent);
-      addBotMessage("✅ Content saved to library!");
+      addBotMessage("Content saved to library!");
     } catch (error) {
       console.error('Error saving marketing content:', error);
-      addBotMessage("❌ Failed to save content. Please try again.");
+      addBotMessage("Failed to save content. Please try again.");
     }
   };
 
@@ -395,6 +500,7 @@ Description 2: ${data.content.description2 || ""}`;
     setConversationState({ step: 'welcome' });
     setMessages([]);
     setAttachments([]);
+    stopAudio();
     addBotMessage("Ahoy! I'm Rigo, your AI marketing assistant. Ready to discover amazing content together? What kind of marketing content would you like to create today?", [
       "Instagram Caption",
       "TikTok Hook", 
@@ -413,6 +519,14 @@ Description 2: ${data.content.description2 || ""}`;
       <div className="flex justify-between items-center mb-6 pl-8">
         <h2 className="text-lg font-medium">Rigo - AI Marketing Assistant</h2>
         <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setIsVoiceEnabled(!isVoiceEnabled)}
+            className={isVoiceEnabled ? "text-blue-600" : "text-gray-400"}
+          >
+            {isVoiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+          </Button>
           <Button variant="ghost" size="sm" onClick={handleCreateAnother}>
             <Sparkles className="h-4 w-4 mr-2" />
             New Chat
@@ -448,6 +562,16 @@ Description 2: ${data.content.description2 || ""}`;
                         <Loader2 className="h-4 w-4 animate-spin" />
                       )}
                       <p className="text-sm">{message.content}</p>
+                      {message.type === 'bot' && message.audioUrl && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => isPlaying ? stopAudio() : playAudio(message.audioUrl!)}
+                          className="ml-2"
+                        >
+                          {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                        </Button>
+                      )}
                     </div>
                     
                     {/* Generated Image */}
