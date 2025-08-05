@@ -14,6 +14,7 @@ import {
   User,
   Sparkles,
   CheckCircle,
+  Loader2,
 } from "lucide-react";
 import { settingsService } from "@/lib/settings-service";
 
@@ -24,6 +25,7 @@ interface ChatMessage {
   timestamp: Date;
   options?: string[];
   selectedOption?: string;
+  isGenerating?: boolean;
 }
 
 interface ConversationState {
@@ -65,7 +67,7 @@ const ContentCreator: React.FC = () => {
   // Initialize chat on component mount
   useEffect(() => {
     if (messages.length === 0) {
-      addBotMessage("Hey there! 👋 I'm your AI marketing assistant. What kind of content would you like to create today?", [
+      addBotMessage("Ahoy! I'm Rigo, your AI marketing assistant inspired by the great explorer Amerigo Vespucci! 🌍 Ready to discover amazing content together? What kind of marketing content would you like to create today?", [
         "Instagram Caption",
         "TikTok Hook", 
         "Google Ad Copy",
@@ -78,13 +80,14 @@ const ContentCreator: React.FC = () => {
     }
   }, []);
 
-  const addBotMessage = (content: string, options?: string[]) => {
+  const addBotMessage = (content: string, options?: string[], isGenerating: boolean = false) => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'bot',
       content,
       timestamp: new Date(),
-      options
+      options,
+      isGenerating
     };
     setMessages(prev => [...prev, newMessage]);
   };
@@ -99,70 +102,78 @@ const ContentCreator: React.FC = () => {
     setMessages(prev => [...prev, newMessage]);
   };
 
-  const handleOptionSelect = (option: string) => {
-    addUserMessage(option);
-    
-    if (conversationState.step === 'welcome') {
-      setConversationState(prev => ({ ...prev, step: 'content-type', contentType: option }));
-      addBotMessage(`Great choice! I'll help you create ${option}. Let's start with the basics. What's the name of your experience or tour?`);
-    } else if (conversationState.step === 'content-type') {
-      setConversationState(prev => ({ ...prev, step: 'experience-details', experienceTitle: option }));
-      addBotMessage("Perfect! Where is this experience located? (e.g., Barcelona, Spain)");
-    } else if (conversationState.step === 'experience-details') {
-      setConversationState(prev => ({ ...prev, step: 'target-audience', location: option }));
-      addBotMessage("Who is your target audience?", [
-        "Cultural Travelers",
-        "Food Enthusiasts", 
-        "Art Lovers",
-        "Luxury Travelers",
-        "Adventure Seekers"
-      ]);
-    } else if (conversationState.step === 'target-audience') {
-      setConversationState(prev => ({ ...prev, step: 'tone', targetAudience: option }));
-      addBotMessage("What tone should we use?", [
-        "Friendly & Approachable",
-        "Luxury & Premium",
-        "Adventurous & Exciting", 
-        "Educational & Informative"
-      ]);
-    } else if (conversationState.step === 'tone') {
-      setConversationState(prev => ({ ...prev, step: 'generating', tone: option }));
-      addBotMessage("Perfect! Now let me create some amazing content for you...");
-      handleGenerateContent();
+  const callOpenAI = async (userInput: string, conversationHistory: ChatMessage[]) => {
+    try {
+      const response = await fetch("/api/generate-content", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userInput,
+          conversationHistory: conversationHistory.map(msg => ({
+            role: msg.type === 'user' ? 'user' : 'assistant',
+            content: msg.content
+          })),
+          isConversation: true
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get response from Rigo");
+      }
+
+      const data = await response.json();
+      return data.response;
+    } catch (error) {
+      console.error("Error calling OpenAI:", error);
+      return "I apologize, but I'm having trouble connecting right now. Let's try again!";
     }
   };
 
-  const handleUserInput = (input: string) => {
+  const handleOptionSelect = async (option: string) => {
+    addUserMessage(option);
+    
+    // Add a temporary "thinking" message
+    const thinkingMessageId = Date.now().toString();
+    setMessages(prev => [...prev, {
+      id: thinkingMessageId,
+      type: 'bot',
+      content: "Let me think about that...",
+      timestamp: new Date(),
+      isGenerating: true
+    }]);
+
+    // Get AI response
+    const aiResponse = await callOpenAI(option, messages);
+    
+    // Remove thinking message and add real response
+    setMessages(prev => prev.filter(msg => msg.id !== thinkingMessageId));
+    addBotMessage(aiResponse);
+  };
+
+  const handleUserInput = async (input: string) => {
     if (!input.trim()) return;
     
     addUserMessage(input);
     setInputValue('');
     
-    if (conversationState.step === 'content-type') {
-      setConversationState(prev => ({ ...prev, step: 'experience-details', experienceTitle: input }));
-      addBotMessage("Perfect! Where is this experience located? (e.g., Barcelona, Spain)");
-    } else if (conversationState.step === 'experience-details') {
-      setConversationState(prev => ({ ...prev, step: 'target-audience', location: input }));
-      addBotMessage("Who is your target audience?", [
-        "Cultural Travelers",
-        "Food Enthusiasts", 
-        "Art Lovers",
-        "Luxury Travelers",
-        "Adventure Seekers"
-      ]);
-    } else if (conversationState.step === 'target-audience') {
-      setConversationState(prev => ({ ...prev, step: 'tone', targetAudience: input }));
-      addBotMessage("What tone should we use?", [
-        "Friendly & Approachable",
-        "Luxury & Premium",
-        "Adventurous & Exciting", 
-        "Educational & Informative"
-      ]);
-    } else if (conversationState.step === 'tone') {
-      setConversationState(prev => ({ ...prev, step: 'generating', tone: input }));
-      addBotMessage("Perfect! Now let me create some amazing content for you...");
-      handleGenerateContent();
-    }
+    // Add a temporary "thinking" message
+    const thinkingMessageId = Date.now().toString();
+    setMessages(prev => [...prev, {
+      id: thinkingMessageId,
+      type: 'bot',
+      content: "Let me think about that...",
+      timestamp: new Date(),
+      isGenerating: true
+    }]);
+
+    // Get AI response
+    const aiResponse = await callOpenAI(input, messages);
+    
+    // Remove thinking message and add real response
+    setMessages(prev => prev.filter(msg => msg.id !== thinkingMessageId));
+    addBotMessage(aiResponse);
   };
 
   const handleGenerateContent = async () => {
@@ -276,7 +287,7 @@ Description 2: ${data.content.description2 || ""}`;
     setGeneratedContent(null);
     setConversationState({ step: 'welcome' });
     setMessages([]);
-    addBotMessage("Hey there! 👋 I'm your AI marketing assistant. What kind of content would you like to create today?", [
+    addBotMessage("Ahoy! I'm Rigo, your AI marketing assistant inspired by the great explorer Amerigo Vespucci! 🌍 Ready to discover amazing content together? What kind of marketing content would you like to create today?", [
       "Instagram Caption",
       "TikTok Hook", 
       "Google Ad Copy",
@@ -292,7 +303,7 @@ Description 2: ${data.content.description2 || ""}`;
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center mb-6 pl-8">
-        <h2 className="text-lg font-medium">Marketing HQ</h2>
+        <h2 className="text-lg font-medium">Rigo - AI Marketing Assistant</h2>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={handleCreateAnother}>
             <Sparkles className="h-4 w-4 mr-2" />
@@ -324,7 +335,12 @@ Description 2: ${data.content.description2 || ""}`;
                       ? 'bg-blue-500 text-white'
                       : 'bg-gray-50 text-gray-900'
                   }`}>
-                    <p className="text-sm">{message.content}</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      {message.isGenerating && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      )}
+                      <p className="text-sm">{message.content}</p>
+                    </div>
                     
                     {/* Options */}
                     {message.options && (

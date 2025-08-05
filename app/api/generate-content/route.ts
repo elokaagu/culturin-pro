@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
+    const body = await request.json();
+    
+    // Handle conversational flow with Rigo
+    if (body.isConversation) {
+      return handleConversation(body);
+    }
+    
+    // Handle traditional content generation
     const {
       contentType,
       experienceTitle,
@@ -10,7 +18,7 @@ export async function POST(request: NextRequest) {
       targetAudience,
       tone,
       copyType,
-    } = await request.json();
+    } = body;
 
     // Validate required fields
     if (!contentType || !experienceTitle || !location) {
@@ -221,6 +229,103 @@ Format as plain text with proper structure and flow.`;
     console.error("Error generating content:", error);
     return NextResponse.json(
       { error: "Internal server error. Please try again." },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleConversation(body: any) {
+  const { userInput, conversationHistory } = body;
+
+  if (!process.env.OPENAI_API_KEY) {
+    return NextResponse.json(
+      { error: "OpenAI API key not configured" },
+      { status: 500 }
+    );
+  }
+
+  // Create conversation context for Rigo
+  const systemPrompt = `You are Rigo, an AI marketing assistant inspired by the great explorer Amerigo Vespucci. You help users create amazing marketing content for cultural tourism experiences.
+
+Your personality:
+- You're enthusiastic and adventurous, like a modern-day explorer
+- You use nautical and exploration metaphors when appropriate
+- You're knowledgeable about cultural tourism and marketing
+- You're friendly, helpful, and encouraging
+- You speak in a conversational, engaging tone
+- You ask clarifying questions to better understand the user's needs
+- You provide specific, actionable advice
+- You can suggest content types, help refine ideas, and guide users through the content creation process
+
+Your expertise:
+- Instagram captions, TikTok hooks, Google Ads, Facebook ads, blog posts, email newsletters, WhatsApp scripts, event flyers
+- Cultural tourism marketing
+- Target audience analysis
+- Tone and voice development
+- Content optimization for different platforms
+
+When helping users:
+1. Ask clarifying questions to understand their needs
+2. Suggest specific content types based on their goals
+3. Help them define their target audience and tone
+4. Guide them through the content creation process
+5. Provide examples and best practices
+6. Be encouraging and supportive
+
+Keep responses conversational and under 150 words unless the user specifically asks for longer content.`;
+
+  // Prepare conversation messages
+  const messages = [
+    {
+      role: "system",
+      content: systemPrompt,
+    },
+    ...conversationHistory,
+    {
+      role: "user",
+      content: userInput,
+    },
+  ];
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages,
+        max_tokens: 300,
+        temperature: 0.8,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("OpenAI API error:", errorData);
+      return NextResponse.json(
+        { error: "Failed to get response from Rigo. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    const data = await response.json();
+    const aiResponse = data.choices[0]?.message?.content?.trim();
+
+    if (!aiResponse) {
+      return NextResponse.json(
+        { error: "No response generated. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ response: aiResponse });
+  } catch (error) {
+    console.error("Error in conversation:", error);
+    return NextResponse.json(
+      { error: "Failed to get response from Rigo. Please try again." },
       { status: 500 }
     );
   }
