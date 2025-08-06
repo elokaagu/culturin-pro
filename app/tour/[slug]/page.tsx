@@ -116,29 +116,49 @@ export default function TourOperatorPage({
 
     // Load operator data with real content
     setTimeout(() => {
+      // Get the actual website content from the builder
+      const websiteContentStr = localStorage.getItem("publishedWebsiteContent");
+      const websiteTheme = localStorage.getItem("publishedWebsiteTheme");
+      
+      let websiteContent = null;
+      if (websiteContentStr) {
+        try {
+          websiteContent = JSON.parse(websiteContentStr);
+        } catch (e) {
+          console.error("Error parsing website content:", e);
+        }
+      }
+
       const defaultData: OperatorData = {
         id: params.slug || "demo",
-        name: websiteData?.settings?.companyName || "Culturin Tours",
-        tagline: websiteData?.settings?.tagline || "Authentic cultural experiences",
-        description: websiteData?.settings?.description || "",
-        logo: websiteData?.settings?.logo || "https://placehold.co/200x80",
-        coverImage: websiteData?.settings?.headerImage || null,
-        theme: parsedTheme,
-        primaryColor: websiteData?.settings?.primaryColor || "#9b87f5",
+        name: websiteContent?.companyName || "Your Tour Company",
+        tagline: websiteContent?.tagline || "Discover amazing cultural experiences",
+        description: websiteContent?.description || "",
+        logo: websiteContent?.logo || "https://placehold.co/200x80",
+        coverImage: websiteContent?.headerImage || null,
+        theme: websiteTheme || parsedTheme,
+        primaryColor: websiteContent?.primaryColor || "#9b87f5",
         contact: {
-          email: websiteData?.settings?.contactEmail || "contact@culturintours.com",
-          phone: websiteData?.settings?.contactPhone || "+1 (555) 123-4567",
-          address: websiteData?.settings?.contactAddress || "Global Cultural Experiences",
+          email: websiteContent?.contactEmail || "contact@yourtourcompany.com",
+          phone: websiteContent?.contactPhone || "+1 (555) 123-4567",
+          address: websiteContent?.contactAddress || "Global Cultural Experiences",
         },
         tours: [],
       };
+
+      // If no website content found, show a message
+      if (!websiteContent) {
+        console.log("No website content found in localStorage");
+      } else {
+        console.log("Loaded website content:", websiteContent);
+      }
 
       // Convert real itineraries to tours
       const toursFromItineraries: Tour[] = itineraries.map((itinerary) => ({
         id: itinerary.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
         name: itinerary.title,
         duration: `${itinerary.days} ${itinerary.days === 1 ? "day" : "days"}`,
-        price: Math.floor(Math.random() * 50) + 40,
+        price: itinerary.price || Math.floor(Math.random() * 50) + 40,
         image: itinerary.image || "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
         description: itinerary.description || `Experience the best of ${itinerary.title}.`,
         highlights: [

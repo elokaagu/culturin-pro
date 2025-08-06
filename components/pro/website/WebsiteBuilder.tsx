@@ -937,6 +937,11 @@ const WebsiteBuilder: React.FC = () => {
         enableBooking: userData?.websiteSettings?.enableBooking || true,
         bookingSettings: userData?.websiteSettings?.bookingSettings || {},
         userId: user?.id || null, // Store user ID for reference
+        // Add contact information - use any to bypass TypeScript restrictions
+        contactEmail: (userData?.websiteSettings as any)?.contactEmail || "contact@yourtourcompany.com",
+        contactPhone: (userData?.websiteSettings as any)?.contactPhone || "+1 (555) 123-4567",
+        contactAddress: (userData?.websiteSettings as any)?.contactAddress || "Global Cultural Experiences",
+        logo: (userData?.websiteSettings as any)?.logo || null,
       };
 
       localStorageUtils.setItem(
@@ -947,10 +952,7 @@ const WebsiteBuilder: React.FC = () => {
         "publishedWebsiteContent",
         JSON.stringify(websiteContent)
       );
-      localStorageUtils.setItem(
-        "publishedItineraries",
-        JSON.stringify(itineraries)
-      );
+      localStorageUtils.setItem("publishedItineraries", JSON.stringify(itineraries));
 
       // Save user-specific website data
       const userSpecificWebsiteKey = user?.id
