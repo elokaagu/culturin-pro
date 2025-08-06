@@ -111,13 +111,16 @@ const WebsiteBuilder: React.FC = () => {
 
         // Load user-specific website data from Supabase
         try {
-          const { data: user } = await supabase.auth.getUser();
-          if (user.user) {
+          // Get current session first, then fallback to getUser
+          const { data: { session } } = await supabase.auth.getSession();
+          const user = session?.user || (await supabase.auth.getUser()).data.user;
+          
+          if (user) {
             // Load user-specific website settings from database
             const { data: userSettings, error } = await supabase
               .from('user_settings')
               .select('website_settings')
-              .eq('user_id', user.user.id)
+              .eq('user_id', user.id)
               .single();
 
             if (userSettings?.website_settings) {
@@ -141,7 +144,7 @@ const WebsiteBuilder: React.FC = () => {
             }
 
             // Load itineraries from database
-            const dbItineraries = await itineraryService.getItineraries(user.user.id);
+            const dbItineraries = await itineraryService.getItineraries(user.id);
             
             if (dbItineraries && dbItineraries.length > 0) {
               setItineraries(dbItineraries);
@@ -153,7 +156,8 @@ const WebsiteBuilder: React.FC = () => {
               localStorageUtils.removeItem("culturinItineraries");
             }
           } else {
-
+            // No authenticated user, load from localStorage
+            console.log("No authenticated user, loading from localStorage");
             setItineraries([]);
             localStorageUtils.removeItem("culturinItineraries");
           }
@@ -198,18 +202,13 @@ const WebsiteBuilder: React.FC = () => {
             enableBooking: true,
           });
         }
-
-
       } catch (error) {
         console.error("Error loading website data:", error);
-        // No fallback - keep empty state
-        setItineraries([]);
-        localStorageUtils.removeItem("culturinItineraries");
       }
     };
 
     loadWebsiteData();
-  }, [userData?.websiteSettings]);
+  }, []);
 
   // Auto-refresh preview when user data changes
   useEffect(() => {
@@ -554,7 +553,9 @@ const WebsiteBuilder: React.FC = () => {
               publishedUrl: publishedUrl,
             };
             
-            await settingsService.saveWebsiteData(minimalData);
+            // Save minimal data to localStorage only
+            localStorageUtils.setItem("websiteData", JSON.stringify(minimalData));
+            localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
             saveUserData();
             
             setLastSaved(new Date());

@@ -24,12 +24,41 @@ export interface ItineraryService {
 }
 
 class SupabaseItineraryService implements ItineraryService {
+  private async getCurrentUser() {
+    try {
+      // First try to get the current session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        return session.user;
+      }
+
+      // Fallback to getUser
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    } catch (error) {
+      console.error("Error getting current user:", error);
+      return null;
+    }
+  }
+
   async createItinerary(
     itinerary: Omit<ItineraryType, "id" | "lastUpdated">
   ): Promise<ItineraryType> {
-    const { data: user } = await supabase.auth.getUser();
-    if (!user.user) {
-      throw new Error("User not authenticated");
+    const user = await this.getCurrentUser();
+    if (!user) {
+      // Fallback to localStorage for non-authenticated users
+      console.log("User not authenticated, saving to localStorage");
+      const localItineraries = this.getItinerariesFromLocalStorage();
+      const newItinerary: ItineraryType = {
+        ...itinerary,
+        id: `local-${Date.now()}`,
+        lastUpdated: "just now",
+      };
+      
+      localItineraries.unshift(newItinerary);
+      localStorageUtils.setItem("culturinItineraries", JSON.stringify(localItineraries));
+      
+      return newItinerary;
     }
 
     const { data, error } = await supabase
@@ -48,7 +77,7 @@ class SupabaseItineraryService implements ItineraryService {
         group_size_max: itinerary.groupSize?.max || 10,
         difficulty: itinerary.difficulty || "easy",
         tags: itinerary.tags,
-        operator_id: user.user.id,
+        operator_id: user.id,
         last_updated: "just now",
       })
       .select()
@@ -71,9 +100,27 @@ class SupabaseItineraryService implements ItineraryService {
     id: string,
     updates: Partial<ItineraryType>
   ): Promise<ItineraryType> {
-    const { data: user } = await supabase.auth.getUser();
-    if (!user.user) {
-      throw new Error("User not authenticated");
+    const user = await this.getCurrentUser();
+    if (!user) {
+      // Fallback to localStorage for non-authenticated users
+      console.log("User not authenticated, updating in localStorage");
+      const localItineraries = this.getItinerariesFromLocalStorage();
+      const itineraryIndex = localItineraries.findIndex(item => item.id === id);
+      
+      if (itineraryIndex === -1) {
+        throw new Error("Itinerary not found");
+      }
+      
+      const updatedItinerary = {
+        ...localItineraries[itineraryIndex],
+        ...updates,
+        lastUpdated: "just now",
+      };
+      
+      localItineraries[itineraryIndex] = updatedItinerary;
+      localStorageUtils.setItem("culturinItineraries", JSON.stringify(localItineraries));
+      
+      return updatedItinerary;
     }
 
     const updateData: any = {
@@ -106,7 +153,7 @@ class SupabaseItineraryService implements ItineraryService {
       .from("itineraries")
       .update(updateData)
       .eq("id", id)
-      .eq("operator_id", user.user.id)
+      .eq("operator_id", user.id)
       .select()
       .single();
 
@@ -119,11 +166,6 @@ class SupabaseItineraryService implements ItineraryService {
         hint: error.hint
       });
       throw new Error(`Failed to update itinerary: ${error.message}`);
-    }
-
-    // Update modules if they exist
-    if (updates.modules !== undefined) {
-      await this.saveItineraryModules(id, updates.modules);
     }
 
     return this.mapDatabaseToItinerary(data);
@@ -150,11 +192,19 @@ class SupabaseItineraryService implements ItineraryService {
 
   async getItineraries(operatorId: string): Promise<ItineraryType[]> {
     try {
+      const user = await this.getCurrentUser();
+      
+      if (!user) {
+        // User not authenticated, return localStorage data
+        console.log("User not authenticated, returning localStorage itineraries");
+        return this.getItinerariesFromLocalStorage();
+      }
+
       // First try to get from Supabase
       const { data, error } = await supabase
         .from("itineraries")
         .select("*")
-        .eq("operator_id", operatorId)
+        .eq("operator_id", user.id)
         .order("updated_at", { ascending: false });
 
       if (error) {
@@ -218,16 +268,27 @@ class SupabaseItineraryService implements ItineraryService {
   }
 
   async deleteItinerary(id: string): Promise<void> {
-    const { data: user } = await supabase.auth.getUser();
-    if (!user.user) {
-      throw new Error("User not authenticated");
+    const user = await this.getCurrentUser();
+    if (!user) {
+      // Fallback to localStorage for non-authenticated users
+      console.log("User not authenticated, deleting from localStorage");
+      const localItineraries = this.getItinerariesFromLocalStorage();
+      const initialLength = localItineraries.length;
+      const updatedItineraries = localItineraries.filter(item => item.id !== id);
+
+      if (updatedItineraries.length === initialLength) {
+        throw new Error("Itinerary not found in localStorage");
+      }
+
+      localStorageUtils.setItem("culturinItineraries", JSON.stringify(updatedItineraries));
+      return;
     }
 
     const { error } = await supabase
       .from("itineraries")
       .delete()
       .eq("id", id)
-      .eq("operator_id", user.user.id);
+      .eq("operator_id", user.id);
 
     if (error) {
       console.error("Error deleting itinerary:", error);
