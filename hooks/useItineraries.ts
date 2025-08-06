@@ -3,12 +3,14 @@ import { ItineraryType } from "@/data/itineraryData";
 import { itineraryService } from "@/lib/itinerary-service";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { localStorageUtils } from "@/lib/localStorage";
+import { useToast } from "@/components/ui/use-toast";
 
 export const useItineraries = () => {
   const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  const { toast } = useToast();
   const isCreatingRef = useRef(false);
 
   // Load itineraries from localStorage as fallback
@@ -208,6 +210,27 @@ export const useItineraries = () => {
     loadItineraries();
   }, [loadItineraries]);
 
+  // Push all local itineraries to database
+  const pushAllToDatabase = useCallback(async () => {
+    try {
+      console.log("Manually pushing all local itineraries to database...");
+      await itineraryService.pushAllLocalItinerariesToDatabase();
+      // Refresh itineraries after pushing to database
+      await loadItineraries();
+      toast({
+        title: "All itineraries pushed to database successfully!",
+        description: "All itineraries pushed to database successfully!",
+      });
+    } catch (error) {
+      console.error("Error pushing itineraries to database:", error);
+      toast({
+        title: "Failed to push itineraries to database",
+        description: "Failed to push itineraries to database",
+        variant: "destructive",
+      });
+    }
+  }, [loadItineraries]);
+
   return {
     itineraries,
     isLoading,
@@ -217,5 +240,6 @@ export const useItineraries = () => {
     deleteItinerary,
     getItinerary,
     refreshItineraries,
+    pushAllToDatabase,
   };
 };

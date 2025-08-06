@@ -294,7 +294,24 @@ class SupabaseItineraryService implements ItineraryService {
         if (localItineraries.length > 0) {
           console.log("Found local itineraries, attempting to sync to database");
           try {
-            await this.syncLocalItinerariesToDatabase(localItineraries, user.id);
+            await this.pushAllLocalItinerariesToDatabase();
+            // After pushing to database, reload from database
+            const { data: dbData, error: dbError } = await supabase
+              .from("itineraries")
+              .select("*")
+              .eq("operator_id", user.id)
+              .order("updated_at", { ascending: false });
+
+            if (!dbError && dbData && dbData.length > 0) {
+              console.log(`Successfully loaded ${dbData.length} itineraries from database after sync`);
+              const itinerariesWithModules = await Promise.all(
+                dbData.map(async (itinerary) => {
+                  const modules = await this.getItineraryModules(itinerary.id);
+                  return this.mapDatabaseToItinerary(itinerary, modules);
+                })
+              );
+              return itinerariesWithModules;
+            }
           } catch (syncError) {
             console.error("Failed to sync local itineraries to database:", syncError);
           }
@@ -306,6 +323,94 @@ class SupabaseItineraryService implements ItineraryService {
       console.error("Error fetching itineraries:", error);
       // Fall back to localStorage
       return await this.getItinerariesFromLocalStorage();
+    }
+  }
+
+  // Push all local itineraries to database
+  async pushAllLocalItinerariesToDatabase(): Promise<void> {
+    try {
+      const user = await this.getCurrentUser();
+      if (!user) {
+        console.log("No authenticated user, cannot push to database");
+        return;
+      }
+
+      console.log("Pushing all local itineraries to database...");
+      
+      // Get all local itineraries
+      const localItineraries = await this.getItinerariesFromLocalStorage();
+      const localOnlyItineraries = localItineraries.filter(it => it.id.startsWith('local-'));
+      
+      if (localOnlyItineraries.length === 0) {
+        console.log("No local itineraries found to push to database");
+        return;
+      }
+
+      console.log(`Found ${localOnlyItineraries.length} local itineraries to push to database`);
+
+      // Push each local itinerary to database
+      for (const itinerary of localOnlyItineraries) {
+        try {
+          console.log(`Pushing itinerary to database: ${itinerary.title}`);
+          
+          const { data, error } = await supabase
+            .from("itineraries")
+            .insert({
+              title: itinerary.title,
+              description: itinerary.description,
+              days: itinerary.days,
+              status: itinerary.status,
+              image: itinerary.image,
+              theme_type: itinerary.themeType,
+              regions: itinerary.regions,
+              price: itinerary.price,
+              currency: itinerary.currency || "USD",
+              group_size_min: itinerary.groupSize?.min || 1,
+              group_size_max: itinerary.groupSize?.max || 10,
+              difficulty: itinerary.difficulty || "easy",
+              tags: itinerary.tags,
+              operator_id: user.id,
+              last_updated: "just now",
+            })
+            .select()
+            .single();
+
+          if (error) {
+            console.error(`Error pushing itinerary ${itinerary.title} to database:`, error);
+            continue;
+          }
+
+          console.log(`Successfully pushed itinerary to database: ${data.id}`);
+
+          // Save modules if they exist
+          if (itinerary.modules && itinerary.modules.length > 0) {
+            await this.saveItineraryModules(data.id, itinerary.modules);
+          }
+
+          // Update the itinerary ID in localStorage to the new database ID
+          const updatedItinerary = {
+            ...itinerary,
+            id: data.id,
+            lastUpdated: "just now",
+          };
+
+          // Update localStorage with the new database ID
+          const allItineraries = await this.getItinerariesFromLocalStorage();
+          const updatedItineraries = allItineraries.map(it => 
+            it.id === itinerary.id ? updatedItinerary : it
+          );
+          
+          const userSpecificKey = user?.id ? `culturinItineraries_${user.id}` : "culturinItineraries";
+          localStorageUtils.setItem(userSpecificKey, JSON.stringify(updatedItineraries));
+
+        } catch (error) {
+          console.error(`Error processing itinerary ${itinerary.title}:`, error);
+        }
+      }
+
+      console.log("Finished pushing local itineraries to database");
+    } catch (error) {
+      console.error("Error pushing local itineraries to database:", error);
     }
   }
 

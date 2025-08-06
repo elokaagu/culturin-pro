@@ -14,6 +14,7 @@ interface ItineraryTabsProps {
   onCreateNewItinerary: () => void;
   onEditItinerary: (itinerary: ItineraryType) => void;
   onDeleteItinerary?: (id: string) => void;
+  onPushToDatabase?: () => Promise<void>;
 }
 
 const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
@@ -23,6 +24,7 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
   onCreateNewItinerary,
   onEditItinerary,
   onDeleteItinerary,
+  onPushToDatabase,
 }) => {
   const navigate = useNavigate();
 
@@ -47,10 +49,21 @@ const ItineraryTabs: React.FC<ItineraryTabsProps> = ({
               <span className="xs:hidden">Daily</span>
             </Toggle>
           </div>
-          <Button onClick={handleCreateNewItinerary} className="w-full sm:w-auto text-sm">
-            <span className="hidden sm:inline">Create New Itinerary</span>
-            <span className="sm:hidden">Create New</span>
-          </Button>
+          <div className="flex gap-2 w-full sm:w-auto">
+            {onPushToDatabase && (
+              <Button 
+                variant="outline" 
+                onClick={onPushToDatabase} 
+                className="text-sm"
+              >
+                Push to Database
+              </Button>
+            )}
+            <Button onClick={handleCreateNewItinerary} className="text-sm">
+              <span className="hidden sm:inline">Create New Itinerary</span>
+              <span className="sm:hidden">Create New</span>
+            </Button>
+          </div>
         </div>
         
         {itineraries.length === 0 ? (
