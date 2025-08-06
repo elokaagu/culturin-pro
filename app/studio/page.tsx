@@ -17,7 +17,13 @@ import {
   Palette,
   Settings,
   Calendar,
+  LogOut,
+  User,
+  Shield,
+  Mail,
+  Key,
 } from "lucide-react";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 
 // Import our modular components
 import BookingFlowBuilder from "@/components/pro/website/BookingFlowBuilder";
@@ -29,10 +35,20 @@ import Image from "@/components/ui/image";
 function StudioContent() {
   const router = useRouter();
   const { userData } = useUserData();
+  const { user, logout, isAdmin, isLoggedIn } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("overview");
 
   const handleLaunchDashboard = () => {
-    router.push("/pricing");
+    router.push("/pro-dashboard");
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/sign-in");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   // Sample tour for booking preview - ensure we always have a valid ItineraryType
@@ -68,6 +84,72 @@ function StudioContent() {
   return (
     <div className="min-h-screen bg-white">
       <Header type="operator" />
+      
+      {/* User Authentication Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <User className="h-4 w-4 text-blue-600" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-gray-900">
+                  {user?.email || "User"}
+                </span>
+                <span className="text-xs text-gray-500">
+                  {isLoggedIn ? "Authenticated" : "Guest"}
+                </span>
+              </div>
+              {isAdmin && (
+                <div className="flex items-center space-x-1 bg-blue-50 px-2 py-1 rounded-full">
+                  <Shield className="h-3 w-3 text-blue-600" />
+                  <span className="text-xs text-blue-600 font-medium">Admin</span>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/pro-dashboard")}
+              className="text-sm"
+            >
+              <Globe className="h-4 w-4 mr-2" />
+              Dashboard
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/pro-dashboard/itinerary")}
+              className="text-sm"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Itineraries
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/pro-dashboard/marketing")}
+              className="text-sm"
+            >
+              <Palette className="h-4 w-4 mr-2" />
+              Marketing
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="text-sm text-red-600 border-red-200 hover:bg-red-50"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        </div>
+      </div>
       
       {activeTab === "overview" ? (
         // Split Screen Layout for Overview
@@ -161,15 +243,18 @@ function StudioContent() {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview" className="space-y-12 animate-fade-in">
+            <TabsContent
+              value="overview"
+              className="space-y-12 animate-fade-in"
+            >
               {/* Hero Section */}
               <div className="text-center max-w-3xl mx-auto mb-12">
                 <h1 className="text-4xl md:text-5xl font-bold mb-6">
                   Welcome to Culturin Studio
                 </h1>
                 <p className="text-lg text-gray-600 mb-8">
-                  Your all-in-one creative workspace for designing, managing, and
-                  growing your cultural tourism business.
+                  Your all-in-one creative workspace for designing, managing,
+                  and growing your cultural tourism business.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
@@ -254,8 +339,8 @@ function StudioContent() {
                     Booking is Currently Disabled
                   </h3>
                   <p className="text-orange-600 mb-4">
-                    Enable booking in the Booking Builder to preview the customer
-                    experience.
+                    Enable booking in the Booking Builder to preview the
+                    customer experience.
                   </p>
                   <Button
                     onClick={() => setActiveTab("booking-builder")}
@@ -272,17 +357,20 @@ function StudioContent() {
                     </h3>
                     <p className="text-blue-600 text-sm">
                       This is exactly how your customers will see and interact
-                      with your booking system. All settings are applied from your
-                      Booking Builder configuration.
+                      with your booking system. All settings are applied from
+                      your Booking Builder configuration.
                     </p>
                   </div>
                   <BookingWidget
                     tour={sampleItinerary}
-                                    primaryColor={userData?.websiteSettings?.primaryColor || "#9b87f5"}
-                companyName={
-                  userData?.websiteSettings?.companyName ||
-                  userData?.businessName || "Your Business"
-                }
+                    primaryColor={
+                      userData?.websiteSettings?.primaryColor || "#9b87f5"
+                    }
+                    companyName={
+                      userData?.websiteSettings?.companyName ||
+                      userData?.businessName ||
+                      "Your Business"
+                    }
                   />
                 </div>
               )}
