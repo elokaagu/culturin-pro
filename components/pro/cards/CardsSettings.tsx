@@ -36,21 +36,29 @@ const CardsSettings: React.FC = () => {
   useEffect(() => {
     const loadSettings = () => {
       try {
-        const savedSettings = localStorage.getItem('cards_settings');
+        const savedSettings = localStorage.getItem("cards_settings");
         if (savedSettings) {
           const { settings } = JSON.parse(savedSettings);
           if (settings) {
-            setDefaultMonthlyLimit(settings.defaultMonthlyLimit?.toString() || "1000.00");
-            setDefaultDailyLimit(settings.defaultDailyLimit?.toString() || "200.00");
-            setDefaultWeeklyLimit(settings.defaultWeeklyLimit?.toString() || "500.00");
+            setDefaultMonthlyLimit(
+              settings.defaultMonthlyLimit?.toString() || "1000.00"
+            );
+            setDefaultDailyLimit(
+              settings.defaultDailyLimit?.toString() || "200.00"
+            );
+            setDefaultWeeklyLimit(
+              settings.defaultWeeklyLimit?.toString() || "500.00"
+            );
             setFundingSource(settings.fundingSource || "culturin-wallet");
             setAutoFreezeOnLimit(settings.autoFreezeOnLimit ?? true);
             setRequireApproval(settings.requireApproval ?? false);
-            setDefaultBlockedCategories(settings.defaultBlockedCategories || ["gambling", "jewelry"]);
+            setDefaultBlockedCategories(
+              settings.defaultBlockedCategories || ["gambling", "jewelry"]
+            );
           }
         }
       } catch (error) {
-        console.error('Error loading cards settings:', error);
+        console.error("Error loading cards settings:", error);
       }
     };
 
@@ -110,15 +118,13 @@ const CardsSettings: React.FC = () => {
 
       // Save to localStorage as fallback
       localStorage.setItem("cardsSettings", JSON.stringify(settings));
-      
-      toast({
-        title: "Settings Saved",
-        description: "Card settings have been saved successfully.",
-      });
+
+      toast.success("Settings saved successfully!");
     } catch (error) {
-      console.error('Error saving cards settings:', error);
+      console.error("Error saving cards settings:", error);
       toast.error("Failed to save settings", {
-        description: error instanceof Error ? error.message : "Please try again.",
+        description:
+          error instanceof Error ? error.message : "Please try again.",
       });
     } finally {
       setIsLoading(false);
