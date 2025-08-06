@@ -15,27 +15,37 @@ export const useItineraries = () => {
   const loadItinerariesFromLocalStorage = useCallback(() => {
     try {
       // Use user-specific key if user is available, otherwise use generic key
-      const userSpecificKey = user?.id ? `culturinItineraries_${user.id}` : "culturinItineraries";
+      const userSpecificKey = user?.id
+        ? `culturinItineraries_${user.id}`
+        : "culturinItineraries";
       let itinerariesStr = localStorageUtils.getItem(userSpecificKey);
-      
+
       // If no user-specific data found, try the generic key as fallback
       if (!itinerariesStr && user?.id) {
-        console.log("No user-specific itineraries found, trying generic key...");
+        console.log(
+          "No user-specific itineraries found, trying generic key..."
+        );
         itinerariesStr = localStorageUtils.getItem("culturinItineraries");
         if (itinerariesStr) {
-          console.log("Found itineraries with generic key, migrating to user-specific key...");
+          console.log(
+            "Found itineraries with generic key, migrating to user-specific key..."
+          );
           // Migrate to user-specific key
           localStorageUtils.setItem(userSpecificKey, itinerariesStr);
         }
       }
-      
+
       if (!itinerariesStr) {
-        console.log(`No itineraries found in localStorage with key: ${userSpecificKey}`);
+        console.log(
+          `No itineraries found in localStorage with key: ${userSpecificKey}`
+        );
         return [];
       }
 
       const itineraries = JSON.parse(itinerariesStr);
-      console.log(`Loaded ${itineraries.length} itineraries from localStorage with key: ${userSpecificKey}`);
+      console.log(
+        `Loaded ${itineraries.length} itineraries from localStorage with key: ${userSpecificKey}`
+      );
 
       // Convert localStorage format to ItineraryType format
       return itineraries.map((itinerary: any) => ({
