@@ -85,8 +85,12 @@ const WebsiteBuilder: React.FC = () => {
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
-  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'tablet'>('desktop');
+  const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "error">(
+    "saved"
+  );
+  const [viewMode, setViewMode] = useState<"desktop" | "mobile" | "tablet">(
+    "desktop"
+  );
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   // History management
@@ -100,19 +104,38 @@ const WebsiteBuilder: React.FC = () => {
 
   // Initialize data - only on client side
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
-    // Load website data from localStorage and database
     const loadWebsiteData = async () => {
       try {
-        // Load published URL - use dynamic URL based on business name
-        const storedUrl = localStorage.getItem("publishedWebsiteUrl");
+        // Get current user for user-specific URL loading
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        const user = session?.user || (await supabase.auth.getUser()).data.user;
+
+        // Load published URL - use user-specific key
+        const userSpecificKey = user?.id
+          ? `publishedWebsiteUrl_${user.id}`
+          : "publishedWebsiteUrl";
+        const storedUrl = localStorage.getItem(userSpecificKey);
+
         if (storedUrl) {
           setPublishedUrl(storedUrl);
         } else {
-          // Generate a default URL based on business name or use a generic one
-          const businessName = userData?.businessName || userData?.websiteSettings?.companyName;
-          if (businessName) {
+          // Generate a default URL based on business name and user ID
+          const businessName =
+            userData?.businessName || userData?.websiteSettings?.companyName;
+          if (businessName && user?.id) {
+            const cleanBusinessName = businessName
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, "")
+              .replace(/\s+/g, "-");
+            const userId = user.id.substring(0, 8);
+            const timestamp = Date.now().toString(36);
+            const defaultUrl = `tour/${cleanBusinessName}-${userId}-${timestamp}`;
+            setPublishedUrl(defaultUrl);
+          } else if (businessName) {
             const defaultSlug = businessName.toLowerCase().replace(/\s+/g, "-");
             setPublishedUrl(`tour/${defaultSlug}`);
           } else {
@@ -122,32 +145,31 @@ const WebsiteBuilder: React.FC = () => {
 
         // Load user-specific website data from Supabase
         try {
-          // Get current session first, then fallback to getUser
-          const { data: { session } } = await supabase.auth.getSession();
-          const user = session?.user || (await supabase.auth.getUser()).data.user;
-          
           if (user) {
             // Load user-specific website settings from database
             const { data: userSettings, error } = await supabase
-              .from('user_settings')
-              .select('website_settings')
-              .eq('user_id', user.id)
+              .from("user_settings")
+              .select("website_settings")
+              .eq("user_id", user.id)
               .single();
 
             if (userSettings?.website_settings) {
               const settings = userSettings.website_settings;
-              
+
               // Update website settings with user-specific data
               if (settings.settings) {
                 updateWebsiteSettings(settings.settings);
               }
-              
+
               // Update itineraries if available
               if (settings.itineraries) {
                 setItineraries(settings.itineraries);
-                localStorageUtils.setItem("culturinItineraries", JSON.stringify(settings.itineraries));
+                localStorageUtils.setItem(
+                  "culturinItineraries",
+                  JSON.stringify(settings.itineraries)
+                );
               }
-              
+
               // Update published URL if available
               if (settings.publishedUrl) {
                 setPublishedUrl(settings.publishedUrl);
@@ -155,16 +177,22 @@ const WebsiteBuilder: React.FC = () => {
             }
 
             // Load itineraries from database
-            const dbItineraries = await itineraryService.getItineraries(user.id);
-            
+            const dbItineraries = await itineraryService.getItineraries(
+              user.id
+            );
+
             if (dbItineraries && dbItineraries.length > 0) {
               setItineraries(dbItineraries);
-              localStorageUtils.setItem("culturinItineraries", JSON.stringify(dbItineraries));
-              
+              // Save with user-specific key
+              const userSpecificItinerariesKey = `culturinItineraries_${user.id}`;
+              localStorageUtils.setItem(
+                userSpecificItinerariesKey,
+                JSON.stringify(dbItineraries)
+              );
             } else {
-              
               setItineraries([]);
-              localStorageUtils.removeItem("culturinItineraries");
+              const userSpecificItinerariesKey = `culturinItineraries_${user.id}`;
+              localStorageUtils.removeItem(userSpecificItinerariesKey);
             }
           } else {
             // No authenticated user, load from localStorage
@@ -187,7 +215,7 @@ const WebsiteBuilder: React.FC = () => {
         // Load auto-save preference
         const autoSavePref = localStorageUtils.getItem("websiteAutoSave");
         if (autoSavePref !== null) {
-          setAutoSaveEnabled(autoSavePref === 'true');
+          setAutoSaveEnabled(autoSavePref === "true");
         }
 
         // Add initial state to history
@@ -198,16 +226,17 @@ const WebsiteBuilder: React.FC = () => {
         };
         setHistory([initialHistory]);
         setHistoryIndex(0);
-        
+
         // Set hasUnsavedChanges to false initially
         setHasUnsavedChanges(false);
-        
+
         // Ensure we have some default website settings if none exist
         if (!userData?.websiteSettings?.companyName) {
           updateWebsiteSettings({
             companyName: "Your Tour Company",
             tagline: "Discover amazing cultural experiences",
-            description: "We specialize in authentic cultural tours that connect travelers with local traditions and experiences.",
+            description:
+              "We specialize in authentic cultural tours that connect travelers with local traditions and experiences.",
             primaryColor: "#3B82F6",
             theme: "classic",
             enableBooking: true,
@@ -226,7 +255,7 @@ const WebsiteBuilder: React.FC = () => {
     if (!isUndoRedoAction) {
       setPreviewKey((prev) => prev + 1);
       setHasUnsavedChanges(true);
-      setSaveStatus('saving');
+      setSaveStatus("saving");
 
       // Auto-save if enabled
       if (autoSaveEnabled) {
@@ -245,8 +274,8 @@ const WebsiteBuilder: React.FC = () => {
     const handleSettingsChange = (event: CustomEvent) => {
       setPreviewKey((prev) => prev + 1);
       setHasUnsavedChanges(true);
-      setSaveStatus('saving');
-      
+      setSaveStatus("saving");
+
       // Update itineraries if they changed
       if (event.detail?.filteredItineraries) {
         setItineraries(event.detail.filteredItineraries);
@@ -263,32 +292,37 @@ const WebsiteBuilder: React.FC = () => {
     const handleThemeChange = (event: CustomEvent) => {
       setPreviewKey((prev) => prev + 1);
       setHasUnsavedChanges(true);
-      setSaveStatus('saving');
-      addToHistory({ websiteSettings: userData?.websiteSettings || {}, itineraries });
+      setSaveStatus("saving");
+      addToHistory({
+        websiteSettings: userData?.websiteSettings || {},
+        itineraries,
+      });
       toast.success("Theme applied", {
         description: `Applied "${event.detail.theme}" theme to preview`,
       });
     };
 
     const handleItineraryChange = async (event: CustomEvent) => {
-
       try {
         // Refresh itineraries from database when itinerary changes
         const { data: user } = await supabase.auth.getUser();
         if (user.user) {
-          const dbItineraries = await itineraryService.getItineraries(user.user.id);
-          
-          
+          const dbItineraries = await itineraryService.getItineraries(
+            user.user.id
+          );
+
           // Always update itineraries, even if empty
           setItineraries(dbItineraries || []);
-          
-          if (dbItineraries && dbItineraries.length > 0) {
-            localStorageUtils.setItem("culturinItineraries", JSON.stringify(dbItineraries));
 
+          if (dbItineraries && dbItineraries.length > 0) {
+            localStorageUtils.setItem(
+              "culturinItineraries",
+              JSON.stringify(dbItineraries)
+            );
           } else {
             localStorageUtils.removeItem("culturinItineraries");
           }
-          
+
           setPreviewKey((prev) => prev + 1);
           toast.success("Itineraries updated", {
             description: "Website preview reflects latest itinerary changes",
@@ -395,24 +429,24 @@ const WebsiteBuilder: React.FC = () => {
     // Trigger immediate preview refresh when settings change
     setPreviewKey((prev) => prev + 1);
     setHasUnsavedChanges(true);
-    setSaveStatus('saving');
+    setSaveStatus("saving");
   }, []);
 
   // Enhanced auto-save function with authentication
   const handleAutoSave = useCallback(async () => {
     try {
       setSaveLoading(true);
-      
+
       if (!isLoggedIn || !user) {
         // Fallback to localStorage for non-authenticated users
         saveUserData();
-        setSaveStatus('saved');
+        setSaveStatus("saved");
         return;
       }
 
       // Save user data
       saveUserData();
-      
+
       // Save website data to Supabase for authenticated users
       const websiteData = {
         settings: {
@@ -430,13 +464,11 @@ const WebsiteBuilder: React.FC = () => {
 
       try {
         // Save to Supabase user_settings table
-        const { error } = await supabase
-          .from('user_settings')
-          .upsert({
-            user_id: user.id,
-            website_settings: websiteData,
-            updated_at: new Date().toISOString(),
-          });
+        const { error } = await supabase.from("user_settings").upsert({
+          user_id: user.id,
+          website_settings: websiteData,
+          updated_at: new Date().toISOString(),
+        });
 
         if (error) {
           throw new Error(`Supabase save failed: ${error.message}`);
@@ -445,55 +477,77 @@ const WebsiteBuilder: React.FC = () => {
         // Also save to localStorage as backup
         localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
         localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
-        localStorageUtils.setItem("websiteAutoSave", autoSaveEnabled.toString());
-        
+        localStorageUtils.setItem(
+          "websiteAutoSave",
+          autoSaveEnabled.toString()
+        );
+
         setLastSaved(new Date());
         setHasUnsavedChanges(false);
-        setSaveStatus('saved');
-        
+        setSaveStatus("saved");
       } catch (dbError) {
-        console.error("Database save failed, falling back to localStorage:", dbError);
-        
+        console.error(
+          "Database save failed, falling back to localStorage:",
+          dbError
+        );
+
         // Fallback to localStorage
         try {
-          const success1 = localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
-          const success2 = localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
-          const success3 = localStorageUtils.setItem("websiteAutoSave", autoSaveEnabled.toString());
-          
+          const success1 = localStorageUtils.setItem(
+            "websiteData",
+            JSON.stringify(websiteData)
+          );
+          const success2 = localStorageUtils.setItem(
+            "websiteLastSaved",
+            new Date().toISOString()
+          );
+          const success3 = localStorageUtils.setItem(
+            "websiteAutoSave",
+            autoSaveEnabled.toString()
+          );
+
           if (success1 && success2 && success3) {
             setLastSaved(new Date());
             setHasUnsavedChanges(false);
-            setSaveStatus('saved');
+            setSaveStatus("saved");
           } else {
             throw new Error("Failed to save to localStorage");
           }
         } catch (storageError) {
-          console.error("localStorage quota exceeded, clearing space and retrying");
-          
+          console.error(
+            "localStorage quota exceeded, clearing space and retrying"
+          );
+
           // Clear some space and try again
           try {
             localStorageUtils.clearNonEssential();
-            
+
             // Save minimal data
             const minimalData = {
               theme: userData?.websiteSettings?.theme || "classic",
               publishedUrl: publishedUrl,
               lastModified: new Date().toISOString(),
             };
-            
-            const success = localStorageUtils.setItem("websiteData", JSON.stringify(minimalData));
-            localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
-            
+
+            const success = localStorageUtils.setItem(
+              "websiteData",
+              JSON.stringify(minimalData)
+            );
+            localStorageUtils.setItem(
+              "websiteLastSaved",
+              new Date().toISOString()
+            );
+
             if (success) {
               setLastSaved(new Date());
               setHasUnsavedChanges(false);
-              setSaveStatus('saved');
+              setSaveStatus("saved");
             } else {
               throw new Error("Failed to save minimal data");
             }
           } catch (retryError) {
             console.error("Failed to save even minimal data:", retryError);
-            setSaveStatus('error');
+            setSaveStatus("error");
             toast.error("Storage full", {
               description: "Please clear browser data or save manually",
             });
@@ -502,21 +556,29 @@ const WebsiteBuilder: React.FC = () => {
       }
     } catch (error) {
       console.error("Auto-save failed:", error);
-      setSaveStatus('error');
+      setSaveStatus("error");
       toast.error("Auto-save failed", {
         description: "Please save manually",
       });
     } finally {
       setSaveLoading(false);
     }
-  }, [saveUserData, userData?.websiteSettings, itineraries, publishedUrl, autoSaveEnabled, isLoggedIn, user]);
+  }, [
+    saveUserData,
+    userData?.websiteSettings,
+    itineraries,
+    publishedUrl,
+    autoSaveEnabled,
+    isLoggedIn,
+    user,
+  ]);
 
   // Enhanced manual save function with authentication
   const handleManualSave = useCallback(async () => {
     try {
       setSaveLoading(true);
-      setSaveStatus('saving');
-      
+      setSaveStatus("saving");
+
       if (!isLoggedIn || !user) {
         // Fallback to localStorage for non-authenticated users
         const minimalWebsiteData = {
@@ -534,14 +596,20 @@ const WebsiteBuilder: React.FC = () => {
         };
 
         try {
-          const success1 = localStorageUtils.setItem("websiteData", JSON.stringify(minimalWebsiteData));
-          const success2 = localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
-          
+          const success1 = localStorageUtils.setItem(
+            "websiteData",
+            JSON.stringify(minimalWebsiteData)
+          );
+          const success2 = localStorageUtils.setItem(
+            "websiteLastSaved",
+            new Date().toISOString()
+          );
+
           if (success1 && success2) {
             setLastSaved(new Date());
             setHasUnsavedChanges(false);
-            setSaveStatus('saved');
-            
+            setSaveStatus("saved");
+
             toast.success("Website saved successfully", {
               description: "All changes have been saved locally",
             });
@@ -550,7 +618,7 @@ const WebsiteBuilder: React.FC = () => {
           }
         } catch (storageError) {
           console.error("Storage quota exceeded, trying minimal save");
-          
+
           // Try saving minimal data
           try {
             const minimalData = {
@@ -563,22 +631,28 @@ const WebsiteBuilder: React.FC = () => {
               theme: userData?.websiteSettings?.theme || "classic",
               publishedUrl: publishedUrl,
             };
-            
+
             // Save minimal data to localStorage only
-            localStorageUtils.setItem("websiteData", JSON.stringify(minimalData));
-            localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
+            localStorageUtils.setItem(
+              "websiteData",
+              JSON.stringify(minimalData)
+            );
+            localStorageUtils.setItem(
+              "websiteLastSaved",
+              new Date().toISOString()
+            );
             saveUserData();
-            
+
             setLastSaved(new Date());
             setHasUnsavedChanges(false);
-            setSaveStatus('saved');
-            
+            setSaveStatus("saved");
+
             toast.success("Website saved with minimal data", {
               description: "Some data was too large to save",
             });
           } catch (retryError) {
             console.error("Failed to save even minimal data:", retryError);
-            setSaveStatus('error');
+            setSaveStatus("error");
             toast.error("Storage full", {
               description: "Please clear browser data or try again",
             });
@@ -604,13 +678,11 @@ const WebsiteBuilder: React.FC = () => {
 
       try {
         // Save to Supabase user_settings table
-        const { error } = await supabase
-          .from('user_settings')
-          .upsert({
-            user_id: user.id,
-            website_settings: websiteData,
-            updated_at: new Date().toISOString(),
-          });
+        const { error } = await supabase.from("user_settings").upsert({
+          user_id: user.id,
+          website_settings: websiteData,
+          updated_at: new Date().toISOString(),
+        });
 
         if (error) {
           throw new Error(`Supabase save failed: ${error.message}`);
@@ -619,37 +691,46 @@ const WebsiteBuilder: React.FC = () => {
         // Also save to localStorage as backup
         localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
         localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
-        
+
         setLastSaved(new Date());
         setHasUnsavedChanges(false);
-        setSaveStatus('saved');
-        
+        setSaveStatus("saved");
+
         toast.success("Website saved successfully", {
           description: "All changes have been saved to your account",
         });
-        
       } catch (dbError) {
-        console.error("Database save failed, falling back to localStorage:", dbError);
-        
+        console.error(
+          "Database save failed, falling back to localStorage:",
+          dbError
+        );
+
         // Fallback to localStorage
         try {
-          const success1 = localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
-          const success2 = localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
-          
+          const success1 = localStorageUtils.setItem(
+            "websiteData",
+            JSON.stringify(websiteData)
+          );
+          const success2 = localStorageUtils.setItem(
+            "websiteLastSaved",
+            new Date().toISOString()
+          );
+
           if (success1 && success2) {
             setLastSaved(new Date());
             setHasUnsavedChanges(false);
-            setSaveStatus('saved');
-            
+            setSaveStatus("saved");
+
             toast.success("Website saved locally", {
-              description: "Database save failed, but changes are saved locally",
+              description:
+                "Database save failed, but changes are saved locally",
             });
           } else {
             throw new Error("Failed to save to localStorage");
           }
         } catch (storageError) {
           console.error("localStorage quota exceeded, trying minimal save");
-          
+
           // Try saving minimal data
           try {
             const minimalData = {
@@ -662,15 +743,21 @@ const WebsiteBuilder: React.FC = () => {
               theme: userData?.websiteSettings?.theme || "classic",
               publishedUrl: publishedUrl,
             };
-            
-            const success = localStorageUtils.setItem("websiteData", JSON.stringify(minimalData));
-            localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
-            
+
+            const success = localStorageUtils.setItem(
+              "websiteData",
+              JSON.stringify(minimalData)
+            );
+            localStorageUtils.setItem(
+              "websiteLastSaved",
+              new Date().toISOString()
+            );
+
             if (success) {
               setLastSaved(new Date());
               setHasUnsavedChanges(false);
-              setSaveStatus('saved');
-              
+              setSaveStatus("saved");
+
               toast.success("Website saved with minimal data", {
                 description: "Some data was too large to save",
               });
@@ -679,7 +766,7 @@ const WebsiteBuilder: React.FC = () => {
             }
           } catch (retryError) {
             console.error("Failed to save even minimal data:", retryError);
-            setSaveStatus('error');
+            setSaveStatus("error");
             toast.error("Storage full", {
               description: "Please clear browser data or try again",
             });
@@ -687,15 +774,23 @@ const WebsiteBuilder: React.FC = () => {
         }
       }
     } catch (error) {
-      console.error('Error saving website:', error);
-      setSaveStatus('error');
+      console.error("Error saving website:", error);
+      setSaveStatus("error");
       toast.error("Save failed", {
-        description: error instanceof Error ? error.message : "Please try again",
+        description:
+          error instanceof Error ? error.message : "Please try again",
       });
     } finally {
       setSaveLoading(false);
     }
-  }, [userData?.websiteSettings, itineraries, publishedUrl, saveUserData, isLoggedIn, user]);
+  }, [
+    userData?.websiteSettings,
+    itineraries,
+    publishedUrl,
+    saveUserData,
+    isLoggedIn,
+    user,
+  ]);
 
   // Export website data
   const handleExportWebsite = useCallback(() => {
@@ -707,16 +802,18 @@ const WebsiteBuilder: React.FC = () => {
         theme: userData?.websiteSettings?.theme || "classic",
         publishedUrl: publishedUrl,
         lastModified: new Date(),
-        version: '1.0.0'
+        version: "1.0.0",
       };
 
       const dataStr = JSON.stringify(websiteData, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const dataBlob = new Blob([dataStr], { type: "application/json" });
       const url = URL.createObjectURL(dataBlob);
-      
-      const link = document.createElement('a');
+
+      const link = document.createElement("a");
       link.href = url;
-      link.download = `website-backup-${new Date().toISOString().split('T')[0]}.json`;
+      link.download = `website-backup-${
+        new Date().toISOString().split("T")[0]
+      }.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -733,42 +830,56 @@ const WebsiteBuilder: React.FC = () => {
   }, [userData?.websiteSettings, itineraries, publishedUrl]);
 
   // Import website data
-  const handleImportWebsite = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleImportWebsite = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const websiteData: WebsiteData = JSON.parse(e.target?.result as string);
-        
-        // Validate the imported data
-        if (websiteData.settings && websiteData.itineraries) {
-          updateWebsiteSettings(websiteData.settings);
-          setItineraries(websiteData.itineraries);
-          if (websiteData.publishedUrl) {
-            setPublishedUrl(websiteData.publishedUrl);
-            localStorage.setItem("publishedWebsiteUrl", websiteData.publishedUrl);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const websiteData: WebsiteData = JSON.parse(
+            e.target?.result as string
+          );
+
+          // Validate the imported data
+          if (websiteData.settings && websiteData.itineraries) {
+            updateWebsiteSettings(websiteData.settings);
+            setItineraries(websiteData.itineraries);
+            if (websiteData.publishedUrl) {
+              setPublishedUrl(websiteData.publishedUrl);
+              localStorage.setItem(
+                "publishedWebsiteUrl",
+                websiteData.publishedUrl
+              );
+            }
+
+            // Save the imported data
+            localStorageUtils.setItem(
+              "websiteData",
+              JSON.stringify(websiteData)
+            );
+            localStorageUtils.setItem(
+              "culturinItineraries",
+              JSON.stringify(websiteData.itineraries)
+            );
+
+            toast.success("Website imported", {
+              description: "Your website data has been restored",
+            });
+          } else {
+            throw new Error("Invalid website data format");
           }
-          
-          // Save the imported data
-          localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
-          localStorageUtils.setItem("culturinItineraries", JSON.stringify(websiteData.itineraries));
-          
-          toast.success("Website imported", {
-            description: "Your website data has been restored",
+        } catch (error) {
+          toast.error("Import failed", {
+            description: "Invalid file format",
           });
-        } else {
-          throw new Error("Invalid website data format");
         }
-      } catch (error) {
-        toast.error("Import failed", {
-          description: "Invalid file format",
-        });
-      }
-    };
-    reader.readAsText(file);
-  }, [updateWebsiteSettings]);
+      };
+      reader.readAsText(file);
+    },
+    [updateWebsiteSettings]
+  );
 
   const handlePublish = async () => {
     if (!userData?.businessName && !userData?.websiteSettings?.companyName) {
@@ -784,19 +895,37 @@ const WebsiteBuilder: React.FC = () => {
       // Save current state before publishing
       await handleManualSave();
 
-      // Generate a unique slug for the website based on business name
-      const businessName = userData?.businessName || userData?.websiteSettings?.companyName || "tour-company";
-      const cleanBusinessName = businessName.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-");
+      // Get current user for unique URL generation
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const user = session?.user || (await supabase.auth.getUser()).data.user;
+
+      // Generate a unique slug for the website based on business name and user ID
+      const businessName =
+        userData?.businessName ||
+        userData?.websiteSettings?.companyName ||
+        "tour-company";
+      const cleanBusinessName = businessName
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-");
       const timestamp = Date.now().toString(36);
-      const newPublishedUrl = `tour/${cleanBusinessName}-${timestamp}`;
+
+      // Include user ID in URL for uniqueness
+      const userId = user?.id ? user.id.substring(0, 8) : "guest";
+      const newPublishedUrl = `tour/${cleanBusinessName}-${userId}-${timestamp}`;
 
       // Simulate publishing process - in a real app, this would save to a backend
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       setPublishedUrl(newPublishedUrl);
 
-      // Save the published URL to localStorage
-      localStorageUtils.setItem("publishedWebsiteUrl", newPublishedUrl);
+      // Save the published URL to localStorage with user-specific key
+      const userSpecificKey = user?.id
+        ? `publishedWebsiteUrl_${user.id}`
+        : "publishedWebsiteUrl";
+      localStorageUtils.setItem(userSpecificKey, newPublishedUrl);
 
       // Save website content and theme to localStorage for the tour operator website
       const websiteContent = {
@@ -807,6 +936,7 @@ const WebsiteBuilder: React.FC = () => {
         headerImage: userData?.websiteSettings?.headerImage || null,
         enableBooking: userData?.websiteSettings?.enableBooking || true,
         bookingSettings: userData?.websiteSettings?.bookingSettings || {},
+        userId: user?.id || null, // Store user ID for reference
       };
 
       localStorageUtils.setItem(
@@ -817,7 +947,27 @@ const WebsiteBuilder: React.FC = () => {
         "publishedWebsiteContent",
         JSON.stringify(websiteContent)
       );
-      localStorageUtils.setItem("publishedItineraries", JSON.stringify(itineraries));
+      localStorageUtils.setItem(
+        "publishedItineraries",
+        JSON.stringify(itineraries)
+      );
+
+      // Save user-specific website data
+      const userSpecificWebsiteKey = user?.id
+        ? `websiteData_${user.id}`
+        : "websiteData";
+      const userSpecificItinerariesKey = user?.id
+        ? `culturinItineraries_${user.id}`
+        : "culturinItineraries";
+
+      localStorageUtils.setItem(
+        userSpecificWebsiteKey,
+        JSON.stringify(websiteContent)
+      );
+      localStorageUtils.setItem(
+        userSpecificItinerariesKey,
+        JSON.stringify(itineraries)
+      );
 
       setHasUnsavedChanges(false);
       toast.success("Website published successfully!", {
@@ -866,20 +1016,22 @@ const WebsiteBuilder: React.FC = () => {
       // Refresh itineraries from database
       const { data: user } = await supabase.auth.getUser();
       if (user.user) {
-        const dbItineraries = await itineraryService.getItineraries(user.user.id);
+        const dbItineraries = await itineraryService.getItineraries(
+          user.user.id
+        );
 
-        
         // Always update itineraries, even if empty
         setItineraries(dbItineraries || []);
-        
-        if (dbItineraries && dbItineraries.length > 0) {
-          localStorageUtils.setItem("culturinItineraries", JSON.stringify(dbItineraries));
 
+        if (dbItineraries && dbItineraries.length > 0) {
+          localStorageUtils.setItem(
+            "culturinItineraries",
+            JSON.stringify(dbItineraries)
+          );
         } else {
           localStorageUtils.removeItem("culturinItineraries");
         }
       } else {
-
         setItineraries([]);
         localStorageUtils.removeItem("culturinItineraries");
       }
@@ -904,28 +1056,55 @@ const WebsiteBuilder: React.FC = () => {
 
   const handleToggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
-    toast.success(isFullScreen ? "Exited full-screen mode" : "Entered full-screen mode", {
-      description: isFullScreen ? "Website builder returned to normal view" : "Website builder now takes full page",
-    });
+    toast.success(
+      isFullScreen ? "Exited full-screen mode" : "Entered full-screen mode",
+      {
+        description: isFullScreen
+          ? "Website builder returned to normal view"
+          : "Website builder now takes full page",
+      }
+    );
   };
 
   // Update published URL when business name changes
-  const updatePublishedUrl = useCallback(() => {
-    const businessName = userData?.businessName || userData?.websiteSettings?.companyName;
-    if (businessName && !publishedUrl.includes(businessName.toLowerCase().replace(/\s+/g, "-"))) {
-      const cleanBusinessName = businessName.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-");
+  const updatePublishedUrl = useCallback(async () => {
+    const businessName =
+      userData?.businessName || userData?.websiteSettings?.companyName;
+
+    // Get current user for unique URL generation
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const user = session?.user || (await supabase.auth.getUser()).data.user;
+
+    if (
+      businessName &&
+      user?.id &&
+      !publishedUrl.includes(user.id.substring(0, 8))
+    ) {
+      const cleanBusinessName = businessName
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-");
+      const userId = user.id.substring(0, 8);
       const timestamp = Date.now().toString(36);
-      const newUrl = `tour/${cleanBusinessName}-${timestamp}`;
+      const newUrl = `tour/${cleanBusinessName}-${userId}-${timestamp}`;
       setPublishedUrl(newUrl);
-      localStorageUtils.setItem("publishedWebsiteUrl", newUrl);
+
+      // Save with user-specific key
+      const userSpecificKey = `publishedWebsiteUrl_${user.id}`;
+      localStorageUtils.setItem(userSpecificKey, newUrl);
     }
-  }, [userData?.businessName, userData?.websiteSettings?.companyName, publishedUrl]);
+  }, [
+    userData?.businessName,
+    userData?.websiteSettings?.companyName,
+    publishedUrl,
+  ]);
 
   // Update URL when business name changes
   useEffect(() => {
     updatePublishedUrl();
   }, [updatePublishedUrl]);
-
 
   // Format last saved time
   const lastSavedText = useMemo(() => {
@@ -933,25 +1112,25 @@ const WebsiteBuilder: React.FC = () => {
     const now = new Date();
     const diff = now.getTime() - lastSaved.getTime();
     const minutes = Math.floor(diff / 60000);
-    
+
     if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-    
+    if (minutes < 60) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    
+    if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+
     const days = Math.floor(hours / 24);
-    return `${days} day${days > 1 ? 's' : ''} ago`;
+    return `${days} day${days > 1 ? "s" : ""} ago`;
   }, [lastSaved]);
 
   // Save status indicator
   const getSaveStatusIcon = () => {
     switch (saveStatus) {
-      case 'saving':
+      case "saving":
         return <Loader2 className="h-3 w-3 animate-spin text-blue-500" />;
-      case 'error':
+      case "error":
         return <div className="h-3 w-3 rounded-full bg-red-500" />;
-      case 'saved':
+      case "saved":
         return <Check className="h-3 w-3 text-green-500" />;
       default:
         return <div className="h-3 w-3 rounded-full bg-gray-300" />;
@@ -959,31 +1138,50 @@ const WebsiteBuilder: React.FC = () => {
   };
 
   return (
-    <div className={`flex ${isFullScreen ? 'fixed inset-0 z-50' : 'h-screen'} bg-gray-50`}>
+    <div
+      className={`flex ${
+        isFullScreen ? "fixed inset-0 z-50" : "h-screen"
+      } bg-gray-50`}
+    >
       {/* Sidebar */}
-      <div className={`${isFullScreen ? 'w-96' : 'w-80'} bg-white border-r border-gray-200 flex flex-col overflow-hidden rounded-r-lg transition-all duration-300`}>
+      <div
+        className={`${
+          isFullScreen ? "w-96" : "w-80"
+        } bg-white border-r border-gray-200 flex flex-col overflow-hidden rounded-r-lg transition-all duration-300`}
+      >
         {/* Sidebar Header - Fixed */}
         <div className="p-6 border-b border-gray-200 flex-shrink-0">
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Your Website</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
+              Your Website
+            </h2>
             <p className="text-sm text-gray-600 leading-relaxed">
-              Customize your tour operator website with real-time preview and booking functionality.
+              Customize your tour operator website with real-time preview and
+              booking functionality.
             </p>
           </div>
-          
+
           {/* Status Indicators */}
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
               {getSaveStatusIcon()}
-              <span className={saveStatus === 'error' ? 'text-red-600' : 'text-gray-600'}>
-                {saveStatus === 'saving' ? 'Saving...' : 
-                 saveStatus === 'error' ? 'Save failed' : 
-                 hasUnsavedChanges ? 'Unsaved changes' : 'All changes saved'}
+              <span
+                className={
+                  saveStatus === "error" ? "text-red-600" : "text-gray-600"
+                }
+              >
+                {saveStatus === "saving"
+                  ? "Saving..."
+                  : saveStatus === "error"
+                  ? "Save failed"
+                  : hasUnsavedChanges
+                  ? "Unsaved changes"
+                  : "All changes saved"}
               </span>
             </div>
             <div className="flex items-center gap-3 text-sm text-gray-600">
               <Zap className="h-3 w-3" />
-              Auto-save: {autoSaveEnabled ? 'On' : 'Off'}
+              Auto-save: {autoSaveEnabled ? "On" : "Off"}
             </div>
             <div className="text-sm text-gray-500">
               Last saved: {lastSavedText}
@@ -995,56 +1193,58 @@ const WebsiteBuilder: React.FC = () => {
         <div className="flex-1 overflow-y-auto">
           {/* Navigation Tabs */}
           <div className="p-6 border-b border-gray-200">
-            <h4 className="text-sm font-medium text-gray-700 mb-3">Navigation</h4>
+            <h4 className="text-sm font-medium text-gray-700 mb-3">
+              Navigation
+            </h4>
             <div className="space-y-2">
-              <Button 
+              <Button
                 variant={activeTab === "preview" ? "default" : "ghost"}
-                size="sm" 
+                size="sm"
                 className="w-full justify-start text-xs"
                 onClick={() => handleTabChange("preview")}
               >
                 <Eye className="h-3 w-3 mr-2" />
                 Preview
               </Button>
-              <Button 
+              <Button
                 variant={activeTab === "builder" ? "default" : "ghost"}
-                size="sm" 
+                size="sm"
                 className="w-full justify-start text-xs"
                 onClick={() => handleTabChange("builder")}
               >
                 <Settings className="h-3 w-3 mr-2" />
                 Builder
               </Button>
-              <Button 
+              <Button
                 variant={activeTab === "themes" ? "default" : "ghost"}
-                size="sm" 
+                size="sm"
                 className="w-full justify-start text-xs"
                 onClick={() => handleTabChange("themes")}
               >
                 <Palette className="h-3 w-3 mr-2" />
                 Themes
               </Button>
-              <Button 
+              <Button
                 variant={activeTab === "content" ? "default" : "ghost"}
-                size="sm" 
+                size="sm"
                 className="w-full justify-start text-xs"
                 onClick={() => handleTabChange("content")}
               >
                 <FileText className="h-3 w-3 mr-2" />
                 Content
               </Button>
-              <Button 
+              <Button
                 variant={activeTab === "booking" ? "default" : "ghost"}
-                size="sm" 
+                size="sm"
                 className="w-full justify-start text-xs"
                 onClick={() => handleTabChange("booking")}
               >
                 <ShoppingCart className="h-3 w-3 mr-2" />
                 Booking
               </Button>
-              <Button 
+              <Button
                 variant={activeTab === "media-library" ? "default" : "ghost"}
-                size="sm" 
+                size="sm"
                 className="w-full justify-start text-xs"
                 onClick={() => handleTabChange("media-library")}
               >
@@ -1057,7 +1257,7 @@ const WebsiteBuilder: React.FC = () => {
           <div className="p-6 border-b border-gray-200">
             <h4 className="text-sm font-medium text-gray-700 mb-3">Actions</h4>
             <div className="flex gap-2">
-              <Button 
+              <Button
                 onClick={handleManualSave}
                 disabled={saveLoading}
                 className="flex-1"
@@ -1071,7 +1271,7 @@ const WebsiteBuilder: React.FC = () => {
                 )}
                 Save
               </Button>
-              <Button 
+              <Button
                 onClick={handlePublish}
                 disabled={publishLoading}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
@@ -1090,18 +1290,26 @@ const WebsiteBuilder: React.FC = () => {
           {/* Published URL Status (scrollable) */}
           {publishedUrl && (
             <div className="p-6 border-b border-gray-200">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Site Status</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">
+                Site Status
+              </h4>
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Check className="h-3 w-3 text-green-600" />
-                  <span className="text-sm font-medium text-green-800">Site Published</span>
+                  <span className="text-sm font-medium text-green-800">
+                    Site Published
+                  </span>
                 </div>
                 <div className="text-xs text-green-700 mb-3 break-all">
-                  {typeof window !== 'undefined' ? `${window.location.origin}/${publishedUrl}` : publishedUrl}
+                  {typeof window !== "undefined"
+                    ? `${window.location.origin}/${publishedUrl}`
+                    : publishedUrl}
                 </div>
                 <div className="flex items-center gap-2 mb-3">
                   <ShoppingCart className="h-3 w-3 text-green-600" />
-                  <span className="text-xs text-green-700">Booking Enabled</span>
+                  <span className="text-xs text-green-700">
+                    Booking Enabled
+                  </span>
                 </div>
                 <Button
                   onClick={handlePreviewSite}
@@ -1121,40 +1329,60 @@ const WebsiteBuilder: React.FC = () => {
             <div className="text-xs text-gray-400 text-center">
               Website Builder v1.0
             </div>
-            
+
             {/* Quick Actions Section */}
             <div className="border-t pt-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Actions</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">
+                Quick Actions
+              </h4>
               <div className="space-y-2">
-                <Button variant="ghost" size="sm" className="w-full justify-start text-xs">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start text-xs"
+                >
                   <Download className="h-3 w-3 mr-2" />
                   Export Website
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="w-full justify-start text-xs"
                   onClick={handleCopyUrl}
                 >
                   <Copy className="h-3 w-3 mr-2" />
                   Copy URL
                 </Button>
-                <Button variant="ghost" size="sm" className="w-full justify-start text-xs">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start text-xs"
+                >
                   <Share className="h-3 w-3 mr-2" />
                   Share Site
                 </Button>
               </div>
             </div>
-            
+
             {/* Help Section */}
             <div className="border-t pt-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Help & Support</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">
+                Help & Support
+              </h4>
               <div className="space-y-2">
-                <Button variant="ghost" size="sm" className="w-full justify-start text-xs">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start text-xs"
+                >
                   <HelpCircle className="h-3 w-3 mr-2" />
                   Documentation
                 </Button>
-                <Button variant="ghost" size="sm" className="w-full justify-start text-xs">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start text-xs"
+                >
                   <MessageCircle className="h-3 w-3 mr-2" />
                   Contact Support
                 </Button>
@@ -1184,19 +1412,21 @@ const WebsiteBuilder: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold">Building Blocks</h3>
-                    <p className="text-sm text-gray-600">Drag blocks to build your website</p>
+                    <p className="text-sm text-gray-600">
+                      Drag blocks to build your website
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => setActiveTab("preview")}
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       Preview
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={handleToggleFullScreen}
                     >
@@ -1207,7 +1437,7 @@ const WebsiteBuilder: React.FC = () => {
                       )}
                       {isFullScreen ? "Collapse" : "Expand"}
                     </Button>
-                    <Button 
+                    <Button
                       size="sm"
                       onClick={handleManualSave}
                       disabled={saveLoading}
@@ -1253,8 +1483,6 @@ const WebsiteBuilder: React.FC = () => {
           )}
         </div>
       </div>
-
-
     </div>
   );
 };

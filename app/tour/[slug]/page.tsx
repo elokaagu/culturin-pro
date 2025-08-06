@@ -73,9 +73,26 @@ export default function TourOperatorPage({
     setTheme(parsedTheme);
     setLayout(parsedLayout);
 
-    // Get actual website builder data and itineraries
-    const websiteDataStr = localStorage.getItem("websiteData");
-    const itinerariesStr = localStorage.getItem("culturinItineraries");
+    // Extract user ID from URL if present
+    // URL format: tour/businessname-userid-timestamp
+    const urlParts = params.slug.split("-");
+    let userId = null;
+    if (urlParts.length >= 3) {
+      // Look for a user ID pattern (8 characters, likely alphanumeric)
+      const potentialUserId = urlParts[urlParts.length - 2]; // Second to last part
+      if (potentialUserId && potentialUserId.length === 8 && /^[a-f0-9]+$/.test(potentialUserId)) {
+        userId = potentialUserId;
+      }
+    }
+
+    // Get user-specific website data and itineraries
+    const userSpecificWebsiteKey = userId ? `websiteData_${userId}` : "websiteData";
+    const userSpecificItinerariesKey = userId ? `culturinItineraries_${userId}` : "culturinItineraries";
+    const userSpecificPublishedKey = userId ? `publishedWebsiteUrl_${userId}` : "publishedWebsiteUrl";
+    
+    const websiteDataStr = localStorage.getItem(userSpecificWebsiteKey);
+    const itinerariesStr = localStorage.getItem(userSpecificItinerariesKey);
+    const publishedUrlStr = localStorage.getItem(userSpecificPublishedKey);
     
     let websiteData = null;
     let itineraries: ItineraryType[] = [];
