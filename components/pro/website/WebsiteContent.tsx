@@ -137,10 +137,7 @@ const WebsiteContent: React.FC = () => {
       // Save to localStorage as fallback
       localStorage.setItem("websiteSettings", JSON.stringify(updates));
       
-      toast({
-        title: "Content Saved",
-        description: "Website content has been saved successfully.",
-      });
+      toast.success("Content saved successfully!");
 
       // Save published content for website preview
       const publishedContent = {
