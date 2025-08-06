@@ -55,13 +55,16 @@ export const useItineraries = () => {
       
       // Try to load from Supabase if user is available
       if (user) {
+        console.log("Loading itineraries for authenticated user:", user.id);
         try {
           data = await itineraryService.getItineraries(user.id);
+          console.log(`Loaded ${data.length} itineraries from database`);
         } catch (err) {
           console.error("Error loading from Supabase, falling back to localStorage:", err);
           data = loadItinerariesFromLocalStorage();
         }
       } else {
+        console.log("No authenticated user, loading from localStorage");
         // No user, load from localStorage
         data = loadItinerariesFromLocalStorage();
       }
@@ -103,7 +106,15 @@ export const useItineraries = () => {
         );
         
         console.log("Itinerary created successfully:", newItinerary.id);
+        
+        // Update the local state with the new itinerary
         setItineraries((prev) => [newItinerary, ...prev]);
+        
+        // Also update localStorage with the new itinerary
+        const currentItineraries = itineraries;
+        const updatedItineraries = [newItinerary, ...currentItineraries];
+        localStorageUtils.setItem("culturinItineraries", JSON.stringify(updatedItineraries));
+        
         return newItinerary;
       } catch (err) {
         console.error("Error creating itinerary:", err);
@@ -112,7 +123,7 @@ export const useItineraries = () => {
         isCreatingRef.current = false;
       }
     },
-    []
+    [itineraries]
   );
 
   // Update existing itinerary

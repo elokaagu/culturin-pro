@@ -45,6 +45,7 @@ class SupabaseItineraryService implements ItineraryService {
     itinerary: Omit<ItineraryType, "id" | "lastUpdated">
   ): Promise<ItineraryType> {
     const user = await this.getCurrentUser();
+    
     if (!user) {
       // Fallback to localStorage for non-authenticated users
       console.log("User not authenticated, saving to localStorage");
@@ -61,39 +62,67 @@ class SupabaseItineraryService implements ItineraryService {
       return newItinerary;
     }
 
-    const { data, error } = await supabase
-      .from("itineraries")
-      .insert({
-        title: itinerary.title,
-        description: itinerary.description,
-        days: itinerary.days,
-        status: itinerary.status,
-        image: itinerary.image,
-        theme_type: itinerary.themeType,
-        regions: itinerary.regions,
-        price: itinerary.price,
-        currency: itinerary.currency || "USD",
-        group_size_min: itinerary.groupSize?.min || 1,
-        group_size_max: itinerary.groupSize?.max || 10,
-        difficulty: itinerary.difficulty || "easy",
-        tags: itinerary.tags,
-        operator_id: user.id,
-        last_updated: "just now",
-      })
-      .select()
-      .single();
+    console.log("Creating itinerary in database for user:", user.id);
 
-    if (error) {
-      console.error("Error creating itinerary:", error);
-      throw new Error(`Failed to create itinerary: ${error.message}`);
+    try {
+      const { data, error } = await supabase
+        .from("itineraries")
+        .insert({
+          title: itinerary.title,
+          description: itinerary.description,
+          days: itinerary.days,
+          status: itinerary.status,
+          image: itinerary.image,
+          theme_type: itinerary.themeType,
+          regions: itinerary.regions,
+          price: itinerary.price,
+          currency: itinerary.currency || "USD",
+          group_size_min: itinerary.groupSize?.min || 1,
+          group_size_max: itinerary.groupSize?.max || 10,
+          difficulty: itinerary.difficulty || "easy",
+          tags: itinerary.tags,
+          operator_id: user.id,
+          last_updated: "just now",
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error creating itinerary in database:", error);
+        throw new Error(`Failed to create itinerary: ${error.message}`);
+      }
+
+      console.log("Itinerary created successfully in database:", data.id);
+
+      // Save modules if they exist
+      if (itinerary.modules && itinerary.modules.length > 0) {
+        await this.saveItineraryModules(data.id, itinerary.modules);
+      }
+
+      const createdItinerary = this.mapDatabaseToItinerary(data);
+      
+      // Also save to localStorage as backup
+      const localItineraries = this.getItinerariesFromLocalStorage();
+      localItineraries.unshift(createdItinerary);
+      localStorageUtils.setItem("culturinItineraries", JSON.stringify(localItineraries));
+
+      return createdItinerary;
+    } catch (error) {
+      console.error("Database error, falling back to localStorage:", error);
+      
+      // Fallback to localStorage
+      const localItineraries = this.getItinerariesFromLocalStorage();
+      const newItinerary: ItineraryType = {
+        ...itinerary,
+        id: `local-${Date.now()}`,
+        lastUpdated: "just now",
+      };
+      
+      localItineraries.unshift(newItinerary);
+      localStorageUtils.setItem("culturinItineraries", JSON.stringify(localItineraries));
+      
+      return newItinerary;
     }
-
-    // Save modules if they exist
-    if (itinerary.modules && itinerary.modules.length > 0) {
-      await this.saveItineraryModules(data.id, itinerary.modules);
-    }
-
-    return this.mapDatabaseToItinerary(data);
   }
 
   async updateItinerary(
@@ -200,6 +229,8 @@ class SupabaseItineraryService implements ItineraryService {
         return this.getItinerariesFromLocalStorage();
       }
 
+      console.log("Loading itineraries from database for user:", user.id);
+
       // First try to get from Supabase
       const { data, error } = await supabase
         .from("itineraries")
@@ -214,6 +245,8 @@ class SupabaseItineraryService implements ItineraryService {
       }
 
       if (data && data.length > 0) {
+        console.log(`Found ${data.length} itineraries in database`);
+        
         // Fetch modules for each itinerary
         const itinerariesWithModules = await Promise.all(
           data.map(async (itinerary) => {
@@ -222,10 +255,26 @@ class SupabaseItineraryService implements ItineraryService {
           })
         );
 
+        // Also update localStorage with database data
+        localStorageUtils.setItem("culturinItineraries", JSON.stringify(itinerariesWithModules));
+
         return itinerariesWithModules;
       } else {
+        console.log("No itineraries found in database, checking localStorage");
         // No itineraries in Supabase, try localStorage
-        return this.getItinerariesFromLocalStorage();
+        const localItineraries = this.getItinerariesFromLocalStorage();
+        
+        // If we have local itineraries, try to save them to database
+        if (localItineraries.length > 0) {
+          console.log("Found local itineraries, attempting to sync to database");
+          try {
+            await this.syncLocalItinerariesToDatabase(localItineraries, user.id);
+          } catch (syncError) {
+            console.error("Failed to sync local itineraries to database:", syncError);
+          }
+        }
+        
+        return localItineraries;
       }
     } catch (error) {
       console.error("Error fetching itineraries:", error);
@@ -264,6 +313,55 @@ class SupabaseItineraryService implements ItineraryService {
     } catch (error) {
       console.error("Error loading itineraries from localStorage:", error);
       return [];
+    }
+  }
+
+  private async syncLocalItinerariesToDatabase(localItineraries: ItineraryType[], userId: string): Promise<void> {
+    console.log("Syncing local itineraries to database...");
+    
+    for (const itinerary of localItineraries) {
+      // Skip if it's already a database itinerary
+      if (!itinerary.id.startsWith('local-')) {
+        continue;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("itineraries")
+          .insert({
+            title: itinerary.title,
+            description: itinerary.description,
+            days: itinerary.days,
+            status: itinerary.status,
+            image: itinerary.image,
+            theme_type: itinerary.themeType,
+            regions: itinerary.regions,
+            price: itinerary.price,
+            currency: itinerary.currency || "USD",
+            group_size_min: itinerary.groupSize?.min || 1,
+            group_size_max: itinerary.groupSize?.max || 10,
+            difficulty: itinerary.difficulty || "easy",
+            tags: itinerary.tags,
+            operator_id: userId,
+            last_updated: "just now",
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error("Error syncing itinerary to database:", error);
+          continue;
+        }
+
+        console.log("Successfully synced itinerary to database:", data.id);
+
+        // Save modules if they exist
+        if (itinerary.modules && itinerary.modules.length > 0) {
+          await this.saveItineraryModules(data.id, itinerary.modules);
+        }
+      } catch (error) {
+        console.error("Error syncing itinerary to database:", error);
+      }
     }
   }
 
