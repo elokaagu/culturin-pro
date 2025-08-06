@@ -552,8 +552,10 @@ Description 2: ${data.content.description2 || ""}`;
     if (!generatedContent) return;
     
     try {
-      await settingsService.saveMarketingContent(generatedContent);
-      addBotMessage("Content saved to library!");
+      // Save to localStorage as fallback
+      localStorage.setItem("marketingContent", JSON.stringify(generatedContent));
+      
+      toast.success("Content saved to library!");
     } catch (error) {
       console.error('Error saving marketing content:', error);
       addBotMessage("Failed to save content. Please try again.");

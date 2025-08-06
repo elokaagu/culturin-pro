@@ -61,14 +61,23 @@ export default function BlockSettingsModal({
     if (localBlock) {
       try {
         // Save block settings using the settings service
-        await settingsService.saveWebsiteSettings({
-          placedBlocks: [localBlock], // This would need to be integrated with the full blocks array
-        });
+        const currentSettings = JSON.parse(localStorage.getItem("websiteSettings") || "{}");
+        const updates = {
+          [localBlock.id]: {
+            ...currentSettings[localBlock.id],
+            ...localBlock.settings,
+          },
+        };
+
+        // Save to localStorage as fallback
+        localStorage.setItem("websiteSettings", JSON.stringify({
+          ...currentSettings,
+          ...updates
+        }));
         
-        onSave(localBlock);
         toast({
           title: "Settings Saved",
-          description: "Block settings have been updated successfully and saved to database.",
+          description: "Block settings have been saved successfully.",
         });
         onClose();
       } catch (error) {

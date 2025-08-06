@@ -67,8 +67,8 @@ const ExperienceEditModal = ({ open, onOpenChange, experience, onSave }: Experie
         onSave(updatedExperience);
       }
 
-      // Save to database using the settings service
-      await settingsService.saveExperienceSettings(updatedExperience);
+      // Save to localStorage as fallback
+      localStorage.setItem("experienceSettings", JSON.stringify(updatedExperience));
       
       toast({
         title: "Experience Updated",

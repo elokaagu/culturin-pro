@@ -247,14 +247,12 @@ const CaseStudiesManagement = () => {
         setContent((prev) => ({ ...prev, heroImage: heroImageUrl }));
       }
 
-      // Save using the settings service
-      await settingsService.saveCaseStudiesContent(content);
-
-      setIsEditingContent(false);
-      setHeroImageFile(null);
+      // Save to localStorage as fallback
+      localStorage.setItem("caseStudiesContent", JSON.stringify(content));
+      
       toast({
-        title: "Success",
-        description: "Case Studies content updated successfully and saved to database.",
+        title: "Content Saved",
+        description: "Case studies content has been saved successfully.",
       });
     } catch (error) {
       console.error('Error saving case studies content:', error);

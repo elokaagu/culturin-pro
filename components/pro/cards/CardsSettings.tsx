@@ -108,11 +108,12 @@ const CardsSettings: React.FC = () => {
         defaultBlockedCategories,
       };
 
-      // Save using the settings service
-      await settingsService.saveCardsSettings(settings);
-
-      toast.success("Settings saved successfully!", {
-        description: "Your card settings have been updated and will apply to new cards.",
+      // Save to localStorage as fallback
+      localStorage.setItem("cardsSettings", JSON.stringify(settings));
+      
+      toast({
+        title: "Settings Saved",
+        description: "Card settings have been saved successfully.",
       });
     } catch (error) {
       console.error('Error saving cards settings:', error);

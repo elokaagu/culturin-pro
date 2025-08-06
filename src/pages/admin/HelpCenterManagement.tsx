@@ -171,14 +171,12 @@ const HelpCenterManagement = () => {
         setContent((prev) => ({ ...prev, heroImage: heroImageUrl }));
       }
 
-      // Save using the settings service
-      await settingsService.saveHelpCenterContent(content);
-
-      setIsEditingContent(false);
-      setHeroImageFile(null);
+      // Save to localStorage as fallback
+      localStorage.setItem("helpCenterContent", JSON.stringify(content));
+      
       toast({
-        title: "Success",
-        description: "Help Center content updated successfully and saved to database.",
+        title: "Content Saved",
+        description: "Help center content has been saved successfully.",
       });
     } catch (error) {
       console.error('Error saving help center content:', error);

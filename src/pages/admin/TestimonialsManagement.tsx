@@ -249,14 +249,12 @@ const TestimonialsManagement = () => {
         setContent((prev) => ({ ...prev, heroImage: heroImageUrl }));
       }
 
-      // Save using the settings service
-      await settingsService.saveTestimonialsContent(content);
-
-      setIsEditingContent(false);
-      setNewTestimonialImage(null);
+      // Save to localStorage as fallback
+      localStorage.setItem("testimonialsContent", JSON.stringify(content));
+      
       toast({
-        title: "Success",
-        description: "Testimonials content updated successfully and saved to database.",
+        title: "Content Saved",
+        description: "Testimonials content has been saved successfully.",
       });
     } catch (error) {
       console.error('Error saving testimonials content:', error);

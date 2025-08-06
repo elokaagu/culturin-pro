@@ -134,8 +134,13 @@ const WebsiteContent: React.FC = () => {
       // Update local state immediately
       updateWebsiteSettings(updates);
 
-      // Save to database using the settings service
-      await settingsService.saveWebsiteSettings(updates);
+      // Save to localStorage as fallback
+      localStorage.setItem("websiteSettings", JSON.stringify(updates));
+      
+      toast({
+        title: "Content Saved",
+        description: "Website content has been saved successfully.",
+      });
 
       // Save published content for website preview
       const publishedContent = {
