@@ -105,9 +105,20 @@ const WebsiteBuilder: React.FC = () => {
     // Load website data from localStorage and database
     const loadWebsiteData = async () => {
       try {
-        // Load published URL
+        // Load published URL - use dynamic URL based on business name
         const storedUrl = localStorage.getItem("publishedWebsiteUrl");
-        setPublishedUrl(storedUrl || "tour/demo");
+        if (storedUrl) {
+          setPublishedUrl(storedUrl);
+        } else {
+          // Generate a default URL based on business name or use a generic one
+          const businessName = userData?.businessName || userData?.websiteSettings?.companyName;
+          if (businessName) {
+            const defaultSlug = businessName.toLowerCase().replace(/\s+/g, "-");
+            setPublishedUrl(`tour/${defaultSlug}`);
+          } else {
+            setPublishedUrl("tour/demo");
+          }
+        }
 
         // Load user-specific website data from Supabase
         try {
@@ -760,7 +771,7 @@ const WebsiteBuilder: React.FC = () => {
   }, [updateWebsiteSettings]);
 
   const handlePublish = async () => {
-    if (!userData?.businessName) {
+    if (!userData?.businessName && !userData?.websiteSettings?.companyName) {
       toast.error("Please complete your business profile first", {
         description: "Add your business name in the settings",
       });
@@ -773,11 +784,11 @@ const WebsiteBuilder: React.FC = () => {
       // Save current state before publishing
       await handleManualSave();
 
-      // Generate a unique slug for the website
-      const slug = `${userData?.businessName
-        .toLowerCase()
-        .replace(/\s+/g, "-")}-${Date.now().toString(36)}`;
-      const newPublishedUrl = `tour/${slug}`;
+      // Generate a unique slug for the website based on business name
+      const businessName = userData?.businessName || userData?.websiteSettings?.companyName || "tour-company";
+      const cleanBusinessName = businessName.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-");
+      const timestamp = Date.now().toString(36);
+      const newPublishedUrl = `tour/${cleanBusinessName}-${timestamp}`;
 
       // Simulate publishing process - in a real app, this would save to a backend
       await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -789,7 +800,7 @@ const WebsiteBuilder: React.FC = () => {
 
       // Save website content and theme to localStorage for the tour operator website
       const websiteContent = {
-        companyName: userData?.websiteSettings?.companyName || "",
+        companyName: userData?.websiteSettings?.companyName || businessName,
         tagline: userData?.websiteSettings?.tagline || "",
         description: userData?.websiteSettings?.description || "",
         primaryColor: userData?.websiteSettings?.primaryColor || "#9b87f5",
@@ -819,6 +830,20 @@ const WebsiteBuilder: React.FC = () => {
       });
     } finally {
       setPublishLoading(false);
+    }
+  };
+
+  const handleCopyUrl = async () => {
+    try {
+      const fullUrl = `${window.location.origin}/${publishedUrl}`;
+      await navigator.clipboard.writeText(fullUrl);
+      toast.success("URL copied to clipboard!", {
+        description: "You can now share your website link",
+      });
+    } catch (error) {
+      toast.error("Failed to copy URL", {
+        description: "Please try again",
+      });
     }
   };
 
@@ -884,6 +909,22 @@ const WebsiteBuilder: React.FC = () => {
     });
   };
 
+  // Update published URL when business name changes
+  const updatePublishedUrl = useCallback(() => {
+    const businessName = userData?.businessName || userData?.websiteSettings?.companyName;
+    if (businessName && !publishedUrl.includes(businessName.toLowerCase().replace(/\s+/g, "-"))) {
+      const cleanBusinessName = businessName.toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-");
+      const timestamp = Date.now().toString(36);
+      const newUrl = `tour/${cleanBusinessName}-${timestamp}`;
+      setPublishedUrl(newUrl);
+      localStorageUtils.setItem("publishedWebsiteUrl", newUrl);
+    }
+  }, [userData?.businessName, userData?.websiteSettings?.companyName, publishedUrl]);
+
+  // Update URL when business name changes
+  useEffect(() => {
+    updatePublishedUrl();
+  }, [updatePublishedUrl]);
 
 
   // Format last saved time
@@ -1055,8 +1096,8 @@ const WebsiteBuilder: React.FC = () => {
                   <Check className="h-3 w-3 text-green-600" />
                   <span className="text-sm font-medium text-green-800">Site Published</span>
                 </div>
-                <div className="text-xs text-green-700 mb-3">
-                  {publishedUrl}
+                <div className="text-xs text-green-700 mb-3 break-all">
+                  {typeof window !== 'undefined' ? `${window.location.origin}/${publishedUrl}` : publishedUrl}
                 </div>
                 <div className="flex items-center gap-2 mb-3">
                   <ShoppingCart className="h-3 w-3 text-green-600" />
@@ -1089,7 +1130,12 @@ const WebsiteBuilder: React.FC = () => {
                   <Download className="h-3 w-3 mr-2" />
                   Export Website
                 </Button>
-                <Button variant="ghost" size="sm" className="w-full justify-start text-xs">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start text-xs"
+                  onClick={handleCopyUrl}
+                >
                   <Copy className="h-3 w-3 mr-2" />
                   Copy URL
                 </Button>
