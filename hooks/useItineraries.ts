@@ -14,28 +14,44 @@ export const useItineraries = () => {
   // Load itineraries from localStorage as fallback
   const loadItinerariesFromLocalStorage = useCallback(() => {
     try {
-      const itinerariesStr = localStorageUtils.getItem('culturinItineraries');
+      // Use user-specific key if user is available, otherwise use generic key
+      const userSpecificKey = user?.id ? `culturinItineraries_${user.id}` : "culturinItineraries";
+      let itinerariesStr = localStorageUtils.getItem(userSpecificKey);
+      
+      // If no user-specific data found, try the generic key as fallback
+      if (!itinerariesStr && user?.id) {
+        console.log("No user-specific itineraries found, trying generic key...");
+        itinerariesStr = localStorageUtils.getItem("culturinItineraries");
+        if (itinerariesStr) {
+          console.log("Found itineraries with generic key, migrating to user-specific key...");
+          // Migrate to user-specific key
+          localStorageUtils.setItem(userSpecificKey, itinerariesStr);
+        }
+      }
+      
       if (!itinerariesStr) {
+        console.log(`No itineraries found in localStorage with key: ${userSpecificKey}`);
         return [];
       }
 
       const itineraries = JSON.parse(itinerariesStr);
-      
+      console.log(`Loaded ${itineraries.length} itineraries from localStorage with key: ${userSpecificKey}`);
+
       // Convert localStorage format to ItineraryType format
       return itineraries.map((itinerary: any) => ({
         id: itinerary.id || `local-${Date.now()}-${Math.random()}`,
-        title: itinerary.title || 'Untitled Itinerary',
-        description: itinerary.description || '',
+        title: itinerary.title || "Untitled Itinerary",
+        description: itinerary.description || "",
         days: itinerary.days || 1,
-        lastUpdated: itinerary.lastUpdated || 'just now',
-        status: itinerary.status || 'draft',
-        image: itinerary.image || '',
-        themeType: itinerary.themeType || 'cultural',
+        lastUpdated: itinerary.lastUpdated || "just now",
+        status: itinerary.status || "draft",
+        image: itinerary.image || "",
+        themeType: itinerary.themeType || "cultural",
         regions: itinerary.regions || [],
         price: itinerary.price || 0,
-        currency: itinerary.currency || 'USD',
+        currency: itinerary.currency || "USD",
         groupSize: itinerary.groupSize || { min: 1, max: 10 },
-        difficulty: itinerary.difficulty || 'easy',
+        difficulty: itinerary.difficulty || "easy",
         tags: itinerary.tags || [],
         modules: itinerary.modules || [],
       }));
@@ -43,16 +59,16 @@ export const useItineraries = () => {
       console.error("Error loading itineraries from localStorage:", error);
       return [];
     }
-  }, []);
+  }, [user]);
 
   // Load itineraries
   const loadItineraries = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       let data: ItineraryType[] = [];
-      
+
       // Try to load from Supabase if user is available
       if (user) {
         console.log("Loading itineraries for authenticated user:", user.id);
@@ -60,7 +76,10 @@ export const useItineraries = () => {
           data = await itineraryService.getItineraries(user.id);
           console.log(`Loaded ${data.length} itineraries from database`);
         } catch (err) {
-          console.error("Error loading from Supabase, falling back to localStorage:", err);
+          console.error(
+            "Error loading from Supabase, falling back to localStorage:",
+            err
+          );
           data = loadItinerariesFromLocalStorage();
         }
       } else {
@@ -68,7 +87,8 @@ export const useItineraries = () => {
         // No user, load from localStorage
         data = loadItinerariesFromLocalStorage();
       }
-      
+
+      console.log("Final itineraries data:", data);
       setItineraries(data);
     } catch (err) {
       console.error("Error loading itineraries:", err);
@@ -100,21 +120,27 @@ export const useItineraries = () => {
       try {
         isCreatingRef.current = true;
         console.log("Creating itinerary:", itineraryData.title);
-        
+
         const newItinerary = await itineraryService.createItinerary(
           itineraryData
         );
-        
+
         console.log("Itinerary created successfully:", newItinerary.id);
-        
+
         // Update the local state with the new itinerary
         setItineraries((prev) => [newItinerary, ...prev]);
-        
+
         // Also update localStorage with the new itinerary
         const currentItineraries = itineraries;
         const updatedItineraries = [newItinerary, ...currentItineraries];
-        localStorageUtils.setItem("culturinItineraries", JSON.stringify(updatedItineraries));
-        
+        const userSpecificKey = user?.id
+          ? `culturinItineraries_${user.id}`
+          : "culturinItineraries";
+        localStorageUtils.setItem(
+          userSpecificKey,
+          JSON.stringify(updatedItineraries)
+        );
+
         return newItinerary;
       } catch (err) {
         console.error("Error creating itinerary:", err);
