@@ -1000,7 +1000,7 @@ Description 2: ${data.content.description2 || ""}`;
 
       {/* Recent Projects */}
       <div className="relative">
-        <div className="space-y-2 max-h-96 overflow-hidden">
+        <div className="space-y-2 max-h-96 overflow-y-auto">
           {filteredProjects.map((project) => (
             <div
               key={project.id}
@@ -1028,8 +1028,7 @@ Description 2: ${data.content.description2 || ""}`;
           ))}
         </div>
         
-        {/* Fade overlay at the bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none"></div>
+        {/* Remove the fade overlay since we now have scrolling */}
       </div>
     </div>
   );
