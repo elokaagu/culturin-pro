@@ -211,8 +211,26 @@ export default function ItineraryDetailPage() {
   };
 
   const handleViewOnWebsiteConfirm = () => {
-    // Generate a public URL for the itinerary
-    const publicUrl = `${window.location.origin}/tour/${itineraryId}`;
+    // Get the user's published website URL from localStorage
+    const getPublishedUrl = () => {
+      // Try to get user-specific published URL first
+      const userKeys = Object.keys(localStorage).filter((key) =>
+        key.startsWith("publishedWebsiteUrl_")
+      );
+
+      if (userKeys.length > 0) {
+        return localStorage.getItem(userKeys[0]);
+      }
+
+      // Fallback to general published URL
+      return localStorage.getItem("publishedWebsiteUrl");
+    };
+
+    const publishedUrl = getPublishedUrl();
+    const publicUrl = publishedUrl
+      ? `${window.location.origin}/${publishedUrl}`
+      : `${window.location.origin}/tour/${itineraryId}`;
+
     window.open(publicUrl, "_blank");
     setShowViewModal(false);
   };
@@ -222,7 +240,25 @@ export default function ItineraryDetailPage() {
   };
 
   const handleShareLinkConfirm = async () => {
-    const shareUrl = `${window.location.origin}/tour/${itineraryId}`;
+    // Get the user's published website URL from localStorage
+    const getPublishedUrl = () => {
+      // Try to get user-specific published URL first
+      const userKeys = Object.keys(localStorage).filter((key) =>
+        key.startsWith("publishedWebsiteUrl_")
+      );
+
+      if (userKeys.length > 0) {
+        return localStorage.getItem(userKeys[0]);
+      }
+
+      // Fallback to general published URL
+      return localStorage.getItem("publishedWebsiteUrl");
+    };
+
+    const publishedUrl = getPublishedUrl();
+    const shareUrl = publishedUrl
+      ? `${window.location.origin}/${publishedUrl}`
+      : `${window.location.origin}/tour/${itineraryId}`;
 
     if (navigator.share) {
       try {

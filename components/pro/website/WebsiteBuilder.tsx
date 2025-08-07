@@ -1011,7 +1011,9 @@ const WebsiteBuilder: React.FC = () => {
   const handlePreviewSite = () => {
     try {
       if (typeof window !== "undefined") {
-        window.open(`/${publishedUrl}`, "_blank", "noopener,noreferrer");
+        // Use the current domain with the published URL path
+        const fullUrl = `${window.location.origin}/${publishedUrl}`;
+        window.open(fullUrl, "_blank", "noopener,noreferrer");
       }
     } catch (error) {
       toast.error("Failed to open preview", {
