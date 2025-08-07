@@ -92,7 +92,7 @@ const Index = () => {
       <main className="flex-1">
         {/* Hero Section - Full View Height */}
         <section className="h-full flex flex-col justify-center items-center text-center px-4 relative">
-          {/* Background Video - No overlay */}
+          {/* Background Video */}
           <div className="absolute inset-0 overflow-hidden">
             <video
               autoPlay
@@ -105,6 +105,9 @@ const Index = () => {
               Your browser does not support the video tag.
             </video>
           </div>
+
+          {/* Dark Overlay for Better Contrast */}
+          <div className="absolute inset-0 bg-black/40 z-10"></div>
 
           {/* Content */}
           <div className="relative z-20 max-w-4xl mx-auto px-6">
