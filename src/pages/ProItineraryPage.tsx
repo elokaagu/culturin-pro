@@ -27,7 +27,6 @@ const ProItineraryPage = () => {
     updateItinerary,
     deleteItinerary,
     refreshItineraries,
-    pushAllToDatabase,
   } = useItineraries();
 
   // Refresh itineraries when component mounts and when returning from creating new itinerary
@@ -172,7 +171,6 @@ const ProItineraryPage = () => {
             onCreateNewItinerary={handleCreateNewItinerary}
             onEditItinerary={handleEditItinerary}
             onDeleteItinerary={handleDeleteItinerary}
-            onPushToDatabase={pushAllToDatabase}
           />
         </Tabs>
       </div>

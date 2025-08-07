@@ -210,26 +210,7 @@ export const useItineraries = () => {
     loadItineraries();
   }, [loadItineraries]);
 
-  // Push all local itineraries to database
-  const pushAllToDatabase = useCallback(async () => {
-    try {
-      console.log("Manually pushing all local itineraries to database...");
-      await itineraryService.pushAllLocalItinerariesToDatabase();
-      // Refresh itineraries after pushing to database
-      await loadItineraries();
-      toast({
-        title: "All itineraries pushed to database successfully!",
-        description: "All itineraries pushed to database successfully!",
-      });
-    } catch (error) {
-      console.error("Error pushing itineraries to database:", error);
-      toast({
-        title: "Failed to push itineraries to database",
-        description: "Failed to push itineraries to database",
-        variant: "destructive",
-      });
-    }
-  }, [loadItineraries]);
+
 
   return {
     itineraries,
@@ -240,6 +221,5 @@ export const useItineraries = () => {
     deleteItinerary,
     getItinerary,
     refreshItineraries,
-    pushAllToDatabase,
   };
 };
