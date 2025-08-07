@@ -67,6 +67,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    console.log("AuthProvider: User state changed:", {
+      user: user ? { id: user.id, email: user.email } : null,
+      isLoggedIn: !!user,
+      loading
+    });
+    
     // Check user permissions when user changes
     if (user) {
       checkUserPermissions(user);
@@ -74,7 +80,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setHasStudioAccess(false);
       setIsAdmin(false);
     }
-  }, [user]);
+  }, [user, loading]);
 
   const checkUserPermissions = async (user: User) => {
     try {

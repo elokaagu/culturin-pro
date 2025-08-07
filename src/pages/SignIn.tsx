@@ -78,16 +78,22 @@ const SignIn = () => {
     setLoading(true);
     setError("");
 
+    console.log("Attempting to sign in with email:", email);
+
     try {
       const { error } = await login(email, password);
 
       if (error) {
+        console.error("Sign in error:", error);
         setError(
           error.message || "Invalid email or password. Please try again."
         );
+      } else {
+        console.log("Sign in successful, waiting for auth state change...");
       }
       // Navigation will be handled by the useEffect above
     } catch (err: any) {
+      console.error("Sign in exception:", err);
       setError(
         err.message || "An error occurred during login. Please try again."
       );
