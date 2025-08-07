@@ -81,7 +81,7 @@ const ProItineraryPage: React.FC = () => {
       <div className="p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Itinerary Builder
+            Itineraries
           </h1>
           <p className="text-gray-600">
             Create and manage your experience itineraries

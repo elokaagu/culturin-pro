@@ -21,7 +21,7 @@ import Image from "@/components/ui/image";
 const menuItems = [
   { name: "Dashboard", path: "/pro-dashboard", icon: LayoutDashboard },
   {
-    name: "Itinerary Builder",
+    name: "Itineraries",
     path: "/pro-dashboard/itinerary",
     icon: PencilRuler,
   },
