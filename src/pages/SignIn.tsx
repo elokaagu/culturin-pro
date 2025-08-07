@@ -117,10 +117,10 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-culturin-indigo/10 to-white">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-culturin-indigo/10 to-white">
       <Header type="operator" />
       
-      <div className="flex-1 flex items-center justify-center p-4 min-h-[calc(100vh-200px)]">
+      <div className="flex-1 flex items-center justify-center p-4 h-full">
         <div className="w-full max-w-md">
           {/* Back to home link */}
           <MotionText delay={0.1}>
