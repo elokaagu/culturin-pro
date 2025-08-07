@@ -22,6 +22,7 @@ import AIContentAssistant from "@/components/pro/itinerary/AIContentAssistant";
 import { ItineraryType } from "@/data/itineraryData";
 import Image from "@/components/ui/image";
 import { itineraryService } from "@/lib/itinerary-service";
+import { useAuthState } from "@/src/hooks/useAuthState";
 
 interface ItineraryEditorProps {
   showEditor: boolean;
@@ -41,6 +42,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   onItinerarySave,
 }) => {
   const { toast } = useToast();
+  const { user, isLoggedIn, isReady } = useAuthState();
   const [itinerary, setItinerary] = useState<ItineraryType | null>(
     selectedItinerary
   );
@@ -69,6 +71,25 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   const handleSaveChanges = async () => {
     if (!itinerary || isSavingInProgress) return;
 
+    // Check if user is ready and authenticated
+    if (!isReady) {
+      toast({
+        title: "Please wait",
+        description: "Authentication is loading. Please try again in a moment.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isLoggedIn) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to save your itinerary to the database.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSavingInProgress(true);
     setIsSaving(true);
 
@@ -78,18 +99,30 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       if (
         itinerary.id.startsWith("temp-") ||
         itinerary.id.startsWith("duplicate-") ||
-        itinerary.id.startsWith("new-")
+        itinerary.id.startsWith("new-") ||
+        itinerary.id.startsWith("local-")
       ) {
         // Create new itinerary
         const { id, lastUpdated, ...itineraryData } = itinerary;
         savedItinerary = await itineraryService.createItinerary(itineraryData);
+        toast({
+          title: "Itinerary Created",
+          description: `"${savedItinerary.title}" has been saved to your database.`,
+        });
       } else {
         // Update existing itinerary
         savedItinerary = await itineraryService.updateItinerary(
           itinerary.id,
           itinerary
         );
+        toast({
+          title: "Changes Saved",
+          description: `"${savedItinerary.title}" has been updated in your database.`,
+        });
       }
+
+      // Update local state with saved itinerary
+      setItinerary(savedItinerary);
 
       if (onItinerarySave) {
         onItinerarySave(savedItinerary);
@@ -97,24 +130,24 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
 
       // Dispatch event to notify website builder of itinerary changes
       if (typeof window !== "undefined") {
-
         window.dispatchEvent(
           new CustomEvent("itineraryChanged", {
             detail: { action: "saved", itinerary: savedItinerary }
           })
         );
+        
+        // Also trigger itinerary refresh for other components
+        window.dispatchEvent(new CustomEvent("userAuthenticated"));
       }
 
-      toast({
-        title: "Itinerary Saved",
-        description: "Your changes have been saved successfully.",
-      });
     } catch (error) {
       console.error("Error saving itinerary:", error);
       toast({
-        title: "Error",
+        title: "Save Failed",
         description:
-          error instanceof Error ? error.message : "Failed to save itinerary",
+          error instanceof Error 
+            ? `Failed to save: ${error.message}` 
+            : "Failed to save itinerary. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -125,6 +158,25 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
 
   const handlePublish = async () => {
     if (!itinerary || isSavingInProgress) return;
+
+    // Check if user is ready and authenticated
+    if (!isReady) {
+      toast({
+        title: "Please wait",
+        description: "Authentication is loading. Please try again in a moment.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isLoggedIn) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to publish your itinerary to the database.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     // Validate required fields before publishing
     if (!itinerary.title || !itinerary.title.trim()) {
@@ -161,7 +213,8 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       if (
         itinerary.id.startsWith("temp-") ||
         itinerary.id.startsWith("duplicate-") ||
-        itinerary.id.startsWith("new-")
+        itinerary.id.startsWith("new-") ||
+        itinerary.id.startsWith("local-")
       ) {
         // Create new itinerary as published
         const { id, lastUpdated, ...itineraryData } = publishedItinerary;
@@ -188,11 +241,14 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
             detail: { action: "published", itinerary: savedItinerary }
           })
         );
+        
+        // Also trigger itinerary refresh for other components
+        window.dispatchEvent(new CustomEvent("userAuthenticated"));
       }
 
       toast({
         title: "Itinerary Published! 🎉",
-        description: "Your itinerary is now live and visible to travelers.",
+        description: `"${savedItinerary.title}" is now live and saved to your database.`,
       });
 
     } catch (error) {
@@ -213,6 +269,25 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
 
   const handleUnpublish = async () => {
     if (!itinerary || isSavingInProgress) return;
+
+    // Check if user is ready and authenticated
+    if (!isReady) {
+      toast({
+        title: "Please wait",
+        description: "Authentication is loading. Please try again in a moment.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isLoggedIn) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to unpublish your itinerary.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsSavingInProgress(true);
     setIsPublishing(true);
