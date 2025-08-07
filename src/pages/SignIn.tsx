@@ -27,6 +27,7 @@ import {
 import NewFooter from "@/components/sections/NewFooter";
 import TranslatableText from "../../components/TranslatableText";
 import Link from "next/link";
+import { MotionCard, MotionText, MotionButton } from "@/components/motion";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -122,25 +123,32 @@ const SignIn = () => {
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           {/* Back to home link */}
-          <Link
-            href="/"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-6 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            <TranslatableText text="Back to Home" />
-          </Link>
+          <MotionText delay={0.1}>
+            <Link
+              href="/"
+              className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              <TranslatableText text="Back to Home" />
+            </Link>
+          </MotionText>
 
-          <Card className="shadow-xl border-0">
-            <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl font-bold text-gray-900">
-                <TranslatableText text="Welcome Back" />
-              </CardTitle>
-              <CardDescription className="text-gray-600">
-                <TranslatableText text="Sign in to access Culturin Studio" />
-              </CardDescription>
-            </CardHeader>
+          <MotionCard className="shadow-xl border-0" hover={false}>
+            <Card className="border-0 shadow-none">
+              <CardHeader className="text-center pb-6">
+                <MotionText delay={0.2}>
+                  <CardTitle className="text-2xl font-bold text-gray-900">
+                    <TranslatableText text="Welcome Back" />
+                  </CardTitle>
+                </MotionText>
+                <MotionText delay={0.3}>
+                  <CardDescription className="text-gray-600">
+                    <TranslatableText text="Sign in to access Culturin Studio" />
+                  </CardDescription>
+                </MotionText>
+              </CardHeader>
 
-            <CardContent className="space-y-6">
+              <CardContent className="space-y-6">
               {error && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
@@ -201,7 +209,7 @@ const SignIn = () => {
                   </div>
                 </div>
 
-                <Button
+                <MotionButton
                   type="submit"
                   className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90"
                   disabled={loading}
@@ -217,19 +225,22 @@ const SignIn = () => {
                       <TranslatableText text="Sign In" />
                     </div>
                   )}
-                </Button>
+                </MotionButton>
               </form>
 
-              <div className="text-center space-y-3">
-                <Link
-                  href="/sign-up"
-                  className="text-sm text-culturin-indigo hover:text-culturin-indigo/80 transition-colors"
-                >
-                  <TranslatableText text="Don't have an account? Sign up" />
-                </Link>
-              </div>
+              <MotionText delay={0.5}>
+                <div className="text-center space-y-3">
+                  <Link
+                    href="/sign-up"
+                    className="text-sm text-culturin-indigo hover:text-culturin-indigo/80 transition-colors"
+                  >
+                    <TranslatableText text="Don't have an account? Sign up" />
+                  </Link>
+                </div>
+              </MotionText>
             </CardContent>
           </Card>
+        </MotionCard>
         </div>
       </div>
 
