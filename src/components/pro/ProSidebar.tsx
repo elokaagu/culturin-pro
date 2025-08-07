@@ -26,7 +26,7 @@ const menuItems = [
     icon: PencilRuler,
   },
   {
-    name: "Booking System",
+    name: "Bookings",
     path: "/pro-dashboard/booking",
     icon: ShoppingCart,
   },
