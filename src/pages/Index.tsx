@@ -4,12 +4,13 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 import { Link } from "../../lib/navigation";
-import { 
-  MotionText, 
-  MotionButton, 
+import {
+  MotionText,
+  MotionButton,
   MotionFloat,
-  ScrollProgress
+  ScrollProgress,
 } from "@/components/motion";
+import { GlassButton } from "@/components/ui/glass";
 
 const Index = () => {
   // Add a smooth scroll effect when the page loads
@@ -28,14 +29,11 @@ const Index = () => {
       <ScrollProgress />
       {/* Transparent Header positioned absolutely */}
       <div className="absolute top-0 left-0 right-0 z-50">
-        <header className="w-full bg-transparent backdrop-blur-sm">
+        <header className="w-full glass-nav">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16 lg:h-20">
               <div className="flex items-center">
-                <Link
-                  to="/"
-                  className="flex items-center"
-                >
+                <Link to="/" className="flex items-center">
                   <div className="h-12 lg:h-16">
                     <img
                       src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png"
@@ -47,7 +45,7 @@ const Index = () => {
                   </div>
                 </Link>
               </div>
-              
+
               <div className="hidden md:flex items-center space-x-8">
                 <nav>
                   <ul className="flex space-x-10">
@@ -69,40 +67,28 @@ const Index = () => {
                     </li>
                   </ul>
                 </nav>
-                
+
                 <div className="flex items-center space-x-4">
-                  <Button
-                    variant="ghost"
-                    className="text-white hover:text-gray-200 hover:bg-white/10"
-                    asChild
-                  >
+                  <GlassButton variant="ghost" size="sm">
                     <Link to="/sign-in">Login</Link>
-                  </Button>
-                  <Button
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                    asChild
-                  >
+                  </GlassButton>
+                  <GlassButton variant="primary" size="sm">
                     <Link to="/demo">Get a free demo</Link>
-                  </Button>
+                  </GlassButton>
                 </div>
               </div>
-              
+
               {/* Mobile menu button */}
               <div className="md:hidden">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-white hover:text-gray-200 hover:bg-white/10"
-                  asChild
-                >
+                <GlassButton variant="ghost" size="sm">
                   <Link to="/sign-in">Login</Link>
-                </Button>
+                </GlassButton>
               </div>
             </div>
           </div>
         </header>
       </div>
-      
+
       <main className="flex-1">
         {/* Hero Section - Full View Height */}
         <section className="h-full flex flex-col justify-center items-center text-center px-4 relative">
@@ -145,21 +131,21 @@ const Index = () => {
             <MotionFloat>
               <MotionText delay={0.6}>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                  <MotionButton
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 text-base font-medium shadow-lg rounded-lg border border-blue-500 hover:border-blue-400 transition-all duration-300 flex items-center justify-center"
-                    asChild
-                  >
-                    <Link to="/how-it-works">
+                  <MotionButton asChild>
+                    <Link
+                      to="/how-it-works"
+                      className="glass-button glass-blue px-6 py-3 text-base font-medium rounded-lg flex items-center justify-center"
+                    >
                       <Play className="h-4 w-4 mr-2" />
                       How It Works
                     </Link>
                   </MotionButton>
 
-                  <MotionButton
-                    className="border-2 border-white/80 hover:border-white text-white hover:text-white px-6 py-3 text-base font-medium shadow-lg bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg transition-all duration-300 flex items-center justify-center"
-                    asChild
-                  >
-                    <Link to="/sign-in">
+                  <MotionButton asChild>
+                    <Link
+                      to="/sign-in"
+                      className="glass-button px-6 py-3 text-base font-medium rounded-lg flex items-center justify-center"
+                    >
                       Login
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Link>

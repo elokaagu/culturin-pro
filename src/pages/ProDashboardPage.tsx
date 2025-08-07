@@ -1,25 +1,25 @@
-'use client'
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from '../../lib/navigation';
-import ProDashboardLayout from '@/components/pro/ProDashboardLayout';
-import DashboardMetricCard from '@/components/pro/DashboardMetricCard';
-import BookingTrendsChart from '@/components/pro/BookingTrendsChart';
+"use client";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "../../lib/navigation";
+import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
+import DashboardMetricCard from "@/components/pro/DashboardMetricCard";
+import BookingTrendsChart from "@/components/pro/BookingTrendsChart";
 import { Calendar, Users, Star } from "lucide-react";
-import CircleDollarSignIcon from '@/components/pro/CircleDollarSign';
-import { 
-  MotionContainer, 
-  MotionCard, 
+import CircleDollarSignIcon from "@/components/pro/CircleDollarSign";
+import {
+  MotionContainer,
+  MotionCard,
   StaggerReveal,
-  RevealOnScroll 
-} from '@/components/motion';
+  RevealOnScroll,
+} from "@/components/motion";
 
 const ProDashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  
+
   useEffect(() => {
-    localStorage.setItem('lastRoute', '/pro-dashboard');
+    localStorage.setItem("lastRoute", "/pro-dashboard");
   }, []);
-  
+
   return (
     <ProDashboardLayout>
       <MotionContainer className="space-y-6">
@@ -31,51 +31,59 @@ const ProDashboardPage: React.FC = () => {
             </p>
           </div>
         </RevealOnScroll>
-        
+
         {/* Metrics Cards with stagger animation */}
         <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <MotionCard>
-            <DashboardMetricCard
-              title="Revenue"
-              value="$3,490"
-              change="12%"
-              changePositive={true}
-              icon={<CircleDollarSignIcon />}
-              actionText="View breakdown"
-            />
+            <div className="glass-card rounded-2xl p-6 glass-hover">
+              <DashboardMetricCard
+                title="Revenue"
+                value="$3,490"
+                change="12%"
+                changePositive={true}
+                icon={<CircleDollarSignIcon />}
+                actionText="View breakdown"
+              />
+            </div>
           </MotionCard>
           <MotionCard>
-            <DashboardMetricCard
-              title="Bookings"
-              value="128"
-              change="8%"
-              changePositive={true}
-              icon={<Calendar className="h-5 w-5" />}
-              actionText="View details"
-            />
+            <div className="glass-card rounded-2xl p-6 glass-hover">
+              <DashboardMetricCard
+                title="Bookings"
+                value="128"
+                change="8%"
+                changePositive={true}
+                icon={<Calendar className="h-5 w-5" />}
+                actionText="View details"
+              />
+            </div>
           </MotionCard>
           <MotionCard>
-            <DashboardMetricCard
-              title="Guests"
-              value="456"
-              change="15%"
-              changePositive={true}
-              icon={<Users className="h-5 w-5" />}
-              actionText="See analytics"
-            />
+            <div className="glass-card rounded-2xl p-6 glass-hover">
+              <DashboardMetricCard
+                title="Guests"
+                value="456"
+                change="15%"
+                changePositive={true}
+                icon={<Users className="h-5 w-5" />}
+                actionText="See analytics"
+              />
+            </div>
           </MotionCard>
           <MotionCard>
-            <DashboardMetricCard
-              title="Rating"
-              value="4.8"
-              change="0.3"
-              changePositive={true}
-              icon={<Star className="h-5 w-5" />}
-              actionText="View reviews"
-            />
+            <div className="glass-card rounded-2xl p-6 glass-hover">
+              <DashboardMetricCard
+                title="Rating"
+                value="4.8"
+                change="0.3"
+                changePositive={true}
+                icon={<Star className="h-5 w-5" />}
+                actionText="View reviews"
+              />
+            </div>
           </MotionCard>
         </StaggerReveal>
-        
+
         {/* Charts */}
         <RevealOnScroll delay={0.3}>
           <div className="grid grid-cols-1 gap-4">

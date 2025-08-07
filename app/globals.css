@@ -2,6 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Liquid Glass Morphism Design System for Culturin */
+
+@layer components {
+  /* Base Glass Effects */
+  .glass-base {
+    @apply backdrop-blur-md bg-white bg-opacity-10 border border-white border-opacity-20;
+  }
+
+  .glass-card {
+    @apply backdrop-blur-xl bg-white bg-opacity-15 border border-white border-opacity-25 shadow-2xl;
+  }
+
+  .glass-modal {
+    @apply backdrop-blur-2xl bg-white bg-opacity-20 border border-white border-opacity-30 shadow-2xl;
+  }
+
+  .glass-nav {
+    @apply backdrop-blur-lg bg-white bg-opacity-10 border-b border-white border-opacity-20;
+  }
+
+  .glass-sidebar {
+    @apply backdrop-blur-xl bg-white bg-opacity-10 border-r border-white border-opacity-15;
+  }
+
+  /* Interactive Glass States */
+  .glass-hover {
+    @apply transition-all duration-300 hover:bg-white hover:bg-opacity-20 hover:border-white hover:border-opacity-35 hover:shadow-2xl;
+  }
+
+  .glass-active {
+    @apply bg-white bg-opacity-25 border-white border-opacity-40 shadow-xl;
+  }
+
+  .glass-focus {
+    @apply ring-2 ring-white ring-opacity-30 ring-offset-2 ring-offset-transparent;
+  }
+
+  /* Glass Variants by Opacity */
+  .glass-light {
+    @apply backdrop-blur-sm bg-white bg-opacity-5 border border-white border-opacity-10;
+  }
+
+  .glass-medium {
+    @apply backdrop-blur-md bg-white bg-opacity-15 border border-white border-opacity-25;
+  }
+
+  .glass-heavy {
+    @apply backdrop-blur-xl bg-white bg-opacity-25 border border-white border-opacity-35;
+  }
+
+  .glass-ultra {
+    @apply backdrop-blur-2xl bg-white bg-opacity-30 border border-white border-opacity-40;
+  }
+
+  /* Colored Glass Effects */
+  .glass-blue {
+    @apply backdrop-blur-md bg-blue-500 bg-opacity-15 border border-blue-300 border-opacity-25;
+  }
+
+  .glass-indigo {
+    @apply backdrop-blur-md bg-indigo-500 bg-opacity-15 border border-indigo-300 border-opacity-25;
+  }
+
+  .glass-purple {
+    @apply backdrop-blur-md bg-purple-500 bg-opacity-15 border border-purple-300 border-opacity-25;
+  }
+
+  .glass-emerald {
+    @apply backdrop-blur-md bg-emerald-500 bg-opacity-15 border border-emerald-300 border-opacity-25;
+  }
+
+  /* Glass Button Styles */
+  .glass-button {
+    @apply backdrop-blur-md bg-white bg-opacity-20 border border-white border-opacity-30 shadow-lg transition-all duration-300;
+  }
+
+  .glass-button:hover {
+    @apply bg-white bg-opacity-30 border-white border-opacity-40 shadow-xl transform scale-105;
+  }
+
+  .glass-button:active {
+    @apply bg-white bg-opacity-25 border-white border-opacity-35 shadow-md transform scale-95;
+  }
+
+  /* Glass Input Styles */
+  .glass-input {
+    @apply backdrop-blur-md bg-white bg-opacity-10 border border-white border-opacity-25 placeholder-white placeholder-opacity-60 text-white;
+  }
+
+  .glass-input:focus {
+    @apply bg-white bg-opacity-15 border-white border-opacity-35 ring-2 ring-white ring-opacity-20 ring-offset-transparent;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -405,13 +499,14 @@ header.sticky {
     animation: float-slow 10s ease-in-out infinite;
     animation-delay: 4s;
   }
-  
+
   .animate-gradient {
     animation: gradient 8s ease infinite;
   }
-  
+
   @keyframes gradient {
-    0%, 100% {
+    0%,
+    100% {
       background-position: 0% 50%;
     }
     50% {
