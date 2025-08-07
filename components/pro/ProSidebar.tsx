@@ -115,9 +115,9 @@ const ProSidebar: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div className="w-64 glass-sidebar h-full flex flex-col fixed left-0 top-0 bottom-0 font-sans">
+    <div className="w-64 bg-white/95 backdrop-blur-md border-r border-gray-200 h-full flex flex-col fixed left-0 top-0 bottom-0 font-sans shadow-lg">
       {/* Logo & Header */}
-      <div className="p-4 border-b border-white/20 glass-light rounded-none">
+      <div className="p-4 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
@@ -147,10 +147,10 @@ const ProSidebar: React.FC = () => {
               key={item.name}
               onClick={() => navigate(item.path)}
               className={cn(
-                "flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-all duration-300 text-sm",
+                "flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-all duration-300 text-sm font-medium",
                 location.pathname === item.path
-                  ? "glass-active text-white shadow-lg"
-                  : "text-white/80 hover:glass-hover hover:text-white"
+                  ? "glass-active text-white shadow-lg bg-white/20"
+                  : "text-gray-800 hover:glass-hover hover:text-gray-900 hover:bg-white/10"
               )}
             >
               <item.icon className="h-4 w-4" />
@@ -161,17 +161,17 @@ const ProSidebar: React.FC = () => {
       </div>
 
       {/* Plan & Account Section */}
-      <div className="p-4 border-t border-white/20 glass-light rounded-none">
+      <div className="p-4 border-t border-gray-200 bg-white/90 backdrop-blur-sm">
         <DropdownMenu>
           <DropdownMenuTrigger className="flex w-full items-center gap-2 p-2 rounded-md glass-hover transition-all duration-300">
-            <div className="w-8 h-8 rounded-full glass-card flex items-center justify-center">
-              <Users className="h-4 w-4 text-white" />
+            <div className="w-8 h-8 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
+              <Users className="h-4 w-4 text-gray-600" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-white">{userName}</p>
-              <p className="text-xs text-white/60">{planType}</p>
+              <p className="text-sm font-medium text-gray-800">{userName}</p>
+              <p className="text-xs text-gray-600">{planType}</p>
             </div>
-            <ChevronDown className="h-4 w-4 text-white/60" />
+            <ChevronDown className="h-4 w-4 text-gray-600" />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 mb-2">
             <div className="px-3 py-2 text-sm text-gray-500">
