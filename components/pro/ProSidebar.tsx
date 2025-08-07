@@ -74,6 +74,10 @@ const ProSidebar: React.FC = () => {
   });
   // Use authenticated user's name if available, otherwise fallback to localStorage
   const userName = useMemo(() => {
+    if (isLoading) {
+      return "Loading...";
+    }
+    
     if (!user) {
       return "Guest";
     }
@@ -109,6 +113,10 @@ const ProSidebar: React.FC = () => {
   }, [user]);
 
   const planType = useMemo(() => {
+    if (isLoading) {
+      return "Loading...";
+    }
+    
     if (!user) {
       return "No Plan";
     }
@@ -193,10 +201,10 @@ const ProSidebar: React.FC = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 mb-2">
             <div className="px-3 py-2 text-sm text-gray-500">
-              {user?.email || "Not signed in"}
+              {isLoading ? "Loading..." : (user?.email || "Not signed in")}
             </div>
             <div className="px-3 py-1 text-xs text-gray-400 capitalize">
-              {user ? (user.role === "admin" ? "Admin" : "User") : "Guest"} •
+              {isLoading ? "Loading..." : (user ? (user.role === "admin" ? "Admin" : "User") : "Guest")} •
               Studio Access
             </div>
             <DropdownMenuSeparator />
