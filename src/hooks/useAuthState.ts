@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { useAuth } from "@/src/components/auth/AuthProvider";
+import { userDataService } from "@/src/services/userDataService";
 
 /**
  * Centralized authentication state hook that ensures consistent user state
@@ -27,21 +28,10 @@ export const useAuthState = () => {
 
   const loadUserData = useCallback(async (user: User) => {
     try {
-      console.log("📊 Loading user data for:", user.email);
+      console.log("📊 Loading comprehensive user data for:", user.email);
       
-      // Load user-specific data from localStorage
-      const userSpecificData = {
-        userId: user.id,
-        email: user.email,
-        lastLogin: new Date().toISOString(),
-        preferences: JSON.parse(localStorage.getItem(`userPreferences_${user.id}`) || '{}'),
-        settings: JSON.parse(localStorage.getItem(`userSettings_${user.id}`) || '{}')
-      };
-      
+      const userSpecificData = await userDataService.loadUserData(user);
       setUserData(userSpecificData);
-      
-      // Update last login timestamp
-      localStorage.setItem(`userLastLogin_${user.id}`, new Date().toISOString());
       
       console.log("✅ User data loaded successfully");
     } catch (error) {
@@ -58,7 +48,7 @@ export const useAuthState = () => {
     if (user && userData) {
       const updatedData = { ...userData, preferences };
       setUserData(updatedData);
-      localStorage.setItem(`userPreferences_${user.id}`, JSON.stringify(preferences));
+      userDataService.updateUserPreferences(user.id, preferences);
     }
   }, [user, userData]);
 
@@ -66,7 +56,7 @@ export const useAuthState = () => {
     if (user && userData) {
       const updatedData = { ...userData, settings };
       setUserData(updatedData);
-      localStorage.setItem(`userSettings_${user.id}`, JSON.stringify(settings));
+      userDataService.updateUserSettings(user.id, settings);
     }
   }, [user, userData]);
 
@@ -75,27 +65,11 @@ export const useAuthState = () => {
     try {
       console.log("🚪 Enhanced logout initiated");
       
-      // Clear user-specific data
-      clearUserData();
-      
-      // Clear all user-specific localStorage entries
-      if (user && typeof window !== "undefined") {
-        const keysToRemove = [];
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key && (
-            key.startsWith(`culturinItineraries_${user.id}`) ||
-            key.startsWith(`userPreferences_${user.id}`) ||
-            key.startsWith(`userSettings_${user.id}`) ||
-            key.startsWith(`userLastLogin_${user.id}`) ||
-            key.startsWith(`publishedWebsiteUrl_${user.id}`) ||
-            key.startsWith(`websiteData_${user.id}`)
-          )) {
-            keysToRemove.push(key);
-          }
-        }
-        keysToRemove.forEach(key => localStorage.removeItem(key));
+      // Clear user-specific data using the service
+      if (user) {
+        userDataService.clearUserData(user.id);
       }
+      clearUserData();
       
       // Call the original logout function
       await logout();
@@ -106,6 +80,20 @@ export const useAuthState = () => {
       throw error;
     }
   }, [user, logout, clearUserData]);
+
+  // Refresh user data
+  const refreshUserData = useCallback(async () => {
+    if (user) {
+      try {
+        console.log("🔄 Refreshing user data for:", user.email);
+        const freshData = await userDataService.refreshUserData(user);
+        setUserData(freshData);
+        console.log("✅ User data refreshed successfully");
+      } catch (error) {
+        console.error("❌ Error refreshing user data:", error);
+      }
+    }
+  }, [user]);
 
   return {
     // Core auth state
@@ -122,6 +110,7 @@ export const useAuthState = () => {
     // Actions
     updateUserPreferences,
     updateUserSettings,
+    refreshUserData,
     logout: enhancedLogout,
     
     // Status

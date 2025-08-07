@@ -6,6 +6,7 @@ import DashboardMetricCard from "@/components/pro/DashboardMetricCard";
 import BookingTrendsChart from "@/components/pro/BookingTrendsChart";
 import { Calendar, Users, Star } from "lucide-react";
 import CircleDollarSignIcon from "@/components/pro/CircleDollarSign";
+import { useAuthState } from "@/src/hooks/useAuthState";
 import {
   MotionContainer,
   MotionCard,
@@ -15,10 +16,19 @@ import {
 
 const ProDashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user, userData, isReady } = useAuthState();
 
   useEffect(() => {
     localStorage.setItem("lastRoute", "/pro-dashboard");
   }, []);
+
+  // Load user-specific dashboard data
+  useEffect(() => {
+    if (isReady && user) {
+      console.log("📊 Loading dashboard data for user:", user.email);
+      // Here you can load user-specific metrics, bookings, etc.
+    }
+  }, [isReady, user]);
 
   return (
     <ProDashboardLayout>

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useAuthState } from "@/src/hooks/useAuthState";
 import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -615,6 +616,15 @@ const ProCRMPage = () => {
   const [selectedGuest, setSelectedGuest] = useState(null);
   const [showEmailCampaignModal, setShowEmailCampaignModal] = useState(false);
   const [showGuestSegmentModal, setShowGuestSegmentModal] = useState(false);
+  const { user, userData, isReady } = useAuthState();
+
+  // Load user-specific CRM data
+  useEffect(() => {
+    if (isReady && user) {
+      console.log("👥 Loading CRM data for user:", user.email);
+      // Here you can load user-specific guests, segments, campaigns, etc.
+    }
+  }, [isReady, user]);
   const [showRewardsModal, setShowRewardsModal] = useState(false);
   const { toast } = useToast();
 

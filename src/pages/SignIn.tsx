@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../components/auth/AuthProvider";
+import { useAuthState } from "@/src/hooks/useAuthState";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ const SignIn = () => {
   const [error, setError] = useState("");
 
   const { login, isLoggedIn, isLoading } = useAuth();
+  const { isReady } = useAuthState();
   const router = useRouter();
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "../../lib/navigation";
 import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,10 +8,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import BookingsTab from "@/components/BookingsTab";
 import BookingOverview from "@/components/BookingOverview";
+import { useAuthState } from "@/src/hooks/useAuthState";
 
 const ProBookingPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const navigate = useNavigate();
+  const { user, userData, isReady } = useAuthState();
+
+  // Load user-specific booking data
+  useEffect(() => {
+    if (isReady && user) {
+      console.log("📋 Loading booking data for user:", user.email);
+      // Here you can load user-specific bookings, analytics, etc.
+    }
+  }, [isReady, user]);
 
   const handleCreateNewExperience = () => {
     // Route to the experience creation flow
