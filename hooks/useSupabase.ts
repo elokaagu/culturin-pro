@@ -10,18 +10,38 @@ export function useAuth() {
 
   useEffect(() => {
     console.log("🔐 useSupabase - Initializing auth state");
+    let mounted = true;
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("🔐 useSupabase - Initial session:", {
-        hasSession: !!session,
-        userEmail: session?.user?.email,
-        userId: session?.user?.id,
-      });
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    // Get initial session with retry logic
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("🔐 useSupabase - Session error:", error);
+        }
+        
+        console.log("🔐 useSupabase - Initial session:", {
+          hasSession: !!session,
+          userEmail: session?.user?.email,
+          userId: session?.user?.id,
+          error: error?.message
+        });
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("🔐 useSupabase - Failed to get session:", error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    getInitialSession();
 
     // Listen for auth changes
     const {
@@ -33,12 +53,18 @@ export function useAuth() {
         userEmail: session?.user?.email,
         userId: session?.user?.id,
       });
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      
+      if (mounted) {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Sign in with email and password

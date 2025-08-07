@@ -5,14 +5,14 @@ import { useNavigate } from "../../lib/navigation";
 import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
 import ItineraryTabs from "@/components/pro/itinerary/ItineraryTabs";
 import { useItineraries } from "@/hooks/useItineraries";
-import { useAuth } from "@/src/components/auth/AuthProvider";
+import { useAuthState } from "@/src/hooks/useAuthState";
 import { localStorageUtils } from "@/lib/localStorage";
 import { Tabs } from "@/components/ui/tabs";
 
 const ProItineraryPage: React.FC = () => {
   const navigate = useNavigate();
   const { itineraries, isLoading, error, createItinerary } = useItineraries();
-  const { user } = useAuth();
+  const { user, isReady } = useAuthState();
   const [hasCheckedSampleData, setHasCheckedSampleData] = useState(false);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const ProItineraryPage: React.FC = () => {
 
   // Check for sample data if no itineraries exist
   useEffect(() => {
-    if (!isLoading && itineraries.length === 0 && user && !hasCheckedSampleData) {
+    if (!isLoading && itineraries.length === 0 && user && isReady && !hasCheckedSampleData) {
       console.log("🔍 No itineraries found, checking for sample data...");
       setHasCheckedSampleData(true);
       
@@ -66,7 +66,7 @@ const ProItineraryPage: React.FC = () => {
         window.location.reload();
       }
     }
-  }, [itineraries, isLoading, user, hasCheckedSampleData]);
+  }, [itineraries, isLoading, user, isReady, hasCheckedSampleData]);
 
   console.log("🎯 ProItineraryPage - Current state:", {
     itinerariesCount: itineraries.length,

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ItineraryType } from "@/data/itineraryData";
 import { itineraryService } from "@/lib/itinerary-service";
-import { useAuth } from "@/components/auth/AuthProvider";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 import { localStorageUtils } from "@/lib/localStorage";
 import { useToast } from "@/components/ui/use-toast";
 

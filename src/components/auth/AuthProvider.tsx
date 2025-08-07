@@ -63,25 +63,39 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { user, session, loading, signIn, signUp, signOut } = useSupabaseAuth();
   const [hasStudioAccess, setHasStudioAccess] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     console.log("🔐 AuthProvider - User changed:", { 
       user: user?.email, 
       isLoggedIn: !!user,
       hasStudioAccess,
-      isAdmin 
+      isAdmin,
+      loading,
+      session: !!session
     });
     
-    // Check user permissions when user changes
-    if (user) {
-      checkUserPermissions(user);
-      // Trigger data loading for authenticated users
-      loadUserData(user);
-    } else {
-      setHasStudioAccess(false);
-      setIsAdmin(false);
+    // Only process user changes when not loading
+    if (!loading) {
+      if (user) {
+        checkUserPermissions(user);
+        loadUserData(user);
+      } else {
+        setHasStudioAccess(false);
+        setIsAdmin(false);
+        
+        // Clear user-specific localStorage data when user is null
+        if (initialized && typeof window !== "undefined") {
+          console.log("🔄 Clearing user data due to logout");
+          window.dispatchEvent(new CustomEvent("userLoggedOut"));
+        }
+      }
+      
+      if (!initialized) {
+        setInitialized(true);
+      }
     }
-  }, [user]);
+  }, [user, loading, session, initialized]);
 
   const checkUserPermissions = async (user: User) => {
     try {

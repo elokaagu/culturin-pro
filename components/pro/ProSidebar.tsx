@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "../../lib/navigation";
-import { useAuth } from "@/src/components/auth/AuthProvider";
+import { useAuthState } from "@/src/hooks/useAuthState";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -63,7 +63,7 @@ const menuItems = [
 const ProSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, isLoggedIn, isLoading } = useAuth();
+  const { user, logout, isLoggedIn, isLoading, isReady } = useAuthState();
 
   // Debug authentication state
   console.log("🔍 ProSidebar - Auth state:", {
