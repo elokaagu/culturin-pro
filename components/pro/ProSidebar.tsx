@@ -65,13 +65,7 @@ const ProSidebar: React.FC = () => {
   const location = useLocation();
   const { user, logout, isLoggedIn, isLoading, isReady } = useAuthState();
 
-  // Debug authentication state
-  console.log("🔍 ProSidebar - Auth state:", {
-    user: user?.email,
-    isLoggedIn,
-    isLoading,
-    userRole: user?.role,
-  });
+
   // Use authenticated user's name if available, otherwise fallback to localStorage
   const userName = useMemo(() => {
     if (isLoading) {

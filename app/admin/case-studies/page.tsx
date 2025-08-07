@@ -1,5 +1,5 @@
 import CaseStudiesManagement from "../../../src/pages/admin/CaseStudiesManagement";
-import ProtectedRoute from "../../../components/auth/ProtectedRoute";
+import { ProtectedRoute } from "@/src/components/auth/ProtectedRoute";
 
 export const metadata = {
   title: "Case Studies Management | Admin - Culturin",

@@ -31,14 +31,12 @@ export class UserDataService {
       
       // Use cache for 5 minutes
       if (cacheAge < 5 * 60 * 1000) {
-        console.log("📊 Returning cached user data for:", user.email);
         return cached.data;
       }
     }
 
     // Return existing promise if already loading
     if (this.loadingPromises.has(cacheKey)) {
-      console.log("⏳ User data already loading for:", user.email);
       return this.loadingPromises.get(cacheKey);
     }
 
@@ -65,7 +63,6 @@ export class UserDataService {
    * Fetch user data from various sources
    */
   private async fetchUserData(user: User): Promise<any> {
-    console.log("🔄 Loading comprehensive user data for:", user.email);
 
     const userData = {
       user: {
@@ -110,9 +107,7 @@ export class UserDataService {
           .order('created_at', { ascending: false });
 
         userData.itineraries = itineraries || [];
-        console.log(`📋 Loaded ${userData.itineraries.length} itineraries`);
       } catch (error) {
-        console.log("📋 Falling back to localStorage for itineraries");
         userData.itineraries = this.loadItinerariesFromLocalStorage(user.id);
       }
 
@@ -126,12 +121,6 @@ export class UserDataService {
 
       // Update last login
       this.saveToLocalStorage(`userLastLogin_${user.id}`, userData.lastLogin);
-
-      console.log("✅ User data loaded successfully:", {
-        itineraries: userData.itineraries.length,
-        hasPreferences: Object.keys(userData.preferences).length > 0,
-        hasSettings: Object.keys(userData.settings).length > 0
-      });
 
       return userData;
     } catch (error) {
@@ -230,7 +219,6 @@ export class UserDataService {
    * Clear all user data from cache and localStorage
    */
   clearUserData(userId: string): void {
-    console.log("🧹 Clearing user data for:", userId);
     
     // Clear cache
     const cacheKey = `userData_${userId}`;

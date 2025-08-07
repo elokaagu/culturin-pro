@@ -7,7 +7,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { useAuth } from "../components/auth/AuthProvider";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 import { localStorageUtils } from "../../lib/localStorage";
 
 export interface UserData {

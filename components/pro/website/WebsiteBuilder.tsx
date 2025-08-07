@@ -49,7 +49,7 @@ import { settingsService } from "@/lib/settings-service";
 import { itineraryService } from "@/lib/itinerary-service";
 import { supabase } from "@/lib/supabase";
 import { localStorageUtils } from "@/lib/localStorage";
-import { useAuth } from "../../../src/components/auth/AuthProvider";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 
 // History management for undo/redo functionality
 interface HistoryState {

@@ -1,19 +1,21 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useAuth } from "./AuthProvider";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 import { useRouter } from "next/navigation";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireStudioAccess?: boolean;
+  requireSuperAdmin?: boolean;
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireStudioAccess = false,
+  requireSuperAdmin = false,
 }) => {
-  const { isLoggedIn, hasStudioAccess, isLoading } = useAuth();
+  const { isLoggedIn, hasStudioAccess, isAdmin, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -25,14 +27,19 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       return;
     }
 
+    if (requireSuperAdmin && !isAdmin) {
+      router.push("/sign-in");
+      return;
+    }
+
     if (requireStudioAccess && !hasStudioAccess) {
       router.push("/");
       return;
     }
-  }, [isLoggedIn, hasStudioAccess, requireStudioAccess, isLoading, router]);
+  }, [isLoggedIn, hasStudioAccess, isAdmin, requireStudioAccess, requireSuperAdmin, isLoading, router]);
 
   // Show loading while checking authentication or during redirects
-  if (isLoading || !isLoggedIn || (requireStudioAccess && !hasStudioAccess)) {
+  if (isLoading || !isLoggedIn || (requireSuperAdmin && !isAdmin) || (requireStudioAccess && !hasStudioAccess)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">

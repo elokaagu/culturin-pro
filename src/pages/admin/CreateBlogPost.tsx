@@ -20,7 +20,7 @@ import {
 import NewFooter from "@/components/sections/NewFooter";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { createBlogPost, generateSlug, isSlugUnique } from "@/lib/blog-service";
-import { useAuth } from "../../components/auth/AuthProvider";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 import Image from "@/components/ui/image";
 import type { CreateBlogPostData } from "@/lib/blog-service";
 

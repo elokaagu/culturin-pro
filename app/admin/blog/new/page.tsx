@@ -1,5 +1,5 @@
 import CreateBlogPost from "../../../../src/pages/admin/CreateBlogPost";
-import ProtectedRoute from "../../../../components/auth/ProtectedRoute";
+import { ProtectedRoute } from "@/src/components/auth/ProtectedRoute";
 
 export const metadata = {
   title: "Create New Blog Post | Admin - Culturin",

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "../lib/navigation";
-import { useAuth } from "../src/components/auth/AuthProvider";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
 import {

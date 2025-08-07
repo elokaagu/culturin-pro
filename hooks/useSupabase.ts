@@ -9,7 +9,6 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("🔐 useSupabase - Initializing auth state");
     let mounted = true;
 
     // Get initial session with retry logic
@@ -18,15 +17,8 @@ export function useAuth() {
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error("🔐 useSupabase - Session error:", error);
+          console.error("Session error:", error);
         }
-        
-        console.log("🔐 useSupabase - Initial session:", {
-          hasSession: !!session,
-          userEmail: session?.user?.email,
-          userId: session?.user?.id,
-          error: error?.message
-        });
         
         if (mounted) {
           setSession(session);
@@ -34,7 +26,7 @@ export function useAuth() {
           setLoading(false);
         }
       } catch (error) {
-        console.error("🔐 useSupabase - Failed to get session:", error);
+        console.error("Failed to get session:", error);
         if (mounted) {
           setLoading(false);
         }
@@ -47,13 +39,6 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("🔐 useSupabase - Auth state change:", {
-        event,
-        hasSession: !!session,
-        userEmail: session?.user?.email,
-        userId: session?.user?.id,
-      });
-      
       if (mounted) {
         setSession(session);
         setUser(session?.user ?? null);

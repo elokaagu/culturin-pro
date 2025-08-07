@@ -68,13 +68,7 @@ const ProItineraryPage: React.FC = () => {
     }
   }, [itineraries, isLoading, user, isReady, hasCheckedSampleData]);
 
-  console.log("🎯 ProItineraryPage - Current state:", {
-    itinerariesCount: itineraries.length,
-    isLoading,
-    error,
-    userId: user?.id,
-    userEmail: user?.email
-  });
+
 
   return (
     <ProDashboardLayout>

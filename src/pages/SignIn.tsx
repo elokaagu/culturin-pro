@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "../components/auth/AuthProvider";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 import { useAuthState } from "@/src/hooks/useAuthState";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";

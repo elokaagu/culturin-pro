@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import EditBlogPost from "../../../../../src/pages/admin/EditBlogPost";
-import ProtectedRoute from "../../../../../components/auth/ProtectedRoute";
+import { ProtectedRoute } from "@/src/components/auth/ProtectedRoute";
 import { getBlogPostBySlug } from "../../../../../lib/blog-service";
 
 interface EditBlogPostProps {

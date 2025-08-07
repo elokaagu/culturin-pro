@@ -1,5 +1,5 @@
 import CareersManagement from "../../../src/pages/admin/CareersManagement";
-import ProtectedRoute from "../../../components/auth/ProtectedRoute";
+import { ProtectedRoute } from "@/src/components/auth/ProtectedRoute";
 
 export const metadata = {
   title: "Careers Management | Admin - Culturin",

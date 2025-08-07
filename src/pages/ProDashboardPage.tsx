@@ -25,7 +25,6 @@ const ProDashboardPage: React.FC = () => {
   // Load user-specific dashboard data
   useEffect(() => {
     if (isReady && user) {
-      console.log("📊 Loading dashboard data for user:", user.email);
       // Here you can load user-specific metrics, bookings, etc.
     }
   }, [isReady, user]);

@@ -24,30 +24,18 @@ export const useItineraries = () => {
 
       // If no user-specific data found, try the generic key as fallback
       if (!itinerariesStr && user?.id) {
-        console.log(
-          "No user-specific itineraries found, trying generic key..."
-        );
         itinerariesStr = localStorageUtils.getItem("culturinItineraries");
         if (itinerariesStr) {
-          console.log(
-            "Found itineraries with generic key, migrating to user-specific key..."
-          );
           // Migrate to user-specific key
           localStorageUtils.setItem(userSpecificKey, itinerariesStr);
         }
       }
 
       if (!itinerariesStr) {
-        console.log(
-          `No itineraries found in localStorage with key: ${userSpecificKey}`
-        );
         return [];
       }
 
       const itineraries = JSON.parse(itinerariesStr);
-      console.log(
-        `Loaded ${itineraries.length} itineraries from localStorage with key: ${userSpecificKey}`
-      );
 
       // Convert localStorage format to ItineraryType format
       return itineraries.map((itinerary: any) => ({
@@ -83,24 +71,16 @@ export const useItineraries = () => {
 
       // Try to load from Supabase if user is available
       if (user) {
-        console.log("Loading itineraries for authenticated user:", user.id);
         try {
           data = await itineraryService.getItineraries(user.id);
-          console.log(`Loaded ${data.length} itineraries from database`);
         } catch (err) {
-          console.error(
-            "Error loading from Supabase, falling back to localStorage:",
-            err
-          );
+          console.error("Error loading from database, falling back to localStorage:", err);
           data = loadItinerariesFromLocalStorage();
         }
       } else {
-        console.log("No authenticated user, loading from localStorage");
         // No user, load from localStorage
         data = loadItinerariesFromLocalStorage();
       }
-
-      console.log("Final itineraries data:", data);
       setItineraries(data);
     } catch (err) {
       console.error("Error loading itineraries:", err);

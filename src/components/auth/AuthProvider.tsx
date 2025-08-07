@@ -66,15 +66,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    console.log("🔐 AuthProvider - User changed:", { 
-      user: user?.email, 
-      isLoggedIn: !!user,
-      hasStudioAccess,
-      isAdmin,
-      loading,
-      session: !!session
-    });
-    
     // Only process user changes when not loading
     if (!loading) {
       if (user) {
@@ -86,7 +77,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         
         // Clear user-specific localStorage data when user is null
         if (initialized && typeof window !== "undefined") {
-          console.log("🔄 Clearing user data due to logout");
           window.dispatchEvent(new CustomEvent("userLoggedOut"));
         }
       }
@@ -99,8 +89,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkUserPermissions = async (user: User) => {
     try {
-      console.log("🔍 Checking permissions for user:", user.email);
-      
       // Check if user has a user record with admin or studio access
       const { data: userData, error } = await supabase
         .from("users")
@@ -114,19 +102,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Grant studio access to all authenticated users
       setHasStudioAccess(true);
-      console.log("✅ Set hasStudioAccess to true for:", user.email);
       
       // Check if user is admin based on email or database role
       const isAdminUser = userData?.role === "admin" || 
                          user.email === "eloka.agu@icloud.com" ||
                          user.email === "eloka@satellitelabs.xyz";
       setIsAdmin(isAdminUser);
-      console.log("👑 Set isAdmin to:", isAdminUser, "for:", user.email);
       
       // If user data doesn't exist in database, set permissions based on email
       if (!userData && (user.email === "eloka.agu@icloud.com" || user.email === "eloka@satellitelabs.xyz")) {
         setIsAdmin(true);
-        console.log("👑 Set admin permissions from email for:", user.email);
       }
     } catch (error) {
       console.error("Error checking user permissions:", error);
@@ -136,7 +121,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const isAdminUser = user.email === "eloka.agu@icloud.com" || 
                          user.email === "eloka@satellitelabs.xyz";
       setIsAdmin(isAdminUser);
-      console.log("👑 Set admin permissions from email fallback for:", user.email);
     }
   };
 
@@ -292,7 +276,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (itineraries.length === 0) {
         itineraries.push(sampleItinerary);
         localStorage.setItem(userSpecificKey, JSON.stringify(itineraries));
-        console.log(`✅ Created sample itinerary in localStorage: "${sampleItinerary.title}"`);
       }
     } catch (error) {
       console.error("Error creating sample itinerary in localStorage:", error);

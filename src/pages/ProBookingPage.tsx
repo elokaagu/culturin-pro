@@ -18,7 +18,6 @@ const ProBookingPage = () => {
   // Load user-specific booking data
   useEffect(() => {
     if (isReady && user) {
-      console.log("📋 Loading booking data for user:", user.email);
       // Here you can load user-specific bookings, analytics, etc.
     }
   }, [isReady, user]);

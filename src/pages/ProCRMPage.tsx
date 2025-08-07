@@ -621,7 +621,6 @@ const ProCRMPage = () => {
   // Load user-specific CRM data
   useEffect(() => {
     if (isReady && user) {
-      console.log("👥 Loading CRM data for user:", user.email);
       // Here you can load user-specific guests, segments, campaigns, etc.
     }
   }, [isReady, user]);

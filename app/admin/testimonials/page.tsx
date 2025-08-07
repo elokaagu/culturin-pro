@@ -1,5 +1,5 @@
 import TestimonialsManagement from "../../../src/pages/admin/TestimonialsManagement";
-import ProtectedRoute from "../../../components/auth/ProtectedRoute";
+import { ProtectedRoute } from "@/src/components/auth/ProtectedRoute";
 
 export const metadata = {
   title: "Testimonials Management | Admin - Culturin",

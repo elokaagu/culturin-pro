@@ -28,19 +28,14 @@ export const useAuthState = () => {
 
   const loadUserData = useCallback(async (user: User) => {
     try {
-      console.log("📊 Loading comprehensive user data for:", user.email);
-      
       const userSpecificData = await userDataService.loadUserData(user);
       setUserData(userSpecificData);
-      
-      console.log("✅ User data loaded successfully");
     } catch (error) {
-      console.error("❌ Error loading user data:", error);
+      console.error("Error loading user data:", error);
     }
   }, []);
 
   const clearUserData = useCallback(() => {
-    console.log("🧹 Clearing user data");
     setUserData(null);
   }, []);
 
@@ -63,8 +58,6 @@ export const useAuthState = () => {
   // Enhanced logout with proper cleanup
   const enhancedLogout = useCallback(async () => {
     try {
-      console.log("🚪 Enhanced logout initiated");
-      
       // Clear user-specific data using the service
       if (user) {
         userDataService.clearUserData(user.id);
@@ -73,10 +66,8 @@ export const useAuthState = () => {
       
       // Call the original logout function
       await logout();
-      
-      console.log("✅ Enhanced logout completed");
     } catch (error) {
-      console.error("❌ Error during enhanced logout:", error);
+      console.error("Error during logout:", error);
       throw error;
     }
   }, [user, logout, clearUserData]);
@@ -85,12 +76,10 @@ export const useAuthState = () => {
   const refreshUserData = useCallback(async () => {
     if (user) {
       try {
-        console.log("🔄 Refreshing user data for:", user.email);
         const freshData = await userDataService.refreshUserData(user);
         setUserData(freshData);
-        console.log("✅ User data refreshed successfully");
       } catch (error) {
-        console.error("❌ Error refreshing user data:", error);
+        console.error("Error refreshing user data:", error);
       }
     }
   }, [user]);

@@ -23,17 +23,8 @@ export default function LocaleLayout({
   const { locale } = params;
 
   return (
-    <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
-      <body>
-        <AuthProvider>
-          <UserDataProvider>
-            <TranslationProvider>
-              <PageTransition>{children}</PageTransition>
-            </TranslationProvider>
-          </UserDataProvider>
-        </AuthProvider>
-        <Toaster />
-      </body>
-    </html>
+    <>
+      {children}
+    </>
   );
 }
