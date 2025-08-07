@@ -210,7 +210,13 @@ const ProSidebar: React.FC = () => {
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout} className="text-red-600">
+            <DropdownMenuItem 
+              onClick={async () => {
+                await logout();
+                navigate("/");
+              }} 
+              className="text-red-600"
+            >
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
             </DropdownMenuItem>

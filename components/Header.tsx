@@ -271,9 +271,10 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                           Settings
                         </Link>
                         <button
-                          onClick={() => {
-                            logout();
+                          onClick={async () => {
+                            await logout();
                             setIsUserMenuOpen(false);
+                            navigate("/");
                           }}
                           className="flex items-center w-full px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
                         >
@@ -455,9 +456,10 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                       </Link>
                     )}
                     <button
-                      onClick={() => {
-                        logout();
+                      onClick={async () => {
+                        await logout();
                         setIsMenuOpen(false);
+                        navigate("/");
                       }}
                       className="block w-full text-left py-2 font-medium text-gray-800"
                     >
