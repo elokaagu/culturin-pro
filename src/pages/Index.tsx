@@ -36,13 +36,13 @@ const Index = () => {
                   to="/"
                   className="flex items-center"
                 >
-                  <div className="h-20 mr-2">
+                  <div className="h-12 lg:h-16">
                     <img
                       src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png"
                       alt="Culturin"
-                      className="h-full cursor-pointer"
-                      width={220}
-                      height={80}
+                      className="h-full w-auto object-contain cursor-pointer filter brightness-0 invert"
+                      width={180}
+                      height={64}
                     />
                   </div>
                 </Link>
@@ -85,6 +85,18 @@ const Index = () => {
                     <Link to="/demo">Get a free demo</Link>
                   </Button>
                 </div>
+              </div>
+              
+              {/* Mobile menu button */}
+              <div className="md:hidden">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:text-gray-200 hover:bg-white/10"
+                  asChild
+                >
+                  <Link to="/sign-in">Login</Link>
+                </Button>
               </div>
             </div>
           </div>
@@ -134,22 +146,22 @@ const Index = () => {
               <MotionText delay={0.6}>
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                   <MotionButton
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold shadow-lg rounded-lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 text-lg font-semibold shadow-2xl rounded-xl border border-blue-500 hover:border-blue-400 transition-all duration-300 min-w-[200px] flex items-center justify-center"
                     asChild
                   >
                     <Link to="/how-it-works">
-                      <Play className="h-5 w-5 mr-2" />
+                      <Play className="h-5 w-5 mr-3" />
                       How It Works
                     </Link>
                   </MotionButton>
 
                   <MotionButton
-                    className="border-2 border-white hover:border-gray-200 text-white hover:text-gray-100 px-8 py-4 text-lg font-semibold shadow-lg bg-white bg-opacity-10 backdrop-blur-sm rounded-lg"
+                    className="border-2 border-white/80 hover:border-white text-white hover:text-white px-10 py-5 text-lg font-semibold shadow-2xl bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-xl transition-all duration-300 min-w-[200px] flex items-center justify-center"
                     asChild
                   >
                     <Link to="/sign-in">
                       Login
-                      <ArrowRight className="h-5 w-5 ml-2" />
+                      <ArrowRight className="h-5 w-5 ml-3" />
                     </Link>
                   </MotionButton>
                 </div>
