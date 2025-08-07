@@ -38,10 +38,13 @@ export function useAuth() {
   };
 
   // Sign up with email and password
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, metadata?: any) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: metadata ? {
+        data: metadata
+      } : undefined,
     });
     return { error };
   };

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { useAuth as useSupabaseAuth } from "@/hooks/useSupabase";
@@ -7,7 +9,7 @@ interface AuthContextType {
   user: User | null;
   isLoggedIn: boolean;
   login: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, metadata?: any) => Promise<{ error: any }>;
   logout: () => Promise<{ error: any }>;
   hasStudioAccess: boolean;
   isAdmin: boolean;
