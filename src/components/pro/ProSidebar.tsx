@@ -30,7 +30,7 @@ const menuItems = [
     path: "/pro-dashboard/booking",
     icon: ShoppingCart,
   },
-  { name: "Guest CRM", path: "/pro-dashboard/crm", icon: Users },
+  { name: "Guests", path: "/pro-dashboard/crm", icon: Users },
   { name: "Marketing", path: "/pro-dashboard/marketing", icon: Megaphone },
   { name: "Website", path: "/pro-dashboard/website", icon: Globe },
   {
