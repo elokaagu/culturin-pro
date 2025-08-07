@@ -84,9 +84,13 @@ export const useItineraries = () => {
       // Try to load from Supabase if user is available
       if (user) {
         console.log("Loading itineraries for authenticated user:", user.id);
+        console.log("User email:", user.email);
         try {
           data = await itineraryService.getItineraries(user.id);
           console.log(`Loaded ${data.length} itineraries from database`);
+          if (data.length > 0) {
+            console.log("Itineraries loaded:", data.map(it => ({ id: it.id, title: it.title, status: it.status })));
+          }
         } catch (err) {
           console.error(
             "Error loading from Supabase, falling back to localStorage:",
@@ -209,8 +213,6 @@ export const useItineraries = () => {
   const refreshItineraries = useCallback(() => {
     loadItineraries();
   }, [loadItineraries]);
-
-
 
   return {
     itineraries,

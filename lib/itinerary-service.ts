@@ -255,6 +255,8 @@ class SupabaseItineraryService implements ItineraryService {
       }
 
       console.log("Loading itineraries from database for user:", user.id);
+      console.log("User email:", user.email);
+      console.log("Operator ID parameter:", operatorId);
 
       // First try to get from Supabase
       const { data, error } = await supabase
@@ -265,12 +267,17 @@ class SupabaseItineraryService implements ItineraryService {
 
       if (error) {
         console.error("Error fetching itineraries from Supabase:", error);
+        console.error("Error details:", error.message, error.code);
         // Fall back to localStorage
         return await this.getItinerariesFromLocalStorage();
       }
 
+      console.log("Raw database query result:", data);
       if (data && data.length > 0) {
         console.log(`Found ${data.length} itineraries in database`);
+        data.forEach((itinerary, index) => {
+          console.log(`  ${index + 1}. ${itinerary.title} (ID: ${itinerary.id}, Operator: ${itinerary.operator_id})`);
+        });
         
         // Fetch modules for each itinerary
         const itinerariesWithModules = await Promise.all(
