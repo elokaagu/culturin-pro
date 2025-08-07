@@ -1,190 +1,106 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "../../lib/navigation";
 import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ItineraryTabs from "@/components/pro/itinerary/ItineraryTabs";
-import ItineraryEditor from "@/components/pro/itinerary/ItineraryEditor";
-import { ItineraryType } from "@/data/itineraryData";
-import { useToast } from "@/components/ui/use-toast";
 import { useItineraries } from "@/hooks/useItineraries";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { localStorageUtils } from "@/lib/localStorage";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const ProItineraryPage = () => {
+const ProItineraryPage: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("itineraries");
-  const [selectedItinerary, setSelectedItinerary] =
-    useState<ItineraryType | null>(null);
-  const [showEditor, setShowEditor] = useState(false);
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
-  const [isSavingInProgress, setIsSavingInProgress] = useState(false);
-  const { toast } = useToast();
-  const {
-    itineraries,
+  const { itineraries, isLoading, error, createItinerary } = useItineraries();
+  const { user } = useAuth();
+  const [hasCheckedSampleData, setHasCheckedSampleData] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("lastRoute", "/pro-dashboard/itinerary");
+  }, []);
+
+  // Check for sample data if no itineraries exist
+  useEffect(() => {
+    if (!isLoading && itineraries.length === 0 && user && !hasCheckedSampleData) {
+      console.log("🔍 No itineraries found, checking for sample data...");
+      setHasCheckedSampleData(true);
+      
+      // Check if we have sample data in localStorage
+      const userSpecificKey = `culturinItineraries_${user.id}`;
+      const existingData = localStorageUtils.getItem(userSpecificKey);
+      
+      if (!existingData) {
+        console.log("📝 Creating sample itinerary for user...");
+        
+        // Create a sample itinerary based on user email
+        const isStTropez = user.email?.includes('satellitelabs');
+        const sampleItinerary = {
+          id: `local-${Date.now()}`,
+          title: isStTropez ? 'St Tropez Soireé' : 'Tuscany Cultural Journey',
+          description: isStTropez 
+            ? 'A luxurious cultural experience in the French Riviera, exploring local art, cuisine, and traditions.'
+            : 'An immersive journey through Tuscany\'s rich cultural heritage, from Renaissance art to culinary traditions.',
+          days: isStTropez ? 3 : 5,
+          lastUpdated: 'just now',
+          status: 'published',
+          image: '',
+          themeType: 'cultural',
+          regions: isStTropez 
+            ? ['French Riviera', 'Mediterranean'] 
+            : ['Tuscany', 'Italy'],
+          price: isStTropez ? 2500 : 3200,
+          currency: 'USD',
+          groupSize: { min: 2, max: 8 },
+          difficulty: 'easy',
+          tags: isStTropez 
+            ? ['luxury', 'cultural', 'french-riviera', 'art'] 
+            : ['cultural', 'italy', 'renaissance', 'culinary'],
+          modules: []
+        };
+
+        // Save to localStorage
+        localStorageUtils.setItem(userSpecificKey, JSON.stringify([sampleItinerary]));
+        console.log("✅ Sample itinerary created in localStorage");
+        
+        // Reload the page to trigger itinerary loading
+        window.location.reload();
+      }
+    }
+  }, [itineraries, isLoading, user, hasCheckedSampleData]);
+
+  console.log("🎯 ProItineraryPage - Current state:", {
+    itinerariesCount: itineraries.length,
     isLoading,
     error,
-    createItinerary,
-    updateItinerary,
-    deleteItinerary,
-    refreshItineraries,
-  } = useItineraries();
-
-  // Refresh itineraries when component mounts and when returning from creating new itinerary
-  useEffect(() => {
-    // Check if we're returning from creating a new itinerary
-    const isReturningFromCreate = sessionStorage.getItem("returningFromCreate");
-    if (isReturningFromCreate === "true") {
-      refreshItineraries();
-      sessionStorage.removeItem("returningFromCreate");
-    }
-  }, [refreshItineraries]);
-
-  const handleCreateNewItinerary = () => {
-    // Navigate to the dedicated new itinerary page
-    navigate("/pro-dashboard/itinerary/new");
-  };
-
-  const handleEditItinerary = (itinerary: ItineraryType) => {
-    setSelectedItinerary(itinerary);
-    setShowEditor(true);
-  };
-
-  const handleEditorClose = () => {
-    setShowEditor(false);
-    setSelectedItinerary(null);
-  };
-
-  const handleItinerarySave = async (updatedItinerary: ItineraryType) => {
-    // Prevent duplicate saves
-    if (isSavingInProgress) {
-      return;
-    }
-
-    setIsSavingInProgress(true);
-
-    try {
-      if (
-        updatedItinerary.id.startsWith("temp-") ||
-        updatedItinerary.id.startsWith("new-") ||
-        updatedItinerary.id.startsWith("duplicate-")
-      ) {
-        // Create new itinerary
-        const { id, lastUpdated, ...itineraryData } = updatedItinerary;
-
-        await createItinerary(itineraryData);
-        toast({
-          title: "Itinerary Created",
-          description: "Your new itinerary has been created successfully.",
-        });
-      } else {
-        // Update existing itinerary
-
-        await updateItinerary(updatedItinerary.id, updatedItinerary);
-        toast({
-          title: "Itinerary Updated",
-          description: "Your itinerary has been updated successfully.",
-        });
-      }
-    } catch (error) {
-      console.error("Error saving itinerary:", error);
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Failed to save itinerary",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSavingInProgress(false);
-    }
-  };
-
-  const handleDeleteItinerary = async (id: string) => {
-    try {
-      await deleteItinerary(id);
-      toast({
-        title: "Itinerary Deleted",
-        description: "The itinerary has been deleted successfully.",
-      });
-    } catch (error) {
-      console.error("Error deleting itinerary:", error);
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Failed to delete itinerary",
-        variant: "destructive",
-      });
-    }
-  };
-
-  if (error) {
-    return (
-      <ProDashboardLayout
-        title="Itinerary Builder"
-        subtitle="Create and manage your experience itineraries"
-      >
-        <div className="px-4 sm:px-0">
-          <div className="text-center py-12">
-            <div className="text-red-600 mb-4">
-              <svg
-                className="w-12 h-12 mx-auto"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Error Loading Itineraries
-            </h3>
-            <p className="text-gray-600 mb-4">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-culturin-indigo text-white px-4 py-2 rounded-lg hover:bg-culturin-indigo/90"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </ProDashboardLayout>
-    );
-  }
+    userId: user?.id,
+    userEmail: user?.email
+  });
 
   return (
-    <ProDashboardLayout
-      title="Itinerary Builder"
-      subtitle="Create and manage your experience itineraries"
-    >
-      <div className="px-4 sm:px-0">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+    <ProDashboardLayout>
+      <div className="p-6">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Itinerary Builder
+          </h1>
+          <p className="text-gray-600">
+            Create and manage your experience itineraries
+          </p>
+        </div>
+
+        <Tabs value="itineraries" className="w-full">
+          <TabsList className="grid w-full grid-cols-1">
+            <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
+          </TabsList>
           <ItineraryTabs
-            activeTab={activeTab}
+            activeTab="itineraries"
             itineraries={itineraries}
             isLoading={isLoading}
-            onCreateNewItinerary={handleCreateNewItinerary}
-            onEditItinerary={handleEditItinerary}
-            onDeleteItinerary={handleDeleteItinerary}
+            onCreateNewItinerary={() => navigate("/pro-dashboard/itinerary/new")}
+            onEditItinerary={(itinerary) => navigate(`/pro-dashboard/itinerary/${itinerary.id}`)}
           />
         </Tabs>
       </div>
-
-      {showEditor && selectedItinerary && (
-        <div className="mx-4 sm:mx-0">
-          <ItineraryEditor
-            showEditor={showEditor}
-            selectedItinerary={selectedItinerary}
-            showAIAssistant={showAIAssistant}
-            onAIAssistantClose={() => setShowAIAssistant(false)}
-            onEditorClose={handleEditorClose}
-            onItinerarySave={handleItinerarySave}
-          />
-        </div>
-      )}
     </ProDashboardLayout>
   );
 };

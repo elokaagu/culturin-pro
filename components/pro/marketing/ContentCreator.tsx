@@ -1028,7 +1028,8 @@ Description 2: ${data.content.description2 || ""}`;
           ))}
         </div>
         
-        {/* Remove the fade overlay since we now have scrolling */}
+        {/* Fade overlay at the bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
       </div>
     </div>
   );
