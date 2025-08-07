@@ -80,23 +80,33 @@ export default function TourOperatorPage({
     if (urlParts.length >= 3) {
       // Look for a user ID pattern (8 characters, likely alphanumeric)
       const potentialUserId = urlParts[urlParts.length - 2]; // Second to last part
-      if (potentialUserId && potentialUserId.length === 8 && /^[a-f0-9]+$/.test(potentialUserId)) {
+      if (
+        potentialUserId &&
+        potentialUserId.length === 8 &&
+        /^[a-f0-9]+$/.test(potentialUserId)
+      ) {
         userId = potentialUserId;
       }
     }
 
     // Get user-specific website data and itineraries
-    const userSpecificWebsiteKey = userId ? `websiteData_${userId}` : "websiteData";
-    const userSpecificItinerariesKey = userId ? `culturinItineraries_${userId}` : "culturinItineraries";
-    const userSpecificPublishedKey = userId ? `publishedWebsiteUrl_${userId}` : "publishedWebsiteUrl";
-    
+    const userSpecificWebsiteKey = userId
+      ? `websiteData_${userId}`
+      : "websiteData";
+    const userSpecificItinerariesKey = userId
+      ? `culturinItineraries_${userId}`
+      : "culturinItineraries";
+    const userSpecificPublishedKey = userId
+      ? `publishedWebsiteUrl_${userId}`
+      : "publishedWebsiteUrl";
+
     const websiteDataStr = localStorage.getItem(userSpecificWebsiteKey);
     const itinerariesStr = localStorage.getItem(userSpecificItinerariesKey);
     const publishedUrlStr = localStorage.getItem(userSpecificPublishedKey);
-    
+
     let websiteData = null;
     let itineraries: ItineraryType[] = [];
-    
+
     if (websiteDataStr) {
       try {
         websiteData = JSON.parse(websiteDataStr);
@@ -104,7 +114,7 @@ export default function TourOperatorPage({
         console.error("Error parsing website data:", e);
       }
     }
-    
+
     if (itinerariesStr) {
       try {
         itineraries = JSON.parse(itinerariesStr);
@@ -119,7 +129,7 @@ export default function TourOperatorPage({
       // Get the actual website content from the builder
       const websiteContentStr = localStorage.getItem("publishedWebsiteContent");
       const websiteTheme = localStorage.getItem("publishedWebsiteTheme");
-      
+
       let websiteContent = null;
       if (websiteContentStr) {
         try {
@@ -132,7 +142,8 @@ export default function TourOperatorPage({
       const defaultData: OperatorData = {
         id: params.slug || "demo",
         name: websiteContent?.companyName || "Your Tour Company",
-        tagline: websiteContent?.tagline || "Discover amazing cultural experiences",
+        tagline:
+          websiteContent?.tagline || "Discover amazing cultural experiences",
         description: websiteContent?.description || "",
         logo: websiteContent?.logo || "https://placehold.co/200x80",
         coverImage: websiteContent?.headerImage || null,
@@ -141,7 +152,8 @@ export default function TourOperatorPage({
         contact: {
           email: websiteContent?.contactEmail || "contact@yourtourcompany.com",
           phone: websiteContent?.contactPhone || "+1 (555) 123-4567",
-          address: websiteContent?.contactAddress || "Global Cultural Experiences",
+          address:
+            websiteContent?.contactAddress || "Global Cultural Experiences",
         },
         tours: [],
       };
@@ -159,8 +171,11 @@ export default function TourOperatorPage({
         name: itinerary.title,
         duration: `${itinerary.days} ${itinerary.days === 1 ? "day" : "days"}`,
         price: itinerary.price || Math.floor(Math.random() * 50) + 40,
-        image: itinerary.image || "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-        description: itinerary.description || `Experience the best of ${itinerary.title}.`,
+        image:
+          itinerary.image ||
+          "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        description:
+          itinerary.description || `Experience the best of ${itinerary.title}.`,
         highlights: [
           "Expert local guides",
           "Small groups of max 10 people",
@@ -172,7 +187,7 @@ export default function TourOperatorPage({
 
       // Only use real itineraries, no fallback to sample tours
       defaultData.tours = toursFromItineraries;
-      
+
       setOperatorData(defaultData);
       setLoading(false);
     }, 500);
@@ -238,7 +253,7 @@ export default function TourOperatorPage({
     // Get the actual website builder content
     const websiteDataStr = localStorage.getItem("websiteData");
     const websiteData = websiteDataStr ? JSON.parse(websiteDataStr) : null;
-    
+
     // If we have custom website data, render it instead of the default template
     if (websiteData?.settings) {
       return (
@@ -247,7 +262,7 @@ export default function TourOperatorPage({
           <div className="w-full">
             {/* Custom header/hero section if exists */}
             {websiteData.settings.headerImage && (
-              <div 
+              <div
                 className="relative h-96 flex items-center justify-center text-white"
                 style={{
                   background: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${websiteData.settings.headerImage})`,
@@ -256,8 +271,12 @@ export default function TourOperatorPage({
                 }}
               >
                 <div className="text-center max-w-4xl px-4">
-                  <h1 className="text-5xl font-bold mb-4">{websiteData.settings.companyName || operatorData?.name}</h1>
-                  <p className="text-xl mb-6">{websiteData.settings.tagline || operatorData?.tagline}</p>
+                  <h1 className="text-5xl font-bold mb-4">
+                    {websiteData.settings.companyName || operatorData?.name}
+                  </h1>
+                  <p className="text-xl mb-6">
+                    {websiteData.settings.tagline || operatorData?.tagline}
+                  </p>
                   {websiteData.settings.enableBooking && (
                     <Button
                       size="lg"
@@ -273,12 +292,17 @@ export default function TourOperatorPage({
             {/* Render placed blocks from website builder */}
             <div className="container mx-auto px-4 py-12">
               {/* Render custom content blocks if they exist */}
-              {websiteData.settings.placedBlocks && websiteData.settings.placedBlocks.length > 0 ? (
+              {websiteData.settings.placedBlocks &&
+              websiteData.settings.placedBlocks.length > 0 ? (
                 websiteData.settings.placedBlocks
                   .sort((a: any, b: any) => a.position - b.position)
                   .map((block: any) => {
                     const style: React.CSSProperties = {
-                      textAlign: block.settings?.textAlign as "left" | "center" | "right" | "justify",
+                      textAlign: block.settings?.textAlign as
+                        | "left"
+                        | "center"
+                        | "right"
+                        | "justify",
                       fontSize: block.settings?.fontSize,
                       fontWeight: block.settings?.fontWeight,
                       color: block.settings?.color,
@@ -304,17 +328,32 @@ export default function TourOperatorPage({
                               {block.content?.logo || "Your Logo"}
                             </div>
                             <nav className="flex gap-4">
-                              {block.content?.navigation?.map((item: string, index: number) => (
-                                <a key={index} href="#" className="hover:text-blue-600">
-                                  {item}
-                                </a>
-                              )) || ["Home", "About", "Tours", "Contact"].map((item, index) => (
-                                <a key={index} href="#" className="hover:text-blue-600">
-                                  {item}
-                                </a>
-                              ))}
+                              {block.content?.navigation?.map(
+                                (item: string, index: number) => (
+                                  <a
+                                    key={index}
+                                    href="#"
+                                    className="hover:text-blue-600"
+                                  >
+                                    {item}
+                                  </a>
+                                )
+                              ) ||
+                                ["Home", "About", "Tours", "Contact"].map(
+                                  (item, index) => (
+                                    <a
+                                      key={index}
+                                      href="#"
+                                      className="hover:text-blue-600"
+                                    >
+                                      {item}
+                                    </a>
+                                  )
+                                )}
                             </nav>
-                            <Button size="sm">{block.content?.cta || "Book Now"}</Button>
+                            <Button size="sm">
+                              {block.content?.cta || "Book Now"}
+                            </Button>
                           </header>
                         );
 
@@ -326,40 +365,69 @@ export default function TourOperatorPage({
                             className="flex flex-col items-center justify-center min-h-[400px]"
                           >
                             <h1 className="text-4xl font-bold mb-4">
-                              {block.content?.title || "Discover Amazing Experiences"}
+                              {block.content?.title ||
+                                "Discover Amazing Experiences"}
                             </h1>
-                            <p className="text-xl mb-6">{block.content?.subtitle || "Explore unique cultural tours and adventures"}</p>
-                            <Button size="lg">{block.content?.ctaText || "Start Exploring"}</Button>
+                            <p className="text-xl mb-6">
+                              {block.content?.subtitle ||
+                                "Explore unique cultural tours and adventures"}
+                            </p>
+                            <Button size="lg">
+                              {block.content?.ctaText || "Start Exploring"}
+                            </Button>
                           </section>
                         );
 
                       case "text":
                         return (
-                          <div key={block.id} style={style} className="max-w-3xl mx-auto text-center">
-                            <p>{block.content?.text || "Add your content here"}</p>
+                          <div
+                            key={block.id}
+                            style={style}
+                            className="max-w-3xl mx-auto text-center"
+                          >
+                            <p>
+                              {block.content?.text || "Add your content here"}
+                            </p>
                           </div>
                         );
 
                       case "heading":
                         return (
-                          <div key={block.id} style={style} className="max-w-3xl mx-auto text-center">
+                          <div
+                            key={block.id}
+                            style={style}
+                            className="max-w-3xl mx-auto text-center"
+                          >
                             {block.content?.level === "h1" && (
-                              <h1 className="text-3xl font-bold text-gray-900 mb-6">{block.content?.text || "Heading"}</h1>
+                              <h1 className="text-3xl font-bold text-gray-900 mb-6">
+                                {block.content?.text || "Heading"}
+                              </h1>
                             )}
                             {block.content?.level === "h2" && (
-                              <h2 className="text-2xl font-bold text-gray-900 mb-4">{block.content?.text || "Heading"}</h2>
+                              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                                {block.content?.text || "Heading"}
+                              </h2>
                             )}
                             {block.content?.level === "h3" && (
-                              <h3 className="text-xl font-bold text-gray-900 mb-3">{block.content?.text || "Heading"}</h3>
+                              <h3 className="text-xl font-bold text-gray-900 mb-3">
+                                {block.content?.text || "Heading"}
+                              </h3>
                             )}
                           </div>
                         );
 
                       case "image":
                         return (
-                          <div key={block.id} style={style} className="max-w-4xl mx-auto">
+                          <div
+                            key={block.id}
+                            style={style}
+                            className="max-w-4xl mx-auto"
+                          >
                             <img
-                              src={block.content?.src || "https://via.placeholder.com/400x300?text=Add+Image"}
+                              src={
+                                block.content?.src ||
+                                "https://via.placeholder.com/400x300?text=Add+Image"
+                              }
                               alt={block.content?.alt || "Image"}
                               className="w-full h-auto rounded-lg"
                             />
@@ -376,14 +444,18 @@ export default function TourOperatorPage({
                           <div
                             key={block.id}
                             style={style}
-                            className={`grid grid-cols-${block.content?.columns || 2} gap-4 max-w-4xl mx-auto`}
+                            className={`grid grid-cols-${
+                              block.content?.columns || 2
+                            } gap-4 max-w-4xl mx-auto`}
                           >
-                            {block.content?.items?.map((item: any, index: number) => (
-                              <div key={index} className="p-4 border rounded">
-                                <h3 className="font-bold">{item.title}</h3>
-                                <p>{item.content}</p>
-                              </div>
-                            )) || (
+                            {block.content?.items?.map(
+                              (item: any, index: number) => (
+                                <div key={index} className="p-4 border rounded">
+                                  <h3 className="font-bold">{item.title}</h3>
+                                  <p>{item.content}</p>
+                                </div>
+                              )
+                            ) || (
                               <div className="p-4 border rounded">
                                 <h3 className="font-bold">Sample Item</h3>
                                 <p>Add your content here</p>
@@ -399,11 +471,17 @@ export default function TourOperatorPage({
                             style={style}
                             className="text-center max-w-3xl mx-auto"
                           >
-                            <p className="mb-4 text-xl italic">"{block.content?.text || "Add your quote here"}"</p>
+                            <p className="mb-4 text-xl italic">
+                              "{block.content?.text || "Add your quote here"}"
+                            </p>
                             <footer>
-                              <cite className="font-bold">{block.content?.author || "Author"}</cite>
+                              <cite className="font-bold">
+                                {block.content?.author || "Author"}
+                              </cite>
                               {block.content?.role && (
-                                <span className="text-gray-600">, {block.content.role}</span>
+                                <span className="text-gray-600">
+                                  , {block.content.role}
+                                </span>
                               )}
                             </footer>
                           </blockquote>
@@ -411,7 +489,11 @@ export default function TourOperatorPage({
 
                       default:
                         return (
-                          <div key={block.id} style={style} className="max-w-3xl mx-auto text-center">
+                          <div
+                            key={block.id}
+                            style={style}
+                            className="max-w-3xl mx-auto text-center"
+                          >
                             <p>{block.content?.text || "Content block"}</p>
                           </div>
                         );
@@ -491,20 +573,26 @@ export default function TourOperatorPage({
                                   Highlights:
                                 </h4>
                                 <ul className="space-y-1">
-                                  {tour.highlights.slice(0, 3).map((highlight, index) => (
-                                    <li
-                                      key={index}
-                                      className="flex items-center gap-2 text-sm text-gray-600"
-                                    >
-                                      <Check className="h-3 w-3 text-green-500 flex-shrink-0" />
-                                      <span>{highlight}</span>
-                                    </li>
-                                  ))}
+                                  {tour.highlights
+                                    .slice(0, 3)
+                                    .map((highlight, index) => (
+                                      <li
+                                        key={index}
+                                        className="flex items-center gap-2 text-sm text-gray-600"
+                                      >
+                                        <Check className="h-3 w-3 text-green-500 flex-shrink-0" />
+                                        <span>{highlight}</span>
+                                      </li>
+                                    ))}
                                 </ul>
                               </div>
                               <Button
                                 className="w-full rounded-md"
-                                style={{ backgroundColor: websiteData.settings.primaryColor || operatorData?.primaryColor }}
+                                style={{
+                                  backgroundColor:
+                                    websiteData.settings.primaryColor ||
+                                    operatorData?.primaryColor,
+                                }}
                                 onClick={() => handleBookNow(tour.id)}
                               >
                                 Book Now - €{tour.price}
@@ -524,14 +612,20 @@ export default function TourOperatorPage({
             {websiteData.settings.footerContent ? (
               <footer className="bg-gray-900 text-white py-12">
                 <div className="container mx-auto px-4 text-center">
-                  <div dangerouslySetInnerHTML={{ __html: websiteData.settings.footerContent }} />
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: websiteData.settings.footerContent,
+                    }}
+                  />
                 </div>
               </footer>
             ) : (
               <footer className="bg-gray-900 text-white py-8">
                 <div className="container mx-auto px-4 text-center">
                   <p className="text-sm text-gray-400">
-                    © {new Date().getFullYear()} {websiteData.settings.companyName || operatorData?.name}. All rights reserved.
+                    © {new Date().getFullYear()}{" "}
+                    {websiteData.settings.companyName || operatorData?.name}.
+                    All rights reserved.
                   </p>
                 </div>
               </footer>

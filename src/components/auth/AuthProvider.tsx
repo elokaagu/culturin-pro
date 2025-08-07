@@ -1,19 +1,13 @@
-"use client";
-
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { User } from "@supabase/supabase-js";
 import { useAuth as useSupabaseAuth } from "@/hooks/useSupabase";
 import { supabase } from "@/lib/supabase";
-import type { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
   isLoggedIn: boolean;
   login: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (
-    email: string,
-    password: string,
-    metadata?: any
-  ) => Promise<{ error: any }>;
+  signUp: (email: string, password: string) => Promise<{ error: any }>;
   logout: () => Promise<{ error: any }>;
   hasStudioAccess: boolean;
   isAdmin: boolean;
@@ -41,7 +35,9 @@ export const useAuth = () => {
       };
     }
     // Return default values instead of throwing to prevent crashes
-    console.warn("useAuth must be used within an AuthProvider, returning default values");
+    console.warn(
+      "useAuth must be used within an AuthProvider, returning default values"
+    );
     return {
       user: null,
       isLoggedIn: false,
@@ -67,20 +63,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    console.log("AuthProvider: User state changed:", {
-      user: user ? { id: user.id, email: user.email } : null,
-      isLoggedIn: !!user,
-      loading
-    });
-    
     // Check user permissions when user changes
     if (user) {
       checkUserPermissions(user);
+      // Trigger data loading for authenticated users
+      loadUserData(user);
     } else {
       setHasStudioAccess(false);
       setIsAdmin(false);
     }
-  }, [user, loading]);
+  }, [user]);
 
   const checkUserPermissions = async (user: User) => {
     try {
@@ -95,7 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error("Error fetching user data:", error);
       }
 
-      // For now, grant studio access to all authenticated users
+      // Grant studio access to all authenticated users
       setHasStudioAccess(true);
       setIsAdmin(
         userData?.role === "admin" || user.email === "eloka.agu@icloud.com"
@@ -107,12 +99,89 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const loadUserData = async (user: User) => {
+    try {
+      // Ensure user record exists in database
+      await ensureUserRecord(user);
+      
+      // Trigger loading of user-specific data
+      // This will be picked up by the useItineraries hook and other data hooks
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("userAuthenticated", {
+            detail: { user }
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Error loading user data:", error);
+    }
+  };
+
+  const ensureUserRecord = async (user: User) => {
+    try {
+      // Check if user record exists
+      const { data: existingUser, error: fetchError } = await supabase
+        .from("users")
+        .select("id")
+        .eq("id", user.id)
+        .single();
+
+      if (fetchError && fetchError.code === "PGRST116") {
+        // User doesn't exist, create record
+        const { error: insertError } = await supabase
+          .from("users")
+          .insert({
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || null,
+            first_name: user.user_metadata?.first_name || null,
+            last_name: user.user_metadata?.last_name || null,
+            role: "user",
+            studio_access: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+
+        if (insertError) {
+          console.error("Error creating user record:", insertError);
+        }
+      }
+    } catch (error) {
+      console.error("Error ensuring user record:", error);
+    }
+  };
+
   const login = async (email: string, password: string) => {
-    return await signIn(email, password);
+    const result = await signIn(email, password);
+    return result;
   };
 
   const logout = async () => {
-    return await signOut();
+    try {
+      // Clear any cached data
+      if (typeof window !== "undefined") {
+        // Clear user-specific localStorage data
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (key.startsWith('culturinItineraries_') || 
+                     key.startsWith('publishedWebsiteUrl_') ||
+                     key.startsWith('websiteData_'))) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+
+        // Dispatch logout event
+        window.dispatchEvent(new CustomEvent("userLoggedOut"));
+      }
+
+      return await signOut();
+    } catch (error) {
+      console.error("Error during logout:", error);
+      return { error };
+    }
   };
 
   const resetPassword = async (email: string) => {

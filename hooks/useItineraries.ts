@@ -84,13 +84,9 @@ export const useItineraries = () => {
       // Try to load from Supabase if user is available
       if (user) {
         console.log("Loading itineraries for authenticated user:", user.id);
-        console.log("User email:", user.email);
         try {
           data = await itineraryService.getItineraries(user.id);
           console.log(`Loaded ${data.length} itineraries from database`);
-          if (data.length > 0) {
-            console.log("Itineraries loaded:", data.map(it => ({ id: it.id, title: it.title, status: it.status })));
-          }
         } catch (err) {
           console.error(
             "Error loading from Supabase, falling back to localStorage:",
@@ -122,6 +118,30 @@ export const useItineraries = () => {
   // Load itineraries on mount and when user changes
   useEffect(() => {
     loadItineraries();
+  }, [loadItineraries]);
+
+  // Listen for authentication events
+  useEffect(() => {
+    const handleUserAuthenticated = () => {
+      // Reload itineraries when user authenticates
+      loadItineraries();
+    };
+
+    const handleUserLoggedOut = () => {
+      // Clear itineraries when user logs out
+      setItineraries([]);
+      setError(null);
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("userAuthenticated", handleUserAuthenticated);
+      window.addEventListener("userLoggedOut", handleUserLoggedOut);
+
+      return () => {
+        window.removeEventListener("userAuthenticated", handleUserAuthenticated);
+        window.removeEventListener("userLoggedOut", handleUserLoggedOut);
+      };
+    }
   }, [loadItineraries]);
 
   // Create new itinerary

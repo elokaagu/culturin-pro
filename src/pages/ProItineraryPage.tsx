@@ -32,10 +32,10 @@ const ProItineraryPage = () => {
   // Refresh itineraries when component mounts and when returning from creating new itinerary
   useEffect(() => {
     // Check if we're returning from creating a new itinerary
-    const isReturningFromCreate = sessionStorage.getItem('returningFromCreate');
-    if (isReturningFromCreate === 'true') {
+    const isReturningFromCreate = sessionStorage.getItem("returningFromCreate");
+    if (isReturningFromCreate === "true") {
       refreshItineraries();
-      sessionStorage.removeItem('returningFromCreate');
+      sessionStorage.removeItem("returningFromCreate");
     }
   }, [refreshItineraries]);
 
@@ -57,12 +57,10 @@ const ProItineraryPage = () => {
   const handleItinerarySave = async (updatedItinerary: ItineraryType) => {
     // Prevent duplicate saves
     if (isSavingInProgress) {
-
       return;
     }
 
     setIsSavingInProgress(true);
-    
 
     try {
       if (
