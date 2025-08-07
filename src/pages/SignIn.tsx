@@ -52,7 +52,7 @@ const SignIn = () => {
   // Show loading while checking authentication
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">
@@ -66,7 +66,7 @@ const SignIn = () => {
   // If already logged in, show loading while redirecting
   if (isLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Redirecting to Culturin Studio...</p>
@@ -117,7 +117,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-culturin-indigo/10 to-white">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-culturin-indigo/10 to-white">
       <Header type="operator" />
       
       <div className="flex-1 flex items-center justify-center p-4">
