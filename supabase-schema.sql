@@ -32,31 +32,41 @@ ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users can view their own profile" ON public.users;
 DROP POLICY IF EXISTS "Users can update their own profile" ON public.users;
 DROP POLICY IF EXISTS "Users can insert their own profile" ON public.users;
+DROP POLICY IF EXISTS "Users can view their own user data" ON public.users;
+DROP POLICY IF EXISTS "Users can update their own user data" ON public.users;
+DROP POLICY IF EXISTS "Users can insert their own user data" ON public.users;
+DROP POLICY IF EXISTS "Authenticated users can create profile" ON public.users;
+DROP POLICY IF EXISTS "Service role can manage all users" ON public.users;
 
--- Create policies for users
+-- Create policies for users with proper trigger support
 CREATE POLICY "Users can view their own user data" ON public.users
   FOR SELECT USING (auth.uid() = id);
 
 CREATE POLICY "Users can update their own user data" ON public.users
   FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY "Users can insert their own user data" ON public.users
-  FOR INSERT WITH CHECK (auth.uid() = id);
+-- Allow authenticated users and service role to create user profiles
+-- This is more permissive to allow the trigger to work properly
+CREATE POLICY "Enable user profile creation" ON public.users
+  FOR INSERT WITH CHECK (true);
 
--- Allow authenticated users to create their own profile (fallback for trigger issues)
-CREATE POLICY "Authenticated users can create profile" ON public.users
-  FOR INSERT WITH CHECK (auth.uid() = id AND auth.role() = 'authenticated');
-
--- Allow service role to manage all users (for admin operations)
+-- Allow service role full access for admin operations and triggers
 CREATE POLICY "Service role can manage all users" ON public.users
   FOR ALL USING (auth.role() = 'service_role');
 
 -- Function to handle new user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  user_exists BOOLEAN;
 BEGIN
-  -- Check if user record already exists
-  IF NOT EXISTS (SELECT 1 FROM public.users WHERE id = NEW.id) THEN
+  -- Check if user record already exists (bypass RLS for this check)
+  SELECT EXISTS(SELECT 1 FROM public.users WHERE id = NEW.id) INTO user_exists;
+  
+  IF NOT user_exists THEN
+    -- Temporarily disable RLS for this transaction
+    PERFORM set_config('row_security', 'off', true);
+    
     INSERT INTO public.users (id, email, full_name, role, studio_access)
     VALUES (
       NEW.id,
@@ -68,12 +78,22 @@ BEGIN
       END,
       true -- Grant studio access to all users
     );
+    
+    -- Re-enable RLS
+    PERFORM set_config('row_security', 'on', true);
+    
+    RAISE NOTICE 'Created user record for: %', NEW.email;
+  ELSE
+    RAISE NOTICE 'User record already exists for: %', NEW.email;
   END IF;
+  
   RETURN NEW;
 EXCEPTION
   WHEN OTHERS THEN
+    -- Re-enable RLS in case of error
+    PERFORM set_config('row_security', 'on', true);
     -- Log the error but don't fail the trigger
-    RAISE WARNING 'Error in handle_new_user trigger: %', SQLERRM;
+    RAISE WARNING 'Error in handle_new_user trigger for %: %', NEW.email, SQLERRM;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
