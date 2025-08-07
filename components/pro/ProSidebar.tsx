@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "../../lib/navigation";
-import { useAuth } from "../../src/components/auth/AuthProvider";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -63,9 +63,21 @@ const menuItems = [
 const ProSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, isLoggedIn, isLoading } = useAuth();
+  
+  // Debug authentication state
+  console.log("🔍 ProSidebar - Auth state:", {
+    user: user?.email,
+    isLoggedIn,
+    isLoading,
+    userRole: user?.role
+  });
   // Use authenticated user's name if available, otherwise fallback to localStorage
   const userName = useMemo(() => {
+    if (!user) {
+      return "Guest";
+    }
+    
     if (user?.user_metadata?.full_name) {
       return user.user_metadata.full_name;
     }
@@ -95,6 +107,10 @@ const ProSidebar: React.FC = () => {
   }, [user]);
 
   const planType = useMemo(() => {
+    if (!user) {
+      return "No Plan";
+    }
+    
     if (typeof window !== "undefined") {
       const storedPlanType = localStorage.getItem("planType");
       if (storedPlanType) {
@@ -105,7 +121,7 @@ const ProSidebar: React.FC = () => {
       return "Growth Plan";
     }
     return "Growth Plan";
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     // Store the current route for navigation
@@ -178,7 +194,7 @@ const ProSidebar: React.FC = () => {
               {user?.email || "Not signed in"}
             </div>
             <div className="px-3 py-1 text-xs text-gray-400 capitalize">
-              {user?.role === "admin" ? "Admin" : "User"} • Studio Access
+              {user ? (user.role === "admin" ? "Admin" : "User") : "Guest"} • Studio Access
             </div>
             <DropdownMenuSeparator />
             {user?.role === "admin" && (
