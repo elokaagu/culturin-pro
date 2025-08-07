@@ -58,7 +58,7 @@
 
   /* Colored Glass Effects */
   .glass-blue {
-    @apply backdrop-blur-md bg-blue-500 bg-opacity-15 border border-blue-300 border-opacity-25;
+    @apply backdrop-blur-md bg-blue-500 bg-opacity-15 border border-blue-300 border-opacity-25 text-white;
   }
 
   .glass-indigo {
@@ -75,7 +75,7 @@
 
   /* Glass Button Styles */
   .glass-button {
-    @apply backdrop-blur-md bg-white bg-opacity-20 border border-white border-opacity-30 shadow-lg transition-all duration-300;
+    @apply backdrop-blur-md bg-white bg-opacity-20 border border-white border-opacity-30 shadow-lg transition-all duration-300 text-white;
   }
 
   .glass-button:hover {
