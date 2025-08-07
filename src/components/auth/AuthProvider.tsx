@@ -137,6 +137,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const isAdminUser = user.email === "eloka.agu@icloud.com" || 
                            user.email === "eloka@satellitelabs.xyz";
         
+        console.log(`🔧 Creating user record for ${user.email}...`);
+        
         const { error: insertError } = await supabase
           .from("users")
           .insert({
@@ -152,15 +154,112 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           });
 
         if (insertError) {
-          console.error("Error creating user record:", insertError);
+          console.error("❌ Error creating user record:", insertError);
+          // If RLS is blocking, try to create a sample itinerary in localStorage instead
+          if (insertError.code === '42501') {
+            console.log("🔄 RLS blocking user creation, will use localStorage fallback");
+            await createSampleItineraryInLocalStorage(user);
+          }
         } else {
           console.log(`✅ Created user record for ${user.email} with role: ${isAdminUser ? "admin" : "user"}`);
+          // Create a sample itinerary for the new user
+          await createSampleItinerary(user);
         }
       } else if (existingUser) {
         console.log(`✅ User record exists for ${user.email} with role: ${existingUser.role}`);
       }
     } catch (error) {
       console.error("Error ensuring user record:", error);
+      // Fallback to localStorage
+      await createSampleItineraryInLocalStorage(user);
+    }
+  };
+
+  const createSampleItinerary = async (user: User) => {
+    try {
+      const isStTropez = user.email?.includes('satellitelabs');
+      const sampleItinerary = {
+        title: isStTropez ? 'St Tropez Soireé' : 'Tuscany Cultural Journey',
+        description: isStTropez 
+          ? 'A luxurious cultural experience in the French Riviera, exploring local art, cuisine, and traditions.'
+          : 'An immersive journey through Tuscany\'s rich cultural heritage, from Renaissance art to culinary traditions.',
+        days: isStTropez ? 3 : 5,
+        status: 'published',
+        theme_type: 'cultural',
+        regions: isStTropez 
+          ? ['French Riviera', 'Mediterranean'] 
+          : ['Tuscany', 'Italy'],
+        price: isStTropez ? 2500 : 3200,
+        currency: 'USD',
+        group_size_min: 2,
+        group_size_max: 8,
+        difficulty: 'easy',
+        tags: isStTropez 
+          ? ['luxury', 'cultural', 'french-riviera', 'art'] 
+          : ['cultural', 'italy', 'renaissance', 'culinary'],
+        operator_id: user.id,
+        last_updated: 'just now',
+      };
+
+      const { data: itinerary, error } = await supabase
+        .from('itineraries')
+        .insert(sampleItinerary)
+        .select()
+        .single();
+
+      if (!error && itinerary) {
+        console.log(`✅ Created sample itinerary: "${itinerary.title}"`);
+      }
+    } catch (error) {
+      console.log("Sample itinerary creation failed, using localStorage fallback");
+    }
+  };
+
+  const createSampleItineraryInLocalStorage = async (user: User) => {
+    try {
+      const isStTropez = user.email?.includes('satellitelabs');
+      const sampleItinerary = {
+        id: `local-${Date.now()}`,
+        title: isStTropez ? 'St Tropez Soireé' : 'Tuscany Cultural Journey',
+        description: isStTropez 
+          ? 'A luxurious cultural experience in the French Riviera, exploring local art, cuisine, and traditions.'
+          : 'An immersive journey through Tuscany\'s rich cultural heritage, from Renaissance art to culinary traditions.',
+        days: isStTropez ? 3 : 5,
+        lastUpdated: 'just now',
+        status: 'published',
+        image: '',
+        themeType: 'cultural',
+        regions: isStTropez 
+          ? ['French Riviera', 'Mediterranean'] 
+          : ['Tuscany', 'Italy'],
+        price: isStTropez ? 2500 : 3200,
+        currency: 'USD',
+        groupSize: { min: 2, max: 8 },
+        difficulty: 'easy',
+        tags: isStTropez 
+          ? ['luxury', 'cultural', 'french-riviera', 'art'] 
+          : ['cultural', 'italy', 'renaissance', 'culinary'],
+        modules: []
+      };
+
+      const userSpecificKey = `culturinItineraries_${user.id}`;
+      
+      // Check if localStorage already has itineraries for this user
+      const existingItineraries = localStorage.getItem(userSpecificKey);
+      let itineraries = [];
+      
+      if (existingItineraries) {
+        itineraries = JSON.parse(existingItineraries);
+      }
+      
+      // Only add sample if no itineraries exist
+      if (itineraries.length === 0) {
+        itineraries.push(sampleItinerary);
+        localStorage.setItem(userSpecificKey, JSON.stringify(itineraries));
+        console.log(`✅ Created sample itinerary in localStorage: "${sampleItinerary.title}"`);
+      }
+    } catch (error) {
+      console.error("Error creating sample itinerary in localStorage:", error);
     }
   };
 

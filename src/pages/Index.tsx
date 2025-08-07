@@ -144,24 +144,24 @@ const Index = () => {
             {/* Action Buttons with floating animation */}
             <MotionFloat>
               <MotionText delay={0.6}>
-                <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <MotionButton
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 text-lg font-semibold shadow-2xl rounded-xl border border-blue-500 hover:border-blue-400 transition-all duration-300 min-w-[200px] flex items-center justify-center"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 text-base font-medium shadow-lg rounded-lg border border-blue-500 hover:border-blue-400 transition-all duration-300 flex items-center justify-center"
                     asChild
                   >
                     <Link to="/how-it-works">
-                      <Play className="h-5 w-5 mr-3" />
+                      <Play className="h-4 w-4 mr-2" />
                       How It Works
                     </Link>
                   </MotionButton>
 
                   <MotionButton
-                    className="border-2 border-white/80 hover:border-white text-white hover:text-white px-10 py-5 text-lg font-semibold shadow-2xl bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-xl transition-all duration-300 min-w-[200px] flex items-center justify-center"
+                    className="border-2 border-white/80 hover:border-white text-white hover:text-white px-6 py-3 text-base font-medium shadow-lg bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-lg transition-all duration-300 flex items-center justify-center"
                     asChild
                   >
                     <Link to="/sign-in">
                       Login
-                      <ArrowRight className="h-5 w-5 ml-3" />
+                      <ArrowRight className="h-4 w-4 ml-2" />
                     </Link>
                   </MotionButton>
                 </div>
