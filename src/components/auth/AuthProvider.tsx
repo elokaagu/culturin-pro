@@ -108,10 +108,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                          user.email === "eloka@satellitelabs.xyz";
       setIsAdmin(isAdminUser);
       console.log("👑 Set isAdmin to:", isAdminUser, "for:", user.email);
+      
+      // If user data doesn't exist in database, set permissions based on email
+      if (!userData && (user.email === "eloka.agu@icloud.com" || user.email === "eloka@satellitelabs.xyz")) {
+        setIsAdmin(true);
+        console.log("👑 Set admin permissions from email for:", user.email);
+      }
     } catch (error) {
       console.error("Error checking user permissions:", error);
       setHasStudioAccess(true);
-      setIsAdmin(false);
+      
+      // Set admin permissions based on email as fallback
+      const isAdminUser = user.email === "eloka.agu@icloud.com" || 
+                         user.email === "eloka@satellitelabs.xyz";
+      setIsAdmin(isAdminUser);
+      console.log("👑 Set admin permissions from email fallback for:", user.email);
     }
   };
 

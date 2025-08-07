@@ -43,22 +43,38 @@ CREATE POLICY "Users can update their own user data" ON public.users
 CREATE POLICY "Users can insert their own user data" ON public.users
   FOR INSERT WITH CHECK (auth.uid() = id);
 
+-- Allow authenticated users to create their own profile (fallback for trigger issues)
+CREATE POLICY "Authenticated users can create profile" ON public.users
+  FOR INSERT WITH CHECK (auth.uid() = id AND auth.role() = 'authenticated');
+
+-- Allow service role to manage all users (for admin operations)
+CREATE POLICY "Service role can manage all users" ON public.users
+  FOR ALL USING (auth.role() = 'service_role');
+
 -- Function to handle new user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, full_name, role, studio_access)
-  VALUES (
-    NEW.id,
-    NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', SPLIT_PART(NEW.email, '@', 1)),
-    CASE 
-      WHEN NEW.email IN ('eloka.agu@icloud.com', 'eloka@satellitelabs.xyz') THEN 'admin'
-      ELSE 'user'
-    END,
-    true -- Grant studio access to all users
-  );
+  -- Check if user record already exists
+  IF NOT EXISTS (SELECT 1 FROM public.users WHERE id = NEW.id) THEN
+    INSERT INTO public.users (id, email, full_name, role, studio_access)
+    VALUES (
+      NEW.id,
+      NEW.email,
+      COALESCE(NEW.raw_user_meta_data->>'full_name', SPLIT_PART(NEW.email, '@', 1)),
+      CASE 
+        WHEN NEW.email IN ('eloka.agu@icloud.com', 'eloka@satellitelabs.xyz') THEN 'admin'
+        ELSE 'user'
+      END,
+      true -- Grant studio access to all users
+    );
+  END IF;
   RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+    -- Log the error but don't fail the trigger
+    RAISE WARNING 'Error in handle_new_user trigger: %', SQLERRM;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

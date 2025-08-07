@@ -9,8 +9,15 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("🔐 useSupabase - Initializing auth state");
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("🔐 useSupabase - Initial session:", {
+        hasSession: !!session,
+        userEmail: session?.user?.email,
+        userId: session?.user?.id,
+      });
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -19,7 +26,13 @@ export function useAuth() {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("🔐 useSupabase - Auth state change:", {
+        event,
+        hasSession: !!session,
+        userEmail: session?.user?.email,
+        userId: session?.user?.id,
+      });
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -42,9 +55,11 @@ export function useAuth() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: metadata ? {
-        data: metadata
-      } : undefined,
+      options: metadata
+        ? {
+            data: metadata,
+          }
+        : undefined,
     });
     return { error };
   };
