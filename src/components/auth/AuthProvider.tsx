@@ -91,9 +91,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Grant studio access to all authenticated users
       setHasStudioAccess(true);
-      setIsAdmin(
-        userData?.role === "admin" || user.email === "eloka.agu@icloud.com"
-      );
+      
+      // Check if user is admin based on email or database role
+      const isAdminUser = userData?.role === "admin" || 
+                         user.email === "eloka.agu@icloud.com" ||
+                         user.email === "eloka@satellitelabs.xyz";
+      setIsAdmin(isAdminUser);
     } catch (error) {
       console.error("Error checking user permissions:", error);
       setHasStudioAccess(true);
@@ -125,21 +128,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Check if user record exists
       const { data: existingUser, error: fetchError } = await supabase
         .from("users")
-        .select("id")
+        .select("id, email, role")
         .eq("id", user.id)
         .single();
 
       if (fetchError && fetchError.code === "PGRST116") {
-        // User doesn't exist, create record
+        // User doesn't exist, create record with proper admin detection
+        const isAdminUser = user.email === "eloka.agu@icloud.com" || 
+                           user.email === "eloka@satellitelabs.xyz";
+        
         const { error: insertError } = await supabase
           .from("users")
           .insert({
             id: user.id,
             email: user.email,
-            full_name: user.user_metadata?.full_name || null,
+            full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || null,
             first_name: user.user_metadata?.first_name || null,
             last_name: user.user_metadata?.last_name || null,
-            role: "user",
+            role: isAdminUser ? "admin" : "user",
             studio_access: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -147,7 +153,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (insertError) {
           console.error("Error creating user record:", insertError);
+        } else {
+          console.log(`✅ Created user record for ${user.email} with role: ${isAdminUser ? "admin" : "user"}`);
         }
+      } else if (existingUser) {
+        console.log(`✅ User record exists for ${user.email} with role: ${existingUser.role}`);
       }
     } catch (error) {
       console.error("Error ensuring user record:", error);

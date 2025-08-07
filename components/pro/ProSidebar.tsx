@@ -70,14 +70,25 @@ const ProSidebar: React.FC = () => {
       return user.user_metadata.full_name;
     }
 
+    // Extract name from email if no full name available
+    if (user?.email) {
+      const emailName = user.email.split('@')[0];
+      // Convert eloka.agu to "Eloka Agu" or similar
+      const formattedName = emailName
+        .split('.')
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+        .join(' ');
+      return formattedName;
+    }
+
     if (typeof window !== "undefined") {
       const storedUserName = localStorage.getItem("userName");
       if (storedUserName) {
         return storedUserName;
       }
       // Set default if not found
-      localStorage.setItem("userName", "Eloka Agu");
-      return "Eloka Agu";
+      localStorage.setItem("userName", "User");
+      return "User";
     }
 
     return "User";
@@ -164,10 +175,10 @@ const ProSidebar: React.FC = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 mb-2">
             <div className="px-3 py-2 text-sm text-gray-500">
-              {user?.email || "eloka.agu@icloud.com"}
+              {user?.email || "Not signed in"}
             </div>
             <div className="px-3 py-1 text-xs text-gray-400 capitalize">
-              {user?.role === "admin" ? "Admin" : "User"}
+              {user?.role === "admin" ? "Admin" : "User"} • Studio Access
             </div>
             <DropdownMenuSeparator />
             {user?.role === "admin" && (

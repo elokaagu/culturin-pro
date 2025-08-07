@@ -51,15 +51,12 @@ BEGIN
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
+    COALESCE(NEW.raw_user_meta_data->>'full_name', SPLIT_PART(NEW.email, '@', 1)),
     CASE 
-      WHEN NEW.email = 'eloka.agu@icloud.com' THEN 'admin'
+      WHEN NEW.email IN ('eloka.agu@icloud.com', 'eloka@satellitelabs.xyz') THEN 'admin'
       ELSE 'user'
     END,
-    CASE 
-      WHEN NEW.email = 'eloka.agu@icloud.com' THEN true
-      ELSE true -- Grant studio access to all users for now
-    END
+    true -- Grant studio access to all users
   );
   RETURN NEW;
 END;
