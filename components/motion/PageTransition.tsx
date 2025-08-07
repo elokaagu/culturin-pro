@@ -24,8 +24,8 @@ const pageVariants = {
 };
 
 const pageTransition = {
-  type: "tween",
-  ease: "anticipate",
+  type: "tween" as const,
+  ease: "anticipate" as const,
   duration: 0.5,
 };
 
@@ -82,7 +82,7 @@ export const ModalTransition: React.FC<ModalTransitionProps> = ({
               scale: 1, 
               y: 0,
               transition: {
-                type: "spring",
+                type: "spring" as const,
                 stiffness: 300,
                 damping: 30,
               }
@@ -140,7 +140,7 @@ export const SlideTransition: React.FC<SlideTransitionProps> = ({
           animate={{ x: 0, y: 0 }}
           exit={getInitialPosition()}
           transition={{
-            type: "spring",
+            type: "spring" as const,
             stiffness: 300,
             damping: 30,
           }}

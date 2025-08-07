@@ -105,32 +105,51 @@ export const staggerItem: Variants = {
 };
 
 // Motion components with gesture animations
-interface MotionButtonProps extends HTMLMotionProps<"button"> {
+interface MotionButtonProps {
   children: React.ReactNode;
   variant?: "primary" | "secondary" | "ghost";
   asChild?: boolean;
+  className?: string;
+  onClick?: React.MouseEventHandler<HTMLElement>;
+  disabled?: boolean;
+  type?: "button" | "submit" | "reset";
 }
 
-export const MotionButton = forwardRef<HTMLButtonElement, MotionButtonProps>(
-  ({ children, variant = "primary", asChild = false, className = "", ...props }, ref) => {
-    const MotionComponent = asChild ? motion.div : motion.button;
+export const MotionButton = forwardRef<HTMLElement, MotionButtonProps>(
+  ({ children, variant = "primary", asChild = false, className = "", onClick, disabled, type = "button" }, ref) => {
+    const motionProps = {
+      className,
+      whileHover: { 
+        scale: 1.02,
+        transition: { type: "spring" as const, stiffness: 400, damping: 10 }
+      },
+      whileTap: { 
+        scale: 0.98,
+        transition: { type: "spring" as const, stiffness: 400, damping: 10 }
+      },
+      onClick,
+    };
+
+    if (asChild) {
+      return (
+        <motion.div
+          ref={ref as React.ForwardedRef<HTMLDivElement>}
+          {...motionProps}
+        >
+          {children}
+        </motion.div>
+      );
+    }
     
     return (
-      <MotionComponent
-        ref={ref}
-        className={className}
-        whileHover={{ 
-          scale: 1.02,
-          transition: { type: "spring", stiffness: 400, damping: 10 }
-        }}
-        whileTap={{ 
-          scale: 0.98,
-          transition: { type: "spring", stiffness: 400, damping: 10 }
-        }}
-        {...props}
+      <motion.button
+        ref={ref as React.ForwardedRef<HTMLButtonElement>}
+        type={type}
+        disabled={disabled}
+        {...motionProps}
       >
         {children}
-      </MotionComponent>
+      </motion.button>
     );
   }
 );
