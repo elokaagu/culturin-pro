@@ -64,32 +64,34 @@ const ProSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout, isLoggedIn, isLoading } = useAuth();
-  
+
   // Debug authentication state
   console.log("🔍 ProSidebar - Auth state:", {
     user: user?.email,
     isLoggedIn,
     isLoading,
-    userRole: user?.role
+    userRole: user?.role,
   });
   // Use authenticated user's name if available, otherwise fallback to localStorage
   const userName = useMemo(() => {
     if (!user) {
       return "Guest";
     }
-    
+
     if (user?.user_metadata?.full_name) {
       return user.user_metadata.full_name;
     }
 
     // Extract name from email if no full name available
     if (user?.email) {
-      const emailName = user.email.split('@')[0];
+      const emailName = user.email.split("@")[0];
       // Convert eloka.agu to "Eloka Agu" or similar
       const formattedName = emailName
-        .split('.')
-        .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-        .join(' ');
+        .split(".")
+        .map(
+          (part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+        )
+        .join(" ");
       return formattedName;
     }
 
@@ -110,7 +112,7 @@ const ProSidebar: React.FC = () => {
     if (!user) {
       return "No Plan";
     }
-    
+
     if (typeof window !== "undefined") {
       const storedPlanType = localStorage.getItem("planType");
       if (storedPlanType) {
@@ -194,7 +196,8 @@ const ProSidebar: React.FC = () => {
               {user?.email || "Not signed in"}
             </div>
             <div className="px-3 py-1 text-xs text-gray-400 capitalize">
-              {user ? (user.role === "admin" ? "Admin" : "User") : "Guest"} • Studio Access
+              {user ? (user.role === "admin" ? "Admin" : "User") : "Guest"} •
+              Studio Access
             </div>
             <DropdownMenuSeparator />
             {user?.role === "admin" && (
@@ -210,11 +213,11 @@ const ProSidebar: React.FC = () => {
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={async () => {
                 await logout();
                 navigate("/");
-              }} 
+              }}
               className="text-red-600"
             >
               <LogOut className="h-4 w-4 mr-2" />

@@ -5,7 +5,7 @@ import { useNavigate } from "../../lib/navigation";
 import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
 import ItineraryTabs from "@/components/pro/itinerary/ItineraryTabs";
 import { useItineraries } from "@/hooks/useItineraries";
-import { useAuth } from "@/components/auth/AuthProvider";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 import { localStorageUtils } from "@/lib/localStorage";
 import { Tabs } from "@/components/ui/tabs";
 
