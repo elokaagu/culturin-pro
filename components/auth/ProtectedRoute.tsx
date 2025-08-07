@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../../src/components/auth/AuthProvider";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -19,22 +19,36 @@ const ProtectedRoute = ({
   const router = useRouter();
 
   useEffect(() => {
+    console.log("🛡️ ProtectedRoute - Auth state:", {
+      isLoggedIn,
+      hasStudioAccess,
+      isAdmin,
+      requireSuperAdmin,
+      requireStudioAccess,
+      isLoading
+    });
+    
     if (isLoading) return;
 
     if (!isLoggedIn) {
+      console.log("❌ User not logged in, redirecting to sign-in");
       router.push("/sign-in");
       return;
     }
 
     if (requireSuperAdmin && !isAdmin) {
+      console.log("❌ User not admin, redirecting to sign-in");
       router.push("/sign-in");
       return;
     }
 
     if (requireStudioAccess && !hasStudioAccess) {
+      console.log("❌ User doesn't have studio access, redirecting to sign-in");
       router.push("/sign-in");
       return;
     }
+    
+    console.log("✅ User authenticated and authorized");
   }, [
     isLoggedIn,
     hasStudioAccess,

@@ -65,6 +65,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    console.log("🔐 AuthProvider - User changed:", { 
+      user: user?.email, 
+      isLoggedIn: !!user,
+      hasStudioAccess,
+      isAdmin 
+    });
+    
     // Check user permissions when user changes
     if (user) {
       checkUserPermissions(user);
@@ -78,6 +85,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkUserPermissions = async (user: User) => {
     try {
+      console.log("🔍 Checking permissions for user:", user.email);
+      
       // Check if user has a user record with admin or studio access
       const { data: userData, error } = await supabase
         .from("users")
@@ -91,12 +100,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Grant studio access to all authenticated users
       setHasStudioAccess(true);
+      console.log("✅ Set hasStudioAccess to true for:", user.email);
       
       // Check if user is admin based on email or database role
       const isAdminUser = userData?.role === "admin" || 
                          user.email === "eloka.agu@icloud.com" ||
                          user.email === "eloka@satellitelabs.xyz";
       setIsAdmin(isAdminUser);
+      console.log("👑 Set isAdmin to:", isAdminUser, "for:", user.email);
     } catch (error) {
       console.error("Error checking user permissions:", error);
       setHasStudioAccess(true);

@@ -84,7 +84,7 @@ function StudioContent() {
   return (
     <div className="min-h-screen bg-white">
       <Header type="operator" />
-      
+
       {/* User Authentication Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex justify-between items-center">
@@ -104,12 +104,14 @@ function StudioContent() {
               {isAdmin && (
                 <div className="flex items-center space-x-1 bg-blue-50 px-2 py-1 rounded-full">
                   <Shield className="h-3 w-3 text-blue-600" />
-                  <span className="text-xs text-blue-600 font-medium">Admin</span>
+                  <span className="text-xs text-blue-600 font-medium">
+                    Admin
+                  </span>
                 </div>
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-3">
             <Button
               variant="outline"
@@ -150,7 +152,7 @@ function StudioContent() {
           </div>
         </div>
       </div>
-      
+
       {activeTab === "overview" ? (
         // Split Screen Layout for Overview
         <div className="min-h-screen flex">
@@ -198,7 +200,7 @@ function StudioContent() {
               />
               <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/30 to-indigo-900/40" />
             </div>
-            
+
             {/* Overlay Buttons */}
             <div className="absolute inset-0 flex flex-col justify-center items-center space-y-6 p-12">
               <Button
@@ -208,7 +210,7 @@ function StudioContent() {
                 <Palette className="mr-3 h-5 w-5" />
                 Studio Overview
               </Button>
-              
+
               <Button
                 onClick={() => handleTabChange("booking-builder")}
                 className="w-64 h-16 text-lg font-semibold transition-all duration-300 bg-white/90 text-gray-700 hover:bg-white hover:shadow-lg"
@@ -216,7 +218,7 @@ function StudioContent() {
                 <Settings className="mr-3 h-5 w-5" />
                 Booking Builder
               </Button>
-              
+
               <Button
                 onClick={() => handleTabChange("booking-preview")}
                 className="w-64 h-16 text-lg font-semibold transition-all duration-300 bg-white/90 text-gray-700 hover:bg-white hover:shadow-lg"
