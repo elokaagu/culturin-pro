@@ -7,7 +7,7 @@ import ItineraryTabs from "@/components/pro/itinerary/ItineraryTabs";
 import { useItineraries } from "@/hooks/useItineraries";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { localStorageUtils } from "@/lib/localStorage";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs } from "@/components/ui/tabs";
 
 const ProItineraryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -89,9 +89,6 @@ const ProItineraryPage: React.FC = () => {
         </div>
 
         <Tabs value="itineraries" className="w-full">
-          <TabsList className="grid w-full grid-cols-1">
-            <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
-          </TabsList>
           <ItineraryTabs
             activeTab="itineraries"
             itineraries={itineraries}
