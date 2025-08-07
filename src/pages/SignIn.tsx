@@ -244,7 +244,8 @@ const SignIn = () => {
         </div>
       </div>
 
-      <div className="mt-auto">
+      {/* Footer pushed below viewport */}
+      <div className="hidden">
         <NewFooter />
       </div>
     </div>
