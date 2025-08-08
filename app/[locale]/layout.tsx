@@ -1,7 +1,6 @@
 import React from "react";
 import "../globals.css";
 import { Toaster } from "../../components/ui/toaster";
-import { AuthProvider } from "../../src/components/auth/AuthProvider";
 import { UserDataProvider } from "../../src/contexts/UserDataContext";
 import { TranslationProvider } from "../../src/contexts/TranslationContext";
 
@@ -23,13 +22,11 @@ export default function LocaleLayout({
   const { locale } = params;
 
   return (
-    <AuthProvider>
-      <UserDataProvider>
-        <TranslationProvider>
-          <PageTransition>{children}</PageTransition>
-        </TranslationProvider>
-      </UserDataProvider>
+    <UserDataProvider>
+      <TranslationProvider>
+        <PageTransition>{children}</PageTransition>
+      </TranslationProvider>
       <Toaster />
-    </AuthProvider>
+    </UserDataProvider>
   );
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import "./globals.css";
 import { Toaster } from "../components/ui/toaster";
+import { AuthProvider } from "../src/components/auth/AuthProvider";
 import { UserDataProvider } from "../src/contexts/UserDataContext";
 import { TranslationProvider } from "../src/contexts/TranslationContext";
 
@@ -32,12 +33,14 @@ export default function RootLayout({
   return (
     <html lang={currentLang} dir={currentLang === "ar" ? "rtl" : "ltr"}>
       <body>
-        <UserDataProvider>
-          <TranslationProvider>
-            <PageTransition>{children}</PageTransition>
-          </TranslationProvider>
-        </UserDataProvider>
-        <Toaster />
+        <AuthProvider>
+          <UserDataProvider>
+            <TranslationProvider>
+              <PageTransition>{children}</PageTransition>
+            </TranslationProvider>
+          </UserDataProvider>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );
