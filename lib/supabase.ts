@@ -21,6 +21,29 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     flowType: "pkce",
+    storage: {
+      getItem: (key) => {
+        if (typeof window === "undefined") {
+          return null;
+        }
+        console.log("Getting storage item:", key);
+        return localStorage.getItem(key);
+      },
+      setItem: (key, value) => {
+        if (typeof window === "undefined") {
+          return;
+        }
+        console.log("Setting storage item:", key);
+        localStorage.setItem(key, value);
+      },
+      removeItem: (key) => {
+        if (typeof window === "undefined") {
+          return;
+        }
+        console.log("Removing storage item:", key);
+        localStorage.removeItem(key);
+      },
+    },
   },
   global: {
     headers: {

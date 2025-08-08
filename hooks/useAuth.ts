@@ -87,6 +87,13 @@ export function useAuth() {
       try {
         console.log("Initializing authentication...");
         
+        // Check what's in localStorage for debugging
+        if (typeof window !== "undefined") {
+          const localStorageKeys = Object.keys(localStorage);
+          const sessionKeys = localStorageKeys.filter(key => key.includes('supabase'));
+          console.log("Supabase localStorage keys:", sessionKeys);
+        }
+        
         // Get current session
         const {
           data: { session },
@@ -98,6 +105,10 @@ export function useAuth() {
         }
 
         console.log("Initial session check:", session ? "Session found" : "No session");
+        if (session) {
+          console.log("Session expires at:", session.expires_at);
+          console.log("Session user:", session.user?.email);
+        }
 
         if (mounted) {
           setState({
@@ -139,6 +150,12 @@ export function useAuth() {
       if (mounted) {
         console.log("Setting state for event:", event);
         
+        // Don't clear user data on INITIAL_SESSION if we already have a user
+        if (event === "INITIAL_SESSION" && !session && state.user) {
+          console.log("Ignoring INITIAL_SESSION with no session - keeping existing user");
+          return;
+        }
+        
         // Update state immediately
         setState((prev) => ({
           ...prev,
@@ -152,9 +169,9 @@ export function useAuth() {
         if (session?.user) {
           console.log("Loading user data after auth change for:", session.user.email);
           await loadUserData(session.user);
-        } else {
+        } else if (event !== "INITIAL_SESSION") {
+          // Only clear data on actual logout, not initial session check
           console.log("Clearing user data - no session at", new Date().toISOString());
-          // Clear cached data on logout
           sessionStorage.removeItem(USER_DATA_KEY);
         }
       } else {
