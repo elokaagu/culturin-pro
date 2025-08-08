@@ -283,8 +283,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const login = async (email: string, password: string) => {
-    const result = await signIn(email, password);
-    return result;
+    try {
+      // Clear any conflicting localStorage data before login
+      if (typeof window !== "undefined") {
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (key.startsWith('culturinItineraries_') || 
+                     key.startsWith('publishedWebsiteUrl_') ||
+                     key.startsWith('websiteData_'))) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        console.log("🧹 Cleared conflicting localStorage data before login");
+      }
+
+      const { data, error } = await signIn(email, password);
+      
+      if (error) {
+        return { error };
+      }
+      
+      // If login successful, ensure user record exists
+      if (data.user) {
+        try {
+          await ensureUserRecord(data.user);
+          console.log("✅ Login successful and user record ensured");
+        } catch (recordError) {
+          console.error("⚠️ Login successful but user record creation failed:", recordError);
+          // Don't fail the login, but log the issue
+        }
+      }
+      
+      return { error: null };
+    } catch (error) {
+      console.error("❌ Login error:", error);
+      return { error };
+    }
   };
 
   const logout = async () => {
@@ -302,6 +338,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         }
         keysToRemove.forEach(key => localStorage.removeItem(key));
+        console.log("🧹 Cleared non-essential localStorage data");
 
         // Dispatch logout event
         window.dispatchEvent(new CustomEvent("userLoggedOut"));

@@ -42,14 +42,18 @@ const SignIn = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Don't redirect while auth is still loading
-    if (isLoading) return;
+    // Don't redirect while auth is still loading or not ready
+    if (isLoading || !isReady) return;
 
     if (isLoggedIn) {
-      // Redirect to the pro dashboard where itineraries are
-      router.push("/pro-dashboard");
+      // Wait a moment for user data to be fully loaded
+      const timer = setTimeout(() => {
+        router.push("/pro-dashboard");
+      }, 1000);
+      
+      return () => clearTimeout(timer);
     }
-  }, [isLoggedIn, isLoading, router]);
+  }, [isLoggedIn, isLoading, isReady, router]);
 
   // Show loading while checking authentication
   if (isLoading) {
