@@ -137,7 +137,7 @@ export const localStorageUtils = {
         }
       });
       
-      console.log('Cleared non-essential localStorage data');
+      // Cleared non-essential localStorage data
     } catch (error) {
       console.error('Failed to clear localStorage:', error);
     }
