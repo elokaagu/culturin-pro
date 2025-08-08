@@ -322,26 +322,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log("🧹 Cleared conflicting localStorage data before login");
       }
 
-                  const result = await signIn(email, password);
-      
-      if (result.error) {
-        return { error: result.error };
+      const { error } = await signIn(email, password);
+
+      if (error) {
+        return { error };
       }
-      
+
       // If login successful, ensure user record exists
-      if (result.data?.user) {
-        try {
-          await ensureUserRecord(result.data.user);
-          console.log("✅ Login successful and user record ensured");
-        } catch (recordError) {
-          console.error(
-            "⚠️ Login successful but user record creation failed:",
-            recordError
-          );
-          // Don't fail the login, but log the issue
-        }
-      }
-      
+      // The user will be available in the next render cycle via useAuth
+      console.log("✅ Login successful, user record will be ensured on next render");
+
       return { error: null };
     } catch (error) {
       console.error("❌ Login error:", error);
