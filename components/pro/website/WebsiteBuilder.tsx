@@ -48,7 +48,7 @@ import MediaLibrary from "./MediaLibrary";
 import { settingsService } from "@/lib/settings-service";
 import { itineraryService } from "@/lib/itinerary-service";
 import { supabase } from "@/lib/supabase";
-import { localStorageUtils } from "@/lib/localStorage";
+import { supabaseStorage } from "@/lib/supabase-storage";
 import { useAuth } from "@/src/components/auth/AuthProvider";
 
 // History management for undo/redo functionality
@@ -118,7 +118,7 @@ const WebsiteBuilder: React.FC = () => {
         const userSpecificKey = user?.id
           ? `publishedWebsiteUrl_${user.id}`
           : "publishedWebsiteUrl";
-        const storedUrl = localStorage.getItem(userSpecificKey);
+        const storedUrl = await supabaseStorage.getItem(userSpecificKey);
 
         if (storedUrl) {
           setPublishedUrl(storedUrl);

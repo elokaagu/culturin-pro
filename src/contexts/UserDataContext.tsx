@@ -1,427 +1,210 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
-import { useAuth } from "@/src/components/auth/AuthProvider";
-import { localStorageUtils } from "../../lib/localStorage";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase";
+import { supabaseStorage } from "@/lib/supabase-storage";
 
-export interface UserData {
-  // General Settings
-  businessName: string;
+interface UserData {
+  id: string;
   email: string;
-  phone: string;
-  address: string;
-  timezone: string;
-  bio: string;
-
-  // Website Settings
-  websiteSettings: {
-    companyName: string;
-    tagline: string;
-    description: string;
-    primaryColor: string;
-    headerImage: string | null;
-    theme: string;
-    enableBooking: boolean;
-    headerSettings?: {
-      layout: string;
-      height: string;
-      textAlign: string;
-      showNav: boolean;
-      navItems: string[];
-      logo: string | null;
-      backgroundType: string;
-    };
-    footerSettings?: {
-      layout: string;
-      showLogo: boolean;
-      logo: string | null;
-      backgroundColor: string;
-      textColor: string;
-      showSocial: boolean;
-      socialLinks: {
-        facebook: string;
-        twitter: string;
-        instagram: string;
-        youtube: string;
-      };
-      contactInfo: {
-        phone: string;
-        email: string;
-        address: string;
-        website: string;
-      };
-    };
-    fontSettings?: {
-      headingFont: string;
-      bodyFont: string;
-      headingFontWeight: number;
-      bodyFontWeight: number;
-      headingFontSize: number;
-      bodyFontSize: number;
-      lineHeight: number;
-      letterSpacing: number;
-    };
-    animationSettings?: {
-      enableAnimations: boolean;
-      animationSpeed: number;
-      animationType: string;
-      enableHoverEffects: boolean;
-      enableScrollAnimations: boolean;
-    };
-    placedBlocks?: Array<{
-      id: string;
-      blockType: string;
-      content: any;
-      settings: {
-        textAlign?: "left" | "center" | "right";
-        fontSize?: string;
-        fontWeight?: string;
-        color?: string;
-        backgroundColor?: string;
-        padding?: string;
-        margin?: string;
-        width?: string;
-        height?: string;
-        borderRadius?: string;
-        border?: string;
-        shadow?: string;
-        gap?: string;
-        fontStyle?: string;
-      };
-      position: number;
-    }>;
-    bookingSettings: {
-      currency: string;
-      paymentMethods: string[];
-      requireDeposit: boolean;
-      depositAmount: number;
-      cancellationPolicy: string;
-      termsAndConditions: string;
-    };
-  };
-
-  // Notification Settings
-  notifications: {
-    emailNotifications: boolean;
-    bookingAlerts: boolean;
-    reviewAlerts: boolean;
-    marketingEmails: boolean;
-    weeklyReports: boolean;
-    monthlyReports: boolean;
-  };
-
-  // Billing Info
-  billing: {
-    planName: string;
-    planPrice: string;
-    nextBilling: string;
-    paymentMethods: Array<{
-      id: string;
-      type: string;
-      last4: string;
-      expiry: string;
-      isDefault: boolean;
-    }>;
-  };
-
-  // Loyalty Card Settings
-  loyaltyCard: {
-    cardId: string;
-    tier: "bronze" | "silver" | "gold" | "platinum";
-    balance: number;
-    rewardsBalance: number;
-    walletAddress: string;
-    status: "active" | "suspended" | "pending";
-    memberSince: Date;
-    kycStatus: "pending" | "verified" | "rejected";
-    amlCheck: "passed" | "failed" | "pending";
-    annualFee: number;
-    rewardsRate: number;
-    benefits: string[];
-  };
+  full_name?: string;
+  role?: string;
+  studio_access?: boolean;
+  preferences?: Record<string, any>;
+  settings?: Record<string, any>;
+  itineraries?: any[];
+  lastLogin?: string;
 }
 
 interface UserDataContextType {
-  userData: UserData;
-  updateUserData: (updates: Partial<UserData>) => void;
-  updateWebsiteSettings: (
-    updates: Partial<UserData["websiteSettings"]>
-  ) => void;
-  updateNotifications: (updates: Partial<UserData["notifications"]>) => void;
-  saveUserData: () => void;
+  userData: UserData | null;
   isLoading: boolean;
+  updateUserData: (updates: Partial<UserData>) => Promise<void>;
+  refreshUserData: () => Promise<void>;
+  clearUserData: () => Promise<void>;
 }
 
-const defaultUserData: UserData = {
-  businessName: "Culturin Tours",
-  email: "eloka.agu@icloud.com",
-  phone: "+1 (555) 123-4567",
-  address: "123 Cultural District, San Francisco, CA 94102",
-  timezone: "utc-8",
-  bio: "Founded by Eloka Agu, Culturin Tours specializes in immersive cultural experiences that connect travelers with authentic local traditions, stories, and communities around the world.",
+const UserDataContext = createContext<UserDataContextType | undefined>(undefined);
 
-  websiteSettings: {
-    companyName: "Culturin Tours",
-    tagline: "Authentic cultural experiences curated by Eloka Agu",
-    description:
-      "Founded by Eloka Agu, Culturin Tours specializes in immersive cultural experiences that connect travelers with authentic local traditions, stories, and communities around the world.",
-    primaryColor: "#9b87f5",
-    headerImage: null,
-    theme: "classic",
-    enableBooking: true,
-    bookingSettings: {
-      currency: "USD",
-      paymentMethods: ["credit_card", "paypal", "bank_transfer"],
-      requireDeposit: true,
-      depositAmount: 25,
-      cancellationPolicy:
-        "Free cancellation up to 24 hours before the experience",
-      termsAndConditions:
-        "By booking this experience, you agree to our terms and conditions and cancellation policy.",
-    },
-  },
-
-  notifications: {
-    emailNotifications: true,
-    bookingAlerts: true,
-    reviewAlerts: true,
-    marketingEmails: false,
-    weeklyReports: true,
-    monthlyReports: true,
-  },
-
-  billing: {
-    planName: "Growth Plan",
-    planPrice: "$99",
-    nextBilling: "June 15, 2025",
-    paymentMethods: [
-      {
-        id: "card-1",
-        type: "Visa",
-        last4: "4242",
-        expiry: "05/28",
-        isDefault: true,
-      },
-    ],
-  },
-
-  loyaltyCard: {
-    cardId: "loyalty-123",
-    tier: "bronze",
-    balance: 100,
-    rewardsBalance: 50,
-    walletAddress: "0x1234567890abcdef1234567890abcdef12345678",
-    status: "active",
-    memberSince: new Date("2023-01-01"),
-    kycStatus: "verified",
-    amlCheck: "passed",
-    annualFee: 50,
-    rewardsRate: 0.1,
-    benefits: ["Free coffee", "Priority booking"],
-  },
+export const useUserData = () => {
+  const context = useContext(UserDataContext);
+  if (!context) {
+    throw new Error("useUserData must be used within a UserDataProvider");
+  }
+  return context;
 };
 
-const UserDataContext = createContext<UserDataContextType | undefined>(
-  undefined
-);
+interface UserDataProviderProps {
+  children: ReactNode;
+}
 
-export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [userData, setUserData] = useState<UserData>(defaultUserData);
+export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) => {
+  const { user, isLoggedIn } = useAuth();
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth();
 
+  // Load user data when user changes
   useEffect(() => {
-    // Load user data from localStorage on mount - only on client side
-    const loadUserData = () => {
+    const loadUserData = async () => {
+      if (!user || !isLoggedIn) {
+        setUserData(null);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
       try {
-        if (typeof window !== "undefined") {
-          // Clean up large itineraries data first
-          localStorageUtils.cleanupItineraries();
-          
-          // Also clear any other large data that might cause issues
-          localStorageUtils.clearNonEssential();
-          
-          const storedData = localStorage.getItem("culturin_user_data");
-          if (storedData) {
-            const parsedData = JSON.parse(storedData);
+        console.log("Loading user data for:", user.email);
 
-            // Convert memberSince back to Date object if it exists
-            if (parsedData.loyaltyCard && parsedData.loyaltyCard.memberSince) {
-              parsedData.loyaltyCard.memberSince = new Date(
-                parsedData.loyaltyCard.memberSince
-              );
-            }
+        // Fetch user data from Supabase users table
+        const { data: userProfile, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", user.id)
+          .single();
 
-            setUserData({ ...defaultUserData, ...parsedData });
-          } else {
-            // Initialize with user auth data if available
-            if (user) {
-              setUserData((prev) => ({
-                ...prev,
-                email: user.email,
-                businessName:
-                  (user.user_metadata?.full_name ||
-                    user.email?.split("@")[0] ||
-                    "User") + "'s Tours",
-              }));
-            }
-          }
+        if (error) {
+          console.error("Error loading user profile:", error);
         }
+
+        // Load additional data from Supabase storage
+        const [preferences, settings, itineraries, lastLogin] = await Promise.all([
+          supabaseStorage.getItem(`userPreferences_${user.id}`),
+          supabaseStorage.getItem(`userSettings_${user.id}`),
+          supabaseStorage.getItem(`userItineraries_${user.id}`),
+          supabaseStorage.getItem(`userLastLogin_${user.id}`),
+        ]);
+
+        const completeUserData: UserData = {
+          id: user.id,
+          email: user.email,
+          full_name: userProfile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0],
+          role: userProfile?.role || 'user',
+          studio_access: userProfile?.studio_access ?? true,
+          preferences: preferences || {},
+          settings: settings || {},
+          itineraries: itineraries || [],
+          lastLogin: lastLogin || new Date().toISOString(),
+        };
+
+        setUserData(completeUserData);
+        console.log("User data loaded successfully:", completeUserData);
+
+        // Save last login time
+        await supabaseStorage.setItem(`userLastLogin_${user.id}`, completeUserData.lastLogin);
       } catch (error) {
         console.error("Error loading user data:", error);
-        // If there's an error, start with default data
-        setUserData(defaultUserData);
+        setUserData(null);
       } finally {
         setIsLoading(false);
       }
     };
 
     loadUserData();
-  }, [user]);
+  }, [user, isLoggedIn]);
 
-  const updateUserData = (updates: Partial<UserData>) => {
-    setUserData((prev) => ({ ...prev, ...updates }));
-  };
+  // Update user data
+  const updateUserData = async (updates: Partial<UserData>) => {
+    if (!user) return;
 
-  const updateWebsiteSettings = (
-    updates: Partial<UserData["websiteSettings"]>
-  ) => {
-    setUserData((prev) => ({
-      ...prev,
-      websiteSettings: { ...prev.websiteSettings, ...updates },
-    }));
+    try {
+      const updatedData = { ...userData, ...updates };
+      setUserData(updatedData);
 
-    // Also update localStorage for website settings (for backward compatibility)
-    if (typeof window !== "undefined") {
-      if (updates.companyName !== undefined) {
-        localStorage.setItem(
-          "websiteCompanyName",
-          updates.companyName as string
-        );
+      // Save updates to Supabase storage
+      if (updates.preferences) {
+        await supabaseStorage.setItem(`userPreferences_${user.id}`, updates.preferences);
       }
-      if (updates.tagline !== undefined) {
-        localStorage.setItem("websiteTagline", updates.tagline as string);
+
+      if (updates.settings) {
+        await supabaseStorage.setItem(`userSettings_${user.id}`, updates.settings);
       }
-      if (updates.description !== undefined) {
-        localStorage.setItem(
-          "websiteDescription",
-          updates.description as string
-        );
+
+      if (updates.itineraries) {
+        await supabaseStorage.setItem(`userItineraries_${user.id}`, updates.itineraries);
       }
-      if (updates.primaryColor !== undefined) {
-        localStorage.setItem(
-          "websitePrimaryColor",
-          updates.primaryColor as string
-        );
-      }
-      if (updates.headerImage !== undefined) {
-        if (updates.headerImage)
-          localStorage.setItem(
-            "websiteHeaderImage",
-            updates.headerImage as string
-          );
-        else localStorage.removeItem("websiteHeaderImage");
-      }
-      if (updates.theme !== undefined) {
-        localStorage.setItem("selectedWebsiteTheme", updates.theme as string);
-      }
+
+      console.log("User data updated:", updates);
+    } catch (error) {
+      console.error("Error updating user data:", error);
     }
   };
 
-  const updateNotifications = (updates: Partial<UserData["notifications"]>) => {
-    setUserData((prev) => ({
-      ...prev,
-      notifications: { ...prev.notifications, ...updates },
-    }));
-  };
+  // Refresh user data
+  const refreshUserData = async () => {
+    if (!user) return;
 
-  const saveUserData = () => {
-    if (typeof window !== "undefined" && localStorageUtils.isAvailable()) {
-      try {
-        // Use the localStorage utility with compression and quota handling
-        const success = localStorageUtils.saveWithCompression("culturin_user_data", userData);
-        
-        if (!success) {
-  
-          localStorageUtils.clearNonEssential();
-          
-          // Try saving essential data only
-          const essentialData = {
-            businessName: userData?.businessName || "",
-            email: userData?.email || "",
-            phone: userData?.phone || "",
-            address: userData?.address || "",
-            timezone: userData?.timezone || "utc-8",
-            bio: userData?.bio || "",
-            websiteSettings: {
-              companyName: userData?.websiteSettings?.companyName || "",
-              tagline: userData?.websiteSettings?.tagline || "",
-              description: userData?.websiteSettings?.description || "",
-              primaryColor: userData?.websiteSettings?.primaryColor || "#9b87f5",
-              theme: userData?.websiteSettings?.theme || "classic",
-              enableBooking: userData?.websiteSettings?.enableBooking || true,
-            },
-            notifications: userData?.notifications || {
-              emailNotifications: true,
-              bookingAlerts: true,
-              reviewAlerts: true,
-              marketingEmails: false,
-              weeklyReports: true,
-              monthlyReports: true,
-            },
-            billing: userData?.billing || {
-              planName: "Growth Plan",
-              planPrice: "$99",
-              nextBilling: "June 15, 2025",
-              paymentMethods: [],
-            },
-            loyaltyCard: userData?.loyaltyCard || {
-              cardId: "loyalty-123",
-              tier: "bronze",
-              balance: 100,
-              rewardsBalance: 50,
-              walletAddress: "0x1234567890abcdef1234567890abcdef12345678",
-              status: "active",
-              memberSince: new Date("2023-01-01"),
-              kycStatus: "verified",
-              amlCheck: "passed",
-              annualFee: 50,
-              rewardsRate: 0.1,
-              benefits: ["Free coffee", "Priority booking"],
-            },
-          };
-          
-          localStorageUtils.saveWithCompression("culturin_user_data", essentialData);
-        }
-      } catch (error) {
-        console.error("Failed to save user data:", error);
+    setIsLoading(true);
+    try {
+      // Reload user data
+      const { data: userProfile, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Error refreshing user profile:", error);
       }
+
+      const [preferences, settings, itineraries, lastLogin] = await Promise.all([
+        supabaseStorage.getItem(`userPreferences_${user.id}`),
+        supabaseStorage.getItem(`userSettings_${user.id}`),
+        supabaseStorage.getItem(`userItineraries_${user.id}`),
+        supabaseStorage.getItem(`userLastLogin_${user.id}`),
+      ]);
+
+      const refreshedData: UserData = {
+        id: user.id,
+        email: user.email,
+        full_name: userProfile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0],
+        role: userProfile?.role || 'user',
+        studio_access: userProfile?.studio_access ?? true,
+        preferences: preferences || {},
+        settings: settings || {},
+        itineraries: itineraries || [],
+        lastLogin: lastLogin || new Date().toISOString(),
+      };
+
+      setUserData(refreshedData);
+      console.log("User data refreshed:", refreshedData);
+    } catch (error) {
+      console.error("Error refreshing user data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Auto-save when userData changes
-  useEffect(() => {
-    if (!isLoading) {
-  
-      saveUserData();
+  // Clear user data
+  const clearUserData = async () => {
+    if (!user) return;
+
+    try {
+      // Clear all user data from Supabase storage
+      const keysToRemove = [
+        `userPreferences_${user.id}`,
+        `userSettings_${user.id}`,
+        `userItineraries_${user.id}`,
+        `userLastLogin_${user.id}`,
+      ];
+
+      const removePromises = keysToRemove.map(key => supabaseStorage.removeItem(key));
+      await Promise.all(removePromises);
+
+      setUserData(null);
+      console.log("User data cleared");
+    } catch (error) {
+      console.error("Error clearing user data:", error);
     }
-  }, [userData, isLoading]);
+  };
 
   const value: UserDataContextType = {
     userData,
-    updateUserData,
-    updateWebsiteSettings,
-    updateNotifications,
-    saveUserData,
     isLoading,
+    updateUserData,
+    refreshUserData,
+    clearUserData,
   };
 
   return (
@@ -429,73 +212,4 @@ export const UserDataProvider: React.FC<{ children: ReactNode }> = ({
       {children}
     </UserDataContext.Provider>
   );
-};
-
-export const useUserData = (): UserDataContextType => {
-  const context = useContext(UserDataContext);
-  if (context === undefined) {
-    // Return default values instead of throwing error to prevent crashes
-    console.warn("useUserData must be used within a UserDataProvider");
-    return {
-      userData: {
-        businessName: "",
-        email: "",
-        phone: "",
-        address: "",
-        timezone: "utc-8",
-        bio: "",
-        websiteSettings: {
-          companyName: "",
-          tagline: "",
-          description: "",
-          primaryColor: "#9b87f5",
-          headerImage: null,
-          theme: "classic",
-          enableBooking: true,
-          bookingSettings: {
-            currency: "USD",
-            paymentMethods: [],
-            requireDeposit: false,
-            depositAmount: 0,
-            cancellationPolicy: "",
-            termsAndConditions: "",
-          },
-        },
-        notifications: {
-          emailNotifications: true,
-          bookingAlerts: true,
-          reviewAlerts: true,
-          marketingEmails: false,
-          weeklyReports: true,
-          monthlyReports: true,
-        },
-        billing: {
-          planName: "Growth Plan",
-          planPrice: "$99",
-          nextBilling: "June 15, 2025",
-          paymentMethods: [],
-        },
-        loyaltyCard: {
-          cardId: "loyalty-123",
-          tier: "bronze",
-          balance: 100,
-          rewardsBalance: 50,
-          walletAddress: "0x1234567890abcdef1234567890abcdef12345678",
-          status: "active",
-          memberSince: new Date("2023-01-01"),
-          kycStatus: "verified",
-          amlCheck: "passed",
-          annualFee: 50,
-          rewardsRate: 0.1,
-          benefits: ["Free coffee", "Priority booking"],
-        },
-      },
-      updateUserData: () => {},
-      updateWebsiteSettings: () => {},
-      updateNotifications: () => {},
-      saveUserData: () => {},
-      isLoading: true,
-    };
-  }
-  return context;
 };

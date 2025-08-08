@@ -1,79 +1,126 @@
 import { supabase } from "./supabase";
+import { supabaseStorage } from "./supabase-storage";
 
-export interface SettingsService {
-  saveGeneralSettings: (settings: any) => Promise<void>;
-  getGeneralSettings: () => Promise<any>;
+export interface UserSettings {
+  theme: "light" | "dark";
+  notifications: boolean;
+  autoSave: boolean;
+  language: string;
+  timezone: string;
+  currency: string;
+  [key: string]: any;
 }
 
-class SupabaseSettingsService implements SettingsService {
-  private async getCurrentUser() {
+class SettingsService {
+  /**
+   * Save user settings to Supabase storage
+   */
+  async saveSettings(settings: UserSettings): Promise<boolean> {
     try {
-      // First try to get the current session
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        return session.user;
+      const isAuthenticated = await supabaseStorage.isAuthenticated();
+      
+      if (!isAuthenticated) {
+        console.warn("User not authenticated, saving to Supabase storage only");
+        return await supabaseStorage.setItem("userSettings", settings);
       }
 
-      // Fallback to getUser
-      const { data: { user } } = await supabase.auth.getUser();
-      return user;
+      const userId = await supabaseStorage.getCurrentUserId();
+      if (!userId) {
+        console.warn("No user ID found");
+        return false;
+      }
+
+      // Save to Supabase storage
+      return await supabaseStorage.setItem(`userSettings_${userId}`, settings);
     } catch (error) {
-      console.error("Error getting current user:", error);
+      console.error("Error saving settings:", error);
+      return false;
+    }
+  }
+
+  /**
+   * Get user settings from Supabase storage
+   */
+  async getSettings(): Promise<UserSettings | null> {
+    try {
+      const isAuthenticated = await supabaseStorage.isAuthenticated();
+      
+      if (!isAuthenticated) {
+        console.warn("User not authenticated, getting from Supabase storage only");
+        return await supabaseStorage.getItem("userSettings");
+      }
+
+      const userId = await supabaseStorage.getCurrentUserId();
+      if (!userId) {
+        console.warn("No user ID found");
+        return null;
+      }
+
+      // Get from Supabase storage
+      const settings = await supabaseStorage.getItem(`userSettings_${userId}`);
+      return settings;
+    } catch (error) {
+      console.error("Error getting settings:", error);
       return null;
     }
   }
 
-  async saveGeneralSettings(settings: any): Promise<void> {
-    const user = await this.getCurrentUser();
-    if (!user) {
-      console.log("User not authenticated, saving to localStorage");
-      // Save to localStorage as fallback
-      localStorage.setItem("userSettings", JSON.stringify(settings));
-      return;
-    }
+  /**
+   * Update specific settings
+   */
+  async updateSettings(updates: Partial<UserSettings>): Promise<boolean> {
+    try {
+      const currentSettings = await this.getSettings();
+      if (!currentSettings) {
+        return await this.saveSettings(updates as UserSettings);
+      }
 
-    const { error } = await supabase
-      .from('users')
-      .update({
-        full_name: settings.businessName,
-        email: settings.email,
-        bio: settings.bio,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', user.id);
-
-    if (error) {
-      console.error('Error saving general settings:', error);
-      throw new Error(`Failed to save general settings: ${error.message}`);
+      const updatedSettings = { ...currentSettings, ...updates };
+      return await this.saveSettings(updatedSettings);
+    } catch (error) {
+      console.error("Error updating settings:", error);
+      return false;
     }
   }
 
-  async getGeneralSettings(): Promise<any> {
-    const user = await this.getCurrentUser();
-    if (!user) {
-      console.log("User not authenticated, getting from localStorage");
-      // Get from localStorage as fallback
-      const settingsStr = localStorage.getItem("userSettings");
-      return settingsStr ? JSON.parse(settingsStr) : {};
-    }
-
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (error) {
-      console.error('Error fetching general settings:', error);
-      throw new Error(`Failed to fetch general settings: ${error.message}`);
-    }
-
-    return {
-      businessName: data.full_name,
-      email: data.email,
-      bio: data.bio,
+  /**
+   * Reset settings to defaults
+   */
+  async resetSettings(): Promise<boolean> {
+    const defaultSettings: UserSettings = {
+      theme: "light",
+      notifications: true,
+      autoSave: true,
+      language: "en",
+      timezone: "UTC",
+      currency: "USD",
     };
+
+    return await this.saveSettings(defaultSettings);
+  }
+
+  /**
+   * Clear all settings
+   */
+  async clearSettings(): Promise<boolean> {
+    try {
+      const isAuthenticated = await supabaseStorage.isAuthenticated();
+      
+      if (!isAuthenticated) {
+        return await supabaseStorage.removeItem("userSettings");
+      }
+
+      const userId = await supabaseStorage.getCurrentUserId();
+      if (!userId) {
+        return false;
+      }
+
+      return await supabaseStorage.removeItem(`userSettings_${userId}`);
+    } catch (error) {
+      console.error("Error clearing settings:", error);
+      return false;
+    }
   }
 }
 
-export const settingsService = new SupabaseSettingsService(); 
+export const settingsService = new SettingsService(); 

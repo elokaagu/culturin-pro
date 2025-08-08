@@ -1,268 +1,217 @@
-import { User } from "@supabase/supabase-js";
-import { localStorageUtils } from "@/lib/localStorage";
 import { supabase } from "@/lib/supabase";
+import { supabaseStorage } from "@/lib/supabase-storage";
 
-/**
- * Centralized service for loading and managing user-specific data
- * across all dashboard sections
- */
-export class UserDataService {
-  private static instance: UserDataService;
-  private userDataCache: Map<string, any> = new Map();
-  private loadingPromises: Map<string, Promise<any>> = new Map();
+export interface UserData {
+  id: string;
+  email: string;
+  full_name?: string;
+  role?: string;
+  studio_access?: boolean;
+  preferences?: Record<string, any>;
+  settings?: Record<string, any>;
+  itineraries?: any[];
+  lastLogin?: string;
+}
 
-  static getInstance(): UserDataService {
-    if (!UserDataService.instance) {
-      UserDataService.instance = new UserDataService();
-    }
-    return UserDataService.instance;
-  }
+class UserDataService {
+  private cache: Map<string, UserData> = new Map();
 
   /**
-   * Load all user-specific data for a given user
+   * Load user data from Supabase
    */
-  async loadUserData(user: User): Promise<any> {
-    const cacheKey = `userData_${user.id}`;
-    
-    // Return cached data if available and fresh
-    if (this.userDataCache.has(cacheKey)) {
-      const cached = this.userDataCache.get(cacheKey);
-      const cacheAge = Date.now() - cached.timestamp;
-      
-      // Use cache for 5 minutes
-      if (cacheAge < 5 * 60 * 1000) {
-        return cached.data;
+  async loadUserData(user: any): Promise<UserData | null> {
+    try {
+      console.log("Loading user data for:", user.email);
+
+      // Check cache first
+      if (this.cache.has(user.id)) {
+        console.log("Returning cached user data");
+        return this.cache.get(user.id)!;
       }
-    }
 
-    // Return existing promise if already loading
-    if (this.loadingPromises.has(cacheKey)) {
-      return this.loadingPromises.get(cacheKey);
-    }
-
-    // Start loading user data
-    const loadingPromise = this.fetchUserData(user);
-    this.loadingPromises.set(cacheKey, loadingPromise);
-
-    try {
-      const userData = await loadingPromise;
-      
-      // Cache the result
-      this.userDataCache.set(cacheKey, {
-        data: userData,
-        timestamp: Date.now()
-      });
-
-      return userData;
-    } finally {
-      this.loadingPromises.delete(cacheKey);
-    }
-  }
-
-  /**
-   * Fetch user data from various sources
-   */
-  private async fetchUserData(user: User): Promise<any> {
-
-    const userData = {
-      user: {
-        id: user.id,
-        email: user.email,
-        full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
-        role: 'user',
-        studio_access: true
-      },
-      itineraries: [],
-      bookings: [],
-      guests: [],
-      analytics: {
-        totalBookings: 0,
-        totalRevenue: 0,
-        averageRating: 0,
-        newGuests: 0
-      },
-      settings: {},
-      preferences: {},
-      lastLogin: new Date().toISOString()
-    };
-
-    try {
-      // Load user profile from database
-      const { data: userProfile } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
+      // Fetch user data from Supabase users table
+      const { data: userData, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
         .single();
 
-      if (userProfile) {
-        userData.user = { ...userData.user, ...userProfile };
+      if (error) {
+        console.error("Error loading user data:", error);
+        return null;
       }
 
-      // Load itineraries
-      try {
-        const { data: itineraries } = await supabase
-          .from('itineraries')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+      // Load additional data from Supabase storage
+      const [preferences, settings, itineraries] = await Promise.all([
+        supabaseStorage.getItem(`userPreferences_${user.id}`),
+        supabaseStorage.getItem(`userSettings_${user.id}`),
+        supabaseStorage.getItem(`userItineraries_${user.id}`),
+      ]);
 
-        userData.itineraries = itineraries || [];
-      } catch (error) {
-        userData.itineraries = this.loadItinerariesFromLocalStorage(user.id);
-      }
+      const completeUserData: UserData = {
+        ...userData,
+        preferences: preferences || {},
+        settings: settings || {},
+        itineraries: itineraries || [],
+        lastLogin: new Date().toISOString(),
+      };
 
-      // Load user preferences and settings from localStorage
-      userData.preferences = this.loadFromLocalStorage(`userPreferences_${user.id}`, {});
-      userData.settings = this.loadFromLocalStorage(`userSettings_${user.id}`, {
-        theme: 'light',
-        notifications: true,
-        autoSave: true
-      });
+      // Cache the result
+      this.cache.set(user.id, completeUserData);
 
-      // Update last login
-      this.saveToLocalStorage(`userLastLogin_${user.id}`, userData.lastLogin);
+      // Save last login time
+      await supabaseStorage.setItem(`userLastLogin_${user.id}`, completeUserData.lastLogin);
 
-      return userData;
+      console.log("User data loaded successfully:", completeUserData);
+      return completeUserData;
     } catch (error) {
-      console.error("❌ Error loading user data:", error);
-      
-      // Return fallback data with localStorage content
-      userData.itineraries = this.loadItinerariesFromLocalStorage(user.id);
-      userData.preferences = this.loadFromLocalStorage(`userPreferences_${user.id}`, {});
-      userData.settings = this.loadFromLocalStorage(`userSettings_${user.id}`, {});
-      
-      return userData;
+      console.error("Error in loadUserData:", error);
+      return null;
     }
   }
 
   /**
-   * Load itineraries from localStorage as fallback
+   * Load user data with fallback to Supabase storage
    */
-  private loadItinerariesFromLocalStorage(userId: string): any[] {
+  async loadUserDataWithFallback(user: any): Promise<UserData | null> {
     try {
-      const userSpecificKey = `culturinItineraries_${userId}`;
-      let itinerariesStr = localStorageUtils.getItem(userSpecificKey);
+      // Try to load from database first
+      const userData = await this.loadUserData(user);
+      if (userData) {
+        return userData;
+      }
 
-      // Fallback to generic key
-      if (!itinerariesStr) {
-        itinerariesStr = localStorageUtils.getItem("culturinItineraries");
-        if (itinerariesStr) {
-          // Migrate to user-specific key
-          localStorageUtils.setItem(userSpecificKey, itinerariesStr);
+      console.log("Database load failed, trying Supabase storage fallback");
+
+      // Fallback to Supabase storage
+      const [preferences, settings, itineraries, lastLogin] = await Promise.all([
+        supabaseStorage.getItem(`userPreferences_${user.id}`),
+        supabaseStorage.getItem(`userSettings_${user.id}`),
+        supabaseStorage.getItem(`userItineraries_${user.id}`),
+        supabaseStorage.getItem(`userLastLogin_${user.id}`),
+      ]);
+
+      const fallbackUserData: UserData = {
+        id: user.id,
+        email: user.email,
+        preferences: preferences || {},
+        settings: settings || {},
+        itineraries: itineraries || [],
+        lastLogin: lastLogin || new Date().toISOString(),
+      };
+
+      console.log("Loaded fallback user data:", fallbackUserData);
+      return fallbackUserData;
+    } catch (error) {
+      console.error("Error in loadUserDataWithFallback:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Save user preferences to Supabase storage
+   */
+  async saveUserPreferences(userId: string, preferences: Record<string, any>): Promise<boolean> {
+    try {
+      const success = await supabaseStorage.setItem(`userPreferences_${userId}`, preferences);
+      if (success) {
+        // Update cache if exists
+        const cached = this.cache.get(userId);
+        if (cached) {
+          cached.preferences = preferences;
+          this.cache.set(userId, cached);
         }
       }
-
-      if (itinerariesStr) {
-        return JSON.parse(itinerariesStr);
-      }
+      return success;
     } catch (error) {
-      console.error("Error loading itineraries from localStorage:", error);
+      console.error("Error saving user preferences:", error);
+      return false;
     }
-    return [];
   }
 
   /**
-   * Load data from localStorage with fallback
+   * Save user settings to Supabase storage
    */
-  private loadFromLocalStorage(key: string, fallback: any = null): any {
+  async saveUserSettings(userId: string, settings: Record<string, any>): Promise<boolean> {
     try {
-      const data = localStorageUtils.getItem(key);
-      return data ? JSON.parse(data) : fallback;
-    } catch (error) {
-      console.error(`Error loading ${key} from localStorage:`, error);
-      return fallback;
-    }
-  }
-
-  /**
-   * Save data to localStorage
-   */
-  private saveToLocalStorage(key: string, data: any): void {
-    try {
-      localStorageUtils.setItem(key, JSON.stringify(data));
-    } catch (error) {
-      console.error(`Error saving ${key} to localStorage:`, error);
-    }
-  }
-
-  /**
-   * Update user preferences
-   */
-  async updateUserPreferences(userId: string, preferences: any): Promise<void> {
-    const key = `userPreferences_${userId}`;
-    this.saveToLocalStorage(key, preferences);
-    
-    // Update cache
-    const cacheKey = `userData_${userId}`;
-    if (this.userDataCache.has(cacheKey)) {
-      const cached = this.userDataCache.get(cacheKey);
-      cached.data.preferences = preferences;
-    }
-  }
-
-  /**
-   * Update user settings
-   */
-  async updateUserSettings(userId: string, settings: any): Promise<void> {
-    const key = `userSettings_${userId}`;
-    this.saveToLocalStorage(key, settings);
-    
-    // Update cache
-    const cacheKey = `userData_${userId}`;
-    if (this.userDataCache.has(cacheKey)) {
-      const cached = this.userDataCache.get(cacheKey);
-      cached.data.settings = settings;
-    }
-  }
-
-  /**
-   * Clear all user data from cache and localStorage
-   */
-  clearUserData(userId: string): void {
-    
-    // Clear cache
-    const cacheKey = `userData_${userId}`;
-    this.userDataCache.delete(cacheKey);
-    this.loadingPromises.delete(cacheKey);
-    
-    // Clear localStorage
-    if (typeof window !== "undefined") {
-      const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (
-          key.startsWith(`culturinItineraries_${userId}`) ||
-          key.startsWith(`userPreferences_${userId}`) ||
-          key.startsWith(`userSettings_${userId}`) ||
-          key.startsWith(`userLastLogin_${userId}`) ||
-          key.startsWith(`publishedWebsiteUrl_${userId}`) ||
-          key.startsWith(`websiteData_${userId}`)
-        )) {
-          keysToRemove.push(key);
+      const success = await supabaseStorage.setItem(`userSettings_${userId}`, settings);
+      if (success) {
+        // Update cache if exists
+        const cached = this.cache.get(userId);
+        if (cached) {
+          cached.settings = settings;
+          this.cache.set(userId, cached);
         }
       }
-      keysToRemove.forEach(key => localStorage.removeItem(key));
+      return success;
+    } catch (error) {
+      console.error("Error saving user settings:", error);
+      return false;
     }
   }
 
   /**
-   * Get cached user data without loading
+   * Save user itineraries to Supabase storage
    */
-  getCachedUserData(userId: string): any | null {
-    const cacheKey = `userData_${userId}`;
-    const cached = this.userDataCache.get(cacheKey);
-    return cached ? cached.data : null;
+  async saveUserItineraries(userId: string, itineraries: any[]): Promise<boolean> {
+    try {
+      const success = await supabaseStorage.setItem(`userItineraries_${userId}`, itineraries);
+      if (success) {
+        // Update cache if exists
+        const cached = this.cache.get(userId);
+        if (cached) {
+          cached.itineraries = itineraries;
+          this.cache.set(userId, cached);
+        }
+      }
+      return success;
+    } catch (error) {
+      console.error("Error saving user itineraries:", error);
+      return false;
+    }
   }
 
   /**
-   * Refresh user data (force reload)
+   * Clear all user data from cache and Supabase storage
    */
-  async refreshUserData(user: User): Promise<any> {
-    const cacheKey = `userData_${user.id}`;
-    this.userDataCache.delete(cacheKey);
-    return this.loadUserData(user);
+  async clearUserData(userId: string): Promise<boolean> {
+    try {
+      // Clear cache
+      this.cache.delete(userId);
+
+      // Clear all user data from Supabase storage
+      const keysToRemove = [
+        `userPreferences_${userId}`,
+        `userSettings_${userId}`,
+        `userItineraries_${userId}`,
+        `userLastLogin_${userId}`,
+      ];
+
+      const removePromises = keysToRemove.map(key => supabaseStorage.removeItem(key));
+      await Promise.all(removePromises);
+
+      console.log("Cleared all user data for:", userId);
+      return true;
+    } catch (error) {
+      console.error("Error clearing user data:", error);
+      return false;
+    }
+  }
+
+  /**
+   * Get cached user data
+   */
+  getCachedUserData(userId: string): UserData | null {
+    return this.cache.get(userId) || null;
+  }
+
+  /**
+   * Clear cache
+   */
+  clearCache(): void {
+    this.cache.clear();
   }
 }
 
-// Export singleton instance
-export const userDataService = UserDataService.getInstance();
+export const userDataService = new UserDataService();
+

@@ -6,6 +6,7 @@ import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
 import ItineraryEditor from "@/components/pro/itinerary/ItineraryEditor";
 import { ItineraryType } from "@/data/itineraryData";
 import { useToast } from "@/components/ui/use-toast";
+import { supabaseStorage } from "@/lib/supabase-storage";
 
 export default function CreateItineraryPage() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function CreateItineraryPage() {
     router.push("/pro-dashboard/itinerary");
   };
 
-  const handleItinerarySave = (savedItinerary: ItineraryType) => {
+  const handleItinerarySave = async (savedItinerary: ItineraryType) => {
     // The savedItinerary now contains the actual database record with proper ID
     toast({
       title: "Itinerary Created!",
@@ -37,7 +38,7 @@ export default function CreateItineraryPage() {
     });
     
     // Set a flag to indicate we're returning from creating a new itinerary
-    sessionStorage.setItem('returningFromCreate', 'true');
+    await supabaseStorage.setItem('returningFromCreate', 'true');
     
     // Navigate back to the itinerary list
     router.push("/pro-dashboard/itinerary");

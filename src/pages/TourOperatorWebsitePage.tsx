@@ -8,6 +8,7 @@ import ContactSection from '@/components/pro/website/ContactSection';
 import ToursGrid from '@/components/pro/website/ToursGrid';
 import { cn } from '@/lib/utils';
 import Image from "@/components/ui/image";
+import { supabaseStorage } from '@/lib/supabase-storage';
 
 const TourOperatorWebsitePage: React.FC = () => {
   const { slug, '*': subpath } = useParams();
@@ -59,23 +60,22 @@ const TourOperatorWebsitePage: React.FC = () => {
   }, [location.pathname, itineraries]);
 
   useEffect(() => {
-    // Fetch website data from localStorage
-    const fetchWebsiteData = () => {
+    // Fetch website data from Supabase storage
+    const fetchWebsiteData = async () => {
       try {
-        const publishedData = localStorage.getItem('publishedWebsiteContent');
-        const publishedTheme = localStorage.getItem('publishedWebsiteTheme');
-        const publishedItineraries = localStorage.getItem('publishedItineraries');
+        const publishedData = await supabaseStorage.getItem('publishedWebsiteContent');
+        const publishedTheme = await supabaseStorage.getItem('publishedWebsiteTheme');
+        const publishedItineraries = await supabaseStorage.getItem('publishedItineraries');
         
         if (publishedData) {
-          const parsedData = JSON.parse(publishedData);
           setWebsiteData({
-            ...parsedData,
+            ...publishedData,
             theme: publishedTheme || 'classic',
           });
         }
         
         if (publishedItineraries) {
-          setItineraries(JSON.parse(publishedItineraries));
+          setItineraries(publishedItineraries);
         }
       } catch (error) {
         console.error('Error loading website data:', error);

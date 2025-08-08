@@ -1,30 +1,18 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+import { User, Session } from "@supabase/supabase-js";
 
-interface UserData {
-  id: string;
-  email: string;
-  full_name?: string;
-  role?: string;
-  studio_access?: boolean;
-  preferences?: Record<string, any>;
-  settings?: Record<string, any>;
-}
-
-interface AuthState {
+export interface AuthState {
   user: User | null;
   session: Session | null;
-  userData: UserData | null;
+  userData: any | null;
   isLoading: boolean;
   isReady: boolean;
 }
 
-const USER_DATA_KEY = "culturin-user-data";
-
-export function useAuth() {
+export const useAuth = () => {
   const [state, setState] = useState<AuthState>({
     user: null,
     session: null,
@@ -33,49 +21,27 @@ export function useAuth() {
     isReady: false,
   });
 
-  // Load user data from database
+  // Load user data from Supabase
   const loadUserData = useCallback(async (user: User) => {
     try {
-      // Check cache first
-      const cachedData = sessionStorage.getItem(USER_DATA_KEY);
-      if (cachedData) {
-        try {
-          const parsed = JSON.parse(cachedData);
-          if (parsed.id === user.id) {
-            setState((prev) => ({
-              ...prev,
-              userData: parsed,
-            }));
-            return;
-          }
-        } catch (e) {
-          // Invalid cache, remove it
-          sessionStorage.removeItem(USER_DATA_KEY);
-        }
-      }
+      console.log("Loading user data for:", user.email);
 
-      // Fetch from database
-      const { data, error } = await supabase
+      // Fetch user data from Supabase users table
+      const { data: userData, error } = await supabase
         .from("users")
         .select("*")
         .eq("id", user.id)
         .single();
 
       if (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error loading user data:", error);
         return;
       }
 
-      if (data) {
-        // Cache the result
-        sessionStorage.setItem(USER_DATA_KEY, JSON.stringify(data));
-        setState((prev) => ({
-          ...prev,
-          userData: data,
-        }));
-      }
+      console.log("User data loaded:", userData);
+      setState((prev) => ({ ...prev, userData }));
     } catch (error) {
-      console.error("Error loading user data:", error);
+      console.error("Error in loadUserData:", error);
     }
   }, []);
 
@@ -86,14 +52,16 @@ export function useAuth() {
     const initAuth = async () => {
       try {
         console.log("Initializing authentication...");
-        
+
         // Check what's in localStorage for debugging
         if (typeof window !== "undefined") {
           const localStorageKeys = Object.keys(localStorage);
-          const sessionKeys = localStorageKeys.filter(key => key.includes('supabase'));
+          const sessionKeys = localStorageKeys.filter((key) =>
+            key.includes("supabase")
+          );
           console.log("Supabase localStorage keys:", sessionKeys);
         }
-        
+
         // Get current session
         const {
           data: { session },
@@ -104,7 +72,10 @@ export function useAuth() {
           console.error("Error getting session:", error);
         }
 
-        console.log("Initial session check:", session ? "Session found" : "No session");
+        console.log(
+          "Initial session check:",
+          session ? "Session found" : "No session"
+        );
         if (session) {
           console.log("Session expires at:", session.expires_at);
           console.log("Session user:", session.user?.email);
@@ -145,17 +116,25 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user?.email, "at", new Date().toISOString());
+      console.log(
+        "Auth state changed:",
+        event,
+        session?.user?.email,
+        "at",
+        new Date().toISOString()
+      );
 
       if (mounted) {
         console.log("Setting state for event:", event);
-        
+
         // Don't clear user data on INITIAL_SESSION if we already have a user
         if (event === "INITIAL_SESSION" && !session && state.user) {
-          console.log("Ignoring INITIAL_SESSION with no session - keeping existing user");
+          console.log(
+            "Ignoring INITIAL_SESSION with no session - keeping existing user"
+          );
           return;
         }
-        
+
         // Update state immediately
         setState((prev) => ({
           ...prev,
@@ -167,12 +146,17 @@ export function useAuth() {
         }));
 
         if (session?.user) {
-          console.log("Loading user data after auth change for:", session.user.email);
+          console.log(
+            "Loading user data after auth change for:",
+            session.user.email
+          );
           await loadUserData(session.user);
         } else if (event !== "INITIAL_SESSION") {
           // Only clear data on actual logout, not initial session check
-          console.log("Clearing user data - no session at", new Date().toISOString());
-          sessionStorage.removeItem(USER_DATA_KEY);
+          console.log(
+            "Clearing user data - no session at",
+            new Date().toISOString()
+          );
         }
       } else {
         console.log("Component unmounted, ignoring auth change");
@@ -185,65 +169,63 @@ export function useAuth() {
     };
   }, [loadUserData]);
 
-  // Authentication methods
+  // Login function
   const login = useCallback(async (email: string, password: string) => {
     console.log("Attempting login for:", email);
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    
     if (error) {
       console.error("Login error:", error);
     } else {
       console.log("Login successful for:", email);
     }
-    
     return { error };
   }, []);
 
-  const signUp = useCallback(
-    async (email: string, password: string, metadata?: any) => {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: metadata ? { data: metadata } : undefined,
-      });
-      return { error };
-    },
-    []
-  );
-
-  const logout = useCallback(async () => {
-    console.log("Logging out user");
-    // Clear cached data
-    sessionStorage.removeItem(USER_DATA_KEY);
-
-    const { error } = await supabase.auth.signOut();
-    return { error };
-  }, []);
-
-  const refreshUserData = useCallback(async () => {
-    if (state.user) {
-      // Clear cache to force fresh fetch
-      sessionStorage.removeItem(USER_DATA_KEY);
-      await loadUserData(state.user);
+  // Sign up function
+  const signUp = useCallback(async (email: string, password: string) => {
+    console.log("Attempting sign up for:", email);
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    if (error) {
+      console.error("Sign up error:", error);
+    } else {
+      console.log("Sign up successful for:", email);
     }
-  }, [state.user, loadUserData]);
+    return { error };
+  }, []);
 
-  // Computed values
+  // Logout function
+  const logout = useCallback(async () => {
+    console.log("Attempting logout");
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Logout error:", error);
+    } else {
+      console.log("Logout successful");
+    }
+    return { error };
+  }, []);
+
+  // Computed properties
   const isLoggedIn = !!state.user;
-  const isAdmin = state.userData?.role === "admin";
-  const hasStudioAccess = !!state.userData?.studio_access;
+  const isLoading = state.isLoading;
+  const isReady = state.isReady;
 
   return {
-    ...state,
+    user: state.user,
+    session: state.session,
+    userData: state.userData,
+    isLoading,
+    isReady,
     isLoggedIn,
-    isAdmin,
-    hasStudioAccess,
     login,
     signUp,
     logout,
-    refreshUserData,
+    loadUserData,
   };
-}
+};

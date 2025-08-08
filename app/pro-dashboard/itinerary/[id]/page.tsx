@@ -44,7 +44,7 @@ import {
 import Image from "@/components/ui/image";
 
 import { itineraryService } from "@/lib/itinerary-service";
-import { ItineraryType } from "@/data/itineraryData";
+import { Itinerary } from "@/hooks/useItineraries";
 
 export default function ItineraryDetailPage() {
   const params = useParams();
@@ -53,7 +53,7 @@ export default function ItineraryDetailPage() {
   const itineraryId = params.id as string;
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<any>(null);
-  const [itinerary, setItinerary] = useState<ItineraryType | null>(null);
+  const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -98,16 +98,11 @@ export default function ItineraryDetailPage() {
         title: itinerary.title,
         description: itinerary.description,
         days: itinerary.days,
-        regions: itinerary.regions.join(", "),
-        themeType: itinerary.themeType,
         status: itinerary.status,
         image: itinerary.image,
         price: itinerary.price,
         currency: itinerary.currency,
-        groupSizeMin: itinerary.groupSize?.min,
-        groupSizeMax: itinerary.groupSize?.max,
-        difficulty: itinerary.difficulty,
-        tags: itinerary.tags?.join(", "),
+        highlights: itinerary.highlights?.join(", "),
       });
       setIsEditing(true);
     }
@@ -136,47 +131,52 @@ export default function ItineraryDetailPage() {
     setIsSaving(true);
 
     try {
-      const updates: Partial<ItineraryType> = {
+      const updates: Partial<Itinerary> = {
         title: formData.title.trim(),
         description: formData.description?.trim() || "",
         days: formData.days || 1,
-        regions: formData.regions
-          ? formData.regions.split(", ").filter(Boolean)
-          : [],
-        themeType: formData.themeType || "cultural",
         status: formData.status || "draft",
-        image: formData.image || null,
+        image: formData.image || "",
         price: formData.price || null,
         currency: formData.currency || "USD",
-        groupSize: {
-          min: formData.groupSizeMin || 1,
-          max: formData.groupSizeMax || 10,
-        },
-        difficulty: formData.difficulty || "easy",
-        tags: formData.tags ? formData.tags.split(", ").filter(Boolean) : [],
+        highlights: formData.highlights
+          ? formData.highlights.split(", ").filter(Boolean)
+          : [],
       };
 
-      const updatedItinerary = await itineraryService.updateItinerary(
-        itinerary.id,
-        updates
-      );
-
-      setItinerary(updatedItinerary);
-      setIsEditing(false);
-
-      // Dispatch event to notify website builder of itinerary changes
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("itineraryChanged", {
-            detail: { action: "updated", itinerary: updatedItinerary },
-          })
-        );
-      }
-
-      toast({
-        title: "Changes Saved",
-        description: "Your itinerary has been updated successfully.",
+      const success = await itineraryService.updateItinerary({
+        ...itinerary,
+        ...updates,
       });
+
+      if (success) {
+        // Refresh the itinerary data
+        const refreshedItinerary = await itineraryService.getItinerary(
+          itinerary.id
+        );
+        setItinerary(refreshedItinerary);
+        setIsEditing(false);
+
+        // Dispatch event to notify website builder of itinerary changes
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("itineraryChanged", {
+              detail: { action: "updated", itinerary: refreshedItinerary },
+            })
+          );
+        }
+
+        toast({
+          title: "Changes Saved",
+          description: "Your itinerary has been updated successfully.",
+        });
+      } else {
+        toast({
+          title: "Save Failed",
+          description: "Failed to save itinerary. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Error saving itinerary:", error);
 
@@ -296,24 +296,31 @@ export default function ItineraryDetailPage() {
 
     try {
       // Create a duplicate of the current itinerary
-      const { id, lastUpdated, ...itineraryData } = itinerary;
+      const { id, ...itineraryData } = itinerary;
       const duplicateItinerary = {
         ...itineraryData,
+        id: `duplicate-${Date.now()}`,
         title: `${itinerary.title} (Copy)`,
         status: "draft" as const,
       };
 
-      const newItinerary = await itineraryService.createItinerary(
-        duplicateItinerary
-      );
+      const success = await itineraryService.saveItinerary(duplicateItinerary);
 
-      toast({
-        title: "Itinerary Duplicated",
-        description: "A copy of this itinerary has been created.",
-      });
+      if (success) {
+        toast({
+          title: "Itinerary Duplicated",
+          description: "A copy of this itinerary has been created.",
+        });
 
-      // Navigate to the new duplicate
-      router.push(`/pro-dashboard/itinerary/${newItinerary.id}`);
+        // Navigate back to the itinerary list
+        router.push("/pro-dashboard/itinerary");
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to duplicate itinerary",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Error duplicating itinerary:", error);
       toast({
@@ -336,16 +343,25 @@ export default function ItineraryDetailPage() {
     if (!itinerary) return;
 
     try {
-      await itineraryService.updateItinerary(itinerary.id, {
+      const success = await itineraryService.updateItinerary({
+        ...itinerary,
         status: "archived",
       });
 
-      toast({
-        title: "Itinerary Archived",
-        description: "The itinerary has been archived successfully.",
-      });
+      if (success) {
+        toast({
+          title: "Itinerary Archived",
+          description: "The itinerary has been archived successfully.",
+        });
 
-      router.push("/pro-dashboard/itinerary");
+        router.push("/pro-dashboard/itinerary");
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to archive itinerary",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Error archiving itinerary:", error);
       toast({
@@ -448,9 +464,9 @@ export default function ItineraryDetailPage() {
                 <p className="text-gray-600">
                   {isEditing
                     ? "Make changes to your itinerary"
-                    : `${itinerary.days} days • ${itinerary.regions.join(
-                        ", "
-                      )}`}
+                    : `${itinerary.days} days • ${
+                        itinerary.highlights?.join(", ") || "No highlights"
+                      }`}
                 </p>
               </div>
             </div>
@@ -525,8 +541,8 @@ export default function ItineraryDetailPage() {
                   />
                   <div className="absolute top-4 right-4">
                     <Badge className="bg-black/50 text-white">
-                      {itinerary.themeType.charAt(0).toUpperCase() +
-                        itinerary.themeType.slice(1)}
+                      {itinerary.status.charAt(0).toUpperCase() +
+                        itinerary.status.slice(1)}
                     </Badge>
                   </div>
                   {/* Image Upload Overlay */}
@@ -767,7 +783,7 @@ export default function ItineraryDetailPage() {
                       <div className="flex flex-col">
                         <span className="text-gray-600">Destinations</span>
                         <span className="font-medium">
-                          {itinerary.regions.join(", ")}
+                          {itinerary.highlights?.join(", ") || "No highlights"}
                         </span>
                       </div>
                       <div className="flex flex-col">

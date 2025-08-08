@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useNavigate } from "../../lib/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
+import { supabaseStorage } from "@/lib/supabase-storage";
 import { ArrowRight } from "lucide-react";
 
 // Import our modular components
@@ -15,13 +16,13 @@ const CulturinPro = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleGetStarted = () => {
+  const handleGetStarted = async () => {
     setIsLoading(true);
 
     // Simulate loading
-    setTimeout(() => {
-      // Store access in localStorage
-      localStorage.setItem("culturinProAccess", "true");
+    setTimeout(async () => {
+      // Store access in Supabase storage
+      await supabaseStorage.setItem("culturinProAccess", "true");
 
       toast({
         title: "Welcome to Culturin Pro!",

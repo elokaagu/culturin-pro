@@ -7,6 +7,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { supabaseStorage } from "@/lib/supabase-storage";
 
 export interface Language {
   code: string;
@@ -2049,54 +2050,62 @@ export const TranslationProvider: React.FC<{ children: ReactNode }> = ({
     useState<Record<string, Record<string, string>>>(mockTranslations);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      // First, try to detect language from URL
-      const urlLangCode = detectLanguageFromURL();
-      let detectedLanguage = availableLanguages.find(
-        (lang) => lang.code === urlLangCode
-      );
-
-      // If no URL language, try cookie
-      if (!detectedLanguage) {
-        const cookieLangCode = getLocaleFromCookie();
-        detectedLanguage = availableLanguages.find(
-          (lang) => lang.code === cookieLangCode
+    const detectLanguage = async () => {
+      if (typeof window !== "undefined") {
+        // First, try to detect language from URL
+        const urlLangCode = detectLanguageFromURL();
+        let detectedLanguage = availableLanguages.find(
+          (lang) => lang.code === urlLangCode
         );
-      }
 
-      // If still no language, try localStorage
-      if (!detectedLanguage) {
-        const savedLanguage = localStorage.getItem("culturin_language");
-        if (savedLanguage) {
+        // If no URL language, try cookie
+        if (!detectedLanguage) {
+          const cookieLangCode = getLocaleFromCookie();
           detectedLanguage = availableLanguages.find(
-            (lang) => lang.code === savedLanguage
+            (lang) => lang.code === cookieLangCode
           );
         }
-      }
 
-      // Final fallback to browser language
-      if (!detectedLanguage) {
-        const browserLang = navigator.language.split("-")[0];
-        detectedLanguage = availableLanguages.find(
-          (lang) => lang.code === browserLang
-        );
-      }
+        // If still no language, try Supabase storage
+        if (!detectedLanguage) {
+          try {
+            const savedLanguage = await supabaseStorage.getItem("culturin_language");
+            if (savedLanguage) {
+              detectedLanguage = availableLanguages.find(
+                (lang) => lang.code === savedLanguage
+              );
+            }
+          } catch (error) {
+            console.error("Error getting language from storage:", error);
+          }
+        }
 
-      if (detectedLanguage) {
-        setCurrentLanguage(detectedLanguage);
-        // Update document attributes
-        document.documentElement.dir = detectedLanguage.rtl ? "rtl" : "ltr";
-        document.documentElement.lang = detectedLanguage.code;
-        // Save to localStorage
-        localStorage.setItem("culturin_language", detectedLanguage.code);
+        // Final fallback to browser language
+        if (!detectedLanguage) {
+          const browserLang = navigator.language.split("-")[0];
+          detectedLanguage = availableLanguages.find(
+            (lang) => lang.code === browserLang
+          );
+        }
+
+        if (detectedLanguage) {
+          setCurrentLanguage(detectedLanguage);
+          // Update document attributes
+          document.documentElement.dir = detectedLanguage.rtl ? "rtl" : "ltr";
+          document.documentElement.lang = detectedLanguage.code;
+          // Save to Supabase storage
+          await supabaseStorage.setItem("culturin_language", detectedLanguage.code);
+        }
       }
-    }
+    };
+
+    detectLanguage();
   }, []);
 
-  const setLanguage = (language: Language) => {
+  const setLanguage = async (language: Language) => {
     setCurrentLanguage(language);
     if (typeof window !== "undefined") {
-      localStorage.setItem("culturin_language", language.code);
+      await supabaseStorage.setItem("culturin_language", language.code);
 
       // Update document direction for RTL languages
       document.documentElement.dir = language.rtl ? "rtl" : "ltr";
