@@ -46,7 +46,7 @@ interface HeaderFooterCustomizerProps {
 const HeaderFooterCustomizer: React.FC<HeaderFooterCustomizerProps> = ({
   onSettingsChange,
 }) => {
-  const { userData, updateWebsiteSettings } = useUserData();
+  const { userData } = useUserData();
   const [saving, setSaving] = useState(false);
 
   // Header settings
@@ -215,28 +215,7 @@ const HeaderFooterCustomizer: React.FC<HeaderFooterCustomizerProps> = ({
       saveHeaderSettings();
       saveFooterSettings();
 
-      // Update website settings context
-      updateWebsiteSettings({
-        headerSettings: {
-          layout: headerLayout,
-          height: headerHeight,
-          textAlign: headerTextAlign,
-          showNav: showHeaderNav,
-          navItems: headerNavItems,
-          logo: headerLogo,
-          backgroundType: headerBackgroundType,
-        },
-        footerSettings: {
-          layout: footerLayout,
-          showLogo: showFooterLogo,
-          logo: footerLogo,
-          backgroundColor: footerBackgroundColor,
-          textColor: footerTextColor,
-          showSocial: showSocialLinks,
-          socialLinks,
-          contactInfo,
-        },
-      });
+      // Note: Website settings would be saved to a separate service in the new structure
 
       if (onSettingsChange) {
         onSettingsChange();

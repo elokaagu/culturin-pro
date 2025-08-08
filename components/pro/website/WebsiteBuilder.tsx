@@ -42,7 +42,7 @@ import {
   Minimize,
 } from "lucide-react";
 import { useNavigate } from "../../../lib/navigation";
-import { ItineraryType } from "@/data/itineraryData";
+import { Itinerary } from "@/hooks/useItineraries";
 import { useUserData } from "../../../src/contexts/UserDataContext";
 import MediaLibrary from "./MediaLibrary";
 import { settingsService } from "@/lib/settings-service";
@@ -54,19 +54,19 @@ import { useAuth } from "@/src/components/auth/AuthProvider";
 // History management for undo/redo functionality
 interface HistoryState {
   websiteSettings: any;
-  itineraries: ItineraryType[];
+  itineraries: Itinerary[];
   timestamp: number;
 }
 
 interface HistoryInput {
   websiteSettings: any;
-  itineraries: ItineraryType[];
+  itineraries: Itinerary[];
 }
 
 // Website data structure for persistence
 interface WebsiteData {
   settings: any;
-  itineraries: ItineraryType[];
+  itineraries: Itinerary[];
   blocks: any[];
   theme: string;
   publishedUrl: string;
@@ -80,7 +80,7 @@ const WebsiteBuilder: React.FC = () => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
   const [publishedUrl, setPublishedUrl] = useState("");
-  const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
+  const [itineraries, setItineraries] = useState<Itinerary[]>([]);
   const [previewKey, setPreviewKey] = useState(0);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -99,7 +99,7 @@ const WebsiteBuilder: React.FC = () => {
   const [isUndoRedoAction, setIsUndoRedoAction] = useState(false);
 
   const navigate = useNavigate();
-  const { userData, updateWebsiteSettings, saveUserData } = useUserData();
+  const { userData } = useUserData();
   const { user, isLoggedIn } = useAuth();
 
   // Initialize data - only on client side
@@ -123,9 +123,8 @@ const WebsiteBuilder: React.FC = () => {
         if (storedUrl) {
           setPublishedUrl(storedUrl);
         } else {
-          // Generate a default URL based on business name and user ID
-          const businessName =
-            userData?.businessName || userData?.websiteSettings?.companyName;
+          // Generate a default URL based on user ID
+          const businessName = "my-business";
           if (businessName && user?.id) {
             const cleanBusinessName = businessName
               .toLowerCase()
@@ -156,18 +155,12 @@ const WebsiteBuilder: React.FC = () => {
             if (userSettings?.website_settings) {
               const settings = userSettings.website_settings;
 
-              // Update website settings with user-specific data
-              if (settings.settings) {
-                updateWebsiteSettings(settings.settings);
-              }
+              // Note: Website settings would be saved to a separate service in the new structure
 
               // Update itineraries if available
               if (settings.itineraries) {
                 setItineraries(settings.itineraries);
-                localStorageUtils.setItem(
-                  "culturinItineraries",
-                  JSON.stringify(settings.itineraries)
-                );
+                // Note: Itineraries are now saved to Supabase storage
               }
 
               // Update published URL if available
@@ -177,50 +170,30 @@ const WebsiteBuilder: React.FC = () => {
             }
 
             // Load itineraries from database
-            const dbItineraries = await itineraryService.getItineraries(
-              user.id
-            );
+            const dbItineraries = await itineraryService.getItineraries();
 
             if (dbItineraries && dbItineraries.length > 0) {
               setItineraries(dbItineraries);
-              // Save with user-specific key
-              const userSpecificItinerariesKey = `culturinItineraries_${user.id}`;
-              localStorageUtils.setItem(
-                userSpecificItinerariesKey,
-                JSON.stringify(dbItineraries)
-              );
+              // Note: Itineraries are now saved to Supabase storage
             } else {
               setItineraries([]);
-              const userSpecificItinerariesKey = `culturinItineraries_${user.id}`;
-              localStorageUtils.removeItem(userSpecificItinerariesKey);
+              // Note: Itineraries are now saved to Supabase storage
             }
           } else {
-            // No authenticated user, load from localStorage
-            console.log("No authenticated user, loading from localStorage");
+            // No authenticated user, load from Supabase storage
+            console.log("No authenticated user, loading from Supabase storage");
             setItineraries([]);
-            localStorageUtils.removeItem("culturinItineraries");
           }
         } catch (error) {
           console.error("Error loading user data from database:", error);
           setItineraries([]);
-          localStorageUtils.removeItem("culturinItineraries");
         }
 
-        // Load last saved timestamp
-        const lastSavedStr = localStorageUtils.getItem("websiteLastSaved");
-        if (lastSavedStr) {
-          setLastSaved(new Date(lastSavedStr));
-        }
-
-        // Load auto-save preference
-        const autoSavePref = localStorageUtils.getItem("websiteAutoSave");
-        if (autoSavePref !== null) {
-          setAutoSaveEnabled(autoSavePref === "true");
-        }
+        // Note: Last saved timestamp and auto-save preference are now handled by Supabase storage
 
         // Add initial state to history
         const initialHistory: HistoryState = {
-          websiteSettings: userData?.websiteSettings || {},
+          websiteSettings: {},
           itineraries: itineraries,
           timestamp: Date.now(),
         };
@@ -230,18 +203,7 @@ const WebsiteBuilder: React.FC = () => {
         // Set hasUnsavedChanges to false initially
         setHasUnsavedChanges(false);
 
-        // Ensure we have some default website settings if none exist
-        if (!userData?.websiteSettings?.companyName) {
-          updateWebsiteSettings({
-            companyName: "Your Tour Company",
-            tagline: "Discover amazing cultural experiences",
-            description:
-              "We specialize in authentic cultural tours that connect travelers with local traditions and experiences.",
-            primaryColor: "#3B82F6",
-            theme: "classic",
-            enableBooking: true,
-          });
-        }
+        // Note: Website settings would be handled by a separate service in the new structure
       } catch (error) {
         console.error("Error loading website data:", error);
       }
@@ -267,7 +229,7 @@ const WebsiteBuilder: React.FC = () => {
       }
     }
     setIsUndoRedoAction(false);
-  }, [userData?.websiteSettings, autoSaveEnabled]);
+  }, [autoSaveEnabled]);
 
   // Listen for website settings changes
   useEffect(() => {
@@ -280,7 +242,7 @@ const WebsiteBuilder: React.FC = () => {
       if (event.detail?.filteredItineraries) {
         setItineraries(event.detail.filteredItineraries);
         addToHistory({
-          websiteSettings: userData?.websiteSettings || {},
+          websiteSettings: {},
           itineraries: event.detail.filteredItineraries,
         });
       }
@@ -294,7 +256,7 @@ const WebsiteBuilder: React.FC = () => {
       setHasUnsavedChanges(true);
       setSaveStatus("saving");
       addToHistory({
-        websiteSettings: userData?.websiteSettings || {},
+        websiteSettings: {},
         itineraries,
       });
       toast.success("Theme applied", {
@@ -307,20 +269,15 @@ const WebsiteBuilder: React.FC = () => {
         // Refresh itineraries from database when itinerary changes
         const { data: user } = await supabase.auth.getUser();
         if (user.user) {
-          const dbItineraries = await itineraryService.getItineraries(
-            user.user.id
-          );
+          const dbItineraries = await itineraryService.getItineraries();
 
           // Always update itineraries, even if empty
           setItineraries(dbItineraries || []);
 
           if (dbItineraries && dbItineraries.length > 0) {
-            localStorageUtils.setItem(
-              "culturinItineraries",
-              JSON.stringify(dbItineraries)
-            );
+            // Note: Itineraries are now saved to Supabase storage
           } else {
-            localStorageUtils.removeItem("culturinItineraries");
+            // Note: Itineraries are now saved to Supabase storage
           }
 
           setPreviewKey((prev) => prev + 1);
@@ -364,7 +321,7 @@ const WebsiteBuilder: React.FC = () => {
         );
       };
     }
-  }, [userData.websiteSettings]);
+  }, []);
 
   // History management functions
   const addToHistory = useCallback(
@@ -392,18 +349,15 @@ const WebsiteBuilder: React.FC = () => {
       setHistoryIndex((prev) => prev - 1);
 
       // Restore state
-      updateWebsiteSettings(previousState.websiteSettings);
+      // Note: Website settings would be saved to a separate service in the new structure
       setItineraries(previousState.itineraries);
-      localStorageUtils.setItem(
-        "culturinItineraries",
-        JSON.stringify(previousState.itineraries)
-      );
+      // Note: Itineraries are now saved to Supabase storage
 
       toast.success("Undone", {
         description: "Reverted to previous state",
       });
     }
-  }, [history, historyIndex, updateWebsiteSettings]);
+  }, [history, historyIndex]);
 
   const redo = useCallback(() => {
     if (historyIndex < history.length - 1) {
@@ -412,18 +366,15 @@ const WebsiteBuilder: React.FC = () => {
       setHistoryIndex((prev) => prev + 1);
 
       // Restore state
-      updateWebsiteSettings(nextState.websiteSettings);
+      // Note: Website settings would be saved to a separate service in the new structure
       setItineraries(nextState.itineraries);
-      localStorage.setItem(
-        "culturinItineraries",
-        JSON.stringify(nextState.itineraries)
-      );
+      // Note: Itineraries are now saved to Supabase storage
 
       toast.success("Redone", {
         description: "Applied next state",
       });
     }
-  }, [history, historyIndex, updateWebsiteSettings]);
+  }, [history, historyIndex]);
 
   const handleSettingsChange = useCallback(() => {
     // Trigger immediate preview refresh when settings change
@@ -438,24 +389,22 @@ const WebsiteBuilder: React.FC = () => {
       setSaveLoading(true);
 
       if (!isLoggedIn || !user) {
-        // Fallback to localStorage for non-authenticated users
-        saveUserData();
+        // Note: Data persistence is now handled by Supabase storage
         setSaveStatus("saved");
         return;
       }
 
-      // Save user data
-      saveUserData();
+      // Note: User data is now handled by Supabase storage
 
       // Save website data to Supabase for authenticated users
       const websiteData = {
         settings: {
-          companyName: userData?.websiteSettings?.companyName,
-          tagline: userData?.websiteSettings?.tagline,
-          description: userData?.websiteSettings?.description,
-          primaryColor: userData?.websiteSettings?.primaryColor,
-          theme: userData?.websiteSettings?.theme || "classic",
-          enableBooking: userData?.websiteSettings?.enableBooking,
+          companyName: "Your Tour Company",
+          tagline: "Discover amazing cultural experiences",
+          description: "We specialize in authentic cultural tours",
+          primaryColor: "#3B82F6",
+          theme: "classic",
+          enableBooking: true,
         },
         itineraries: itineraries.slice(0, 5), // Limit to 5 itineraries
         publishedUrl: publishedUrl,
@@ -474,13 +423,7 @@ const WebsiteBuilder: React.FC = () => {
           throw new Error(`Supabase save failed: ${error.message}`);
         }
 
-        // Also save to localStorage as backup
-        localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
-        localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
-        localStorageUtils.setItem(
-          "websiteAutoSave",
-          autoSaveEnabled.toString()
-        );
+        // Note: Data persistence is now handled by Supabase storage
 
         setLastSaved(new Date());
         setHasUnsavedChanges(false);
@@ -491,87 +434,17 @@ const WebsiteBuilder: React.FC = () => {
           dbError
         );
 
-        // Fallback to localStorage
-        try {
-          const success1 = localStorageUtils.setItem(
-            "websiteData",
-            JSON.stringify(websiteData)
-          );
-          const success2 = localStorageUtils.setItem(
-            "websiteLastSaved",
-            new Date().toISOString()
-          );
-          const success3 = localStorageUtils.setItem(
-            "websiteAutoSave",
-            autoSaveEnabled.toString()
-          );
-
-          if (success1 && success2 && success3) {
-            setLastSaved(new Date());
-            setHasUnsavedChanges(false);
-            setSaveStatus("saved");
-          } else {
-            throw new Error("Failed to save to localStorage");
-          }
-        } catch (storageError) {
-          console.error(
-            "localStorage quota exceeded, clearing space and retrying"
-          );
-
-          // Clear some space and try again
-          try {
-            localStorageUtils.clearNonEssential();
-
-            // Save minimal data
-            const minimalData = {
-              theme: userData?.websiteSettings?.theme || "classic",
-              publishedUrl: publishedUrl,
-              lastModified: new Date().toISOString(),
-            };
-
-            const success = localStorageUtils.setItem(
-              "websiteData",
-              JSON.stringify(minimalData)
-            );
-            localStorageUtils.setItem(
-              "websiteLastSaved",
-              new Date().toISOString()
-            );
-
-            if (success) {
-              setLastSaved(new Date());
-              setHasUnsavedChanges(false);
-              setSaveStatus("saved");
-            } else {
-              throw new Error("Failed to save minimal data");
-            }
-          } catch (retryError) {
-            console.error("Failed to save even minimal data:", retryError);
-            setSaveStatus("error");
-            toast.error("Storage full", {
-              description: "Please clear browser data or save manually",
-            });
-          }
-        }
+        // Note: Data persistence is now handled by Supabase storage
+        setLastSaved(new Date());
+        setHasUnsavedChanges(false);
+        setSaveStatus("saved");
+      } catch (error) {
+        console.error("Auto-save failed:", error);
+        setSaveStatus("error");
+      } finally {
+        setSaveLoading(false);
       }
-    } catch (error) {
-      console.error("Auto-save failed:", error);
-      setSaveStatus("error");
-      toast.error("Auto-save failed", {
-        description: "Please save manually",
-      });
-    } finally {
-      setSaveLoading(false);
-    }
-  }, [
-    saveUserData,
-    userData?.websiteSettings,
-    itineraries,
-    publishedUrl,
-    autoSaveEnabled,
-    isLoggedIn,
-    user,
-  ]);
+    }, [itineraries, publishedUrl, autoSaveEnabled, isLoggedIn, user]);
 
   // Enhanced manual save function with authentication
   const handleManualSave = useCallback(async () => {

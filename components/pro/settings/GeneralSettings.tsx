@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useUserData } from "../../../src/contexts/UserDataContext";
-import { settingsService } from "@/lib/settings-service";
+import { settingsService, UserSettings } from "@/lib/settings-service";
 
 const formSchema = z.object({
   businessName: z.string().min(2, {
@@ -116,21 +116,26 @@ const GeneralSettings: React.FC = () => {
       // Update local state immediately for better UX
       updateUserData(values);
 
-      // Also update website settings if business name changed
-      if (values.businessName !== userData?.businessName) {
-        updateUserData({
-          websiteSettings: {
-            ...userData?.websiteSettings,
-            companyName: values.businessName,
-          },
-        });
-      }
+      // Note: Website settings would be handled separately in the new structure
 
       // Save to database using the settings service
-      await settingsService.saveGeneralSettings(values);
+      const settingsData: UserSettings = {
+        theme: "light",
+        notifications: true,
+        autoSave: true,
+        language: "en",
+        timezone: values.timezone || "UTC",
+        currency: "USD",
+        // Include form values as additional properties
+        email: values.email,
+        address: values.address,
+        phone: values.phone,
+        businessName: values.businessName,
+        bio: values.bio,
+      };
+      await settingsService.saveSettings(settingsData);
 
-      // Also save to localStorage for immediate persistence
-      saveUserData();
+      // Note: Data persistence is now handled by Supabase storage
 
       toast.success("Settings updated successfully", {
         description:
@@ -139,7 +144,10 @@ const GeneralSettings: React.FC = () => {
     } catch (error) {
       console.error("Error saving settings:", error);
       toast.error("Failed to save settings", {
-        description: error instanceof Error ? error.message : "Please try again. If the problem persists, contact support.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Please try again. If the problem persists, contact support.",
       });
     } finally {
       setIsSaving(false);

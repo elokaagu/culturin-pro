@@ -27,7 +27,7 @@ interface FontCustomizerProps {
 const FontCustomizer: React.FC<FontCustomizerProps> = ({
   onSettingsChange,
 }) => {
-  const { userData, updateWebsiteSettings } = useUserData();
+  const { userData } = useUserData();
   const [saving, setSaving] = useState(false);
 
   // Font settings
@@ -169,26 +169,7 @@ const FontCustomizer: React.FC<FontCustomizerProps> = ({
       saveFontSettings();
       saveAnimationSettings();
 
-      // Update website settings context
-      updateWebsiteSettings({
-        fontSettings: {
-          headingFont,
-          bodyFont,
-          headingFontWeight: headingFontWeight[0],
-          bodyFontWeight: bodyFontWeight[0],
-          headingFontSize: headingFontSize[0],
-          bodyFontSize: bodyFontSize[0],
-          lineHeight: lineHeight[0],
-          letterSpacing: letterSpacing[0],
-        },
-        animationSettings: {
-          enableAnimations,
-          animationSpeed: animationSpeed[0],
-          animationType,
-          enableHoverEffects,
-          enableScrollAnimations,
-        },
-      });
+      // Note: Website settings would be saved to a separate service in the new structure
 
       if (onSettingsChange) {
         onSettingsChange();

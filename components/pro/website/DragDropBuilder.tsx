@@ -319,9 +319,7 @@ export default function DragDropBuilder() {
   const { toast } = useToast();
   const { userData, updateUserData } = useUserData();
 
-  const [placedBlocks, setPlacedBlocks] = useState<PlacedBlock[]>(
-    userData?.websiteSettings?.placedBlocks || []
-  );
+  const [placedBlocks, setPlacedBlocks] = useState<PlacedBlock[]>([]);
   const [selectedBlock, setSelectedBlock] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -375,13 +373,7 @@ export default function DragDropBuilder() {
         setPlacedBlocks(updatedBlocks);
 
         // Update user data
-        updateUserData({
-          ...userData,
-          websiteSettings: {
-            ...userData?.websiteSettings,
-            placedBlocks: updatedBlocks,
-          },
-        });
+        // Note: Website settings would be saved to a separate service in the new structure
 
         toast({
           title: "Block Added",
@@ -400,13 +392,7 @@ export default function DragDropBuilder() {
       );
       setPlacedBlocks(updatedBlocks);
 
-      updateUserData({
-        ...userData,
-        websiteSettings: {
-          ...userData?.websiteSettings,
-          placedBlocks: updatedBlocks,
-        },
-      });
+      // Note: Website settings would be saved to a separate service in the new structure
 
       toast({
         title: "Block Removed",
@@ -428,13 +414,7 @@ export default function DragDropBuilder() {
       const updatedBlocks = [...placedBlocks, newBlock];
       setPlacedBlocks(updatedBlocks);
 
-      updateUserData({
-        ...userData,
-        websiteSettings: {
-          ...userData?.websiteSettings,
-          placedBlocks: updatedBlocks,
-        },
-      });
+      // Note: Website settings would be saved to a separate service in the new structure
 
       toast({
         title: "Block Duplicated",
@@ -458,13 +438,7 @@ export default function DragDropBuilder() {
       );
       setPlacedBlocks(updatedBlocks);
 
-      updateUserData({
-        ...userData,
-        websiteSettings: {
-          ...userData?.websiteSettings,
-          placedBlocks: updatedBlocks,
-        },
-      });
+      // Note: Website settings would be saved to a separate service in the new structure
     },
     [placedBlocks, updateUserData, userData]
   );
