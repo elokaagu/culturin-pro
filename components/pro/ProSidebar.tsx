@@ -170,7 +170,7 @@ const ProSidebar: React.FC = () => {
                 "flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-all duration-300 text-sm font-medium",
                 location.pathname === item.path
                   ? "glass-active text-white shadow-lg bg-white/20"
-                  : "text-gray-800 hover:glass-hover hover:text-gray-900 hover:bg-white/10"
+                  : "text-black hover:glass-hover hover:text-black hover:bg-white/10"
               )}
             >
               <item.icon className="h-4 w-4" />
@@ -188,7 +188,7 @@ const ProSidebar: React.FC = () => {
               <Users className="h-4 w-4 text-gray-600" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-gray-800">{userName}</p>
+              <p className="text-sm font-medium text-black">{userName}</p>
               <p className="text-xs text-gray-600">{planType}</p>
             </div>
             <ChevronDown className="h-4 w-4 text-gray-600" />

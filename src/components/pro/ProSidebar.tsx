@@ -103,8 +103,8 @@ const ProSidebar: React.FC = () => {
               className={cn(
                 "flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-colors text-sm",
                 location.pathname === item.path
-                  ? "bg-gray-100 text-gray-900"
-                  : "text-gray-700 hover:bg-gray-50"
+                  ? "bg-gray-100 text-black"
+                  : "text-black hover:bg-gray-50"
               )}
             >
               <item.icon className="h-4 w-4" />
@@ -121,7 +121,7 @@ const ProSidebar: React.FC = () => {
             <Users className="h-4 w-4 text-gray-700" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium">{userName}</p>
+            <p className="text-sm font-medium text-black">{userName}</p>
             <p className="text-xs text-gray-500">{planType}</p>
           </div>
         </div>
