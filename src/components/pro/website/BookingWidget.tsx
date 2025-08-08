@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ItineraryType } from "@/data/itineraryData";
+import { Itinerary } from "@/hooks/useItineraries";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 interface BookingWidgetProps {
-  tour: ItineraryType;
+  tour: Itinerary;
   primaryColor: string;
   companyName: string;
 }

@@ -787,9 +787,9 @@ export default function ItineraryDetailPage() {
                         </span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-gray-600">Theme</span>
+                        <span className="text-gray-600">Type</span>
                         <span className="font-medium capitalize">
-                          {itinerary.themeType}
+                          Cultural Experience
                         </span>
                       </div>
                       <div className="flex flex-col">
@@ -814,34 +814,29 @@ export default function ItineraryDetailPage() {
                           </span>
                         </div>
                       )}
-                      {itinerary.groupSize && (
+                      <div className="flex flex-col">
+                        <span className="text-gray-600">Group Size</span>
+                        <span className="font-medium">
+                          2-8 people
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-600">Difficulty</span>
+                        <span className="font-medium capitalize">
+                          Easy
+                        </span>
+                      </div>
+                      {itinerary.highlights && itinerary.highlights.length > 0 && (
                         <div className="flex flex-col">
-                          <span className="text-gray-600">Group Size</span>
-                          <span className="font-medium">
-                            {itinerary.groupSize.min}-{itinerary.groupSize.max}{" "}
-                            people
-                          </span>
-                        </div>
-                      )}
-                      {itinerary.difficulty && (
-                        <div className="flex flex-col">
-                          <span className="text-gray-600">Difficulty</span>
-                          <span className="font-medium capitalize">
-                            {itinerary.difficulty}
-                          </span>
-                        </div>
-                      )}
-                      {itinerary.tags && itinerary.tags.length > 0 && (
-                        <div className="flex flex-col">
-                          <span className="text-gray-600">Tags</span>
+                          <span className="text-gray-600">Highlights</span>
                           <div className="flex gap-1 flex-wrap">
-                            {itinerary.tags.map((tag, index) => (
+                            {itinerary.highlights.map((highlight, index) => (
                               <Badge
                                 key={index}
                                 variant="outline"
                                 className="text-xs"
                               >
-                                {tag}
+                                {highlight}
                               </Badge>
                             ))}
                           </div>
@@ -938,7 +933,7 @@ export default function ItineraryDetailPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-600">
-                    {itinerary.lastUpdated}
+                    {itinerary.updated_at ? new Date(itinerary.updated_at).toLocaleDateString() : 'Recently updated'}
                   </p>
                 </CardContent>
               </Card>

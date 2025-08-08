@@ -35,7 +35,7 @@ import Image from "@/components/ui/image";
 function StudioContent() {
   const router = useRouter();
   const { userData } = useUserData();
-  const { user, logout, isAdmin, isLoggedIn } = useAuth();
+  const { user, logout, isLoggedIn } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("overview");
 
   const handleLaunchDashboard = () => {
@@ -101,14 +101,7 @@ function StudioContent() {
                   {isLoggedIn ? "Authenticated" : "Guest"}
                 </span>
               </div>
-              {isAdmin && (
-                <div className="flex items-center space-x-1 bg-blue-50 px-2 py-1 rounded-full">
-                  <Shield className="h-3 w-3 text-blue-600" />
-                  <span className="text-xs text-blue-600 font-medium">
-                    Admin
-                  </span>
-                </div>
-              )}
+
             </div>
           </div>
 
@@ -334,48 +327,23 @@ function StudioContent() {
               </div>
 
               {/* Booking Status Check */}
-              {!userData?.websiteSettings?.enableBooking ? (
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 text-center">
-                  <ShoppingCart className="h-12 w-12 text-orange-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-orange-800 mb-2">
-                    Booking is Currently Disabled
+              <div className="bg-white border rounded-lg p-6">
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="font-semibold text-blue-800 mb-2">
+                    Live Booking Preview
                   </h3>
-                  <p className="text-orange-600 mb-4">
-                    Enable booking in the Booking Builder to preview the
-                    customer experience.
+                  <p className="text-blue-600 text-sm">
+                    This is exactly how your customers will see and interact
+                    with your booking system. All settings are applied from
+                    your Booking Builder configuration.
                   </p>
-                  <Button
-                    onClick={() => setActiveTab("booking-builder")}
-                    className="bg-orange-600 hover:bg-orange-700"
-                  >
-                    Enable Booking
-                  </Button>
                 </div>
-              ) : (
-                <div className="bg-white border rounded-lg p-6">
-                  <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <h3 className="font-semibold text-blue-800 mb-2">
-                      Live Booking Preview
-                    </h3>
-                    <p className="text-blue-600 text-sm">
-                      This is exactly how your customers will see and interact
-                      with your booking system. All settings are applied from
-                      your Booking Builder configuration.
-                    </p>
-                  </div>
-                  <BookingWidget
-                    tour={sampleItinerary}
-                    primaryColor={
-                      userData?.websiteSettings?.primaryColor || "#9b87f5"
-                    }
-                    companyName={
-                      userData?.websiteSettings?.companyName ||
-                      userData?.businessName ||
-                      "Your Business"
-                    }
-                  />
-                </div>
-              )}
+                <BookingWidget
+                  tour={sampleItinerary}
+                  primaryColor="#9b87f5"
+                  companyName="Your Business"
+                />
+              </div>
             </TabsContent>
           </Tabs>
         </div>

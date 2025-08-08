@@ -61,18 +61,18 @@ const timezones = [
 ];
 
 const GeneralSettings: React.FC = () => {
-  const { userData, updateUserData, saveUserData, isLoading } = useUserData();
+  const { userData, updateUserData, isLoading } = useUserData();
   const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      businessName: userData?.businessName || "",
+      businessName: "",
       email: userData?.email || "",
-      phone: userData?.phone || "",
-      address: userData?.address || "",
-      timezone: userData?.timezone || "utc-8",
-      bio: userData?.bio || "",
+      phone: "",
+      address: "",
+      timezone: "utc-8",
+      bio: "",
     },
   });
 
@@ -80,12 +80,12 @@ const GeneralSettings: React.FC = () => {
   useEffect(() => {
     if (userData) {
       form.reset({
-        businessName: userData?.businessName || "",
+        businessName: "",
         email: userData?.email || "",
-        phone: userData?.phone || "",
-        address: userData?.address || "",
-        timezone: userData?.timezone || "utc-8",
-        bio: userData?.bio || "",
+        phone: "",
+        address: "",
+        timezone: "utc-8",
+        bio: "",
       });
     }
   }, [userData, form]);

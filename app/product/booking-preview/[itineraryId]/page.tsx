@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import BookingWidget from "@/components/pro/website/BookingWidget";
 import { itineraryService } from "@/lib/itinerary-service";
-import { ItineraryType } from "@/data/itineraryData";
+import { Itinerary } from "@/hooks/useItineraries";
 import { notFound } from "next/navigation";
 
 export default function BookingPreviewPage({
@@ -10,7 +10,7 @@ export default function BookingPreviewPage({
 }: {
   params: { itineraryId: string };
 }) {
-  const [itinerary, setItinerary] = useState<ItineraryType | null>(null);
+  const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

@@ -24,7 +24,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isLoggedIn, isAdmin, logout } = useAuth();
+  const { user, isLoggedIn, logout } = useAuth();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -254,15 +254,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                         >
                           Culturin Studio
                         </Link>
-                        {isAdmin && (
-                          <Link
-                            to="/admin"
-                            className="flex items-center px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
-                            onClick={() => setIsUserMenuOpen(false)}
-                          >
-                            Admin Dashboard
-                          </Link>
-                        )}
+
                         <Link
                           to="/settings"
                           className="flex items-center px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
@@ -446,15 +438,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                     >
                       Settings
                     </Link>
-                    {isAdmin && (
-                      <Link
-                        to="/admin"
-                        className="block py-2 font-medium text-gray-800"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Admin Dashboard
-                      </Link>
-                    )}
+
                     <button
                       onClick={async () => {
                         await logout();

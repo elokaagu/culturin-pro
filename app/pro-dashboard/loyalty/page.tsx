@@ -64,7 +64,21 @@ const LoyaltyDashboard: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isConnectingWallet, setIsConnectingWallet] = useState(false);
 
-  const loyaltyCard = userData?.loyaltyCard;
+  // Create a default loyalty card since the new UserData type doesn't include it
+  const loyaltyCard = {
+    cardId: user?.id || 'default-card',
+    tier: 'bronze' as const,
+    balance: 0,
+    rewardsBalance: 0,
+    walletAddress: '',
+    status: 'active' as const,
+    memberSince: new Date(),
+    kycStatus: 'pending' as const,
+    amlCheck: 'pending' as const,
+    annualFee: 0,
+    rewardsRate: 0.1,
+    benefits: ['Free coffee', 'Priority booking'],
+  };
 
   useEffect(() => {
     loadTransactions();

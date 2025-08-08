@@ -19,18 +19,18 @@ import { Link } from "../../../lib/navigation";
 import ModuleLibrary from "@/components/pro/itinerary/ModuleLibrary";
 import ItineraryPreview from "@/components/pro/itinerary/ItineraryPreview";
 import AIContentAssistant from "@/components/pro/itinerary/AIContentAssistant";
-import { ItineraryType } from "@/data/itineraryData";
+import { Itinerary } from "@/hooks/useItineraries";
 import Image from "@/components/ui/image";
 import { itineraryService } from "@/lib/itinerary-service";
 import { useAuth } from "@/src/components/auth/AuthProvider";
 
 interface ItineraryEditorProps {
   showEditor: boolean;
-  selectedItinerary: ItineraryType | null;
+  selectedItinerary: Itinerary | null;
   showAIAssistant: boolean;
   onAIAssistantClose: () => void;
   onEditorClose: () => void;
-  onItinerarySave?: (itinerary: ItineraryType) => void;
+  onItinerarySave?: (itinerary: Itinerary) => void;
 }
 
 const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
@@ -43,7 +43,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
 }) => {
   const { toast } = useToast();
   const { user, isLoggedIn, isReady } = useAuth();
-  const [itinerary, setItinerary] = useState<ItineraryType | null>(
+  const [itinerary, setItinerary] = useState<Itinerary | null>(
     selectedItinerary
   );
   const [isPublishing, setIsPublishing] = useState(false);
@@ -61,7 +61,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
     return null;
   }
 
-  const handlePropertyChange = (property: keyof ItineraryType, value: any) => {
+  const handlePropertyChange = (property: keyof Itinerary, value: any) => {
     setItinerary((prev) => {
       if (!prev) return prev;
       return { ...prev, [property]: value };
@@ -94,7 +94,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
     setIsSaving(true);
 
     try {
-      let savedItinerary: ItineraryType;
+      let savedItinerary: Itinerary;
 
       if (
         itinerary.id.startsWith("temp-") ||
@@ -103,22 +103,37 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
         itinerary.id.startsWith("local-")
       ) {
         // Create new itinerary
-        const { id, lastUpdated, ...itineraryData } = itinerary;
-        savedItinerary = await itineraryService.createItinerary(itineraryData);
-        toast({
-          title: "Itinerary Created",
-          description: `"${savedItinerary.title}" has been saved to your database.`,
-        });
+        const { id, ...itineraryData } = itinerary;
+        const newItinerary: Itinerary = {
+          ...itineraryData,
+          id: `new-${Date.now()}`,
+        };
+        const success = await itineraryService.saveItinerary(newItinerary);
+        if (success) {
+          // Get the saved itinerary from the service
+          const savedItineraries = await itineraryService.getItineraries();
+          savedItinerary = savedItineraries.find(i => i.title === itinerary.title) || itinerary;
+          toast({
+            title: "Itinerary Created",
+            description: `"${savedItinerary.title}" has been saved to your database.`,
+          });
+        } else {
+          throw new Error("Failed to save itinerary");
+        }
       } else {
         // Update existing itinerary
-        savedItinerary = await itineraryService.updateItinerary(
-          itinerary.id,
-          itinerary
-        );
-        toast({
-          title: "Changes Saved",
-          description: `"${savedItinerary.title}" has been updated in your database.`,
-        });
+        const success = await itineraryService.updateItinerary(itinerary);
+        if (success) {
+          // Get the updated itinerary from the service
+          const savedItineraries = await itineraryService.getItineraries();
+          savedItinerary = savedItineraries.find(i => i.id === itinerary.id) || itinerary;
+          toast({
+            title: "Changes Saved",
+            description: `"${savedItinerary.title}" has been updated in your database.`,
+          });
+        } else {
+          throw new Error("Failed to update itinerary");
+        }
       }
 
       // Update local state with saved itinerary
@@ -208,7 +223,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
         lastUpdated: "just now",
       };
 
-      let savedItinerary: ItineraryType;
+      let savedItinerary: Itinerary;
 
       if (
         itinerary.id.startsWith("temp-") ||
@@ -218,13 +233,26 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
       ) {
         // Create new itinerary as published
         const { id, lastUpdated, ...itineraryData } = publishedItinerary;
-        savedItinerary = await itineraryService.createItinerary(itineraryData);
+        const newItinerary: Itinerary = {
+          ...itineraryData,
+          id: `new-${Date.now()}`,
+        };
+        const success = await itineraryService.saveItinerary(newItinerary);
+        if (success) {
+          const savedItineraries = await itineraryService.getItineraries();
+          savedItinerary = savedItineraries.find(i => i.title === itinerary.title) || itinerary;
+        } else {
+          throw new Error("Failed to save itinerary");
+        }
       } else {
         // Update existing itinerary as published
-        savedItinerary = await itineraryService.updateItinerary(
-          itinerary.id,
-          publishedItinerary
-        );
+        const success = await itineraryService.updateItinerary(publishedItinerary);
+        if (success) {
+          const savedItineraries = await itineraryService.getItineraries();
+          savedItinerary = savedItineraries.find(i => i.id === itinerary.id) || itinerary;
+        } else {
+          throw new Error("Failed to update itinerary");
+        }
       }
 
       // Update local state
@@ -300,31 +328,34 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
         lastUpdated: "just now",
       };
 
-      const savedItinerary = await itineraryService.updateItinerary(
-        itinerary.id,
-        draftItinerary
-      );
+      const success = await itineraryService.updateItinerary(draftItinerary);
+      if (success) {
+        const savedItineraries = await itineraryService.getItineraries();
+        const savedItinerary = savedItineraries.find(i => i.id === itinerary.id) || itinerary;
+        
+        // Update local state
+        setItinerary(savedItinerary);
 
-      // Update local state
-      setItinerary(savedItinerary);
+        if (onItinerarySave) {
+          onItinerarySave(savedItinerary);
+        }
 
-      if (onItinerarySave) {
-        onItinerarySave(savedItinerary);
+        // Dispatch event to notify website builder of itinerary changes
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("itineraryChanged", {
+              detail: { action: "unpublished", itinerary: savedItinerary }
+            })
+          );
+        }
+
+        toast({
+          title: "Itinerary Unpublished",
+          description: "Your itinerary is now back to draft status.",
+        });
+      } else {
+        throw new Error("Failed to update itinerary");
       }
-
-      // Dispatch event to notify website builder of itinerary changes
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("itineraryChanged", {
-            detail: { action: "unpublished", itinerary: savedItinerary }
-          })
-        );
-      }
-
-      toast({
-        title: "Itinerary Unpublished",
-        description: "Your itinerary is now back to draft status.",
-      });
 
     } catch (error) {
       console.error("Error unpublishing itinerary:", error);
@@ -346,7 +377,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
     if (itinerary && onItinerarySave) {
       const updatedItinerary = {
         ...itinerary,
-        lastUpdated: "just now",
+        updated_at: new Date().toISOString(),
       };
       onItinerarySave(updatedItinerary);
     }
@@ -384,7 +415,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
               {itinerary.status === "published" ? "Published" : "Draft"}
             </Badge>
             <span className="text-xs text-white/80">
-              {itinerary.lastUpdated}
+              {itinerary.updated_at ? new Date(itinerary.updated_at).toLocaleDateString() : 'Recently updated'}
             </span>
           </div>
           {/* Inline editable title */}
@@ -490,25 +521,6 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
               </div>
             </div>
             <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700">Theme</label>
-                <select
-                  className="w-full border p-2 rounded-md text-sm mt-1"
-                  value={itinerary.themeType || "cultural"}
-                  onChange={(e) =>
-                    handlePropertyChange("themeType", e.target.value)
-                  }
-                >
-                  <option value="cultural">Cultural</option>
-                  <option value="adventure">Adventure</option>
-                  <option value="culinary">Culinary</option>
-                  <option value="historical">Historical</option>
-                  <option value="nature">Nature</option>
-                  <option value="urban">Urban</option>
-                  <option value="spiritual">Spiritual</option>
-                  <option value="arts">Arts</option>
-                </select>
-              </div>
               <div>
                 <label className="text-sm font-medium text-gray-700">Price (USD)</label>
                 <input

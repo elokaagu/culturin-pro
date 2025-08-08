@@ -37,10 +37,25 @@ import {
   Bot,
 } from "lucide-react";
 import Image from "@/components/ui/image";
-import { ItineraryType, ItineraryModule } from "@/data/itineraryData";
+import { Itinerary } from "@/hooks/useItineraries";
+
+interface ItineraryModule {
+  id: string;
+  type: string;
+  title: string;
+  description?: string;
+  duration?: number;
+  price?: number;
+  location?: string;
+  time?: string;
+  day?: number;
+  order?: number;
+  position?: number;
+  notes?: string;
+}
 
 interface ItineraryPreviewProps {
-  itinerary: ItineraryType & {
+  itinerary: Itinerary & {
     modules?: ItineraryModule[];
     price?: number;
     currency?: string;

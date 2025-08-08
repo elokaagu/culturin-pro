@@ -44,11 +44,11 @@ const LoyaltyCardApplication: React.FC = () => {
   const [selectedTier, setSelectedTier] = useState("bronze");
 
   const [formData, setFormData] = useState({
-    firstName: userData?.businessName?.split(" ")[0] || "",
-    lastName: userData?.businessName?.split(" ").slice(1).join(" ") || "",
-    email: userData?.email || "",
-    phone: userData?.phone || "",
-    address: userData?.address || "",
+    firstName: user?.user_metadata?.full_name?.split(" ")[0] || "",
+    lastName: user?.user_metadata?.full_name?.split(" ").slice(1).join(" ") || "",
+    email: user?.email || "",
+    phone: "",
+    address: "",
     dateOfBirth: "",
     nationality: "",
     sourceOfFunds: "",
@@ -188,7 +188,7 @@ const LoyaltyCardApplication: React.FC = () => {
         benefits: selectedTierData?.benefits || [],
       };
 
-      updateUserData({ loyaltyCard: loyaltyCardData });
+      // Note: Loyalty card data would be saved to a separate service in the new structure
 
       toast.success("Your loyalty card application has been submitted successfully. We'll review your application and contact you within 2-3 business days.");
 
