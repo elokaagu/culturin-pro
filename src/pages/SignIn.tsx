@@ -57,7 +57,9 @@ const SignIn = () => {
       console.log("User is logged in, redirecting to dashboard...");
       // Wait a moment for user data to be fully loaded
       const timer = setTimeout(() => {
-        router.push("/pro-dashboard");
+        console.log("Executing router.push to /pro-dashboard");
+        // Force a hard navigation to ensure it works
+        window.location.href = "/pro-dashboard";
       }, 1000);
 
       return () => clearTimeout(timer);

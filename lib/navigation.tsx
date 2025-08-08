@@ -18,9 +18,16 @@ const addPageTransition = (callback: () => void) => {
 export const useNavigate = () => {
   return (path: string) => {
     if (typeof window !== "undefined") {
-      addPageTransition(() => {
-        window.location.href = path;
-      });
+      // Use Next.js router if available, otherwise fallback to window.location
+      if (typeof window !== "undefined" && window.next) {
+        addPageTransition(() => {
+          window.location.href = path;
+        });
+      } else {
+        addPageTransition(() => {
+          window.location.href = path;
+        });
+      }
     }
   };
 };
