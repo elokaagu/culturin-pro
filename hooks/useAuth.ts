@@ -105,11 +105,13 @@ export function useAuth() {
 
   const initSession = useCallback(async () => {
     try {
+      console.log("Initializing session...");
       // Try to recover session from storage first
       const storedSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
       if (storedSession) {
         const session = JSON.parse(storedSession);
         if (session.expires_at && new Date(session.expires_at) > new Date()) {
+          console.log("Recovered session from storage for user:", session.user?.email);
           updateState({
             session,
             user: session.user,
@@ -118,6 +120,7 @@ export function useAuth() {
           await loadUserData(session.user);
           return;
         }
+        console.log("Stored session expired, removing");
         sessionStorage.removeItem(SESSION_STORAGE_KEY);
       }
 
@@ -163,6 +166,7 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state change:", event, session?.user?.email);
       if (session) {
         sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
         updateState({

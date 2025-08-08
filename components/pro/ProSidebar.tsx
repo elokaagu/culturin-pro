@@ -67,12 +67,14 @@ const ProSidebar: React.FC = () => {
 
   // Redirect to home if not authenticated
   useEffect(() => {
+    console.log("ProSidebar auth check:", { isLoading, user: !!user, isReady, pathname: location.pathname });
+    
     // Only redirect if we're not loading and definitely have no user
     if (!isLoading && !user && isReady) {
       console.log("No authenticated user, redirecting to home");
       navigate("/");
     }
-  }, [isLoading, user, isReady, navigate]);
+  }, [isLoading, user, isReady, navigate, location.pathname]);
 
   // Use authenticated user's name if available
   const userName = useMemo(() => {
