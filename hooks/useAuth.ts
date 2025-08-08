@@ -62,7 +62,7 @@ export function useAuth() {
       // Ensure we have a valid session first
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !session) {
-        console.warn("No valid session for user data fetch");
+        // Session not available yet, this is normal during auth flow
         return;
       }
 
