@@ -155,7 +155,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const ensureUserRecord = async (user: User) => {
     try {
-      // Check if user record exists
+      // Check if user record exists by ID first
       const { data: existingUser, error: fetchError } = await supabase
         .from("users")
         .select("id, email, role")
@@ -163,43 +163,87 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .single();
 
       if (fetchError && fetchError.code === "PGRST116") {
-        // User doesn't exist, create record with proper admin detection
-        const isAdminUser =
-          user.email === "eloka.agu@icloud.com" ||
-          user.email === "eloka@satellitelabs.xyz";
+        // User doesn't exist by ID, check if email exists
+        const { data: existingByEmail, error: emailError } = await supabase
+          .from("users")
+          .select("id, email, role")
+          .eq("email", user.email)
+          .single();
 
-        console.log(`🔧 Creating user record for ${user.email}...`);
+        if (existingByEmail) {
+          // Email exists but with different ID, update the existing record
+          console.log(`🔄 Updating existing user record for ${user.email}...`);
+          
+          const { error: updateError } = await supabase
+            .from("users")
+            .update({
+              id: user.id,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("email", user.email);
 
-        const { error: insertError } = await supabase.from("users").insert({
-          id: user.id,
-          email: user.email,
-          full_name:
-            user.user_metadata?.full_name || user.email?.split("@")[0] || null,
-          first_name: user.user_metadata?.first_name || null,
-          last_name: user.user_metadata?.last_name || null,
-          role: isAdminUser ? "admin" : "user",
-          studio_access: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
-
-        if (insertError) {
-          console.error("❌ Error creating user record:", insertError);
-          // If RLS is blocking, try to create a sample itinerary in localStorage instead
-          if (insertError.code === "42501") {
-            console.log(
-              "🔄 RLS blocking user creation, will use localStorage fallback"
-            );
+          if (updateError) {
+            console.error("❌ Error updating user record:", updateError);
             await createSampleItineraryInLocalStorage(user);
+          } else {
+            console.log(`✅ Updated user record for ${user.email}`);
+            await createSampleItinerary(user);
           }
         } else {
-          console.log(
-            `✅ Created user record for ${user.email} with role: ${
-              isAdminUser ? "admin" : "user"
-            }`
-          );
-          // Create a sample itinerary for the new user
-          await createSampleItinerary(user);
+          // No existing user, create new record
+          const isAdminUser =
+            user.email === "eloka.agu@icloud.com" ||
+            user.email === "eloka@satellitelabs.xyz";
+
+          console.log(`🔧 Creating new user record for ${user.email}...`);
+
+          const { error: insertError } = await supabase.from("users").insert({
+            id: user.id,
+            email: user.email,
+            full_name:
+              user.user_metadata?.full_name || user.email?.split("@")[0] || null,
+            first_name: user.user_metadata?.first_name || null,
+            last_name: user.user_metadata?.last_name || null,
+            role: isAdminUser ? "admin" : "user",
+            studio_access: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+
+          if (insertError) {
+            console.error("❌ Error creating user record:", insertError);
+            // If duplicate key error, try to update existing record
+            if (insertError.code === "23505") {
+              console.log("🔄 Duplicate email detected, updating existing record...");
+              const { error: updateError } = await supabase
+                .from("users")
+                .update({
+                  id: user.id,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq("email", user.email);
+
+              if (updateError) {
+                console.error("❌ Error updating existing record:", updateError);
+                await createSampleItineraryInLocalStorage(user);
+              } else {
+                console.log(`✅ Updated existing user record for ${user.email}`);
+                await createSampleItinerary(user);
+              }
+            } else if (insertError.code === "42501") {
+              console.log(
+                "🔄 RLS blocking user creation, will use localStorage fallback"
+              );
+              await createSampleItineraryInLocalStorage(user);
+            }
+          } else {
+            console.log(
+              `✅ Created user record for ${user.email} with role: ${
+                isAdminUser ? "admin" : "user"
+              }`
+            );
+            await createSampleItinerary(user);
+          }
         }
       } else if (existingUser) {
         console.log(
@@ -330,7 +374,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // If login successful, ensure user record exists
       // The user will be available in the next render cycle via useAuth
-      console.log("✅ Login successful, user record will be ensured on next render");
+      console.log(
+        "✅ Login successful, user record will be ensured on next render"
+      );
 
       return { error: null };
     } catch (error) {
