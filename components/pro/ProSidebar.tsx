@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "../../lib/navigation";
-import { useAuthState } from "@/src/hooks/useAuthState";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -63,67 +63,42 @@ const menuItems = [
 const ProSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, isLoggedIn, isLoading, isReady } = useAuthState();
+  const { user, logout, isLoading } = useAuth();
 
+  // Redirect to home if not authenticated
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate("/");
+    }
+  }, [isLoading, user, navigate]);
 
-  // Use authenticated user's name if available, otherwise fallback to localStorage
+  // Use authenticated user's name if available
   const userName = useMemo(() => {
-    if (isLoading) {
-      return "Loading...";
-    }
-    
-    if (!user) {
-      return "Guest";
-    }
+    if (!user) return "";
 
     if (user?.user_metadata?.full_name) {
       return user.user_metadata.full_name;
     }
 
-    // Extract name from email if no full name available
+    // Extract name from email
     if (user?.email) {
       const emailName = user.email.split("@")[0];
-      // Convert eloka.agu to "Eloka Agu" or similar
-      const formattedName = emailName
+      // Convert eloka.agu to "Eloka Agu"
+      return emailName
         .split(".")
         .map(
           (part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
         )
         .join(" ");
-      return formattedName;
     }
 
-    if (typeof window !== "undefined") {
-      const storedUserName = localStorage.getItem("userName");
-      if (storedUserName) {
-        return storedUserName;
-      }
-      // Set default if not found
-      localStorage.setItem("userName", "User");
-      return "User";
-    }
-
-    return "User";
+    return "";
   }, [user]);
 
   const planType = useMemo(() => {
-    if (isLoading) {
-      return "Loading...";
-    }
-    
-    if (!user) {
-      return "No Plan";
-    }
+    if (!user) return "";
 
-    if (typeof window !== "undefined") {
-      const storedPlanType = localStorage.getItem("planType");
-      if (storedPlanType) {
-        return storedPlanType;
-      }
-      // Set default if not found
-      localStorage.setItem("planType", "Growth Plan");
-      return "Growth Plan";
-    }
+    // Default to Growth Plan if no specific plan is set
     return "Growth Plan";
   }, [user]);
 
@@ -195,11 +170,15 @@ const ProSidebar: React.FC = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 mb-2">
             <div className="px-3 py-2 text-sm text-gray-500">
-              {isLoading ? "Loading..." : (user?.email || "Not signed in")}
+              {user?.email || ""}
             </div>
             <div className="px-3 py-1 text-xs text-gray-400 capitalize">
-              {isLoading ? "Loading..." : (user ? (user.role === "admin" ? "Admin" : "User") : "Guest")} •
-              Studio Access
+              {user
+                ? user.role === "admin"
+                  ? "Admin"
+                  : "User"
+                : ""}{" "}
+              • Studio Access
             </div>
             <DropdownMenuSeparator />
             {user?.role === "admin" && (

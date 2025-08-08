@@ -29,7 +29,14 @@ class SupabaseItineraryService implements ItineraryService {
       // First try to get the current session
       const {
         data: { session },
+        error: sessionError,
       } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Session error:", sessionError);
+        return null;
+      }
+      
       if (session?.user) {
         return session.user;
       }
@@ -37,7 +44,14 @@ class SupabaseItineraryService implements ItineraryService {
       // Fallback to getUser
       const {
         data: { user },
+        error: userError,
       } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error("User error:", userError);
+        return null;
+      }
+      
       return user;
     } catch (error) {
       console.error("Error getting current user:", error);
@@ -289,7 +303,13 @@ class SupabaseItineraryService implements ItineraryService {
 
       if (error) {
         console.error("Error fetching itineraries from Supabase:", error);
-        // Fall back to localStorage
+        // Check if it's an auth error (401/406)
+        if (error.code === "401" || error.code === "406") {
+          console.warn("Authentication error, falling back to localStorage");
+          return await this.getItinerariesFromLocalStorage();
+        }
+        // For other errors, try to continue but log the issue
+        console.warn("Database error, attempting to continue with localStorage fallback");
         return await this.getItinerariesFromLocalStorage();
       }
 

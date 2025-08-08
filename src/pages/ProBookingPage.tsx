@@ -8,12 +8,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import BookingsTab from "@/components/BookingsTab";
 import BookingOverview from "@/components/BookingOverview";
-import { useAuthState } from "@/src/hooks/useAuthState";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 
 const ProBookingPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const navigate = useNavigate();
-  const { user, userData, isReady } = useAuthState();
+  const { user, userData, isReady } = useAuth();
 
   // Load user-specific booking data
   useEffect(() => {

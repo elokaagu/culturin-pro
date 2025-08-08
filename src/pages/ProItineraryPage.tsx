@@ -5,14 +5,14 @@ import { useNavigate } from "../../lib/navigation";
 import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
 import ItineraryTabs from "@/components/pro/itinerary/ItineraryTabs";
 import { useItineraries } from "@/hooks/useItineraries";
-import { useAuthState } from "@/src/hooks/useAuthState";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 import { localStorageUtils } from "@/lib/localStorage";
 import { Tabs } from "@/components/ui/tabs";
 
 const ProItineraryPage: React.FC = () => {
   const navigate = useNavigate();
   const { itineraries, isLoading, error, createItinerary } = useItineraries();
-  const { user, isReady } = useAuthState();
+  const { user, isReady } = useAuth();
   const [hasCheckedSampleData, setHasCheckedSampleData] = useState(false);
 
   useEffect(() => {

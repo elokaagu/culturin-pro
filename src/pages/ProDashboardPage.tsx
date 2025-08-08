@@ -6,7 +6,7 @@ import DashboardMetricCard from "@/components/pro/DashboardMetricCard";
 import BookingTrendsChart from "@/components/pro/BookingTrendsChart";
 import { Calendar, Users, Star } from "lucide-react";
 import CircleDollarSignIcon from "@/components/pro/CircleDollarSign";
-import { useAuthState } from "@/src/hooks/useAuthState";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 import {
   MotionContainer,
   MotionCard,
@@ -16,7 +16,7 @@ import {
 
 const ProDashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, userData, isReady } = useAuthState();
+  const { user, userData, isReady } = useAuth();
 
   useEffect(() => {
     localStorage.setItem("lastRoute", "/pro-dashboard");

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/src/components/auth/AuthProvider";
-import { useAuthState } from "@/src/hooks/useAuthState";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -38,7 +37,7 @@ const SignIn = () => {
   const [error, setError] = useState("");
 
   const { login, isLoggedIn, isLoading } = useAuth();
-  const { isReady } = useAuthState();
+  const { isReady } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -50,7 +49,7 @@ const SignIn = () => {
       const timer = setTimeout(() => {
         router.push("/pro-dashboard");
       }, 1000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [isLoggedIn, isLoading, isReady, router]);
@@ -107,11 +106,18 @@ const SignIn = () => {
         if (error.message.includes("Invalid login credentials")) {
           setError("Invalid email or password. Please try again.");
         } else if (error.message.includes("Email not confirmed")) {
-          setError("Please check your email and click the verification link before signing in.");
+          setError(
+            "Please check your email and click the verification link before signing in."
+          );
         } else if (error.message.includes("Too many requests")) {
-          setError("Too many sign-in attempts. Please wait a moment and try again.");
+          setError(
+            "Too many sign-in attempts. Please wait a moment and try again."
+          );
         } else {
-          setError(error.message || "An error occurred during sign-in. Please try again.");
+          setError(
+            error.message ||
+              "An error occurred during sign-in. Please try again."
+          );
         }
       }
       // If successful, the useEffect will handle navigation
@@ -125,7 +131,7 @@ const SignIn = () => {
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-culturin-indigo/10 to-white">
       <Header type="operator" />
-      
+
       <div className="flex-1 flex items-center justify-center p-4 h-full">
         <div className="w-full max-w-md">
           {/* Back to home link */}
@@ -155,98 +161,98 @@ const SignIn = () => {
               </CardHeader>
 
               <CardContent className="space-y-6">
-              {error && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    <TranslatableText text="Email Address" />
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
-                      className="pl-10"
-                      disabled={loading}
-                      autoComplete="email"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium">
-                    <TranslatableText text="Password" />
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter your password"
-                      className="pl-10 pr-10"
-                      disabled={loading}
-                      autoComplete="current-password"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      disabled={loading}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <MotionButton
-                  type="submit"
-                  className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      <TranslatableText text="Signing In..." />
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium">
+                      <TranslatableText text="Email Address" />
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email"
+                        className="pl-10"
+                        disabled={loading}
+                        autoComplete="email"
+                        required
+                      />
                     </div>
-                  ) : (
-                    <div className="flex items-center">
-                      <LogIn className="h-4 w-4 mr-2" />
-                      <TranslatableText text="Sign In" />
-                    </div>
-                  )}
-                </MotionButton>
-              </form>
+                  </div>
 
-              <MotionText delay={0.5}>
-                <div className="text-center space-y-3">
-                  <Link
-                    href="/sign-up"
-                    className="text-sm text-culturin-indigo hover:text-culturin-indigo/80 transition-colors"
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-sm font-medium">
+                      <TranslatableText text="Password" />
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter your password"
+                        className="pl-10 pr-10"
+                        disabled={loading}
+                        autoComplete="current-password"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        disabled={loading}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <MotionButton
+                    type="submit"
+                    className="w-full bg-culturin-indigo hover:bg-culturin-indigo/90"
+                    disabled={loading}
                   >
-                    <TranslatableText text="Don't have an account? Sign up" />
-                  </Link>
-                </div>
-              </MotionText>
-            </CardContent>
-          </Card>
-        </MotionCard>
+                    {loading ? (
+                      <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        <TranslatableText text="Signing In..." />
+                      </div>
+                    ) : (
+                      <div className="flex items-center">
+                        <LogIn className="h-4 w-4 mr-2" />
+                        <TranslatableText text="Sign In" />
+                      </div>
+                    )}
+                  </MotionButton>
+                </form>
+
+                <MotionText delay={0.5}>
+                  <div className="text-center space-y-3">
+                    <Link
+                      href="/sign-up"
+                      className="text-sm text-culturin-indigo hover:text-culturin-indigo/80 transition-colors"
+                    >
+                      <TranslatableText text="Don't have an account? Sign up" />
+                    </Link>
+                  </div>
+                </MotionText>
+              </CardContent>
+            </Card>
+          </MotionCard>
         </div>
       </div>
 

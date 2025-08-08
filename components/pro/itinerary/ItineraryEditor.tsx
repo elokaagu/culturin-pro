@@ -22,7 +22,7 @@ import AIContentAssistant from "@/components/pro/itinerary/AIContentAssistant";
 import { ItineraryType } from "@/data/itineraryData";
 import Image from "@/components/ui/image";
 import { itineraryService } from "@/lib/itinerary-service";
-import { useAuthState } from "@/src/hooks/useAuthState";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 
 interface ItineraryEditorProps {
   showEditor: boolean;
@@ -42,7 +42,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   onItinerarySave,
 }) => {
   const { toast } = useToast();
-  const { user, isLoggedIn, isReady } = useAuthState();
+  const { user, isLoggedIn, isReady } = useAuth();
   const [itinerary, setItinerary] = useState<ItineraryType | null>(
     selectedItinerary
   );
