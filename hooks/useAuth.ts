@@ -302,6 +302,7 @@ export function useAuth() {
   return {
     ...state,
     isLoggedIn: !!state.user,
+    isReady: !state.isLoading && state.user !== undefined,
     login,
     signUp,
     logout,

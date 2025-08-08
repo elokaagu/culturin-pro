@@ -63,14 +63,16 @@ const menuItems = [
 const ProSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, isLoading } = useAuth();
+  const { user, logout, isLoading, isReady } = useAuth();
 
   // Redirect to home if not authenticated
   useEffect(() => {
-    if (!isLoading && !user) {
+    // Only redirect if we're not loading and definitely have no user
+    if (!isLoading && !user && isReady) {
+      console.log("No authenticated user, redirecting to home");
       navigate("/");
     }
-  }, [isLoading, user, navigate]);
+  }, [isLoading, user, isReady, navigate]);
 
   // Use authenticated user's name if available
   const userName = useMemo(() => {

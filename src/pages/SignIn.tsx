@@ -37,7 +37,7 @@ const SignIn = () => {
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
 
-  const { login, isLoggedIn, isLoading, isReady } = useAuth();
+  const { login, isLoggedIn, isLoading, isReady, user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -45,10 +45,16 @@ const SignIn = () => {
   }, []);
 
   useEffect(() => {
+    console.log("Auth state:", { isLoggedIn, isLoading, isReady, user: !!user });
+    
     // Don't redirect while auth is still loading or not ready
-    if (isLoading || !isReady) return;
+    if (isLoading || !isReady) {
+      console.log("Not ready to redirect - loading:", isLoading, "ready:", isReady);
+      return;
+    }
 
     if (isLoggedIn) {
+      console.log("User is logged in, redirecting to dashboard...");
       // Wait a moment for user data to be fully loaded
       const timer = setTimeout(() => {
         router.push("/pro-dashboard");
