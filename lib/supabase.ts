@@ -6,23 +6,27 @@ const supabaseAnonKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
 
 // Add error handling for missing or invalid Supabase credentials
-if (supabaseUrl === "https://placeholder.supabase.co" || supabaseAnonKey === "placeholder-key") {
-  console.warn("Supabase credentials not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your .env.local file");
+if (
+  supabaseUrl === "https://placeholder.supabase.co" ||
+  supabaseAnonKey === "placeholder-key"
+) {
+  console.warn(
+    "Supabase credentials not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your .env.local file"
+  );
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
-    storageKey: 'sb-leiesulmdjrfmufwjiam-auth-token',
     autoRefreshToken: true,
     detectSessionInUrl: true,
-    flowType: 'pkce'
+    flowType: "pkce",
   },
   global: {
     headers: {
-      'X-Client-Info': 'culturin-studio'
-    }
-  }
+      "X-Client-Info": "culturin-studio",
+    },
+  },
 });
 
 // Database types (you can generate these from your Supabase dashboard)

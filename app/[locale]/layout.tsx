@@ -23,8 +23,13 @@ export default function LocaleLayout({
   const { locale } = params;
 
   return (
-    <>
-      {children}
-    </>
+    <AuthProvider>
+      <UserDataProvider>
+        <TranslationProvider>
+          <PageTransition>{children}</PageTransition>
+        </TranslationProvider>
+      </UserDataProvider>
+      <Toaster />
+    </AuthProvider>
   );
 }

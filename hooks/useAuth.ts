@@ -1,13 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
-
-const SESSION_STORAGE_KEY = "supabase.auth.token";
-const AUTH_EVENT_KEY = "supabase.auth.event";
-const USER_DATA_KEY = "user-data";
-const USER_PERMISSIONS_KEY = "user-permissions";
 
 interface UserData {
   id: string;
@@ -22,61 +17,44 @@ interface UserData {
 interface AuthState {
   user: User | null;
   session: Session | null;
-  isLoading: boolean;
-  isAdmin: boolean;
-  hasStudioAccess: boolean;
   userData: UserData | null;
+  isLoading: boolean;
   isReady: boolean;
 }
 
-// Create a singleton instance for auth state
-let authState: AuthState = {
-  user: null,
-  session: null,
-  isLoading: true,
-  isAdmin: false,
-  hasStudioAccess: false,
-  userData: null,
-  isReady: false,
-};
-
-let listeners: Set<(state: AuthState) => void> = new Set();
-
-const updateState = (newState: Partial<AuthState>) => {
-  authState = { ...authState, ...newState };
-  listeners.forEach((listener) => listener(authState));
-};
+const USER_DATA_KEY = "culturin-user-data";
 
 export function useAuth() {
-  const [state, setState] = useState<AuthState>(authState);
+  const [state, setState] = useState<AuthState>({
+    user: null,
+    session: null,
+    userData: null,
+    isLoading: true,
+    isReady: false,
+  });
 
-  useEffect(() => {
-    listeners.add(setState);
-    return () => {
-      listeners.delete(setState);
-    };
-  }, []);
-
+  // Load user data from database
   const loadUserData = useCallback(async (user: User) => {
     try {
-      // Ensure we have a valid session first
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !session) {
-        // Session not available yet, this is normal during auth flow
-        return;
-      }
-
-      // Try to get from cache first
+      // Check cache first
       const cachedData = sessionStorage.getItem(USER_DATA_KEY);
       if (cachedData) {
-        const parsed = JSON.parse(cachedData);
-        if (parsed.id === user.id) {
-          updateState({ userData: parsed });
-          return;
+        try {
+          const parsed = JSON.parse(cachedData);
+          if (parsed.id === user.id) {
+            setState((prev) => ({
+              ...prev,
+              userData: parsed,
+            }));
+            return;
+          }
+        } catch (e) {
+          // Invalid cache, remove it
+          sessionStorage.removeItem(USER_DATA_KEY);
         }
       }
 
-      // Fetch fresh data with proper headers
+      // Fetch from database
       const { data, error } = await supabase
         .from("users")
         .select("*")
@@ -85,233 +63,148 @@ export function useAuth() {
 
       if (error) {
         console.error("Error fetching user data:", error);
-        // Don't throw, just log the error
         return;
       }
 
       if (data) {
         // Cache the result
         sessionStorage.setItem(USER_DATA_KEY, JSON.stringify(data));
-        updateState({
+        setState((prev) => ({
+          ...prev,
           userData: data,
-          isAdmin: data.role === "admin",
-          hasStudioAccess: !!data.studio_access,
-        });
+        }));
       }
     } catch (error) {
       console.error("Error loading user data:", error);
     }
   }, []);
 
-  const initSession = useCallback(async () => {
-    try {
-      console.log("Initializing session...");
-      // Try to recover session from storage first
-      const storedSession = sessionStorage.getItem(SESSION_STORAGE_KEY);
-      if (storedSession) {
-        const session = JSON.parse(storedSession);
-        if (session.expires_at && new Date(session.expires_at) > new Date()) {
-          console.log("Recovered session from storage for user:", session.user?.email);
-          updateState({
-            session,
-            user: session.user,
-            isLoading: false,
-          });
-          await loadUserData(session.user);
-          return;
-        }
-        console.log("Stored session expired, removing");
-        sessionStorage.removeItem(SESSION_STORAGE_KEY);
-      }
-
-      // Get fresh session
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (error) throw error;
-
-      if (session) {
-        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
-        updateState({
-          session,
-          user: session.user,
-          isLoading: false,
-        });
-        await loadUserData(session.user);
-      } else {
-        updateState({
-          session: null,
-          user: null,
-          isLoading: false,
-          isAdmin: false,
-          hasStudioAccess: false,
-          userData: null,
-        });
-      }
-    } catch (error) {
-      console.error("Session initialization error:", error);
-      updateState({
-        isLoading: false,
-        session: null,
-        user: null,
-      });
-    }
-  }, [loadUserData]);
-
+  // Initialize authentication state
   useEffect(() => {
-    initSession();
+    let mounted = true;
 
+    const initAuth = async () => {
+      try {
+        // Get current session
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error("Error getting session:", error);
+        }
+
+        if (mounted) {
+          setState({
+            user: session?.user || null,
+            session: session,
+            userData: null,
+            isLoading: false,
+            isReady: true,
+          });
+
+          // Load user data if we have a user
+          if (session?.user) {
+            await loadUserData(session.user);
+          }
+        }
+      } catch (error) {
+        console.error("Error initializing auth:", error);
+        if (mounted) {
+          setState({
+            user: null,
+            session: null,
+            userData: null,
+            isLoading: false,
+            isReady: true,
+          });
+        }
+      }
+    };
+
+    initAuth();
+
+    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state change:", event, session?.user?.email);
-      if (session) {
-        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
-        updateState({
-          session,
-          user: session.user,
-          isLoading: false,
-        });
-        await loadUserData(session.user);
+      console.log("Auth state changed:", event);
 
-        // Broadcast to other tabs
-        localStorage.setItem(
-          AUTH_EVENT_KEY,
-          JSON.stringify({ event, timestamp: Date.now() })
-        );
-      } else {
-        sessionStorage.removeItem(SESSION_STORAGE_KEY);
-        sessionStorage.removeItem(USER_DATA_KEY);
-        sessionStorage.removeItem(USER_PERMISSIONS_KEY);
-        updateState({
-          session: null,
-          user: null,
-          isLoading: false,
-          isAdmin: false,
-          hasStudioAccess: false,
+      if (mounted) {
+        setState({
+          user: session?.user || null,
+          session: session,
           userData: null,
+          isLoading: false,
+          isReady: true,
         });
+
+        if (session?.user) {
+          await loadUserData(session.user);
+        } else {
+          // Clear cached data on logout
+          sessionStorage.removeItem(USER_DATA_KEY);
+        }
       }
     });
 
-    // Listen for auth events from other tabs
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === AUTH_EVENT_KEY) {
-        initSession();
-      }
-    };
-
-    window.addEventListener("storage", handleStorage);
-
     return () => {
+      mounted = false;
       subscription.unsubscribe();
-      window.removeEventListener("storage", handleStorage);
     };
-  }, [initSession, loadUserData]);
+  }, [loadUserData]);
 
+  // Authentication methods
   const login = useCallback(async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      return { error };
-    } catch (error) {
-      return { error };
-    }
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { error };
   }, []);
 
   const signUp = useCallback(
     async (email: string, password: string, metadata?: any) => {
-      try {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: metadata ? { data: metadata } : undefined,
-        });
-        return { error };
-      } catch (error) {
-        return { error };
-      }
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: metadata ? { data: metadata } : undefined,
+      });
+      return { error };
     },
     []
   );
 
   const logout = useCallback(async () => {
-    try {
-      // Clear all auth-related storage
-      sessionStorage.removeItem(SESSION_STORAGE_KEY);
-      sessionStorage.removeItem(USER_DATA_KEY);
-      sessionStorage.removeItem(USER_PERMISSIONS_KEY);
+    // Clear cached data
+    sessionStorage.removeItem(USER_DATA_KEY);
 
-      const { error } = await supabase.auth.signOut();
-      return { error };
-    } catch (error) {
-      return { error };
-    }
+    const { error } = await supabase.auth.signOut();
+    return { error };
   }, []);
-
-  const updateUserPreferences = useCallback(
-    async (preferences: Record<string, any>) => {
-      if (!state.user?.id || !state.userData) return;
-
-      try {
-        const { error } = await supabase
-          .from("users")
-          .update({ preferences })
-          .eq("id", state.user.id);
-
-        if (error) throw error;
-
-        const newUserData = { ...state.userData, preferences };
-        sessionStorage.setItem(USER_DATA_KEY, JSON.stringify(newUserData));
-        updateState({ userData: newUserData });
-      } catch (error) {
-        console.error("Error updating preferences:", error);
-      }
-    },
-    [state.user?.id, state.userData]
-  );
-
-  const updateUserSettings = useCallback(
-    async (settings: Record<string, any>) => {
-      if (!state.user?.id || !state.userData) return;
-
-      try {
-        const { error } = await supabase
-          .from("users")
-          .update({ settings })
-          .eq("id", state.user.id);
-
-        if (error) throw error;
-
-        const newUserData = { ...state.userData, settings };
-        sessionStorage.setItem(USER_DATA_KEY, JSON.stringify(newUserData));
-        updateState({ userData: newUserData });
-      } catch (error) {
-        console.error("Error updating settings:", error);
-      }
-    },
-    [state.user?.id, state.userData]
-  );
 
   const refreshUserData = useCallback(async () => {
     if (state.user) {
+      // Clear cache to force fresh fetch
+      sessionStorage.removeItem(USER_DATA_KEY);
       await loadUserData(state.user);
     }
   }, [state.user, loadUserData]);
 
+  // Computed values
+  const isLoggedIn = !!state.user;
+  const isAdmin = state.userData?.role === "admin";
+  const hasStudioAccess = !!state.userData?.studio_access;
+
   return {
     ...state,
-    isLoggedIn: !!state.user,
-    isReady: !state.isLoading && state.user !== undefined,
+    isLoggedIn,
+    isAdmin,
+    hasStudioAccess,
     login,
     signUp,
     logout,
-    updateUserPreferences,
-    updateUserSettings,
     refreshUserData,
   };
 }

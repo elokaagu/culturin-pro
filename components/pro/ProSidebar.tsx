@@ -67,14 +67,12 @@ const ProSidebar: React.FC = () => {
 
   // Redirect to home if not authenticated
   useEffect(() => {
-    console.log("ProSidebar auth check:", { isLoading, user: !!user, isReady, pathname: location.pathname });
-    
-    // Only redirect if we're not loading and definitely have no user
-    if (!isLoading && !user && isReady) {
+    // Only redirect if auth is ready and we definitely have no user
+    if (isReady && !isLoading && !user) {
       console.log("No authenticated user, redirecting to home");
       navigate("/");
     }
-  }, [isLoading, user, isReady, navigate, location.pathname]);
+  }, [isReady, isLoading, user, navigate]);
 
   // Use authenticated user's name if available
   const userName = useMemo(() => {
@@ -177,12 +175,8 @@ const ProSidebar: React.FC = () => {
               {user?.email || ""}
             </div>
             <div className="px-3 py-1 text-xs text-gray-400 capitalize">
-              {user
-                ? user.role === "admin"
-                  ? "Admin"
-                  : "User"
-                : ""}{" "}
-              • Studio Access
+              {user ? (user.role === "admin" ? "Admin" : "User") : ""} • Studio
+              Access
             </div>
             <DropdownMenuSeparator />
             {user?.role === "admin" && (
