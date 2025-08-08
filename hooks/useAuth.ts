@@ -85,6 +85,8 @@ export function useAuth() {
 
     const initAuth = async () => {
       try {
+        console.log("Initializing authentication...");
+        
         // Get current session
         const {
           data: { session },
@@ -94,6 +96,8 @@ export function useAuth() {
         if (error) {
           console.error("Error getting session:", error);
         }
+
+        console.log("Initial session check:", session ? "Session found" : "No session");
 
         if (mounted) {
           setState({
@@ -106,6 +110,7 @@ export function useAuth() {
 
           // Load user data if we have a user
           if (session?.user) {
+            console.log("Loading user data for:", session.user.email);
             await loadUserData(session.user);
           }
         }
@@ -129,23 +134,31 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event);
+      console.log("Auth state changed:", event, session?.user?.email, "at", new Date().toISOString());
 
       if (mounted) {
-        setState({
+        console.log("Setting state for event:", event);
+        
+        // Update state immediately
+        setState((prev) => ({
+          ...prev,
           user: session?.user || null,
           session: session,
-          userData: null,
+          userData: null, // Reset user data, will be loaded if needed
           isLoading: false,
           isReady: true,
-        });
+        }));
 
         if (session?.user) {
+          console.log("Loading user data after auth change for:", session.user.email);
           await loadUserData(session.user);
         } else {
+          console.log("Clearing user data - no session at", new Date().toISOString());
           // Clear cached data on logout
           sessionStorage.removeItem(USER_DATA_KEY);
         }
+      } else {
+        console.log("Component unmounted, ignoring auth change");
       }
     });
 
@@ -157,10 +170,18 @@ export function useAuth() {
 
   // Authentication methods
   const login = useCallback(async (email: string, password: string) => {
+    console.log("Attempting login for:", email);
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    
+    if (error) {
+      console.error("Login error:", error);
+    } else {
+      console.log("Login successful for:", email);
+    }
+    
     return { error };
   }, []);
 
@@ -177,6 +198,7 @@ export function useAuth() {
   );
 
   const logout = useCallback(async () => {
+    console.log("Logging out user");
     // Clear cached data
     sessionStorage.removeItem(USER_DATA_KEY);
 

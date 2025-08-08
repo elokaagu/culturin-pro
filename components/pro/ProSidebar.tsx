@@ -70,7 +70,12 @@ const ProSidebar: React.FC = () => {
     // Only redirect if auth is ready and we definitely have no user
     if (isReady && !isLoading && !user) {
       console.log("No authenticated user, redirecting to home");
-      navigate("/");
+      // Add a small delay to ensure auth state is stable
+      const timer = setTimeout(() => {
+        navigate("/");
+      }, 500);
+      
+      return () => clearTimeout(timer);
     }
   }, [isReady, isLoading, user, navigate]);
 
