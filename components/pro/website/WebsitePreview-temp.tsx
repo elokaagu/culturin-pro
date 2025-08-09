@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ItineraryType } from "@/data/itineraryData";
 import { Itinerary } from "@/lib/itinerary-service";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useUserData } from "../../../src/contexts/UserDataContext";
 import {

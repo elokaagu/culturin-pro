@@ -6,6 +6,8 @@ import WebsitePreview from "./WebsitePreview";
 import WebsiteThemes from "./WebsiteThemes";
 import WebsiteContent from "./WebsiteContent";
 import WebsiteSettings from "./WebsiteSettings";
+import UserWebsiteSettings from "./UserWebsiteSettings";
+import { userWebsiteService } from "./UserWebsiteService";
 import BookingFlowBuilder from "./BookingFlowBuilder";
 import HeaderFooterCustomizer from "./HeaderFooterCustomizer";
 import FontCustomizer from "./FontCustomizer";
@@ -82,6 +84,7 @@ const WebsiteBuilder: React.FC = () => {
   const [publishedUrl, setPublishedUrl] = useState("");
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
   const [previewKey, setPreviewKey] = useState(0);
+  const [websiteSettingsChanged, setWebsiteSettingsChanged] = useState(false);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -931,6 +934,15 @@ const WebsiteBuilder: React.FC = () => {
                 Content
               </Button>
               <Button
+                variant={activeTab === "settings" ? "default" : "ghost"}
+                size="sm"
+                className="w-full justify-start text-xs"
+                onClick={() => handleTabChange("settings")}
+              >
+                <Settings className="h-3 w-3 mr-2" />
+                Settings
+              </Button>
+              <Button
                 variant={activeTab === "booking" ? "default" : "ghost"}
                 size="sm"
                 className="w-full justify-start text-xs"
@@ -1164,6 +1176,17 @@ const WebsiteBuilder: React.FC = () => {
           {activeTab === "content" && (
             <div className="h-full p-6 pl-8">
               <WebsiteContent />
+            </div>
+          )}
+
+          {activeTab === "settings" && (
+            <div className="h-full p-6 pl-8">
+              <UserWebsiteSettings
+                onSettingsChange={() => {
+                  setWebsiteSettingsChanged(true);
+                  setPreviewKey((prev) => prev + 1);
+                }}
+              />
             </div>
           )}
 
