@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { supabaseStorage } from "@/lib/supabase-storage";
 
 export interface Itinerary {
-  id: string;
+  id?: string;
   title: string;
   description?: string;
   days: number;

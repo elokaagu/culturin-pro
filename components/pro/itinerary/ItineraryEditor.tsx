@@ -102,11 +102,11 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
         itinerary.id.startsWith("new-") ||
         itinerary.id.startsWith("local-")
       ) {
-        // Create new itinerary
+        // Create new itinerary - let database generate UUID
         const { id, ...itineraryData } = itinerary;
         const newItinerary: Itinerary = {
           ...itineraryData,
-          id: `new-${Date.now()}`,
+          // Don't include id - let database generate UUID
         };
         const success = await itineraryService.saveItinerary(newItinerary);
         if (success) {

@@ -2,7 +2,7 @@ import { supabase } from "./supabase";
 import { supabaseStorage } from "./supabase-storage";
 
 export interface Itinerary {
-  id: string;
+  id?: string;
   title: string;
   description?: string;
   days: number;
@@ -128,8 +128,24 @@ class ItineraryService {
         groupSize: undefined,
       };
 
-      // Save to database
-      const { error } = await supabase.from("itineraries").upsert(dbItinerary);
+      // For new records without valid UUID, use insert; for existing records, use upsert
+      const isNewRecord = !itinerary.id || 
+        itinerary.id.startsWith("new-") || 
+        itinerary.id.startsWith("temp-") || 
+        itinerary.id.startsWith("local-") ||
+        itinerary.id.startsWith("duplicate-");
+
+      let error;
+      if (isNewRecord) {
+        // Remove invalid ID for new records - let database generate UUID
+        const { id, ...newRecord } = dbItinerary;
+        const result = await supabase.from("itineraries").insert(newRecord);
+        error = result.error;
+      } else {
+        // Update existing record
+        const result = await supabase.from("itineraries").upsert(dbItinerary);
+        error = result.error;
+      }
 
       if (error) {
         console.error("Database error:", error);
