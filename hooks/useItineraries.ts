@@ -21,6 +21,13 @@ export interface Itinerary {
   operator_id?: string;
   status?: "draft" | "published" | "archived";
   lastUpdated?: string;
+  themeType?: string;
+  regions?: string[];
+  groupSize?: { min: number; max: number };
+  groupSizeMin?: number;
+  groupSizeMax?: number;
+  difficulty?: string;
+  tags?: string[];
 }
 
 export const useItineraries = () => {
@@ -35,10 +42,14 @@ export const useItineraries = () => {
       setError(null);
 
       // Get user session directly
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session?.user) {
-        console.warn("User not authenticated, cannot get itineraries from database");
+        console.warn(
+          "User not authenticated, cannot get itineraries from database"
+        );
         setItineraries([]);
         setLoading(false);
         setAuthChecked(true);
@@ -83,7 +94,7 @@ export const useItineraries = () => {
         operator_id: item.operator_id,
         status: item.status || "draft",
       }));
-      
+
       setItineraries(transformedItineraries);
     } catch (err) {
       console.error("Error fetching itineraries:", err);
@@ -94,77 +105,94 @@ export const useItineraries = () => {
     }
   }, [authChecked]);
 
-  const saveItinerary = useCallback(async (itinerary: Itinerary): Promise<boolean> => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session?.user) {
-        console.warn("User not authenticated, cannot save itinerary");
-        return false;
-      }
+  const saveItinerary = useCallback(
+    async (itinerary: Itinerary): Promise<boolean> => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      const userId = session.user.id;
+        if (!session?.user) {
+          console.warn("User not authenticated, cannot save itinerary");
+          return false;
+        }
 
-      // Save to database
-      const { error } = await supabase
-        .from("itineraries")
-        .upsert({
+        const userId = session.user.id;
+
+        // Save to database
+        const { error } = await supabase.from("itineraries").upsert({
           ...itinerary,
           operator_id: userId,
           updated_at: new Date().toISOString(),
         });
 
-      if (error) {
-        console.error("Database error:", error);
+        if (error) {
+          console.error("Database error:", error);
+          return false;
+        }
+
+        // Update local state
+        setItineraries((current) =>
+          updateItineraryInList([...current], itinerary)
+        );
+
+        return true;
+      } catch (error) {
+        console.error("Error saving itinerary:", error);
         return false;
       }
+    },
+    []
+  );
 
-      // Update local state
-      setItineraries(current => updateItineraryInList([...current], itinerary));
+  const deleteItinerary = useCallback(
+    async (itineraryId: string): Promise<boolean> => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      return true;
-    } catch (error) {
-      console.error("Error saving itinerary:", error);
-      return false;
-    }
-  }, []);
+        if (!session?.user) {
+          console.warn("User not authenticated, cannot delete itinerary");
+          return false;
+        }
 
-  const deleteItinerary = useCallback(async (itineraryId: string): Promise<boolean> => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session?.user) {
-        console.warn("User not authenticated, cannot delete itinerary");
+        const userId = session.user.id;
+
+        // Delete from database
+        const { error } = await supabase
+          .from("itineraries")
+          .delete()
+          .eq("id", itineraryId)
+          .eq("operator_id", userId);
+
+        if (error) {
+          console.error("Database error:", error);
+          return false;
+        }
+
+        // Update local state
+        setItineraries((current) =>
+          current.filter((it) => it.id !== itineraryId)
+        );
+
+        return true;
+      } catch (error) {
+        console.error("Error deleting itinerary:", error);
         return false;
       }
-
-      const userId = session.user.id;
-
-      // Delete from database
-      const { error } = await supabase
-        .from("itineraries")
-        .delete()
-        .eq("id", itineraryId)
-        .eq("operator_id", userId);
-
-      if (error) {
-        console.error("Database error:", error);
-        return false;
-      }
-
-      // Update local state
-      setItineraries(current => current.filter(it => it.id !== itineraryId));
-
-      return true;
-    } catch (error) {
-      console.error("Error deleting itinerary:", error);
-      return false;
-    }
-  }, []);
+    },
+    []
+  );
 
   // Helper function to update itinerary in a list
-  const updateItineraryInList = (itineraries: Itinerary[], updatedItinerary: Itinerary): Itinerary[] => {
-    const index = itineraries.findIndex((it: Itinerary) => it.id === updatedItinerary.id);
+  const updateItineraryInList = (
+    itineraries: Itinerary[],
+    updatedItinerary: Itinerary
+  ): Itinerary[] => {
+    const index = itineraries.findIndex(
+      (it: Itinerary) => it.id === updatedItinerary.id
+    );
     if (index !== -1) {
       itineraries[index] = updatedItinerary;
     } else {
