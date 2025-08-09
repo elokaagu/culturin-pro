@@ -119,43 +119,65 @@ const WebsiteBuilder: React.FC = () => {
           return;
         }
 
-        // Load user website data using UserWebsiteService
-        const websiteData = await userWebsiteService.getUserWebsiteData(user.id);
-        
-        if (websiteData) {
-          // Set published URL from settings
-          if (websiteData.settings.published_url) {
-            setPublishedUrl(websiteData.settings.published_url);
-          } else {
-            // Generate default URL if none exists
-            const defaultUrl = userWebsiteService.generateWebsiteUrl(
-              user.id, 
-              websiteData.settings.company_name
-            );
-            setPublishedUrl(defaultUrl);
+        // Try to load user website data using UserWebsiteService
+        try {
+          const websiteData = await userWebsiteService.getUserWebsiteData(user.id);
+          
+          if (websiteData) {
+            // Set published URL from settings
+            if (websiteData.settings.published_url) {
+              setPublishedUrl(websiteData.settings.published_url);
+            } else {
+              // Generate default URL if none exists
+              const defaultUrl = userWebsiteService.generateWebsiteUrl(
+                user.id, 
+                websiteData.settings.company_name
+              );
+              setPublishedUrl(defaultUrl);
+            }
+
+            // Set itineraries
+            setItineraries(websiteData.itineraries || []);
+
+            // Store in localStorage for compatibility
+            localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
+              settings: websiteData.settings,
+              itineraries: websiteData.itineraries,
+              publishedUrl: websiteData.settings.published_url,
+              lastLoaded: new Date().toISOString()
+            }));
+
+            // Store published URL for persistence
+            if (websiteData.settings.published_url) {
+              localStorage.setItem(`publishedWebsiteUrl_${user.id}`, websiteData.settings.published_url);
+            }
           }
-
-          // Set itineraries
-          setItineraries(websiteData.itineraries || []);
-
-          // Store in localStorage for compatibility
-          localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
-            settings: websiteData.settings,
-            itineraries: websiteData.itineraries,
-            publishedUrl: websiteData.settings.published_url,
-            lastLoaded: new Date().toISOString()
-          }));
-
-          // Store published URL for persistence
-          if (websiteData.settings.published_url) {
-            localStorage.setItem(`publishedWebsiteUrl_${user.id}`, websiteData.settings.published_url);
+        } catch (dbError) {
+          console.warn("Database unavailable, using localStorage fallback:", dbError);
+          
+          // Fallback to localStorage
+          const savedData = localStorage.getItem(`websiteData_${user.id}`);
+          const savedUrl = localStorage.getItem(`publishedWebsiteUrl_${user.id}`);
+          
+          if (savedData) {
+            try {
+              const parsed = JSON.parse(savedData);
+              setItineraries(parsed.itineraries || []);
+              if (parsed.publishedUrl) setPublishedUrl(parsed.publishedUrl);
+            } catch (e) {
+              console.error("Error parsing saved data:", e);
+            }
+          }
+          
+          if (savedUrl) {
+            setPublishedUrl(savedUrl);
           }
         }
 
         // Add initial state to history
         const initialHistory: HistoryState = {
-          websiteSettings: websiteData?.settings || {},
-          itineraries: websiteData?.itineraries || [],
+          websiteSettings: {},
+          itineraries: itineraries || [],
           timestamp: Date.now(),
         };
         setHistory([initialHistory]);

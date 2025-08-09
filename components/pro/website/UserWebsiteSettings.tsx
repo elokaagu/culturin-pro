@@ -28,6 +28,35 @@ const UserWebsiteSettingsComponent: React.FC<UserWebsiteSettingsProps> = ({
   useEffect(() => {
     const loadSettings = async () => {
       if (!user?.id) {
+        // If no user, show default settings without loading
+        setSettings({
+          user_id: "demo",
+          company_name: "Your Cultural Tours",
+          tagline: "Discover Authentic Cultural Experiences",
+          description: "We specialize in creating immersive cultural experiences that connect you with local traditions and communities.",
+          contact_info: {
+            phone: "",
+            email: "",
+            address: "",
+          },
+          social_media: {},
+          branding: {
+            primary_color: "#9b87f5",
+            theme: "classic",
+          },
+          website_settings: {
+            show_booking: true,
+            show_reviews: true,
+            show_testimonials: true,
+            currency: "USD",
+            language: "en",
+            timezone: "UTC",
+          },
+          seo_settings: {
+            keywords: ["cultural tours", "authentic experiences", "travel"],
+          },
+          is_published: false,
+        });
         setLoading(false);
         return;
       }
@@ -40,7 +69,56 @@ const UserWebsiteSettingsComponent: React.FC<UserWebsiteSettingsProps> = ({
         setSettings(userSettings);
       } catch (error) {
         console.error("Error loading website settings:", error);
-        toast.error("Failed to load website settings");
+        // Show a more helpful error message
+        if (error instanceof Error && (error.message.includes("relation") || error.message.includes("42P01"))) {
+          console.warn("Database table not found, using localStorage fallback");
+          // Try to load from localStorage as fallback
+          const savedSettings = localStorage.getItem(`userWebsiteSettings_${user.id}`);
+          if (savedSettings) {
+            try {
+              const parsed = JSON.parse(savedSettings);
+              setSettings(parsed);
+              setLoading(false);
+              return;
+            } catch (e) {
+              console.error("Error parsing saved settings:", e);
+            }
+          }
+        } else {
+          toast.error("Failed to load website settings", {
+            description: "Using default settings for now"
+          });
+        }
+        
+        // Fallback to default settings
+        setSettings({
+          user_id: user.id,
+          company_name: "Your Cultural Tours",
+          tagline: "Discover Authentic Cultural Experiences",
+          description: "We specialize in creating immersive cultural experiences that connect you with local traditions and communities.",
+          contact_info: {
+            phone: "",
+            email: "",
+            address: "",
+          },
+          social_media: {},
+          branding: {
+            primary_color: "#9b87f5",
+            theme: "classic",
+          },
+          website_settings: {
+            show_booking: true,
+            show_reviews: true,
+            show_testimonials: true,
+            currency: "USD",
+            language: "en",
+            timezone: "UTC",
+          },
+          seo_settings: {
+            keywords: ["cultural tours", "authentic experiences", "travel"],
+          },
+          is_published: false,
+        });
       } finally {
         setLoading(false);
       }
@@ -87,11 +165,29 @@ const UserWebsiteSettingsComponent: React.FC<UserWebsiteSettingsProps> = ({
       if (success) {
         toast.success("Website settings saved successfully!");
       } else {
-        toast.error("Failed to save website settings");
+        // Fallback to localStorage
+        try {
+          localStorage.setItem(`userWebsiteSettings_${user.id}`, JSON.stringify(settings));
+          toast.success("Website settings saved locally!", {
+            description: "Data saved to browser storage"
+          });
+        } catch (localError) {
+          console.error("Failed to save to localStorage:", localError);
+          toast.error("Failed to save website settings");
+        }
       }
     } catch (error) {
       console.error("Error saving settings:", error);
-      toast.error("An error occurred while saving");
+      // Try localStorage fallback
+      try {
+        localStorage.setItem(`userWebsiteSettings_${user.id}`, JSON.stringify(settings));
+        toast.success("Website settings saved locally!", {
+          description: "Data saved to browser storage"
+        });
+      } catch (localError) {
+        console.error("Failed to save to localStorage:", localError);
+        toast.error("An error occurred while saving");
+      }
     } finally {
       setSaving(false);
     }

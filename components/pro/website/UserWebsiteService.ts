@@ -69,8 +69,19 @@ class UserWebsiteService {
         .eq("user_id", userId)
         .single();
 
-      if (error && error.code !== "PGRST116") {
-        console.error("Error fetching website settings:", error);
+      if (error) {
+        if (error.code === "PGRST116") {
+          // No record found, return defaults
+          console.log("No website settings found for user, using defaults");
+          return this.getDefaultSettings(userId);
+        } else if (error.code === "42P01") {
+          // Table doesn't exist
+          console.warn("user_website_settings table doesn't exist, using defaults");
+          return this.getDefaultSettings(userId);
+        } else {
+          console.error("Error fetching website settings:", error);
+          return this.getDefaultSettings(userId);
+        }
       }
 
       // Return settings or defaults
@@ -94,8 +105,15 @@ class UserWebsiteService {
       });
 
       if (error) {
-        console.error("Error saving website settings:", error);
-        return false;
+        if (error.code === "42P01") {
+          // Table doesn't exist
+          console.warn("user_website_settings table doesn't exist, cannot save");
+          // In a real app, you might want to create the table here or show a setup message
+          return false;
+        } else {
+          console.error("Error saving website settings:", error);
+          return false;
+        }
       }
 
       return true;
