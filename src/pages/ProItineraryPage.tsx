@@ -15,7 +15,7 @@ const ProItineraryPage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedItinerary, setSelectedItinerary] = useState<ItineraryType | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
@@ -24,19 +24,52 @@ const ProItineraryPage: React.FC = () => {
   useEffect(() => {
     const loadItineraries = async () => {
       try {
+        console.log("🔄 Loading itineraries...");
         setLoading(true);
+        
+        // Add a small delay to ensure auth is ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         // Load from Supabase storage first (fallback)
-        const storedItineraries = await supabaseStorage.getItem('userItineraries') || [];
-        setItineraries(storedItineraries);
+        try {
+          const storedItineraries = await supabaseStorage.getItem('userItineraries') || [];
+          console.log("📦 Loaded from Supabase storage:", storedItineraries);
+          setItineraries(Array.isArray(storedItineraries) ? storedItineraries : []);
+        } catch (storageError) {
+          console.error("Error loading from storage:", storageError);
+          // Use local storage as ultimate fallback
+          try {
+            const localItineraries = localStorage.getItem('userItineraries');
+            const parsed = localItineraries ? JSON.parse(localItineraries) : [];
+            console.log("📦 Loaded from localStorage:", parsed);
+            setItineraries(parsed);
+          } catch (localError) {
+            console.error("Error loading from localStorage:", localError);
+            setItineraries([]);
+          }
+        }
       } catch (error) {
         console.error("Error loading itineraries:", error);
         setItineraries([]);
       } finally {
+        console.log("✅ Itineraries loading complete");
         setLoading(false);
       }
     };
     
-    loadItineraries();
+    // Add timeout failsafe to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.log("⚠️ Loading timeout - forcing loading state to false");
+      setLoading(false);
+    }, 3000);
+    
+    loadItineraries().finally(() => {
+      clearTimeout(timeoutId);
+    });
+    
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   const handleCreateNew = () => {
@@ -65,8 +98,14 @@ const ProItineraryPage: React.FC = () => {
       const updatedItineraries = itineraries.filter(it => it.id !== itineraryId);
       setItineraries(updatedItineraries);
       
-      // Save to storage
-      await supabaseStorage.setItem('userItineraries', updatedItineraries);
+      // Save to storage with fallback
+      try {
+        await supabaseStorage.setItem('userItineraries', updatedItineraries);
+      } catch (storageError) {
+        console.error("Error saving to Supabase storage:", storageError);
+        // Fallback to localStorage
+        localStorage.setItem('userItineraries', JSON.stringify(updatedItineraries));
+      }
       
       toast({
         title: "Itinerary Deleted",
@@ -108,7 +147,15 @@ const ProItineraryPage: React.FC = () => {
       }
       
       setItineraries(updatedItineraries);
-      await supabaseStorage.setItem('userItineraries', updatedItineraries);
+      
+      // Save to storage with fallback
+      try {
+        await supabaseStorage.setItem('userItineraries', updatedItineraries);
+      } catch (storageError) {
+        console.error("Error saving to Supabase storage:", storageError);
+        // Fallback to localStorage
+        localStorage.setItem('userItineraries', JSON.stringify(updatedItineraries));
+      }
       
       toast({
         title: "Itinerary Saved",
