@@ -4,81 +4,123 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "../../lib/navigation";
 import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
 import { useToast } from "@/components/ui/use-toast";
-import { useItineraries } from "@/hooks/useItineraries";
 import { supabaseStorage } from "@/lib/supabase-storage";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, Eye } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import ItineraryEditor from "@/components/pro/itinerary/ItineraryEditor";
+import { ItineraryType } from "@/data/itineraryData";
 
 const ProItineraryPage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { itineraries, loading, error, saveItinerary, deleteItinerary, refreshItineraries } = useItineraries();
-  const [hasCheckedSampleData, setHasCheckedSampleData] = useState(false);
+  const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedItinerary, setSelectedItinerary] = useState<ItineraryType | null>(null);
+  const [showEditor, setShowEditor] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
 
+  // Load itineraries from storage
   useEffect(() => {
-    // Save current route to session storage instead
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("lastRoute", "/pro-dashboard/itinerary");
-    }
-    
-    // Check if we're returning from creating a new itinerary
-    const checkReturningFromCreate = async () => {
+    const loadItineraries = async () => {
       try {
-        const returningFromCreate = await supabaseStorage.getItem('returningFromCreate');
-        if (returningFromCreate === 'true') {
-          console.log("Returning from create, refreshing itineraries...");
-          // Clear the flag
-          await supabaseStorage.removeItem('returningFromCreate');
-          // Force refresh itineraries
-          setTimeout(() => {
-            refreshItineraries();
-          }, 100);
-        }
+        setLoading(true);
+        // Load from Supabase storage first (fallback)
+        const storedItineraries = await supabaseStorage.getItem('userItineraries') || [];
+        setItineraries(storedItineraries);
       } catch (error) {
-        console.error("Error checking return flag:", error);
+        console.error("Error loading itineraries:", error);
+        setItineraries([]);
+      } finally {
+        setLoading(false);
       }
     };
     
-    checkReturningFromCreate();
-  }, [refreshItineraries]);
-
-  // Check for sample data if no itineraries exist
-  useEffect(() => {
-    if (!loading && itineraries.length === 0 && !hasCheckedSampleData) {
-      console.log("🔍 No itineraries found");
-      setHasCheckedSampleData(true);
-    }
-  }, [itineraries, loading, hasCheckedSampleData]);
+    loadItineraries();
+  }, []);
 
   const handleCreateNew = () => {
-    navigate("/pro-dashboard/itinerary/new");
+    const newItinerary: ItineraryType = {
+      id: `new-${Date.now()}`,
+      title: "New Itinerary",
+      days: 3,
+      lastUpdated: "just now",
+      status: "draft",
+      image: "/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
+      themeType: "cultural",
+      description: "Start building your cultural experience itinerary",
+      regions: [],
+    };
+    setSelectedItinerary(newItinerary);
+    setShowEditor(true);
   };
 
-  const handleEditItinerary = (itineraryId: string) => {
-    navigate(`/pro-dashboard/itinerary/${itineraryId}`);
+  const handleEditItinerary = (itinerary: ItineraryType) => {
+    setSelectedItinerary(itinerary);
+    setShowEditor(true);
   };
 
   const handleDeleteItinerary = async (itineraryId: string) => {
     try {
-      const success = await deleteItinerary(itineraryId);
-      if (success) {
-        toast({
-          title: "Itinerary Deleted",
-          description: "The itinerary has been successfully deleted.",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to delete the itinerary.",
-          variant: "destructive",
-        });
-      }
+      const updatedItineraries = itineraries.filter(it => it.id !== itineraryId);
+      setItineraries(updatedItineraries);
+      
+      // Save to storage
+      await supabaseStorage.setItem('userItineraries', updatedItineraries);
+      
+      toast({
+        title: "Itinerary Deleted",
+        description: "The itinerary has been successfully deleted.",
+      });
     } catch (error) {
       console.error("Error deleting itinerary:", error);
       toast({
         title: "Error",
         description: "An error occurred while deleting the itinerary.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEditorClose = () => {
+    setShowEditor(false);
+    setSelectedItinerary(null);
+    setShowAIAssistant(false);
+  };
+
+  const handleItinerarySave = async (savedItinerary: ItineraryType) => {
+    try {
+      let updatedItineraries;
+      
+      if (savedItinerary.id.startsWith('new-')) {
+        // New itinerary - generate a proper ID
+        const newItinerary = {
+          ...savedItinerary,
+          id: `itinerary-${Date.now()}`,
+          lastUpdated: "just now"
+        };
+        updatedItineraries = [newItinerary, ...itineraries];
+      } else {
+        // Existing itinerary - update
+        updatedItineraries = itineraries.map(it => 
+          it.id === savedItinerary.id ? { ...savedItinerary, lastUpdated: "just now" } : it
+        );
+      }
+      
+      setItineraries(updatedItineraries);
+      await supabaseStorage.setItem('userItineraries', updatedItineraries);
+      
+      toast({
+        title: "Itinerary Saved",
+        description: `"${savedItinerary.title}" has been saved successfully.`,
+      });
+      
+      handleEditorClose();
+    } catch (error) {
+      console.error("Error saving itinerary:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save the itinerary.",
         variant: "destructive",
       });
     }
@@ -93,6 +135,20 @@ const ProItineraryPage: React.FC = () => {
           </div>
         </div>
       </ProDashboardLayout>
+    );
+  }
+
+  // Show editor if selectedItinerary exists
+  if (showEditor && selectedItinerary) {
+    return (
+      <ItineraryEditor
+        showEditor={showEditor}
+        selectedItinerary={selectedItinerary}
+        showAIAssistant={showAIAssistant}
+        onAIAssistantClose={() => setShowAIAssistant(false)}
+        onEditorClose={handleEditorClose}
+        onItinerarySave={handleItinerarySave}
+      />
     );
   }
 
@@ -114,11 +170,7 @@ const ProItineraryPage: React.FC = () => {
           </Button>
         </div>
 
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-red-600">{error}</p>
-          </div>
-        )}
+
 
         {itineraries.length === 0 ? (
           <div className="text-center py-12">
@@ -151,7 +203,7 @@ const ProItineraryPage: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEditItinerary(itinerary.id)}
+                        onClick={() => handleEditItinerary(itinerary)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
