@@ -117,9 +117,9 @@ const ProSidebar: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div className="w-64 bg-white/95 backdrop-blur-md border-r border-gray-200 h-full flex flex-col fixed left-0 top-0 bottom-0 font-sans shadow-lg">
+    <div className="w-64 bg-white border-r border-gray-200 h-full flex flex-col fixed left-0 top-0 bottom-0 font-sans shadow-lg">
       {/* Logo & Header */}
-      <div className="p-4 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
+      <div className="p-4 border-b border-gray-200 bg-white">
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
@@ -151,8 +151,8 @@ const ProSidebar: React.FC = () => {
               className={cn(
                 "flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-all duration-300 text-sm font-medium",
                 location.pathname === item.path
-                  ? "glass-active text-white shadow-lg bg-white/20"
-                  : "text-black hover:glass-hover hover:text-black hover:bg-white/10"
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               )}
             >
               <item.icon className="h-4 w-4" />
@@ -163,9 +163,9 @@ const ProSidebar: React.FC = () => {
       </div>
 
       {/* Plan & Account Section */}
-      <div className="p-4 border-t border-gray-200 bg-white/90 backdrop-blur-sm">
+      <div className="p-4 border-t border-gray-200 bg-white">
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex w-full items-center gap-2 p-2 rounded-md glass-hover transition-all duration-300">
+          <DropdownMenuTrigger className="flex w-full items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-all duration-300">
             <div className="w-8 h-8 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
               <Users className="h-4 w-4 text-gray-600" />
             </div>
