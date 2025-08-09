@@ -55,35 +55,57 @@ const ProItineraryPage: React.FC = () => {
       try {
         console.log("🔄 Loading itineraries for user:", user?.email || 'anonymous');
         
-        // Create user-specific storage key
-        const storageKey = user?.id ? `userItineraries_${user.id}` : 'userItineraries';
-        console.log("🔑 Using storage key:", storageKey);
+        // Try multiple storage keys to find existing data
+        const possibleKeys = [
+          user?.id ? `userItineraries_${user.id}` : null,
+          'userItineraries',
+          'userItineraries_' + (user?.email || '').replace(/[@.]/g, '_'),
+        ].filter(Boolean);
         
-        // Load from Supabase storage first (user-specific)
-        try {
-          const storedItineraries = await supabaseStorage.getItem(storageKey) || [];
-          console.log("📦 Loaded from Supabase storage:", storedItineraries);
-          if (isMounted) {
-            setItineraries(Array.isArray(storedItineraries) ? storedItineraries : []);
-          }
-        } catch (storageError) {
-          console.error("Error loading from Supabase storage:", storageError);
-          // Use local storage as fallback with user-specific key
+        console.log("🔑 Trying storage keys:", possibleKeys);
+        
+        let foundItineraries: any[] = [];
+        
+        // Try Supabase storage with different keys
+        for (const key of possibleKeys) {
           try {
-            const localStorageKey = user?.id ? `userItineraries_${user.id}` : 'userItineraries';
-            const localItineraries = localStorage.getItem(localStorageKey);
-            const parsed = localItineraries ? JSON.parse(localItineraries) : [];
-            console.log("📦 Loaded from localStorage with key:", localStorageKey, parsed);
-            if (isMounted) {
-              setItineraries(parsed);
+            const storedItineraries = await supabaseStorage.getItem(key);
+            console.log(`📦 Checking Supabase storage with key "${key}":`, storedItineraries);
+            if (storedItineraries && Array.isArray(storedItineraries) && storedItineraries.length > 0) {
+              foundItineraries = storedItineraries;
+              console.log(`✅ Found ${foundItineraries.length} itineraries with key: ${key}`);
+              break;
             }
-          } catch (localError) {
-            console.error("Error loading from localStorage:", localError);
-            if (isMounted) {
-              setItineraries([]);
+          } catch (error) {
+            console.log(`❌ Error with Supabase storage key "${key}":`, error);
+          }
+        }
+        
+        // If no Supabase data, try localStorage with different keys
+        if (foundItineraries.length === 0) {
+          for (const key of possibleKeys) {
+            try {
+              const localItineraries = localStorage.getItem(key);
+              if (localItineraries) {
+                const parsed = JSON.parse(localItineraries);
+                console.log(`📦 Checking localStorage with key "${key}":`, parsed);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  foundItineraries = parsed;
+                  console.log(`✅ Found ${foundItineraries.length} itineraries in localStorage with key: ${key}`);
+                  break;
+                }
+              }
+            } catch (error) {
+              console.log(`❌ Error with localStorage key "${key}":`, error);
             }
           }
         }
+        
+        console.log(`🎯 Final result: ${foundItineraries.length} itineraries found`);
+        if (isMounted) {
+          setItineraries(foundItineraries);
+        }
+        
       } catch (error) {
         console.error("Error loading itineraries:", error);
         if (isMounted) {
@@ -103,19 +125,10 @@ const ProItineraryPage: React.FC = () => {
       if (isMounted) {
         setLoading(false);
       }
-    }, 3000);
+    }, 5000); // Increased timeout to 5 seconds
     
-    // Load data when auth is ready, or after a short delay
-    if (isReady) {
-      loadItineraries();
-    } else {
-      // Wait a bit for auth, then load anyway
-      setTimeout(() => {
-        if (isMounted) {
-          loadItineraries();
-        }
-      }, 1000);
-    }
+    // Load data immediately, don't wait for auth
+    loadItineraries();
     
     return () => {
       isMounted = false;
@@ -361,3 +374,4 @@ const ProItineraryPage: React.FC = () => {
 };
 
 export default ProItineraryPage;
+
