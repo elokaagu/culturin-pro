@@ -447,21 +447,22 @@ export default function ItineraryDetailPage() {
       <div className="p-6">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+            {/* Left side - Back button and title */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <Button
                 variant="outline"
                 onClick={() => router.push("/pro-dashboard/itinerary")}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 w-fit"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to Itineraries
               </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-2xl font-bold text-gray-900 truncate">
                   {isEditing ? "Edit Itinerary" : itinerary.title}
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm">
                   {isEditing
                     ? "Make changes to your itinerary"
                     : `${itinerary.days} days • ${
@@ -470,14 +471,16 @@ export default function ItineraryDetailPage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            
+            {/* Right side - Action buttons */}
+            <div className="flex items-center gap-3 flex-wrap">
               {isEditing ? (
                 <>
-                  <Button variant="outline" onClick={handleCancel}>
+                  <Button variant="outline" onClick={handleCancel} className="min-w-fit">
                     <X className="h-4 w-4 mr-2" />
                     Cancel
                   </Button>
-                  <Button onClick={handleSave} disabled={isSaving}>
+                  <Button onClick={handleSave} disabled={isSaving} className="min-w-fit">
                     {isSaving ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -493,23 +496,23 @@ export default function ItineraryDetailPage() {
                 </>
               ) : (
                 <>
-                  <Button variant="outline" onClick={handleShareLink}>
+                  <Button variant="outline" onClick={handleShareLink} className="min-w-fit">
                     <Share2 className="h-4 w-4 mr-2" />
                     Share
                   </Button>
-                  <Button variant="outline" onClick={handleDuplicate}>
+                  <Button variant="outline" onClick={handleDuplicate} className="min-w-fit">
                     <Copy className="h-4 w-4 mr-2" />
                     Duplicate
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => setShowDeleteDialog(true)}
-                    className="text-red-600 border-red-600 hover:bg-red-50"
+                    className="text-red-600 border-red-600 hover:bg-red-50 min-w-fit"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete
                   </Button>
-                  <Button onClick={handleEditClick}>
+                  <Button onClick={handleEditClick} className="min-w-fit">
                     <Edit className="h-4 w-4 mr-2" />
                     Edit Itinerary
                   </Button>
