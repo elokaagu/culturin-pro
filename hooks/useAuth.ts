@@ -93,7 +93,22 @@ export const useAuth = () => {
           // Load user data if we have a user
           if (session?.user) {
             console.log("Loading user data for:", session.user.email);
-            await loadUserData(session.user);
+            try {
+              const { data: userData, error } = await supabase
+                .from("users")
+                .select("*")
+                .eq("id", session.user.id)
+                .single();
+
+              if (error) {
+                console.error("Error loading user data:", error);
+              } else {
+                console.log("User data loaded:", userData);
+                setState((prev) => ({ ...prev, userData }));
+              }
+            } catch (error) {
+              console.error("Error in loadUserData:", error);
+            }
           }
         }
       } catch (error) {
@@ -150,7 +165,22 @@ export const useAuth = () => {
             "Loading user data after auth change for:",
             session.user.email
           );
-          await loadUserData(session.user);
+          try {
+            const { data: userData, error } = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", session.user.id)
+              .single();
+
+            if (error) {
+              console.error("Error loading user data:", error);
+            } else {
+              console.log("User data loaded:", userData);
+              setState((prev) => ({ ...prev, userData }));
+            }
+          } catch (error) {
+            console.error("Error loading user data:", error);
+          }
         } else if (event !== "INITIAL_SESSION") {
           // Only clear data on actual logout, not initial session check
           console.log(
@@ -167,7 +197,7 @@ export const useAuth = () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [loadUserData]);
+  }, []); // Remove loadUserData dependency to prevent infinite loops
 
   // Login function
   const login = useCallback(async (email: string, password: string) => {
