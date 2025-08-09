@@ -296,7 +296,13 @@ const ProItineraryPage: React.FC = () => {
             {itineraries.map((itinerary, index) => {
               const itineraryWithImage = ensureItineraryHasImage(itinerary, index);
               return (
-                <div key={itinerary.id} onClick={() => handleEditItinerary(itinerary)}>
+                <div 
+                  key={itinerary.id} 
+                  onClick={() => {
+                    console.log("🖱️ Card clicked, opening modal for:", itinerary.title);
+                    handleEditItinerary(itinerary);
+                  }}
+                >
                   <ItineraryCard
                     id={itinerary.id}
                     title={itinerary.title}
@@ -317,6 +323,7 @@ const ProItineraryPage: React.FC = () => {
                       }
                     }}
                     completionPercentage={itinerary.status === 'published' ? 100 : 60}
+                    disableNavigation={true}
                   />
                 </div>
               );

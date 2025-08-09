@@ -58,6 +58,7 @@ interface ItineraryCardProps {
   onQuickAction?: (itineraryId: string, action: string) => void;
   completionPercentage?: number;
   isTrending?: boolean;
+  disableNavigation?: boolean; // New prop to disable internal navigation
 }
 
 const ItineraryCard: React.FC<ItineraryCardProps> = ({
@@ -74,6 +75,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
   isTrending = false,
   themeType,
   regions,
+  disableNavigation = false,
 }) => {
   const router = useRouter();
   const [showActions, setShowActions] = useState(false);
@@ -96,7 +98,7 @@ const ItineraryCard: React.FC<ItineraryCardProps> = ({
     <>
       <Card
         className="relative h-64 overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer group"
-        onClick={() => router.push(`/pro-dashboard/itinerary/${id}`)}
+        onClick={disableNavigation ? undefined : () => router.push(`/pro-dashboard/itinerary/${id}`)}
       >
         {/* Background Image */}
         <Image
