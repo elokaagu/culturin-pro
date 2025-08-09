@@ -6,11 +6,11 @@ import ProDashboardLayout from "@/components/pro/ProDashboardLayout";
 import { useToast } from "@/components/ui/use-toast";
 import { supabaseStorage } from "@/lib/supabase-storage";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, Eye, ArrowLeft } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus } from "lucide-react";
 import ItineraryEditor from "@/components/pro/itinerary/ItineraryEditor";
 import { ItineraryType } from "@/data/itineraryData";
 import { useAuth } from "@/src/components/auth/AuthProvider";
+import ItineraryCard from "@/components/pro/itinerary/ItineraryCard";
 
 const ProItineraryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -21,6 +21,29 @@ const ProItineraryPage: React.FC = () => {
   const [selectedItinerary, setSelectedItinerary] = useState<ItineraryType | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+
+  // Default images for itineraries
+  const defaultImages = [
+    "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
+    "/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png", 
+    "/lovable-uploads/57645fce-47c3-43f5-82f6-080cd2577e06.png",
+    "/lovable-uploads/61e2237f-86de-4ec9-8712-8902092d8c9b.png",
+    "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
+    "/lovable-uploads/88dfd739-180c-4ca4-8bfd-08396d3464c9.png",
+    "/lovable-uploads/90db897a-9b44-4eb3-87cd-585b37891618.png",
+    "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png"
+  ];
+
+  // Helper function to ensure itinerary has an image
+  const ensureItineraryHasImage = (itinerary: ItineraryType, index: number): ItineraryType => {
+    if (!itinerary.image) {
+      return {
+        ...itinerary,
+        image: defaultImages[index % defaultImages.length]
+      };
+    }
+    return itinerary;
+  };
 
   // Load itineraries from storage - wait for auth to be ready
   useEffect(() => {
@@ -269,47 +292,35 @@ const ProItineraryPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {itineraries.map((itinerary) => (
-              <Card key={itinerary.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{itinerary.title}</CardTitle>
-                      <CardDescription>
-                        {itinerary.days} day{itinerary.days !== 1 ? 's' : ''} • {itinerary.status}
-                      </CardDescription>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditItinerary(itinerary)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteItinerary(itinerary.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 mb-4">
-                    {itinerary.description}
-                  </p>
-                  {itinerary.price && (
-                    <div className="text-sm font-medium text-gray-900">
-                      ${itinerary.price} {itinerary.currency}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {itineraries.map((itinerary, index) => {
+              const itineraryWithImage = ensureItineraryHasImage(itinerary, index);
+              return (
+                <div key={itinerary.id} onClick={() => handleEditItinerary(itinerary)}>
+                  <ItineraryCard
+                    id={itinerary.id}
+                    title={itinerary.title}
+                    description={itinerary.description || 'Start building your cultural experience itinerary'}
+                    days={itinerary.days}
+                    lastUpdated={itinerary.lastUpdated || 'Recently updated'}
+                    status={itinerary.status}
+                    image={itineraryWithImage.image || defaultImages[0]}
+                    themeType={itinerary.themeType}
+                    regions={itinerary.regions}
+                    onEdit={() => handleEditItinerary(itinerary)}
+                    onDelete={() => handleDeleteItinerary(itinerary.id)}
+                    onQuickAction={(id, action) => {
+                      if (action === 'edit') {
+                        handleEditItinerary(itinerary);
+                      } else if (action === 'delete') {
+                        handleDeleteItinerary(itinerary.id);
+                      }
+                    }}
+                    completionPercentage={itinerary.status === 'published' ? 100 : 60}
+                  />
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
