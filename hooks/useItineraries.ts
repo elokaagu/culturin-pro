@@ -20,6 +20,7 @@ export interface Itinerary {
   updated_at?: string;
   operator_id?: string;
   status?: "draft" | "published" | "archived";
+  lastUpdated?: string;
 }
 
 export const useItineraries = () => {

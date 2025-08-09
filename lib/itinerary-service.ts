@@ -19,6 +19,7 @@ export interface Itinerary {
   updated_at?: string;
   operator_id?: string;
   status?: "draft" | "published" | "archived";
+  lastUpdated?: string;
 }
 
 class ItineraryService {
@@ -68,6 +69,7 @@ class ItineraryService {
         updated_at: item.updated_at,
         operator_id: item.operator_id,
         status: item.status || "draft",
+        lastUpdated: item.lastUpdated || item.last_updated || "just now",
       }));
       
       return transformedItineraries;
