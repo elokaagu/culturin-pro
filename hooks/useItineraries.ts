@@ -103,7 +103,7 @@ export const useItineraries = () => {
     } finally {
       setLoading(false);
     }
-  }, [authChecked]);
+  }, []); // Remove authChecked dependency to prevent loops
 
   const saveItinerary = useCallback(
     async (itinerary: Itinerary): Promise<boolean> => {
@@ -203,6 +203,14 @@ export const useItineraries = () => {
 
   useEffect(() => {
     fetchItineraries();
+    
+    // Fallback timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.warn("Itineraries fetch timeout - setting loading to false");
+      setLoading(false);
+    }, 10000); // 10 second timeout
+    
+    return () => clearTimeout(timeoutId);
   }, [fetchItineraries]);
 
   return {
