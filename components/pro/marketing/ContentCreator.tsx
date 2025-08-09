@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 import {
   FileText,
   Copy,
@@ -44,6 +43,9 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { settingsService } from "@/lib/settings-service";
+import ContentCanvas from "./ContentCanvas";
+import FlyerCanvas from "./FlyerCanvas";
+import { toast } from "sonner";
 
 interface ChatMessage {
   id: string;
@@ -840,70 +842,72 @@ Description 2: ${data.content.description2 || ""}`;
                         </div>
                       )}
                       
-                      {/* Generated Content */}
-                      {(message.generatedContent || message.flyerDesign) && (
+                      {/* Generated Content Canvas */}
+                      {message.generatedContent && (
                         <div className="mt-3">
-                          <div className="bg-white p-4 rounded border">
-                            <div className="flex items-center gap-2 mb-3">
-                              <Sparkles className="h-4 w-4 text-blue-500" />
-                              <span className="text-sm font-medium">
-                                Generated {message.platform || 'Content'}
-                              </span>
-                            </div>
-                            
-                            {message.generatedContent && (
-                              <div className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap">
-                                {message.generatedContent}
-                              </div>
-                            )}
-                            
-                            {message.flyerDesign && (
-                              <div className="space-y-3">
-                                {typeof message.flyerDesign === 'object' ? (
-                                  <div className="space-y-2">
-                                    {message.flyerDesign.headline && (
-                                      <div>
-                                        <span className="text-xs font-medium text-gray-500">Headline:</span>
-                                        <p className="text-sm font-bold">{message.flyerDesign.headline}</p>
-                                      </div>
-                                    )}
-                                    {message.flyerDesign.subheading && (
-                                      <div>
-                                        <span className="text-xs font-medium text-gray-500">Subheading:</span>
-                                        <p className="text-sm">{message.flyerDesign.subheading}</p>
-                                      </div>
-                                    )}
-                                    {message.flyerDesign.description && (
-                                      <div>
-                                        <span className="text-xs font-medium text-gray-500">Description:</span>
-                                        <p className="text-sm">{message.flyerDesign.description}</p>
-                                      </div>
-                                    )}
-                                    {message.flyerDesign.benefits && (
-                                      <div>
-                                        <span className="text-xs font-medium text-gray-500">Benefits:</span>
-                                        <ul className="text-sm list-disc list-inside space-y-1">
-                                          {message.flyerDesign.benefits.map((benefit: string, idx: number) => (
-                                            <li key={idx}>{benefit}</li>
-                                          ))}
-                                        </ul>
-                                      </div>
-                                    )}
-                                    {message.flyerDesign.callToAction && (
-                                      <div>
-                                        <span className="text-xs font-medium text-gray-500">Call to Action:</span>
-                                        <p className="text-sm font-medium text-blue-600">{message.flyerDesign.callToAction}</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                ) : (
-                                  <div className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap">
-                                    {JSON.stringify(message.flyerDesign, null, 2)}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
+                          <ContentCanvas
+                            content={message.generatedContent}
+                            contentType={message.contentType || 'content'}
+                            platform={message.platform}
+                            onCopy={() => {
+                              navigator.clipboard.writeText(message.generatedContent);
+                              toast.success("Content copied to clipboard!");
+                            }}
+                            onSave={() => {
+                              const contentToSave = {
+                                id: Date.now().toString(),
+                                type: message.contentType || 'content',
+                                platform: message.platform || 'general',
+                                content: message.generatedContent,
+                                createdAt: new Date().toISOString()
+                              };
+                              
+                              try {
+                                const existingContent = JSON.parse(localStorage.getItem('rigoGeneratedContent') || '[]');
+                                existingContent.push(contentToSave);
+                                localStorage.setItem('rigoGeneratedContent', JSON.stringify(existingContent));
+                                toast.success("Content saved to library!");
+                              } catch (error) {
+                                toast.error("Failed to save content");
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
+                      
+                      {/* Generated Flyer Canvas */}
+                      {message.flyerDesign && (
+                        <div className="mt-3">
+                          <FlyerCanvas
+                            flyerDesign={message.flyerDesign}
+                            colorTheme="blue-ocean"
+                            templateStyle="modern"
+                            onCopy={() => {
+                              const text = typeof message.flyerDesign === 'string' 
+                                ? message.flyerDesign 
+                                : JSON.stringify(message.flyerDesign, null, 2);
+                              navigator.clipboard.writeText(text);
+                              toast.success("Flyer content copied to clipboard!");
+                            }}
+                            onSave={() => {
+                              const contentToSave = {
+                                id: Date.now().toString(),
+                                type: 'flyer',
+                                platform: 'print/digital',
+                                content: message.flyerDesign,
+                                createdAt: new Date().toISOString()
+                              };
+                              
+                              try {
+                                const existingContent = JSON.parse(localStorage.getItem('rigoGeneratedContent') || '[]');
+                                existingContent.push(contentToSave);
+                                localStorage.setItem('rigoGeneratedContent', JSON.stringify(existingContent));
+                                toast.success("Flyer saved to library!");
+                              } catch (error) {
+                                toast.error("Failed to save flyer");
+                              }
+                            }}
+                          />
                         </div>
                       )}
                       
