@@ -49,16 +49,11 @@ const ProItineraryPage: React.FC = () => {
   useEffect(() => {
     console.log("🔄 useEffect triggered - isReady:", isReady, "user:", user?.email);
     
+    let isMounted = true;
+    
     const loadItineraries = async () => {
-      // Wait for authentication to be ready
-      if (!isReady) {
-        console.log("🔄 Waiting for auth to be ready...");
-        return;
-      }
-
       try {
         console.log("🔄 Loading itineraries for user:", user?.email || 'anonymous');
-        setLoading(true);
         
         // Create user-specific storage key
         const storageKey = user?.id ? `userItineraries_${user.id}` : 'userItineraries';
@@ -68,7 +63,9 @@ const ProItineraryPage: React.FC = () => {
         try {
           const storedItineraries = await supabaseStorage.getItem(storageKey) || [];
           console.log("📦 Loaded from Supabase storage:", storedItineraries);
-          setItineraries(Array.isArray(storedItineraries) ? storedItineraries : []);
+          if (isMounted) {
+            setItineraries(Array.isArray(storedItineraries) ? storedItineraries : []);
+          }
         } catch (storageError) {
           console.error("Error loading from Supabase storage:", storageError);
           // Use local storage as fallback with user-specific key
@@ -77,43 +74,51 @@ const ProItineraryPage: React.FC = () => {
             const localItineraries = localStorage.getItem(localStorageKey);
             const parsed = localItineraries ? JSON.parse(localItineraries) : [];
             console.log("📦 Loaded from localStorage with key:", localStorageKey, parsed);
-            setItineraries(parsed);
+            if (isMounted) {
+              setItineraries(parsed);
+            }
           } catch (localError) {
             console.error("Error loading from localStorage:", localError);
-            setItineraries([]);
+            if (isMounted) {
+              setItineraries([]);
+            }
           }
         }
       } catch (error) {
         console.error("Error loading itineraries:", error);
-        setItineraries([]);
+        if (isMounted) {
+          setItineraries([]);
+        }
       } finally {
         console.log("✅ Itineraries loading complete");
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
     
-    // Add timeout failsafe to prevent infinite loading
+    // Simple timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
       console.log("⚠️ Loading timeout - forcing loading state to false");
-      setLoading(false);
-    }, 3000); // Reduced timeout for faster fallback
+      if (isMounted) {
+        setLoading(false);
+      }
+    }, 3000);
     
-    // If auth is ready, load immediately, otherwise wait
+    // Load data when auth is ready, or after a short delay
     if (isReady) {
-      loadItineraries().finally(() => {
-        clearTimeout(timeoutId);
-      });
+      loadItineraries();
     } else {
-      // If auth is not ready after timeout, still show the page
+      // Wait a bit for auth, then load anyway
       setTimeout(() => {
-        if (!isReady) {
-          console.log("⚠️ Auth timeout - showing page anyway");
-          setLoading(false);
+        if (isMounted) {
+          loadItineraries();
         }
-      }, 2000);
+      }, 1000);
     }
     
     return () => {
+      isMounted = false;
       clearTimeout(timeoutId);
     };
   }, [isReady, user?.id, user?.email]);
