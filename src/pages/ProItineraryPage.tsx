@@ -10,38 +10,48 @@ import { Plus, Edit, Trash2, Eye, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import ItineraryEditor from "@/components/pro/itinerary/ItineraryEditor";
 import { ItineraryType } from "@/data/itineraryData";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 
 const ProItineraryPage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, isReady } = useAuth();
   const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedItinerary, setSelectedItinerary] = useState<ItineraryType | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
 
-  // Load itineraries from storage
+  // Load itineraries from storage - wait for auth to be ready
   useEffect(() => {
     const loadItineraries = async () => {
+      // Wait for authentication to be ready
+      if (!isReady) {
+        console.log("🔄 Waiting for auth to be ready...");
+        return;
+      }
+
       try {
-        console.log("🔄 Loading itineraries...");
+        console.log("🔄 Loading itineraries for user:", user?.email || 'anonymous');
         setLoading(true);
         
-        // Add a small delay to ensure auth is ready
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Create user-specific storage key
+        const storageKey = user?.id ? `userItineraries_${user.id}` : 'userItineraries';
+        console.log("🔑 Using storage key:", storageKey);
         
-        // Load from Supabase storage first (fallback)
+        // Load from Supabase storage first (user-specific)
         try {
-          const storedItineraries = await supabaseStorage.getItem('userItineraries') || [];
+          const storedItineraries = await supabaseStorage.getItem(storageKey) || [];
           console.log("📦 Loaded from Supabase storage:", storedItineraries);
           setItineraries(Array.isArray(storedItineraries) ? storedItineraries : []);
         } catch (storageError) {
-          console.error("Error loading from storage:", storageError);
-          // Use local storage as ultimate fallback
+          console.error("Error loading from Supabase storage:", storageError);
+          // Use local storage as fallback with user-specific key
           try {
-            const localItineraries = localStorage.getItem('userItineraries');
+            const localStorageKey = user?.id ? `userItineraries_${user.id}` : 'userItineraries';
+            const localItineraries = localStorage.getItem(localStorageKey);
             const parsed = localItineraries ? JSON.parse(localItineraries) : [];
-            console.log("📦 Loaded from localStorage:", parsed);
+            console.log("📦 Loaded from localStorage with key:", localStorageKey, parsed);
             setItineraries(parsed);
           } catch (localError) {
             console.error("Error loading from localStorage:", localError);
@@ -61,7 +71,7 @@ const ProItineraryPage: React.FC = () => {
     const timeoutId = setTimeout(() => {
       console.log("⚠️ Loading timeout - forcing loading state to false");
       setLoading(false);
-    }, 3000);
+    }, 5000); // Increased timeout to allow for auth
     
     loadItineraries().finally(() => {
       clearTimeout(timeoutId);
@@ -70,7 +80,7 @@ const ProItineraryPage: React.FC = () => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, []);
+  }, [isReady, user?.id, user?.email]);
 
   const handleCreateNew = () => {
     const newItinerary: ItineraryType = {
@@ -98,13 +108,19 @@ const ProItineraryPage: React.FC = () => {
       const updatedItineraries = itineraries.filter(it => it.id !== itineraryId);
       setItineraries(updatedItineraries);
       
-      // Save to storage with fallback
+      // Save to storage with user-specific key and fallback
+      const storageKey = user?.id ? `userItineraries_${user.id}` : 'userItineraries';
+      console.log("🗑️ Deleting from storage key:", storageKey);
+      
       try {
-        await supabaseStorage.setItem('userItineraries', updatedItineraries);
+        await supabaseStorage.setItem(storageKey, updatedItineraries);
+        console.log("💾 Updated Supabase storage after deletion");
       } catch (storageError) {
-        console.error("Error saving to Supabase storage:", storageError);
-        // Fallback to localStorage
-        localStorage.setItem('userItineraries', JSON.stringify(updatedItineraries));
+        console.error("Error updating Supabase storage:", storageError);
+        // Fallback to localStorage with user-specific key
+        const localStorageKey = user?.id ? `userItineraries_${user.id}` : 'userItineraries';
+        localStorage.setItem(localStorageKey, JSON.stringify(updatedItineraries));
+        console.log("💾 Updated localStorage after deletion with key:", localStorageKey);
       }
       
       toast({
@@ -152,15 +168,19 @@ const ProItineraryPage: React.FC = () => {
       
       setItineraries(updatedItineraries);
       
-      // Save to storage with fallback
+      // Save to storage with user-specific key and fallback
+      const storageKey = user?.id ? `userItineraries_${user.id}` : 'userItineraries';
+      console.log("💾 Saving with storage key:", storageKey);
+      
       try {
-        await supabaseStorage.setItem('userItineraries', updatedItineraries);
+        await supabaseStorage.setItem(storageKey, updatedItineraries);
         console.log("💾 Saved to Supabase storage");
       } catch (storageError) {
         console.error("Error saving to Supabase storage:", storageError);
-        // Fallback to localStorage
-        localStorage.setItem('userItineraries', JSON.stringify(updatedItineraries));
-        console.log("💾 Saved to localStorage as fallback");
+        // Fallback to localStorage with user-specific key
+        const localStorageKey = user?.id ? `userItineraries_${user.id}` : 'userItineraries';
+        localStorage.setItem(localStorageKey, JSON.stringify(updatedItineraries));
+        console.log("💾 Saved to localStorage as fallback with key:", localStorageKey);
       }
       
       // Different toast messages for save vs publish

@@ -26,10 +26,10 @@ const DashboardMetricCard: React.FC<DashboardMetricCardProps> = ({
   actionText
 }) => {
   return (
-    <Card className={cn("overflow-hidden group transition-all duration-200 hover:shadow-md", className)}>
-      <CardContent className="p-6 relative">
-        <div className="flex items-start justify-between">
-          <div>
+    <Card className={cn("overflow-hidden group transition-all duration-200 hover:shadow-md h-full", className)}>
+      <CardContent className="p-6 relative h-full flex flex-col">
+        <div className="flex items-start justify-between flex-1">
+          <div className="flex-1">
             <div className="flex items-center gap-2">
               <p className="text-sm text-gray-500 font-medium">{title}</p>
               {icon && (
@@ -66,7 +66,7 @@ const DashboardMetricCard: React.FC<DashboardMetricCardProps> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="mt-3 text-xs font-medium text-blue-600 flex items-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="mt-auto pt-3 text-xs font-medium text-blue-600 flex items-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
                   {actionText}
                   <ChevronRight className="h-3 w-3 ml-0.5" />
                 </div>
