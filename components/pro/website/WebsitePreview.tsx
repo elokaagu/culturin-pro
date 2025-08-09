@@ -237,7 +237,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">View:</span>
-          <Select value={viewMode} onValueChange={setViewMode}>
+          <Select value={viewMode} onValueChange={(value) => setViewMode(value as "desktop" | "mobile" | "tablet")}>
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
