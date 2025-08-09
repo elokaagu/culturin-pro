@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from "react";
-import { Edit, Save, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { Edit, Save, ExternalLink, Image as ImageIcon, Eye, Share2, Copy, Archive, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -31,6 +31,7 @@ interface ItineraryEditorProps {
   onAIAssistantClose: () => void;
   onEditorClose: () => void;
   onItinerarySave?: (itinerary: ItineraryType) => void;
+  onQuickAction?: (action: string) => void;
 }
 
 const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
@@ -40,6 +41,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
   onAIAssistantClose,
   onEditorClose,
   onItinerarySave,
+  onQuickAction,
 }) => {
   const { toast } = useToast();
   const { user, isLoggedIn, isReady } = useAuth();
@@ -428,6 +430,107 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
     });
   };
 
+  const handleQuickAction = (action: string) => {
+    if (!itinerary) return;
+
+    // For delete action, delegate to parent if available
+    if (action === 'delete' && onQuickAction) {
+      if (window.confirm(`Are you sure you want to delete "${itinerary.title}"? This action cannot be undone.`)) {
+        onQuickAction(action);
+        onEditorClose(); // Close editor after delete
+      }
+      return;
+    }
+
+    switch (action) {
+      case 'view-website':
+        // Open website preview in new tab
+        if (itinerary.status === 'published') {
+          const websiteUrl = `/tour/operator/${user?.id || 'demo'}`;
+          window.open(websiteUrl, '_blank');
+        } else {
+          toast({
+            title: "Itinerary Not Published",
+            description: "Please publish your itinerary before viewing it on the website.",
+            variant: "destructive",
+          });
+        }
+        break;
+
+      case 'share':
+        // Copy share link to clipboard
+        const shareUrl = `${window.location.origin}/product/booking-preview/${itinerary.id}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          toast({
+            title: "Link Copied",
+            description: "Share link has been copied to your clipboard.",
+          });
+        }).catch(() => {
+          toast({
+            title: "Failed to Copy",
+            description: "Please copy the URL manually from your browser.",
+            variant: "destructive",
+          });
+        });
+        break;
+
+      case 'duplicate':
+        // Create a duplicate itinerary
+        const duplicatedItinerary: ItineraryType = {
+          ...itinerary,
+          id: `duplicate-${Date.now()}`,
+          title: `${itinerary.title} (Copy)`,
+          status: 'draft',
+          lastUpdated: 'just now',
+        };
+        
+        if (onItinerarySave) {
+          onItinerarySave(duplicatedItinerary);
+          toast({
+            title: "Itinerary Duplicated",
+            description: `"${duplicatedItinerary.title}" has been created.`,
+          });
+        }
+        break;
+
+      case 'archive':
+        // Archive the itinerary
+        const archivedItinerary = {
+          ...itinerary,
+          status: 'archived' as const,
+          lastUpdated: 'just now',
+        };
+        
+        if (onItinerarySave) {
+          onItinerarySave(archivedItinerary);
+          toast({
+            title: "Itinerary Archived",
+            description: `"${itinerary.title}" has been archived.`,
+          });
+          onEditorClose(); // Close editor after archiving
+        }
+        break;
+
+      case 'delete':
+        // Fallback delete handling if no parent handler
+        if (window.confirm(`Are you sure you want to delete "${itinerary.title}"? This action cannot be undone.`)) {
+          toast({
+            title: "Itinerary Deleted",
+            description: `"${itinerary.title}" has been deleted.`,
+          });
+          onEditorClose();
+        }
+        break;
+
+      default:
+        console.log(`Unhandled quick action: ${action}`);
+        toast({
+          title: "Feature Coming Soon",
+          description: `${action} functionality will be available soon.`,
+        });
+    }
+  };
+
   const isPublished = itinerary.status === "published";
 
   return (
@@ -667,6 +770,58 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
                   <ExternalLink className="h-4 w-4 mr-2" /> Preview Booking
                 </Link>
               </Button>
+
+              {/* Quick Actions Section */}
+              <div className="mt-8">
+                <h3 className="font-medium mb-4 text-culturin-indigo">
+                  Quick Actions
+                </h3>
+                
+                {/* View on Website */}
+                <Button
+                  variant="outline"
+                  className="w-full mb-3 justify-start"
+                  onClick={() => handleQuickAction('view-website')}
+                >
+                  <Eye className="h-4 w-4 mr-2" /> View on Website
+                </Button>
+
+                {/* Share Link */}
+                <Button
+                  variant="outline"
+                  className="w-full mb-3 justify-start"
+                  onClick={() => handleQuickAction('share')}
+                >
+                  <Share2 className="h-4 w-4 mr-2" /> Share Link
+                </Button>
+
+                {/* Duplicate */}
+                <Button
+                  variant="outline"
+                  className="w-full mb-3 justify-start"
+                  onClick={() => handleQuickAction('duplicate')}
+                >
+                  <Copy className="h-4 w-4 mr-2" /> Duplicate
+                </Button>
+
+                {/* Archive */}
+                <Button
+                  variant="outline"
+                  className="w-full mb-3 justify-start"
+                  onClick={() => handleQuickAction('archive')}
+                >
+                  <Archive className="h-4 w-4 mr-2" /> Archive
+                </Button>
+
+                {/* Delete Itinerary */}
+                <Button
+                  variant="outline"
+                  className="w-full mb-3 justify-start text-red-600 border-red-200 hover:bg-red-50"
+                  onClick={() => handleQuickAction('delete')}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" /> Delete Itinerary
+                </Button>
+              </div>
             </div>
           )}
         </div>

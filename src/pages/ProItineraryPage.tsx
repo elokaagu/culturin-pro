@@ -270,6 +270,13 @@ const ProItineraryPage: React.FC = () => {
         onAIAssistantClose={() => setShowAIAssistant(false)}
         onEditorClose={handleEditorClose}
         onItinerarySave={handleItinerarySave}
+        onQuickAction={(action: string) => {
+          console.log("🎯 Quick action:", action, "for itinerary:", selectedItinerary.id);
+          if (action === 'delete') {
+            handleDeleteItinerary(selectedItinerary.id);
+          }
+          // Other quick actions will be handled by the ItineraryEditor
+        }}
       />
     );
   }
