@@ -21,8 +21,10 @@ const CulturinPro = () => {
 
     // Simulate loading
     setTimeout(async () => {
-      // Store access in Supabase storage
-      await supabaseStorage.setItem("culturinProAccess", "true");
+      // Store access in session storage to avoid conflicts
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("culturinProAccess", "true");
+      }
 
       toast({
         title: "Welcome to Culturin Pro!",

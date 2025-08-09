@@ -38,6 +38,8 @@ export const supabaseStorage = {
           value: JSON.stringify(value),
           user_id: userId,
           updated_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id,key'
         });
 
       if (error) {

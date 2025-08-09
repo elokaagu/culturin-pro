@@ -17,20 +17,19 @@ class SettingsService {
    */
   async saveSettings(settings: UserSettings): Promise<boolean> {
     try {
-      const isAuthenticated = await supabaseStorage.isAuthenticated();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!isAuthenticated) {
-        console.warn("User not authenticated, saving to Supabase storage only");
-        return await supabaseStorage.setItem("userSettings", settings);
+      if (!session?.user) {
+        console.warn("User not authenticated, saving to session storage");
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("userSettings", JSON.stringify(settings));
+        }
+        return true;
       }
 
-      const userId = await supabaseStorage.getCurrentUserId();
-      if (!userId) {
-        console.warn("No user ID found");
-        return false;
-      }
+      const userId = session.user.id;
 
-      // Save to Supabase storage
+      // Save to Supabase storage only if really needed
       return await supabaseStorage.setItem(`userSettings_${userId}`, settings);
     } catch (error) {
       console.error("Error saving settings:", error);

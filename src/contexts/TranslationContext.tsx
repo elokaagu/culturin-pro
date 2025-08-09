@@ -2093,8 +2093,10 @@ export const TranslationProvider: React.FC<{ children: ReactNode }> = ({
           // Update document attributes
           document.documentElement.dir = detectedLanguage.rtl ? "rtl" : "ltr";
           document.documentElement.lang = detectedLanguage.code;
-          // Save to Supabase storage
-          await supabaseStorage.setItem("culturin_language", detectedLanguage.code);
+          // Save to session storage instead to avoid conflicts
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem("culturin_language", detectedLanguage.code);
+          }
         }
       }
     };
@@ -2105,7 +2107,7 @@ export const TranslationProvider: React.FC<{ children: ReactNode }> = ({
   const setLanguage = async (language: Language) => {
     setCurrentLanguage(language);
     if (typeof window !== "undefined") {
-      await supabaseStorage.setItem("culturin_language", language.code);
+      sessionStorage.setItem("culturin_language", language.code);
 
       // Update document direction for RTL languages
       document.documentElement.dir = language.rtl ? "rtl" : "ltr";

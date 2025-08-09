@@ -27,21 +27,17 @@ class ItineraryService {
    */
   async getItineraries(): Promise<Itinerary[]> {
     try {
-      // Check if user is authenticated
-      const isAuthenticated = await supabaseStorage.isAuthenticated();
+      // Get user session directly
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!isAuthenticated) {
+      if (!session?.user) {
         console.warn("User not authenticated, cannot get itineraries from database");
         return [];
       }
 
-      const userId = await supabaseStorage.getCurrentUserId();
-      if (!userId) {
-        console.warn("No user ID found");
-        return [];
-      }
+      const userId = session.user.id;
 
-      // Try to get from database first
+      // Get from database
       const { data: itineraries, error } = await supabase
         .from("itineraries")
         .select("*")
@@ -49,15 +45,8 @@ class ItineraryService {
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Database error, falling back to Supabase storage:", error);
-        // Fallback to Supabase storage
-        const storedItineraries = await supabaseStorage.getItem(`userItineraries_${userId}`);
-        return storedItineraries || [];
-      }
-
-      // Also save to Supabase storage as backup
-      if (itineraries) {
-        await supabaseStorage.setItem(`userItineraries_${userId}`, itineraries);
+        console.error("Database error:", error);
+        return [];
       }
 
       return itineraries || [];
@@ -72,24 +61,14 @@ class ItineraryService {
    */
   async saveItinerary(itinerary: Itinerary): Promise<boolean> {
     try {
-      const isAuthenticated = await supabaseStorage.isAuthenticated();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!isAuthenticated) {
-        console.warn("User not authenticated, saving to Supabase storage only");
-        const userId = await supabaseStorage.getCurrentUserId();
-        if (userId) {
-          const localItineraries = await this.getItinerariesFromStorage(userId);
-          const updatedItineraries = this.updateItineraryInList(localItineraries, itinerary);
-          return await supabaseStorage.setItem(`userItineraries_${userId}`, updatedItineraries);
-        }
+      if (!session?.user) {
+        console.warn("User not authenticated, cannot save itinerary");
         return false;
       }
 
-      const userId = await supabaseStorage.getCurrentUserId();
-      if (!userId) {
-        console.warn("No user ID found");
-        return false;
-      }
+      const userId = session.user.id;
 
       // Save to database
       const { error } = await supabase
@@ -101,17 +80,9 @@ class ItineraryService {
         });
 
       if (error) {
-        console.error("Database error, falling back to Supabase storage:", error);
-        // Fallback to Supabase storage
-        const localItineraries = await this.getItinerariesFromStorage(userId);
-        const updatedItineraries = this.updateItineraryInList(localItineraries, itinerary);
-        return await supabaseStorage.setItem(`userItineraries_${userId}`, updatedItineraries);
+        console.error("Database error:", error);
+        return false;
       }
-
-      // Also save to Supabase storage as backup
-      const localItineraries = await this.getItinerariesFromStorage(userId);
-      const updatedItineraries = this.updateItineraryInList(localItineraries, itinerary);
-      await supabaseStorage.setItem(`userItineraries_${userId}`, updatedItineraries);
 
       return true;
     } catch (error) {

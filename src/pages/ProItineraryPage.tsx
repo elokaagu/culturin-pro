@@ -17,18 +17,26 @@ const ProItineraryPage: React.FC = () => {
   const [hasCheckedSampleData, setHasCheckedSampleData] = useState(false);
 
   useEffect(() => {
-    // Save current route to Supabase storage
-    supabaseStorage.setItem("lastRoute", "/pro-dashboard/itinerary");
+    // Save current route to session storage instead
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("lastRoute", "/pro-dashboard/itinerary");
+    }
     
     // Check if we're returning from creating a new itinerary
     const checkReturningFromCreate = async () => {
-      const returningFromCreate = await supabaseStorage.getItem('returningFromCreate');
-      if (returningFromCreate === 'true') {
-        console.log("Returning from create, refreshing itineraries...");
-        // Clear the flag
-        await supabaseStorage.removeItem('returningFromCreate');
-        // Force refresh itineraries
-        await refreshItineraries();
+      try {
+        const returningFromCreate = await supabaseStorage.getItem('returningFromCreate');
+        if (returningFromCreate === 'true') {
+          console.log("Returning from create, refreshing itineraries...");
+          // Clear the flag
+          await supabaseStorage.removeItem('returningFromCreate');
+          // Force refresh itineraries
+          setTimeout(() => {
+            refreshItineraries();
+          }, 100);
+        }
+      } catch (error) {
+        console.error("Error checking return flag:", error);
       }
     };
     
@@ -37,44 +45,11 @@ const ProItineraryPage: React.FC = () => {
 
   // Check for sample data if no itineraries exist
   useEffect(() => {
-    const checkSampleData = async () => {
-      if (!loading && itineraries.length === 0 && !hasCheckedSampleData) {
-        console.log("🔍 No itineraries found, checking for sample data...");
-        setHasCheckedSampleData(true);
-        
-        // Check if we have sample data in Supabase storage
-        const existingData = await supabaseStorage.getItem("sampleItineraries");
-        
-        if (!existingData) {
-          console.log("📝 Creating sample itinerary...");
-          
-          // Create a sample itinerary
-          const sampleItinerary = {
-            id: `sample-${Date.now()}`,
-            title: 'Tuscany Cultural Journey',
-            description: 'An immersive journey through Tuscany\'s rich cultural heritage, from Renaissance art to culinary traditions.',
-            days: 5,
-            status: 'published',
-            image: '',
-            price: 3200,
-            currency: 'USD',
-            highlights: ['Renaissance Art', 'Culinary Traditions', 'Cultural Heritage'],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          };
-
-          // Save to Supabase storage
-          await supabaseStorage.setItem("sampleItineraries", [sampleItinerary]);
-          console.log("✅ Sample itinerary created in Supabase storage");
-          
-          // Refresh itineraries
-          await refreshItineraries();
-        }
-      }
-    };
-
-    checkSampleData();
-  }, [itineraries, loading, hasCheckedSampleData, refreshItineraries]);
+    if (!loading && itineraries.length === 0 && !hasCheckedSampleData) {
+      console.log("🔍 No itineraries found");
+      setHasCheckedSampleData(true);
+    }
+  }, [itineraries, loading, hasCheckedSampleData]);
 
   const handleCreateNew = () => {
     navigate("/pro-dashboard/itinerary/new");

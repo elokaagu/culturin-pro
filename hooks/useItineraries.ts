@@ -26,29 +26,26 @@ export const useItineraries = () => {
   const [itineraries, setItineraries] = useState<Itinerary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
   const fetchItineraries = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Check if user is authenticated
-      const isAuthenticated = await supabaseStorage.isAuthenticated();
+      // Get user session directly
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!isAuthenticated) {
+      if (!session?.user) {
         console.warn("User not authenticated, cannot get itineraries from database");
         setItineraries([]);
         setLoading(false);
+        setAuthChecked(true);
         return;
       }
 
-      const userId = await supabaseStorage.getCurrentUserId();
-      if (!userId) {
-        console.warn("No user ID found");
-        setItineraries([]);
-        setLoading(false);
-        return;
-      }
+      const userId = session.user.id;
+      setAuthChecked(true);
 
       // Try to get from database first
       const { data: itineraries, error } = await supabase
@@ -58,17 +55,11 @@ export const useItineraries = () => {
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Database error, falling back to Supabase storage:", error);
-        // Fallback to Supabase storage
-        const storedItineraries = await supabaseStorage.getItem(`userItineraries_${userId}`);
-        setItineraries(storedItineraries || []);
+        console.error("Database error:", error);
+        setError("Failed to load itineraries from database");
+        setItineraries([]);
         setLoading(false);
         return;
-      }
-
-      // Also save to Supabase storage as backup
-      if (itineraries) {
-        await supabaseStorage.setItem(`userItineraries_${userId}`, itineraries);
       }
 
       setItineraries(itineraries || []);
@@ -79,32 +70,18 @@ export const useItineraries = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [authChecked]);
 
   const saveItinerary = useCallback(async (itinerary: Itinerary): Promise<boolean> => {
     try {
-      const isAuthenticated = await supabaseStorage.isAuthenticated();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!isAuthenticated) {
-        console.warn("User not authenticated, saving to Supabase storage only");
-        const userId = await supabaseStorage.getCurrentUserId();
-        if (userId) {
-          const localItineraries = await supabaseStorage.getItem(`userItineraries_${userId}`) || [];
-          const updatedItineraries = updateItineraryInList(localItineraries, itinerary);
-          const success = await supabaseStorage.setItem(`userItineraries_${userId}`, updatedItineraries);
-          if (success) {
-            setItineraries(updatedItineraries);
-          }
-          return success;
-        }
+      if (!session?.user) {
+        console.warn("User not authenticated, cannot save itinerary");
         return false;
       }
 
-      const userId = await supabaseStorage.getCurrentUserId();
-      if (!userId) {
-        console.warn("No user ID found");
-        return false;
-      }
+      const userId = session.user.id;
 
       // Save to database
       const { error } = await supabase
@@ -116,22 +93,12 @@ export const useItineraries = () => {
         });
 
       if (error) {
-        console.error("Database error, falling back to Supabase storage:", error);
-        // Fallback to Supabase storage
-        const localItineraries = await supabaseStorage.getItem(`userItineraries_${userId}`) || [];
-        const updatedItineraries = updateItineraryInList(localItineraries, itinerary);
-        const success = await supabaseStorage.setItem(`userItineraries_${userId}`, updatedItineraries);
-        if (success) {
-          setItineraries(updatedItineraries);
-        }
-        return success;
+        console.error("Database error:", error);
+        return false;
       }
 
-      // Also save to Supabase storage as backup
-      const localItineraries = await supabaseStorage.getItem(`userItineraries_${userId}`) || [];
-      const updatedItineraries = updateItineraryInList(localItineraries, itinerary);
-      await supabaseStorage.setItem(`userItineraries_${userId}`, updatedItineraries);
-      setItineraries(updatedItineraries);
+      // Update local state
+      setItineraries(current => updateItineraryInList([...current], itinerary));
 
       return true;
     } catch (error) {
@@ -142,28 +109,14 @@ export const useItineraries = () => {
 
   const deleteItinerary = useCallback(async (itineraryId: string): Promise<boolean> => {
     try {
-      const isAuthenticated = await supabaseStorage.isAuthenticated();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!isAuthenticated) {
-        console.warn("User not authenticated, deleting from Supabase storage only");
-        const userId = await supabaseStorage.getCurrentUserId();
-        if (userId) {
-          const localItineraries = await supabaseStorage.getItem(`userItineraries_${userId}`) || [];
-          const updatedItineraries = localItineraries.filter((it: Itinerary) => it.id !== itineraryId);
-          const success = await supabaseStorage.setItem(`userItineraries_${userId}`, updatedItineraries);
-          if (success) {
-            setItineraries(updatedItineraries);
-          }
-          return success;
-        }
+      if (!session?.user) {
+        console.warn("User not authenticated, cannot delete itinerary");
         return false;
       }
 
-      const userId = await supabaseStorage.getCurrentUserId();
-      if (!userId) {
-        console.warn("No user ID found");
-        return false;
-      }
+      const userId = session.user.id;
 
       // Delete from database
       const { error } = await supabase
@@ -173,22 +126,12 @@ export const useItineraries = () => {
         .eq("user_id", userId);
 
       if (error) {
-        console.error("Database error, falling back to Supabase storage:", error);
-        // Fallback to Supabase storage
-        const localItineraries = await supabaseStorage.getItem(`userItineraries_${userId}`) || [];
-        const updatedItineraries = localItineraries.filter((it: Itinerary) => it.id !== itineraryId);
-        const success = await supabaseStorage.setItem(`userItineraries_${userId}`, updatedItineraries);
-        if (success) {
-          setItineraries(updatedItineraries);
-        }
-        return success;
+        console.error("Database error:", error);
+        return false;
       }
 
-      // Also delete from Supabase storage
-      const localItineraries = await supabaseStorage.getItem(`userItineraries_${userId}`) || [];
-      const updatedItineraries = localItineraries.filter((it: Itinerary) => it.id !== itineraryId);
-      await supabaseStorage.setItem(`userItineraries_${userId}`, updatedItineraries);
-      setItineraries(updatedItineraries);
+      // Update local state
+      setItineraries(current => current.filter(it => it.id !== itineraryId));
 
       return true;
     } catch (error) {
