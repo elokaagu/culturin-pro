@@ -18,7 +18,7 @@ export interface Itinerary {
   notes?: any[];
   created_at?: string;
   updated_at?: string;
-  user_id?: string;
+  operator_id?: string;
   status?: "draft" | "published" | "archived";
 }
 
@@ -51,7 +51,7 @@ export const useItineraries = () => {
       const { data: itineraries, error } = await supabase
         .from("itineraries")
         .select("*")
-        .eq("user_id", userId)
+        .eq("operator_id", userId)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -62,7 +62,28 @@ export const useItineraries = () => {
         return;
       }
 
-      setItineraries(itineraries || []);
+      // Transform database format to interface format
+      const transformedItineraries = (itineraries || []).map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        days: item.days,
+        price: item.price,
+        currency: item.currency || "USD",
+        image: item.image,
+        highlights: item.highlights || [],
+        activities: item.activities || [],
+        accommodations: item.accommodations || [],
+        transportation: item.transportation || [],
+        meals: item.meals || [],
+        notes: item.notes || [],
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        operator_id: item.operator_id,
+        status: item.status || "draft",
+      }));
+      
+      setItineraries(transformedItineraries);
     } catch (err) {
       console.error("Error fetching itineraries:", err);
       setError("Failed to load itineraries");
@@ -88,7 +109,7 @@ export const useItineraries = () => {
         .from("itineraries")
         .upsert({
           ...itinerary,
-          user_id: userId,
+          operator_id: userId,
           updated_at: new Date().toISOString(),
         });
 
@@ -123,7 +144,7 @@ export const useItineraries = () => {
         .from("itineraries")
         .delete()
         .eq("id", itineraryId)
-        .eq("user_id", userId);
+        .eq("operator_id", userId);
 
       if (error) {
         console.error("Database error:", error);
