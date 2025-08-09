@@ -111,93 +111,51 @@ const WebsiteBuilder: React.FC = () => {
 
     const loadWebsiteData = async () => {
       try {
-        // Get current user for user-specific URL loading
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        const user = session?.user || (await supabase.auth.getUser()).data.user;
-
-        // Load published URL - use user-specific key
-        const userSpecificKey = user?.id
-          ? `publishedWebsiteUrl_${user.id}`
-          : "publishedWebsiteUrl";
-        const storedUrl = await supabaseStorage.getItem(userSpecificKey);
-
-        if (storedUrl) {
-          setPublishedUrl(storedUrl);
-        } else {
-          // Generate a default URL based on user ID
-          const businessName = "my-business";
-          if (businessName && user?.id) {
-            const cleanBusinessName = businessName
-              .toLowerCase()
-              .replace(/[^a-z0-9\s-]/g, "")
-              .replace(/\s+/g, "-");
-            const userId = user.id.substring(0, 8);
-            const timestamp = Date.now().toString(36);
-            const defaultUrl = `tour/${cleanBusinessName}-${userId}-${timestamp}`;
-            setPublishedUrl(defaultUrl);
-          } else if (businessName) {
-            const defaultSlug = businessName.toLowerCase().replace(/\s+/g, "-");
-            setPublishedUrl(`tour/${defaultSlug}`);
-          } else {
-            setPublishedUrl("tour/demo");
-          }
-        }
-
-        // Load user-specific website data from Supabase
-        try {
-          if (user) {
-            // Load user-specific website settings from database
-            const { data: userSettings, error } = await supabase
-              .from("user_settings")
-              .select("website_settings")
-              .eq("user_id", user.id)
-              .single();
-
-            if (userSettings?.website_settings) {
-              const settings = userSettings.website_settings;
-
-              // Note: Website settings would be saved to a separate service in the new structure
-
-              // Update itineraries if available
-              if (settings.itineraries) {
-                setItineraries(settings.itineraries);
-                // Note: Itineraries are now saved to Supabase storage
-              }
-
-              // Update published URL if available
-              if (settings.publishedUrl) {
-                setPublishedUrl(settings.publishedUrl);
-              }
-            }
-
-            // Load itineraries from database
-            const dbItineraries = await itineraryService.getItineraries();
-
-            if (dbItineraries && dbItineraries.length > 0) {
-              setItineraries(dbItineraries);
-              // Note: Itineraries are now saved to Supabase storage
-            } else {
-              setItineraries([]);
-              // Note: Itineraries are now saved to Supabase storage
-            }
-          } else {
-            // No authenticated user, load from Supabase storage
-            console.log("No authenticated user, loading from Supabase storage");
-            setItineraries([]);
-          }
-        } catch (error) {
-          console.error("Error loading user data from database:", error);
+        if (!user?.id) {
+          console.log("No authenticated user, using defaults");
           setItineraries([]);
+          setPublishedUrl("tour/demo");
+          setHasUnsavedChanges(false);
+          return;
         }
 
-        // Note: Last saved timestamp and auto-save preference are now handled by Supabase storage
+        // Load user website data using UserWebsiteService
+        const websiteData = await userWebsiteService.getUserWebsiteData(user.id);
+        
+        if (websiteData) {
+          // Set published URL from settings
+          if (websiteData.settings.published_url) {
+            setPublishedUrl(websiteData.settings.published_url);
+          } else {
+            // Generate default URL if none exists
+            const defaultUrl = userWebsiteService.generateWebsiteUrl(
+              user.id, 
+              websiteData.settings.company_name
+            );
+            setPublishedUrl(defaultUrl);
+          }
+
+          // Set itineraries
+          setItineraries(websiteData.itineraries || []);
+
+          // Store in localStorage for compatibility
+          localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
+            settings: websiteData.settings,
+            itineraries: websiteData.itineraries,
+            publishedUrl: websiteData.settings.published_url,
+            lastLoaded: new Date().toISOString()
+          }));
+
+          // Store published URL for persistence
+          if (websiteData.settings.published_url) {
+            localStorage.setItem(`publishedWebsiteUrl_${user.id}`, websiteData.settings.published_url);
+          }
+        }
 
         // Add initial state to history
         const initialHistory: HistoryState = {
-          websiteSettings: {},
-          itineraries: itineraries,
+          websiteSettings: websiteData?.settings || {},
+          itineraries: websiteData?.itineraries || [],
           timestamp: Date.now(),
         };
         setHistory([initialHistory]);
@@ -205,15 +163,18 @@ const WebsiteBuilder: React.FC = () => {
 
         // Set hasUnsavedChanges to false initially
         setHasUnsavedChanges(false);
-
-        // Note: Website settings would be handled by a separate service in the new structure
+        setLastSaved(new Date());
+        setSaveStatus("saved");
       } catch (error) {
         console.error("Error loading website data:", error);
+        setItineraries([]);
+        setPublishedUrl("tour/demo");
+        setHasUnsavedChanges(false);
       }
     };
 
     loadWebsiteData();
-  }, []);
+  }, [user?.id]);
 
   // Auto-refresh preview when user data changes
   useEffect(() => {
@@ -445,99 +406,96 @@ const WebsiteBuilder: React.FC = () => {
 
   // Enhanced manual save function with authentication
   const handleManualSave = useCallback(async () => {
+    if (!user?.id) {
+      toast.error("Please log in to save your website");
+      return;
+    }
+
+    setSaveLoading(true);
+    setSaveStatus("saving");
+    
     try {
-      setSaveLoading(true);
-      setSaveStatus("saving");
-
-      if (!isLoggedIn || !user) {
-        // Fallback to localStorage for non-authenticated users
-        const minimalWebsiteData = {
-          settings: {
-            companyName: "Your Tour Company",
-            tagline: "Discover amazing cultural experiences",
-            description: "We specialize in authentic cultural tours",
-            primaryColor: "#3B82F6",
-            theme: "classic",
-            enableBooking: true,
-          },
-          itineraries: itineraries.slice(0, 5), // Limit to 5 itineraries
-          publishedUrl: publishedUrl,
-          lastModified: new Date().toISOString(),
-        };
-
-        // Note: Data persistence is now handled by Supabase storage
-        setLastSaved(new Date());
-        setHasUnsavedChanges(false);
-        setSaveStatus("saved");
-
-        toast.success("Website saved successfully", {
-          description: "All changes have been saved",
-        });
-        return;
+      // Get current website settings
+      const currentSettings = await userWebsiteService.getUserWebsiteSettings(user.id);
+      
+      // Get any customizations from localStorage
+      const websiteContentStr = localStorage.getItem("publishedWebsiteContent");
+      const websiteDataStr = localStorage.getItem(`websiteData_${user.id}`);
+      
+      let updatedSettings = { ...currentSettings };
+      
+      // Apply customizations from WebsiteContent component
+      if (websiteContentStr) {
+        try {
+          const websiteContent = JSON.parse(websiteContentStr);
+          updatedSettings = {
+            ...updatedSettings,
+            company_name: websiteContent.companyName || updatedSettings.company_name,
+            tagline: websiteContent.tagline || updatedSettings.tagline,
+            description: websiteContent.description || updatedSettings.description,
+            branding: {
+              ...updatedSettings.branding,
+              primary_color: websiteContent.primaryColor || updatedSettings.branding.primary_color,
+              header_image: websiteContent.headerImage || updatedSettings.branding.header_image,
+              theme: websiteContent.theme || updatedSettings.branding.theme,
+            }
+          };
+        } catch (e) {
+          console.error("Error parsing website content:", e);
+        }
       }
 
-      // Save website data to Supabase for authenticated users
-      const websiteData = {
-        settings: {
-          companyName: "Your Tour Company",
-          tagline: "Discover amazing cultural experiences",
-          description: "We specialize in authentic cultural tours",
-          primaryColor: "#3B82F6",
-          theme: "classic",
-          enableBooking: true,
-        },
-        itineraries: itineraries.slice(0, 5), // Limit to 5 itineraries
-        publishedUrl: publishedUrl,
-        lastModified: new Date().toISOString(),
-      };
-
-      try {
-        // Save to Supabase user_settings table
-        const { error } = await supabase.from("user_settings").upsert({
-          user_id: user.id,
-          website_settings: websiteData,
-          updated_at: new Date().toISOString(),
-        });
-
-        if (error) {
-          throw new Error(`Supabase save failed: ${error.message}`);
+      // Apply any builder-specific settings
+      if (websiteDataStr) {
+        try {
+          const websiteData = JSON.parse(websiteDataStr);
+          if (websiteData.settings) {
+            updatedSettings = {
+              ...updatedSettings,
+              ...websiteData.settings,
+              user_id: user.id, // Ensure user_id is correct
+            };
+          }
+        } catch (e) {
+          console.error("Error parsing website data:", e);
         }
+      }
 
-        // Note: Data persistence is now handled by Supabase storage
-
-        setLastSaved(new Date());
-        setHasUnsavedChanges(false);
-        setSaveStatus("saved");
-
-        toast.success("Website saved successfully", {
+      // Save to UserWebsiteService
+      const success = await userWebsiteService.saveUserWebsiteSettings(updatedSettings);
+      
+      if (success) {
+        toast.success("Website saved successfully!", {
           description: "All changes have been saved to your account",
         });
-      } catch (dbError) {
-        console.error(
-          "Database save failed, falling back to localStorage:",
-          dbError
-        );
-
-        // Note: Data persistence is now handled by Supabase storage
-        setLastSaved(new Date());
+        
         setHasUnsavedChanges(false);
+        setLastSaved(new Date());
         setSaveStatus("saved");
+        
+        // Update localStorage with consistent data
+        localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
+          settings: updatedSettings,
+          itineraries: itineraries.slice(0, 10), // Save current itineraries
+          publishedUrl: publishedUrl,
+          lastSaved: new Date().toISOString()
+        }));
 
-        toast.success("Website saved successfully", {
-          description: "All changes have been saved",
-        });
+        // Force preview refresh
+        setPreviewKey(prev => prev + 1);
+      } else {
+        throw new Error("Failed to save to database");
       }
     } catch (error) {
-      console.error("Error saving website:", error);
-      setSaveStatus("error");
-      toast.error("Save failed", {
-        description:
-          error instanceof Error ? error.message : "Please try again",
+      console.error("Save error:", error);
+      toast.error("Failed to save website", {
+        description: "Please try again or contact support if the issue persists",
       });
+      setSaveStatus("error");
     } finally {
       setSaveLoading(false);
     }
-  }, [itineraries, publishedUrl, isLoggedIn, user]);
+  }, [user?.id, itineraries, publishedUrl]);
 
   // Export website data
   const handleExportWebsite = useCallback(() => {
@@ -628,11 +586,10 @@ const WebsiteBuilder: React.FC = () => {
   );
 
   const handlePublish = async () => {
-    // Note: Business profile validation would be handled by a separate service
-    toast.error("Please complete your business profile first", {
-      description: "Add your business name in the settings",
-    });
-    return;
+    if (!user?.id) {
+      toast.error("Please log in to publish your website");
+      return;
+    }
 
     setPublishLoading(true);
 
@@ -640,55 +597,40 @@ const WebsiteBuilder: React.FC = () => {
       // Save current state before publishing
       await handleManualSave();
 
-      // Get current user for unique URL generation
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const user = session?.user || (await supabase.auth.getUser()).data.user;
+      // Get current website settings
+      const currentSettings = await userWebsiteService.getUserWebsiteSettings(user.id);
+      
+      // Validate required fields
+      if (!currentSettings.company_name || currentSettings.company_name === "Your Cultural Tours") {
+        toast.error("Please set your company name before publishing", {
+          description: "Go to Content tab and add your business details",
+        });
+        return;
+      }
 
-      // Generate a unique slug for the website based on business name and user ID
-      const businessName = "tour-company";
-      const cleanBusinessName = businessName
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-");
-      const timestamp = Date.now().toString(36);
+      // Publish website using UserWebsiteService
+      const result = await userWebsiteService.publishWebsite(user.id);
+      
+      if (result.success && result.url) {
+        setPublishedUrl(result.url);
+        
+        // Store published URL for persistence
+        localStorage.setItem(`publishedWebsiteUrl_${user.id}`, result.url);
+        
+        toast.success("Website published successfully!", {
+          description: `Your website is now live at: ${window.location.origin}/${result.url}`,
+          action: {
+            label: "View Website",
+            onClick: () => window.open(`/${result.url}`, '_blank')
+          }
+        });
 
-      // Include user ID in URL for uniqueness
-      const userId = user?.id ? user.id.substring(0, 8) : "guest";
-      const newPublishedUrl = `tour/${cleanBusinessName}-${userId}-${timestamp}`;
-
-      // Simulate publishing process - in a real app, this would save to a backend
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      setPublishedUrl(newPublishedUrl);
-
-      // Note: Published URL would be saved to Supabase storage
-
-      // Note: Website content would be saved to Supabase storage
-      const websiteContent = {
-        companyName: businessName,
-        tagline: "Discover amazing cultural experiences",
-        description: "We specialize in authentic cultural tours",
-        primaryColor: "#9b87f5",
-        headerImage: null,
-        enableBooking: true,
-        bookingSettings: {},
-        userId: user?.id || null, // Store user ID for reference
-        contactEmail: "contact@yourtourcompany.com",
-        contactPhone: "+1 (555) 123-4567",
-        contactAddress: "Global Cultural Experiences",
-        logo: null,
-      };
-
-      // Note: Website theme and content would be saved to Supabase storage
-
-      setHasUnsavedChanges(false);
-      toast.success("Website published successfully!", {
-        description:
-          "Your changes are now live with the latest booking settings.",
-      });
+        setHasUnsavedChanges(false);
+      } else {
+        throw new Error("Failed to publish website");
+      }
     } catch (error) {
+      console.error("Publish error:", error);
       toast.error("Failed to publish website", {
         description: "Please try again or contact support",
       });

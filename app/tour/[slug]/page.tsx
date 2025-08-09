@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ItineraryType } from "@/data/itineraryData";
+import { userWebsiteService } from "@/components/pro/website/UserWebsiteService";
 
 type Tour = {
   id: string;
@@ -62,70 +63,127 @@ export default function TourOperatorPage({
   >([]);
 
   useEffect(() => {
-    // Parse theme and layout from slug: e.g. elegant-newspaper-xxxxxx
-    const slugParts = params.slug.split("-");
-    let parsedTheme = "classic";
-    let parsedLayout = "hero-top";
-    if (slugParts.length >= 3) {
-      parsedTheme = slugParts[0];
-      parsedLayout = slugParts[1];
-    }
-    setTheme(parsedTheme);
-    setLayout(parsedLayout);
+    const loadData = async () => {
+      // Parse theme and layout from slug: e.g. elegant-newspaper-xxxxxx
+      const slugParts = params.slug.split("-");
+      let parsedTheme = "classic";
+      let parsedLayout = "hero-top";
+      if (slugParts.length >= 3) {
+        parsedTheme = slugParts[0];
+        parsedLayout = slugParts[1];
+      }
+      setTheme(parsedTheme);
+      setLayout(parsedLayout);
 
     // Extract user ID from URL if present
     // URL format: tour/businessname-userid-timestamp
     const urlParts = params.slug.split("-");
     let userId = null;
-    if (urlParts.length >= 3) {
+    if (urlParts.length >= 2) {
       // Look for a user ID pattern (8 characters, likely alphanumeric)
-      const potentialUserId = urlParts[urlParts.length - 2]; // Second to last part
+      const potentialUserId = urlParts[urlParts.length - 1]; // Last part
       if (
         potentialUserId &&
         potentialUserId.length === 8 &&
         /^[a-f0-9]+$/.test(potentialUserId)
       ) {
         userId = potentialUserId;
+      } else {
+        // Try second to last part
+        const potentialUserId2 = urlParts[urlParts.length - 2];
+        if (
+          potentialUserId2 &&
+          potentialUserId2.length === 8 &&
+          /^[a-f0-9]+$/.test(potentialUserId2)
+        ) {
+          userId = potentialUserId2;
+        }
       }
     }
 
-    // Get user-specific website data and itineraries
-    const userSpecificWebsiteKey = userId
-      ? `websiteData_${userId}`
-      : "websiteData";
-    const userSpecificItinerariesKey = userId
-      ? `culturinItineraries_${userId}`
-      : "culturinItineraries";
-    const userSpecificPublishedKey = userId
-      ? `publishedWebsiteUrl_${userId}`
-      : "publishedWebsiteUrl";
-
-    const websiteDataStr = localStorage.getItem(userSpecificWebsiteKey);
-    const itinerariesStr = localStorage.getItem(userSpecificItinerariesKey);
-    const publishedUrlStr = localStorage.getItem(userSpecificPublishedKey);
-
+    // Load website data - try database first for published sites, then localStorage
     let websiteData = null;
     let itineraries: ItineraryType[] = [];
-
-    if (websiteDataStr) {
+    
+    if (userId) {
       try {
-        websiteData = JSON.parse(websiteDataStr);
-      } catch (e) {
-        console.error("Error parsing website data:", e);
+        // Try to load from database for published website
+        const dbWebsiteData = await userWebsiteService.getUserWebsiteData(userId);
+        if (dbWebsiteData && dbWebsiteData.settings.published_url) {
+          websiteData = {
+            settings: {
+              companyName: dbWebsiteData.settings.company_name,
+              tagline: dbWebsiteData.settings.tagline,
+              description: dbWebsiteData.settings.description,
+              primaryColor: dbWebsiteData.settings.branding.primary_color,
+              headerImage: dbWebsiteData.settings.branding.header_image,
+              theme: dbWebsiteData.settings.branding.theme,
+              contactEmail: dbWebsiteData.settings.contact_info.email,
+              contactPhone: dbWebsiteData.settings.contact_info.phone,
+              contactAddress: dbWebsiteData.settings.contact_info.address,
+            }
+          };
+          
+          // Convert database itineraries to ItineraryType format
+          itineraries = dbWebsiteData.itineraries.map(item => ({
+            id: item.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
+            title: item.title,
+            description: item.description || `Experience the best of ${item.title}.`,
+            days: item.days,
+            price: item.price || Math.floor(Math.random() * 50) + 40,
+            image: item.image || "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+            highlights: item.highlights || [],
+            activities: item.activities || [],
+            accommodations: item.accommodations || [],
+            transportation: item.transportation || [],
+            meals: item.meals || [],
+            notes: item.notes || [],
+            // Add any missing ItineraryType fields with defaults
+            difficulty: 'moderate',
+            groupSize: { min: 2, max: 12 },
+            regions: [],
+            tags: [],
+            themeType: 'cultural',
+            operatorId: userId,
+            status: 'published',
+            createdAt: item.created_at || new Date().toISOString(),
+            lastUpdated: item.updated_at || new Date().toISOString(),
+          }));
+          
+          setPublishedItineraries(itineraries);
+        }
+      } catch (error) {
+        console.error("Error loading from database:", error);
       }
     }
 
-    if (itinerariesStr) {
-      try {
-        itineraries = JSON.parse(itinerariesStr);
-        setPublishedItineraries(itineraries);
-      } catch (e) {
-        console.error("Error parsing itineraries:", e);
+    // Fallback to localStorage if database load failed or no userId
+    if (!websiteData) {
+      const userSpecificWebsiteKey = userId ? `websiteData_${userId}` : "websiteData";
+      const userSpecificItinerariesKey = userId ? `culturinItineraries_${userId}` : "culturinItineraries";
+
+      const websiteDataStr = localStorage.getItem(userSpecificWebsiteKey);
+      const itinerariesStr = localStorage.getItem(userSpecificItinerariesKey);
+
+      if (websiteDataStr) {
+        try {
+          websiteData = JSON.parse(websiteDataStr);
+        } catch (e) {
+          console.error("Error parsing website data:", e);
+        }
+      }
+
+      if (itinerariesStr) {
+        try {
+          itineraries = JSON.parse(itinerariesStr);
+          setPublishedItineraries(itineraries);
+        } catch (e) {
+          console.error("Error parsing itineraries:", e);
+        }
       }
     }
 
-    // Load operator data with real content
-    setTimeout(() => {
+      // Load operator data with real content
       // Get the actual website content from the builder
       const websiteContentStr = localStorage.getItem("publishedWebsiteContent");
       const websiteTheme = localStorage.getItem("publishedWebsiteTheme");
@@ -139,31 +197,27 @@ export default function TourOperatorPage({
         }
       }
 
+      // Use websiteData from database if available, otherwise use localStorage content
+      const finalWebsiteData = websiteData?.settings || websiteContent;
+
       const defaultData: OperatorData = {
         id: params.slug || "demo",
-        name: websiteContent?.companyName || "Your Tour Company",
+        name: finalWebsiteData?.companyName || "Your Tour Company",
         tagline:
-          websiteContent?.tagline || "Discover amazing cultural experiences",
-        description: websiteContent?.description || "",
-        logo: websiteContent?.logo || "https://placehold.co/200x80",
-        coverImage: websiteContent?.headerImage || null,
+          finalWebsiteData?.tagline || "Discover amazing cultural experiences",
+        description: finalWebsiteData?.description || "",
+        logo: finalWebsiteData?.logo || "https://placehold.co/200x80",
+        coverImage: finalWebsiteData?.headerImage || null,
         theme: websiteTheme || parsedTheme,
-        primaryColor: websiteContent?.primaryColor || "#9b87f5",
+        primaryColor: finalWebsiteData?.primaryColor || "#9b87f5",
         contact: {
-          email: websiteContent?.contactEmail || "contact@yourtourcompany.com",
-          phone: websiteContent?.contactPhone || "+1 (555) 123-4567",
+          email: finalWebsiteData?.contactEmail || "contact@yourtourcompany.com",
+          phone: finalWebsiteData?.contactPhone || "+1 (555) 123-4567",
           address:
-            websiteContent?.contactAddress || "Global Cultural Experiences",
+            finalWebsiteData?.contactAddress || "Global Cultural Experiences",
         },
         tours: [],
       };
-
-      // If no website content found, show a message
-      if (!websiteContent) {
-        console.log("No website content found in localStorage");
-      } else {
-        console.log("Loaded website content:", websiteContent);
-      }
 
       // Convert real itineraries to tours
       const toursFromItineraries: Tour[] = itineraries.map((itinerary) => ({
@@ -190,7 +244,10 @@ export default function TourOperatorPage({
 
       setOperatorData(defaultData);
       setLoading(false);
-    }, 500);
+    };
+
+    // Call the async function
+    loadData();
   }, [params.slug]);
 
   const getThemeStyles = () => {

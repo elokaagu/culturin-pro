@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Upload, X, Eye, EyeOff } from "lucide-react";
 import { useUserData } from "../../../src/contexts/UserDataContext";
+import { userWebsiteService } from "./UserWebsiteService";
 import { settingsService } from "@/lib/settings-service";
 
 const WebsiteContent: React.FC = () => {
@@ -122,6 +123,12 @@ const WebsiteContent: React.FC = () => {
         return;
       }
 
+      // Check if user is logged in
+      if (!userData?.id) {
+        toast.error("Please log in to save website content");
+        return;
+      }
+
       const updates = {
         companyName: companyName.trim(),
         tagline: tagline.trim(),
@@ -130,35 +137,56 @@ const WebsiteContent: React.FC = () => {
         headerImage,
       };
 
-      // Note: Website settings would be saved to a separate service in the new structure
-
-      toast.success("Content saved successfully!");
-
-      // Save published content for website preview
-      const publishedContent = {
-        companyName: updates.companyName,
+      // Get current user website settings
+      const currentSettings = await userWebsiteService.getUserWebsiteSettings(userData.id);
+      
+      // Update settings with new content
+      const updatedSettings = {
+        ...currentSettings,
+        company_name: updates.companyName,
         tagline: updates.tagline,
         description: updates.description,
-        primaryColor: updates.primaryColor,
-        headerImage: updates.headerImage,
-        theme: "classic",
-        lastUpdated: new Date().toISOString(),
+        branding: {
+          ...currentSettings.branding,
+          primary_color: updates.primaryColor,
+          header_image: updates.headerImage,
+        }
       };
 
-      localStorage.setItem(
-        "publishedWebsiteContent",
-        JSON.stringify(publishedContent)
-      );
+      // Save to UserWebsiteService
+      const success = await userWebsiteService.saveUserWebsiteSettings(updatedSettings);
 
-      toast.success("Website content saved successfully!", {
-        description:
-          "Your changes have been applied and are live on your website",
-      });
+      if (success) {
+        toast.success("Website content saved successfully!", {
+          description: "Your changes have been applied and are live on your website",
+        });
 
-      // Optional: Trigger a page refresh or update preview
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+        // Save published content for backward compatibility
+        const publishedContent = {
+          companyName: updates.companyName,
+          tagline: updates.tagline,
+          description: updates.description,
+          primaryColor: updates.primaryColor,
+          headerImage: updates.headerImage,
+          theme: "classic",
+          lastUpdated: new Date().toISOString(),
+        };
+
+        localStorage.setItem("publishedWebsiteContent", JSON.stringify(publishedContent));
+        
+        // Update user-specific storage
+        localStorage.setItem(`websiteData_${userData.id}`, JSON.stringify({
+          settings: updatedSettings,
+          lastSaved: new Date().toISOString()
+        }));
+
+        // Trigger preview refresh by dispatching a custom event
+        window.dispatchEvent(new CustomEvent('websiteContentUpdated', { 
+          detail: updatedSettings 
+        }));
+      } else {
+        throw new Error("Failed to save to database");
+      }
     } catch (error) {
       console.error("Save error:", error);
       toast.error("Failed to save content", {
