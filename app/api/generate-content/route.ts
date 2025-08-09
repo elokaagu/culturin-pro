@@ -244,14 +244,66 @@ async function handleConversation(body: any) {
     );
   }
 
-  // Check if user is requesting image generation
-  const isImageRequest = userInput.toLowerCase().includes('generate') && 
-    (userInput.toLowerCase().includes('image') || 
-     userInput.toLowerCase().includes('picture') || 
-     userInput.toLowerCase().includes('photo'));
+  // Check if user is requesting asset generation (images, flyers, content, etc.)
+  const assetKeywords = [
+    'generate', 'create', 'make', 'design', 'build', 'produce'
+  ];
+  
+  const assetTypes = [
+    'image', 'picture', 'photo', 'visual', 'graphic',
+    'flyer', 'poster', 'banner', 'advertisement', 'ad',
+    'instagram post', 'facebook ad', 'google ad', 'tiktok content',
+    'marketing material', 'social media content', 'asset',
+    'content', 'copy', 'caption', 'hook', 'script', 'email'
+  ];
+
+  const lowerInput = userInput.toLowerCase();
+  const hasActionWord = assetKeywords.some(keyword => lowerInput.includes(keyword));
+  const hasAssetType = assetTypes.some(type => lowerInput.includes(type));
+  
+  // More specific image/visual generation detection
+  const isImageRequest = hasActionWord && (
+    lowerInput.includes('image') || 
+    lowerInput.includes('picture') || 
+    lowerInput.includes('photo') ||
+    lowerInput.includes('visual') ||
+    lowerInput.includes('graphic') ||
+    lowerInput.includes('flyer') ||
+    lowerInput.includes('poster') ||
+    lowerInput.includes('banner')
+  );
+
+  // Flyer generation detection
+  const isFlyerRequest = hasActionWord && (
+    lowerInput.includes('flyer') ||
+    lowerInput.includes('poster') ||
+    lowerInput.includes('advertisement') ||
+    lowerInput.includes('marketing material')
+  );
+
+  // Content generation detection (Instagram, TikTok, etc.)
+  const isContentRequest = hasActionWord && (
+    lowerInput.includes('instagram') ||
+    lowerInput.includes('tiktok') ||
+    lowerInput.includes('facebook') ||
+    lowerInput.includes('google ad') ||
+    lowerInput.includes('caption') ||
+    lowerInput.includes('hook') ||
+    lowerInput.includes('email') ||
+    lowerInput.includes('script') ||
+    lowerInput.includes('copy')
+  );
 
   if (isImageRequest) {
     return handleImageGeneration(userInput, conversationHistory, attachments);
+  }
+
+  if (isFlyerRequest) {
+    return handleFlyerGeneration(userInput, conversationHistory, attachments);
+  }
+
+  if (isContentRequest) {
+    return handleContentGeneration(userInput, conversationHistory, attachments);
   }
 
   // Create conversation context for Rigo
@@ -369,6 +421,202 @@ Keep responses conversational and under 150 words unless the user specifically a
   }
 }
 
+async function handleContentGeneration(userInput: string, conversationHistory: any[], attachments: any[]) {
+  try {
+    // Extract content type from user input
+    let contentType = '';
+    let platform = '';
+    
+    const lowerInput = userInput.toLowerCase();
+    
+    if (lowerInput.includes('instagram')) {
+      contentType = 'instagram-caption';
+      platform = 'Instagram';
+    } else if (lowerInput.includes('tiktok')) {
+      contentType = 'tiktok-hook';
+      platform = 'TikTok';
+    } else if (lowerInput.includes('facebook')) {
+      contentType = 'facebook-ad';
+      platform = 'Facebook';
+    } else if (lowerInput.includes('google ad')) {
+      contentType = 'google-ad-copy';
+      platform = 'Google Ads';
+    } else if (lowerInput.includes('email')) {
+      contentType = 'email-campaign';
+      platform = 'Email';
+    } else {
+      contentType = 'marketing-copy';
+      platform = 'General';
+    }
+
+    // Extract experience details from conversation history
+    const recentMessages = conversationHistory.slice(-10);
+    let experienceTitle = 'Cultural Experience';
+    let location = 'Barcelona';
+    let keyCulturalElements = 'authentic local traditions';
+    
+    // Try to extract details from conversation
+    const conversationText = recentMessages
+      .filter(msg => msg.role === 'user')
+      .map(msg => msg.content)
+      .join(' ');
+    
+    // Simple extraction patterns
+    const titleMatch = conversationText.match(/(?:experience|tour|class|workshop):\s*([^.,!?]+)/i);
+    if (titleMatch) experienceTitle = titleMatch[1].trim();
+    
+    const locationMatch = conversationText.match(/(?:in|at|location):\s*([^.,!?]+)/i);
+    if (locationMatch) location = locationMatch[1].trim();
+
+    // Generate content using the same logic as the traditional content generation
+    const systemPrompt = getSystemPromptForContentType(contentType);
+    const prompt = getPromptForContentType(contentType, experienceTitle, location, keyCulturalElements);
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: prompt },
+        ],
+        max_tokens: 500,
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to generate content");
+    }
+
+    const data = await response.json();
+    const generatedContent = data.choices[0]?.message?.content?.trim();
+
+    return NextResponse.json({ 
+      response: `Here's your ${platform} content:`,
+      generatedContent: generatedContent,
+      contentType: contentType,
+      platform: platform
+    });
+  } catch (error) {
+    console.error("Error generating content:", error);
+    return NextResponse.json(
+      { error: "Failed to generate content. Please try again." },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleFlyerGeneration(userInput: string, conversationHistory: any[], attachments: any[]) {
+  try {
+    // Extract experience details from conversation history
+    const recentMessages = conversationHistory.slice(-10);
+    let experienceTitle = 'Cultural Experience';
+    let location = 'Barcelona';
+    let duration = '2 hours';
+    let price = 'Contact for pricing';
+    
+    // Try to extract details from conversation
+    const conversationText = recentMessages
+      .filter(msg => msg.role === 'user')
+      .map(msg => msg.content)
+      .join(' ');
+    
+    // Simple extraction patterns
+    const titleMatch = conversationText.match(/(?:experience|tour|class|workshop):\s*([^.,!?]+)/i);
+    if (titleMatch) experienceTitle = titleMatch[1].trim();
+    
+    const locationMatch = conversationText.match(/(?:in|at|location):\s*([^.,!?]+)/i);
+    if (locationMatch) location = locationMatch[1].trim();
+
+    const durationMatch = conversationText.match(/(?:duration|time|hours?):\s*([^.,!?]+)/i);
+    if (durationMatch) duration = durationMatch[1].trim();
+
+    const priceMatch = conversationText.match(/(?:price|cost|\$):\s*([^.,!?]+)/i);
+    if (priceMatch) price = priceMatch[1].trim();
+
+    // Generate flyer design
+    const flyerPrompt = `Create a professional marketing flyer for a cultural experience:
+
+Experience Title: ${experienceTitle}
+Location: ${location}
+Duration: ${duration}
+Price: ${price}
+
+Create a flyer design that includes:
+- Compelling headline
+- Engaging subheading
+- Description of the experience
+- Key benefits and what's included
+- Strong call to action
+- Contact information
+- Professional layout suitable for print and digital use
+
+Format as JSON with the following structure:
+{
+  "headline": "string",
+  "subheading": "string", 
+  "description": "string",
+  "benefits": ["string", "string", "string"],
+  "included": ["string", "string", "string"],
+  "callToAction": "string",
+  "contactInfo": "string",
+  "socialProof": "string"
+}`;
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert graphic designer specializing in cultural tourism marketing. Create professional flyer designs that are engaging and conversion-focused."
+          },
+          { role: "user", content: flyerPrompt },
+        ],
+        max_tokens: 800,
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to generate flyer");
+    }
+
+    const data = await response.json();
+    const generatedContent = data.choices[0]?.message?.content?.trim();
+
+    // Try to parse JSON response
+    let flyerDesign;
+    try {
+      flyerDesign = JSON.parse(generatedContent);
+    } catch (e) {
+      flyerDesign = { content: generatedContent };
+    }
+
+    return NextResponse.json({ 
+      response: `I've created a professional flyer design for your ${experienceTitle} experience:`,
+      flyerDesign: flyerDesign,
+      contentType: 'flyer'
+    });
+  } catch (error) {
+    console.error("Error generating flyer:", error);
+    return NextResponse.json(
+      { error: "Failed to generate flyer. Please try again." },
+      { status: 500 }
+    );
+  }
+}
+
 async function handleImageGeneration(userInput: string, conversationHistory: any[], attachments: any[]) {
   try {
     // Create a prompt for image generation based on the conversation context
@@ -457,6 +705,100 @@ async function handleImageGeneration(userInput: string, conversationHistory: any
       { error: "Failed to generate image. Please try again." },
       { status: 500 }
     );
+  }
+}
+
+// Helper functions for content generation
+function getSystemPromptForContentType(contentType: string): string {
+  switch (contentType) {
+    case "instagram-caption":
+      return "You are an expert social media marketer specializing in cultural tourism. You create engaging, Instagram-optimized captions that drive engagement and inspire travelers to book authentic cultural experiences.";
+    case "tiktok-hook":
+      return "You are an expert TikTok content creator specializing in cultural tourism. You create attention-grabbing hooks that capture viewers in the first 3 seconds.";
+    case "google-ad-copy":
+      return "You are an expert Google Ads copywriter specializing in cultural tourism. You create high-converting ad copy that drives clicks and bookings.";
+    case "facebook-ad":
+      return "You are an expert Facebook Ads specialist for cultural tourism. You create compelling ad copy that generates clicks and conversions.";
+    case "email-campaign":
+      return "You are an expert email marketer for cultural tourism. You create engaging email campaigns that drive bookings and build relationships.";
+    default:
+      return "You are an expert marketing copywriter specializing in cultural tourism. You create compelling marketing content that inspires travelers to book authentic cultural experiences.";
+  }
+}
+
+function getPromptForContentType(contentType: string, experienceTitle: string, location: string, keyCulturalElements: string): string {
+  switch (contentType) {
+    case "instagram-caption":
+      return `Create an engaging Instagram caption for a cultural experience:
+
+Experience Title: ${experienceTitle}
+Location: ${location}
+Key Cultural Elements: ${keyCulturalElements}
+
+Create an Instagram caption that:
+- Is 50-100 words
+- Uses relevant emojis strategically
+- Includes a compelling hook
+- Describes the experience authentically
+- Includes a call to action
+- Is optimized for Instagram engagement
+- Uses hashtags relevant to cultural travel
+
+Format as plain text with proper line breaks and emojis.`;
+
+    case "tiktok-hook":
+      return `Create an attention-grabbing TikTok hook for:
+
+Experience Title: ${experienceTitle}
+Location: ${location}
+Key Cultural Elements: ${keyCulturalElements}
+
+Create a TikTok hook that:
+- Is 10-20 words maximum
+- Captures attention in the first 3 seconds
+- Creates curiosity and interest
+- Uses trending language and style
+- Is shareable and engaging
+
+Format as a single, impactful sentence.`;
+
+    case "google-ad-copy":
+      return `Create high-converting Google Ads copy for:
+
+Experience Title: ${experienceTitle}
+Location: ${location}
+Key Cultural Elements: ${keyCulturalElements}
+
+Create Google Ads copy with:
+- Headline 1 (30 characters max)
+- Headline 2 (30 characters max)
+- Headline 3 (30 characters max)
+- Description 1 (90 characters max)
+- Description 2 (90 characters max)
+
+Format as JSON with the structure:
+{
+  "headline1": "string",
+  "headline2": "string",
+  "headline3": "string",
+  "description1": "string",
+  "description2": "string"
+}`;
+
+    default:
+      return `Create compelling marketing content for:
+
+Experience Title: ${experienceTitle}
+Location: ${location}
+Key Cultural Elements: ${keyCulturalElements}
+
+Create marketing content that:
+- Is compelling and conversion-focused
+- Describes the experience authentically
+- Includes a clear value proposition
+- Has a strong call to action
+- Incorporates cultural authenticity
+- Is optimized for the target audience`;
   }
 }
 

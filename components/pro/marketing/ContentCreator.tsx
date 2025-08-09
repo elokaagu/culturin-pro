@@ -57,6 +57,10 @@ interface ChatMessage {
   generatedImage?: string;
   imagePrompt?: string;
   audioUrl?: string;
+  generatedContent?: any;
+  flyerDesign?: any;
+  contentType?: string;
+  platform?: string;
 }
 
 interface UploadedFile {
@@ -177,7 +181,7 @@ const ContentCreator: React.FC = () => {
     }
   }, [showChat]);
 
-  const addBotMessage = (content: string, options?: string[], isGenerating: boolean = false, attachments?: UploadedFile[], generatedImage?: string, imagePrompt?: string, audioUrl?: string) => {
+  const addBotMessage = (content: string, options?: string[], isGenerating: boolean = false, attachments?: UploadedFile[], generatedImage?: string, imagePrompt?: string, generatedData?: any) => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'bot',
@@ -188,7 +192,10 @@ const ContentCreator: React.FC = () => {
       attachments,
       generatedImage,
       imagePrompt,
-      audioUrl
+      generatedContent: generatedData?.generatedContent,
+      flyerDesign: generatedData?.flyerDesign,
+      contentType: generatedData?.contentType,
+      platform: generatedData?.platform
     };
     setMessages(prev => [...prev, newMessage]);
   };
@@ -359,6 +366,20 @@ const ContentCreator: React.FC = () => {
   };
 
   const handleOptionSelect = async (option: string) => {
+    // Handle action buttons for generated content
+    if (option === "Copy Content") {
+      return handleCopyGeneratedContent();
+    }
+    if (option === "Save to Library") {
+      return handleSaveGeneratedContent();
+    }
+    if (option === "Generate Images") {
+      return handleGenerateImagesForContent();
+    }
+    if (option === "Create Another") {
+      return handleCreateAnother();
+    }
+
     addUserMessage(option);
     
     // Add a temporary "thinking" message
@@ -379,6 +400,15 @@ const ContentCreator: React.FC = () => {
     
     if (aiResponse.generatedImage) {
       addBotMessage(aiResponse.response, undefined, false, undefined, aiResponse.generatedImage, aiResponse.imagePrompt);
+    } else if (aiResponse.generatedContent || aiResponse.flyerDesign) {
+      // Handle generated content or flyer
+      const responseText = aiResponse.response || "Here's your generated content:";
+      addBotMessage(responseText, [
+        "Copy Content",
+        "Save to Library", 
+        "Generate Images",
+        "Create Another"
+      ], false, undefined, undefined, undefined, aiResponse);
     } else {
       const responseText = aiResponse.response || aiResponse;
       addBotMessage(responseText);
@@ -428,6 +458,15 @@ const ContentCreator: React.FC = () => {
     
     if (aiResponse.generatedImage) {
       addBotMessage(aiResponse.response, undefined, false, undefined, aiResponse.generatedImage, aiResponse.imagePrompt);
+    } else if (aiResponse.generatedContent || aiResponse.flyerDesign) {
+      // Handle generated content or flyer
+      const responseText = aiResponse.response || "Here's your generated content:";
+      addBotMessage(responseText, [
+        "Copy Content",
+        "Save to Library", 
+        "Generate Images",
+        "Create Another"
+      ], false, undefined, undefined, undefined, aiResponse);
     } else {
       const responseText = aiResponse.response || aiResponse;
       addBotMessage(responseText);
@@ -559,6 +598,104 @@ Description 2: ${data.content.description2 || ""}`;
     } catch (error) {
       console.error('Error saving marketing content:', error);
       addBotMessage("Failed to save content. Please try again.");
+    }
+  };
+
+  const handleCopyGeneratedContent = () => {
+    // Find the last message with generated content
+    const lastMessageWithContent = messages.reverse().find(msg => 
+      msg.generatedContent || msg.flyerDesign
+    );
+    
+    if (lastMessageWithContent) {
+      let contentToCopy = '';
+      if (lastMessageWithContent.generatedContent) {
+        contentToCopy = lastMessageWithContent.generatedContent;
+      } else if (lastMessageWithContent.flyerDesign) {
+        contentToCopy = JSON.stringify(lastMessageWithContent.flyerDesign, null, 2);
+      }
+      
+      navigator.clipboard.writeText(contentToCopy);
+      addBotMessage("Content copied to clipboard!");
+      toast.success("Content copied to clipboard!");
+    } else {
+      addBotMessage("No content found to copy.");
+    }
+  };
+
+  const handleSaveGeneratedContent = () => {
+    // Find the last message with generated content
+    const lastMessageWithContent = messages.reverse().find(msg => 
+      msg.generatedContent || msg.flyerDesign
+    );
+    
+    if (lastMessageWithContent) {
+      const contentToSave = {
+        id: Date.now().toString(),
+        type: lastMessageWithContent.contentType || 'content',
+        platform: lastMessageWithContent.platform || 'general',
+        content: lastMessageWithContent.generatedContent || lastMessageWithContent.flyerDesign,
+        createdAt: new Date().toISOString()
+      };
+      
+      // Save to localStorage
+      try {
+        const existingContent = JSON.parse(localStorage.getItem('rigoGeneratedContent') || '[]');
+        existingContent.push(contentToSave);
+        localStorage.setItem('rigoGeneratedContent', JSON.stringify(existingContent));
+        
+        addBotMessage("Content saved to your library!");
+        toast.success("Content saved to library!");
+      } catch (error) {
+        addBotMessage("Failed to save content. Please try again.");
+        toast.error("Failed to save content");
+      }
+    } else {
+      addBotMessage("No content found to save.");
+    }
+  };
+
+  const handleGenerateImagesForContent = async () => {
+    // Find the last message with generated content
+    const lastMessageWithContent = messages.reverse().find(msg => 
+      msg.generatedContent || msg.flyerDesign
+    );
+    
+    if (lastMessageWithContent) {
+      addBotMessage("Let me generate some images for your content...", undefined, true);
+      
+      try {
+        const imagePrompt = `Create a professional marketing image for: ${
+          lastMessageWithContent.generatedContent || 
+          JSON.stringify(lastMessageWithContent.flyerDesign)
+        }`;
+        
+        const response = await fetch("/api/generate-images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt: imagePrompt,
+            assetType: "social-media"
+          }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.images && data.images.length > 0) {
+          addBotMessage("Here are some images for your content:", [
+            "Copy Content",
+            "Save to Library",
+            "Create Another"
+          ], false, undefined, data.images[0], imagePrompt);
+        } else {
+          addBotMessage("Sorry, I couldn't generate images right now. Please try again later.");
+        }
+      } catch (error) {
+        console.error("Error generating images:", error);
+        addBotMessage("Sorry, I encountered an error generating images. Please try again.");
+      }
+    } else {
+      addBotMessage("Please generate some content first, then I can create images for it.");
     }
   };
 
@@ -699,6 +836,73 @@ Description 2: ${data.content.description2 || ""}`;
                                 Copy URL
                               </Button>
                             </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Generated Content */}
+                      {(message.generatedContent || message.flyerDesign) && (
+                        <div className="mt-3">
+                          <div className="bg-white p-4 rounded border">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Sparkles className="h-4 w-4 text-blue-500" />
+                              <span className="text-sm font-medium">
+                                Generated {message.platform || 'Content'}
+                              </span>
+                            </div>
+                            
+                            {message.generatedContent && (
+                              <div className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap">
+                                {message.generatedContent}
+                              </div>
+                            )}
+                            
+                            {message.flyerDesign && (
+                              <div className="space-y-3">
+                                {typeof message.flyerDesign === 'object' ? (
+                                  <div className="space-y-2">
+                                    {message.flyerDesign.headline && (
+                                      <div>
+                                        <span className="text-xs font-medium text-gray-500">Headline:</span>
+                                        <p className="text-sm font-bold">{message.flyerDesign.headline}</p>
+                                      </div>
+                                    )}
+                                    {message.flyerDesign.subheading && (
+                                      <div>
+                                        <span className="text-xs font-medium text-gray-500">Subheading:</span>
+                                        <p className="text-sm">{message.flyerDesign.subheading}</p>
+                                      </div>
+                                    )}
+                                    {message.flyerDesign.description && (
+                                      <div>
+                                        <span className="text-xs font-medium text-gray-500">Description:</span>
+                                        <p className="text-sm">{message.flyerDesign.description}</p>
+                                      </div>
+                                    )}
+                                    {message.flyerDesign.benefits && (
+                                      <div>
+                                        <span className="text-xs font-medium text-gray-500">Benefits:</span>
+                                        <ul className="text-sm list-disc list-inside space-y-1">
+                                          {message.flyerDesign.benefits.map((benefit: string, idx: number) => (
+                                            <li key={idx}>{benefit}</li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    )}
+                                    {message.flyerDesign.callToAction && (
+                                      <div>
+                                        <span className="text-xs font-medium text-gray-500">Call to Action:</span>
+                                        <p className="text-sm font-medium text-blue-600">{message.flyerDesign.callToAction}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <div className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap">
+                                    {JSON.stringify(message.flyerDesign, null, 2)}
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}
