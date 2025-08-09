@@ -20,7 +20,6 @@ import {
   BarChart3,
   Calendar,
   Map,
-  CreditCard,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -47,11 +46,6 @@ const menuItems = [
   { name: "Users", path: "/pro-dashboard/users", icon: Users },
   { name: "Marketing", path: "/pro-dashboard/marketing", icon: Megaphone },
   { name: "Website", path: "/pro-dashboard/website", icon: Globe },
-  {
-    name: "Cards",
-    path: "/pro-dashboard/cards",
-    icon: CreditCard,
-  },
   {
     name: "Analytics",
     path: "/pro-dashboard/analytics",
