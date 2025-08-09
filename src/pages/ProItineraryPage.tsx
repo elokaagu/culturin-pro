@@ -47,6 +47,8 @@ const ProItineraryPage: React.FC = () => {
 
   // Load itineraries from storage - wait for auth to be ready
   useEffect(() => {
+    console.log("🔄 useEffect triggered - isReady:", isReady, "user:", user?.email);
+    
     const loadItineraries = async () => {
       // Wait for authentication to be ready
       if (!isReady) {
@@ -94,11 +96,22 @@ const ProItineraryPage: React.FC = () => {
     const timeoutId = setTimeout(() => {
       console.log("⚠️ Loading timeout - forcing loading state to false");
       setLoading(false);
-    }, 5000); // Increased timeout to allow for auth
+    }, 3000); // Reduced timeout for faster fallback
     
-    loadItineraries().finally(() => {
-      clearTimeout(timeoutId);
-    });
+    // If auth is ready, load immediately, otherwise wait
+    if (isReady) {
+      loadItineraries().finally(() => {
+        clearTimeout(timeoutId);
+      });
+    } else {
+      // If auth is not ready after timeout, still show the page
+      setTimeout(() => {
+        if (!isReady) {
+          console.log("⚠️ Auth timeout - showing page anyway");
+          setLoading(false);
+        }
+      }, 2000);
+    }
     
     return () => {
       clearTimeout(timeoutId);
