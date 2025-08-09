@@ -222,6 +222,8 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
     setIsPublishing(true);
 
     try {
+      console.log("📤 Publishing itinerary:", itinerary.title);
+      
       // Set status to published
       const publishedItinerary = {
         ...itinerary,
@@ -229,6 +231,20 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
         lastUpdated: "just now",
       };
 
+      // Use the parent's save handler if provided (new approach)
+      if (onItinerarySave) {
+        console.log("📤 Using parent save handler for publish");
+        await onItinerarySave(publishedItinerary);
+        
+        // Update local state
+        setItinerary(publishedItinerary);
+        
+        console.log("✅ Parent save handler completed for publish");
+        return; // Parent handles the toast and persistence
+      }
+
+      // Fallback to database save (legacy approach)
+      console.log("🗄️ Using database save fallback for publish");
       let savedItinerary: ItineraryType;
 
       if (

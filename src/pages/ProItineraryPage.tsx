@@ -129,6 +129,8 @@ const ProItineraryPage: React.FC = () => {
 
   const handleItinerarySave = async (savedItinerary: ItineraryType) => {
     try {
+      console.log("🏠 Parent handling save for:", savedItinerary.title, "Status:", savedItinerary.status);
+      
       let updatedItineraries;
       
       if (savedItinerary.id.startsWith('new-')) {
@@ -139,11 +141,13 @@ const ProItineraryPage: React.FC = () => {
           lastUpdated: "just now"
         };
         updatedItineraries = [newItinerary, ...itineraries];
+        console.log("✅ Created new itinerary with ID:", newItinerary.id);
       } else {
         // Existing itinerary - update
         updatedItineraries = itineraries.map(it => 
           it.id === savedItinerary.id ? { ...savedItinerary, lastUpdated: "just now" } : it
         );
+        console.log("✅ Updated existing itinerary:", savedItinerary.id);
       }
       
       setItineraries(updatedItineraries);
@@ -151,16 +155,26 @@ const ProItineraryPage: React.FC = () => {
       // Save to storage with fallback
       try {
         await supabaseStorage.setItem('userItineraries', updatedItineraries);
+        console.log("💾 Saved to Supabase storage");
       } catch (storageError) {
         console.error("Error saving to Supabase storage:", storageError);
         // Fallback to localStorage
         localStorage.setItem('userItineraries', JSON.stringify(updatedItineraries));
+        console.log("💾 Saved to localStorage as fallback");
       }
       
-      toast({
-        title: "Itinerary Saved",
-        description: `"${savedItinerary.title}" has been saved successfully.`,
-      });
+      // Different toast messages for save vs publish
+      if (savedItinerary.status === "published") {
+        toast({
+          title: "Itinerary Published! 🎉",
+          description: `"${savedItinerary.title}" is now live and available.`,
+        });
+      } else {
+        toast({
+          title: "Itinerary Saved",
+          description: `"${savedItinerary.title}" has been saved successfully.`,
+        });
+      }
       
       handleEditorClose();
     } catch (error) {
