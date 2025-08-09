@@ -84,8 +84,15 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
         console.log("📤 Using parent save handler");
         await onItinerarySave(itinerary);
         console.log("✅ Parent save handler completed");
-        return; // Parent handles the toast and closing
-      }
+        
+        // Show success toast since parent doesn't handle it
+        toast({
+          title: "Changes Saved",
+          description: `"${itinerary.title}" has been saved successfully.`,
+        });
+        
+        // Don't return here - let the finally block execute
+      } else {
 
       // Fallback to database save (legacy approach)
       console.log("🗄️ Using database save fallback");
@@ -162,6 +169,7 @@ const ItineraryEditor: React.FC<ItineraryEditorProps> = ({
         // Also trigger itinerary refresh for other components
         window.dispatchEvent(new CustomEvent("userAuthenticated"));
       }
+      } // Close the else block
 
     } catch (error) {
       console.error("Error saving itinerary:", error);
