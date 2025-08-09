@@ -400,10 +400,11 @@ const ContentCreator: React.FC = () => {
     // Remove thinking message and add real response
     setMessages(prev => prev.filter(msg => msg.id !== thinkingMessageId));
     
-    if (aiResponse.generatedImage) {
+    if (aiResponse.generatedImage && !aiResponse.flyerDesign) {
+      // Pure image generation (not flyer with image)
       addBotMessage(aiResponse.response, undefined, false, undefined, aiResponse.generatedImage, aiResponse.imagePrompt);
     } else if (aiResponse.generatedContent || aiResponse.flyerDesign) {
-      // Handle generated content or flyer
+      // Handle generated content or flyer (with or without image)
       const responseText = aiResponse.response || "Here's your generated content:";
       addBotMessage(responseText, [
         "Copy Content",
@@ -458,10 +459,11 @@ const ContentCreator: React.FC = () => {
     // Remove thinking message and add real response
     setMessages(prev => prev.filter(msg => msg.id !== thinkingMessageId));
     
-    if (aiResponse.generatedImage) {
+    if (aiResponse.generatedImage && !aiResponse.flyerDesign) {
+      // Pure image generation (not flyer with image)
       addBotMessage(aiResponse.response, undefined, false, undefined, aiResponse.generatedImage, aiResponse.imagePrompt);
     } else if (aiResponse.generatedContent || aiResponse.flyerDesign) {
-      // Handle generated content or flyer
+      // Handle generated content or flyer (with or without image)
       const responseText = aiResponse.response || "Here's your generated content:";
       addBotMessage(responseText, [
         "Copy Content",
@@ -878,6 +880,55 @@ Description 2: ${data.content.description2 || ""}`;
                       {/* Generated Flyer Canvas */}
                       {message.flyerDesign && (
                         <div className="mt-3">
+                          {/* Show generated image first if available */}
+                          {message.generatedImage && (
+                            <div className="mb-4">
+                              <div className="bg-white p-3 rounded border">
+                                <div className="flex items-center gap-2 mb-3">
+                                  <span className="text-sm font-medium text-gray-700">
+                                    🎨 AI-Generated Flyer Design
+                                  </span>
+                                </div>
+                                <img 
+                                  src={message.generatedImage} 
+                                  alt="Generated flyer design"
+                                  className="w-full h-auto rounded-lg border"
+                                />
+                                {message.imagePrompt && (
+                                  <p className="text-xs text-gray-500 mt-2">
+                                    Design prompt: {message.imagePrompt}
+                                  </p>
+                                )}
+                                <div className="flex gap-2 mt-3">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => {
+                                      const link = document.createElement('a');
+                                      link.href = message.generatedImage!;
+                                      link.download = 'flyer-design.png';
+                                      link.click();
+                                      toast.success("Flyer image downloaded!");
+                                    }}
+                                  >
+                                    📥 Download Image
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(message.generatedImage!);
+                                      toast.success("Image URL copied to clipboard!");
+                                    }}
+                                  >
+                                    📋 Copy URL
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Show structured flyer content */}
                           <FlyerCanvas
                             flyerDesign={message.flyerDesign}
                             colorTheme="blue-ocean"
@@ -895,6 +946,7 @@ Description 2: ${data.content.description2 || ""}`;
                                 type: 'flyer',
                                 platform: 'print/digital',
                                 content: message.flyerDesign,
+                                generatedImage: message.generatedImage,
                                 createdAt: new Date().toISOString()
                               };
                               
