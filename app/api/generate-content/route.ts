@@ -261,27 +261,7 @@ async function handleConversation(body: any) {
   const hasActionWord = assetKeywords.some(keyword => lowerInput.includes(keyword));
   const hasAssetType = assetTypes.some(type => lowerInput.includes(type));
   
-  // More specific image/visual generation detection
-  const isImageRequest = hasActionWord && (
-    lowerInput.includes('image') || 
-    lowerInput.includes('picture') || 
-    lowerInput.includes('photo') ||
-    lowerInput.includes('visual') ||
-    lowerInput.includes('graphic') ||
-    lowerInput.includes('flyer') ||
-    lowerInput.includes('poster') ||
-    lowerInput.includes('banner')
-  );
-
-  // Flyer generation detection
-  const isFlyerRequest = hasActionWord && (
-    lowerInput.includes('flyer') ||
-    lowerInput.includes('poster') ||
-    lowerInput.includes('advertisement') ||
-    lowerInput.includes('marketing material')
-  );
-
-  // Content generation detection (Instagram, TikTok, etc.)
+  // Content generation detection (Instagram, TikTok, etc.) - Check this FIRST
   const isContentRequest = hasActionWord && (
     lowerInput.includes('instagram') ||
     lowerInput.includes('tiktok') ||
@@ -294,16 +274,34 @@ async function handleConversation(body: any) {
     lowerInput.includes('copy')
   );
 
-  if (isImageRequest) {
-    return handleImageGeneration(userInput, conversationHistory, attachments);
+  // Flyer generation detection (only if not a content request)
+  const isFlyerRequest = !isContentRequest && hasActionWord && (
+    lowerInput.includes('flyer') ||
+    lowerInput.includes('poster') ||
+    lowerInput.includes('advertisement') ||
+    lowerInput.includes('marketing material')
+  );
+
+  // Image/visual generation detection (only if not content or flyer)
+  const isImageRequest = !isContentRequest && !isFlyerRequest && hasActionWord && (
+    lowerInput.includes('image') || 
+    lowerInput.includes('picture') || 
+    lowerInput.includes('photo') ||
+    lowerInput.includes('visual') ||
+    lowerInput.includes('graphic') ||
+    lowerInput.includes('banner')
+  );
+
+  if (isContentRequest) {
+    return handleContentGeneration(userInput, conversationHistory, attachments);
   }
 
   if (isFlyerRequest) {
     return handleFlyerGeneration(userInput, conversationHistory, attachments);
   }
 
-  if (isContentRequest) {
-    return handleContentGeneration(userInput, conversationHistory, attachments);
+  if (isImageRequest) {
+    return handleImageGeneration(userInput, conversationHistory, attachments);
   }
 
   // Create conversation context for Rigo
@@ -430,8 +428,14 @@ async function handleContentGeneration(userInput: string, conversationHistory: a
     const lowerInput = userInput.toLowerCase();
     
     if (lowerInput.includes('instagram')) {
-      contentType = 'instagram-caption';
-      platform = 'Instagram';
+      // Check if it's specifically asking for a flyer/post format
+      if (lowerInput.includes('flyer') || lowerInput.includes('post')) {
+        contentType = 'instagram-post';
+        platform = 'Instagram';
+      } else {
+        contentType = 'instagram-caption';
+        platform = 'Instagram';
+      }
     } else if (lowerInput.includes('tiktok')) {
       contentType = 'tiktok-hook';
       platform = 'TikTok';
@@ -490,7 +494,23 @@ async function handleContentGeneration(userInput: string, conversationHistory: a
     });
 
     if (!response.ok) {
-      throw new Error("Failed to generate content");
+      const errorData = await response.json();
+      console.error("OpenAI API error in content generation:", errorData);
+      
+      // Check if it's a quota error and provide fallback
+      if (errorData.error?.code === "insufficient_quota") {
+        console.log("OpenAI quota exceeded, using fallback content");
+        const fallbackContent = generateFallbackContentForType(contentType, experienceTitle, location);
+        return NextResponse.json({ 
+          response: `Here's your ${platform} content:`,
+          generatedContent: fallbackContent,
+          contentType: contentType,
+          platform: platform,
+          note: "Generated using fallback content due to OpenAI quota limits"
+        });
+      }
+      
+      throw new Error(`Failed to generate content: ${errorData.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();
@@ -713,6 +733,8 @@ function getSystemPromptForContentType(contentType: string): string {
   switch (contentType) {
     case "instagram-caption":
       return "You are an expert social media marketer specializing in cultural tourism. You create engaging, Instagram-optimized captions that drive engagement and inspire travelers to book authentic cultural experiences.";
+    case "instagram-post":
+      return "You are an expert Instagram content creator specializing in cultural tourism. You create compelling Instagram post content that combines visual storytelling with engaging copy to promote cultural experiences.";
     case "tiktok-hook":
       return "You are an expert TikTok content creator specializing in cultural tourism. You create attention-grabbing hooks that capture viewers in the first 3 seconds.";
     case "google-ad-copy":
@@ -745,6 +767,25 @@ Create an Instagram caption that:
 - Uses hashtags relevant to cultural travel
 
 Format as plain text with proper line breaks and emojis.`;
+
+    case "instagram-post":
+      return `Create compelling Instagram post content for a cultural experience:
+
+Experience Title: ${experienceTitle}
+Location: ${location}
+Key Cultural Elements: ${keyCulturalElements}
+
+Create Instagram post content that:
+- Is 100-150 words
+- Tells a visual story about the experience
+- Uses engaging emojis and formatting
+- Includes compelling details about what visitors will experience
+- Has a strong call to action
+- Uses relevant hashtags for cultural travel
+- Is formatted for Instagram's visual platform
+- Emphasizes the unique and authentic aspects
+
+Format as an engaging Instagram post with proper structure, emojis, and hashtags.`;
 
     case "tiktok-hook":
       return `Create an attention-grabbing TikTok hook for:
@@ -799,6 +840,74 @@ Create marketing content that:
 - Has a strong call to action
 - Incorporates cultural authenticity
 - Is optimized for the target audience`;
+  }
+}
+
+// Fallback content generator for different content types
+function generateFallbackContentForType(contentType: string, experienceTitle: string, location: string): string {
+  switch (contentType) {
+    case "instagram-caption":
+    case "instagram-post":
+      return `🌟 Experience the authentic magic of ${location} with our ${experienceTitle}! 
+
+Immerse yourself in local traditions and discover the heart of ${location} through authentic cultural experiences. From traditional activities to hidden gem discoveries, every moment is crafted to connect you with the local community.
+
+Perfect for cultural travelers who want more than just a tour - they want a genuine connection to the culture and people of ${location}.
+
+Ready to create memories that last a lifetime? Book your spot today! ✨
+
+#CulturalTravel #${location.replace(/\s+/g, '')} #AuthenticExperiences #CulturalImmersion #TravelWithPurpose #${experienceTitle.replace(/\s+/g, '')}`;
+
+    case "tiktok-hook":
+      return `You won't believe what we discovered in ${location}... 🤯`;
+
+    case "google-ad-copy":
+      return JSON.stringify({
+        headline1: `Authentic ${location} Experience`,
+        headline2: `${experienceTitle} - Book Now`,
+        headline3: "Cultural Immersion Tours",
+        description1: `Discover the real ${location} with authentic cultural experiences. Expert local guides, small groups, unforgettable memories.`,
+        description2: "Book your cultural adventure today and save 20%. Limited spots available!"
+      });
+
+    case "facebook-ad":
+      return `Experience the authentic magic of ${location} with our ${experienceTitle}! 
+
+🌍 Authentic cultural immersion
+👥 Expert local guides  
+⭐ Small group experiences
+💫 Unforgettable memories
+
+Book now and save 20% on your cultural adventure!`;
+
+    case "email-campaign":
+      return `Subject: Your ${location} Cultural Adventure Awaits
+
+Dear Cultural Explorer,
+
+Get ready to experience ${location} like never before with our ${experienceTitle}!
+
+This isn't just another tour - it's your gateway to authentic cultural immersion. You'll connect with local traditions, meet inspiring people, and create memories that will last a lifetime.
+
+What makes this special:
+• Authentic local experiences
+• Expert cultural guides
+• Small group settings
+• Genuine community connections
+
+Ready to embark on this cultural journey?
+
+Book your ${experienceTitle} today!
+
+Best regards,
+The Cultural Experience Team`;
+
+    default:
+      return `Experience the authentic magic of ${location} with our ${experienceTitle}! 
+
+Immerse yourself in local traditions and discover the heart of ${location} through authentic cultural experiences. Perfect for cultural travelers who want more than just a tour - they want a genuine connection to the culture and people.
+
+Book your spot today and create memories that last a lifetime!`;
   }
 }
 
