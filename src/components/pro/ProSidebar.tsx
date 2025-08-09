@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "../../../lib/navigation";
 import { cn } from "@/lib/utils";
-import { localStorageUtils } from "../../../lib/localStorage";
+// Note: localStorage utilities have been replaced with Supabase storage
 import {
   LayoutDashboard,
   PencilRuler,

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Lock, Check } from "lucide-react";
 import { toast } from "sonner";
-import { localStorageUtils } from "../../../../lib/localStorage";
+// Note: localStorage utilities have been replaced with Supabase storage
 import {
   Dialog,
   DialogContent,

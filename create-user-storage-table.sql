@@ -16,7 +16,7 @@ CREATE INDEX IF NOT EXISTS idx_user_storage_key ON public.user_storage(key);
 -- Enable Row Level Security
 ALTER TABLE public.user_storage ENABLE ROW LEVEL SECURITY;
 
--- Create RLS policies
+-- Create RLS policies\
 CREATE POLICY "Users can view their own storage" ON public.user_storage
   FOR SELECT USING (auth.uid() = user_id);
 

@@ -1,8 +1,22 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Mountain, Crown, Building2, Heart, Leaf, Sparkles } from "lucide-react";
+import {
+  Check,
+  Mountain,
+  Crown,
+  Building2,
+  Heart,
+  Leaf,
+  Sparkles,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useUserData } from "../../../src/contexts/UserDataContext";
 
@@ -29,10 +43,16 @@ const templates: Template[] = [
   {
     id: "adventure",
     name: "Adventure Explorer",
-    description: "Perfect for adventure tour operators with stunning imagery and bold typography",
+    description:
+      "Perfect for adventure tour operators with stunning imagery and bold typography",
     category: "Adventure",
     image: "/lovable-uploads/2e9a9e9e-af76-4913-8148-9fce248d55c9.png",
-    features: ["Hero video background", "Adventure gallery", "Trip difficulty levels", "Booking calendar"],
+    features: [
+      "Hero video background",
+      "Adventure gallery",
+      "Trip difficulty levels",
+      "Booking calendar",
+    ],
     isPopular: true,
     themeSettings: {
       primaryColor: "#059669",
@@ -40,16 +60,22 @@ const templates: Template[] = [
       heroClass: "bg-gradient-to-r from-green-600 to-green-800",
       headerStyle: "modern",
       footerStyle: "clean",
-      animationStyle: "smooth"
-    }
+      animationStyle: "smooth",
+    },
   },
   {
     id: "luxury",
     name: "Luxury Retreat",
-    description: "Elegant design for high-end travel experiences with sophisticated styling",
+    description:
+      "Elegant design for high-end travel experiences with sophisticated styling",
     category: "Luxury",
     image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
-    features: ["Premium imagery", "Luxury amenities", "Concierge booking", "VIP testimonials"],
+    features: [
+      "Premium imagery",
+      "Luxury amenities",
+      "Concierge booking",
+      "VIP testimonials",
+    ],
     isNew: true,
     themeSettings: {
       primaryColor: "#7C3AED",
@@ -57,63 +83,81 @@ const templates: Template[] = [
       heroClass: "bg-gradient-to-r from-purple-600 to-purple-800",
       headerStyle: "elegant",
       footerStyle: "sophisticated",
-      animationStyle: "subtle"
-    }
+      animationStyle: "subtle",
+    },
   },
   {
     id: "city-tours",
     name: "City Explorer",
-    description: "Urban-focused design perfect for city tour operators and cultural experiences",
+    description:
+      "Urban-focused design perfect for city tour operators and cultural experiences",
     category: "City Tours",
     image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
-    features: ["Interactive maps", "Local highlights", "Cultural insights", "Group bookings"],
+    features: [
+      "Interactive maps",
+      "Local highlights",
+      "Cultural insights",
+      "Group bookings",
+    ],
     themeSettings: {
       primaryColor: "#1E40AF",
       fontFamily: "Inter",
       heroClass: "bg-gradient-to-r from-blue-600 to-blue-800",
       headerStyle: "urban",
       footerStyle: "modern",
-      animationStyle: "dynamic"
-    }
+      animationStyle: "dynamic",
+    },
   },
   {
     id: "cultural",
     name: "Cultural Immersion",
-    description: "Deep cultural experiences with rich storytelling and local connections",
+    description:
+      "Deep cultural experiences with rich storytelling and local connections",
     category: "Cultural",
     image: "/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png",
-    features: ["Story-driven content", "Local guides", "Cultural workshops", "Community impact"],
+    features: [
+      "Story-driven content",
+      "Local guides",
+      "Cultural workshops",
+      "Community impact",
+    ],
     themeSettings: {
       primaryColor: "#DC2626",
       fontFamily: "Merriweather",
       heroClass: "bg-gradient-to-r from-red-600 to-red-800",
       headerStyle: "traditional",
       footerStyle: "warm",
-      animationStyle: "gentle"
-    }
+      animationStyle: "gentle",
+    },
   },
   {
     id: "eco-tourism",
     name: "Eco Adventure",
-    description: "Sustainable tourism focus with nature-inspired design and eco-friendly messaging",
+    description:
+      "Sustainable tourism focus with nature-inspired design and eco-friendly messaging",
     category: "Eco-Tourism",
     image: "/lovable-uploads/1b4ba777-0a40-4904-98a9-11b727de21a6.png",
-    features: ["Sustainability focus", "Nature photography", "Eco-certifications", "Conservation impact"],
+    features: [
+      "Sustainability focus",
+      "Nature photography",
+      "Eco-certifications",
+      "Conservation impact",
+    ],
     themeSettings: {
       primaryColor: "#16A34A",
       fontFamily: "Inter",
       heroClass: "bg-gradient-to-r from-green-500 to-green-700",
       headerStyle: "natural",
       footerStyle: "eco-friendly",
-      animationStyle: "organic"
-    }
-  }
+      animationStyle: "organic",
+    },
+  },
 ];
 
 const WebsiteThemes: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [applyingTemplate, setApplyingTemplate] = useState(false);
-  const { userData, updateWebsiteSettings } = useUserData();
+  const { userData } = useUserData();
 
   const handleTemplateSelect = (templateId: string) => {
     setSelectedTemplate(templateId);
@@ -121,39 +165,33 @@ const WebsiteThemes: React.FC = () => {
 
   const handleApplyTemplate = async (template: Template) => {
     setApplyingTemplate(true);
-    
+
     try {
-      // Apply the template settings to the website
+      // Note: Website settings would be saved to a separate service in the new structure
       const updatedSettings = {
-        ...userData?.websiteSettings,
         theme: template.id,
         primaryColor: template.themeSettings.primaryColor,
         fontSettings: {
-          ...userData?.websiteSettings?.fontSettings,
           family: template.themeSettings.fontFamily,
         },
         headerSettings: {
-          ...userData?.websiteSettings?.headerSettings,
           style: template.themeSettings.headerStyle,
         },
         footerSettings: {
-          ...userData?.websiteSettings?.footerSettings,
           style: template.themeSettings.footerStyle,
         },
         animationSettings: {
-          ...userData?.websiteSettings?.animationSettings,
           style: template.themeSettings.animationStyle,
         },
       };
 
-      // Update the website settings
-      updateWebsiteSettings(updatedSettings);
+      // Note: Website settings would be saved to a separate service
 
       // Dispatch theme change event for preview update
       if (typeof window !== "undefined") {
         window.dispatchEvent(
           new CustomEvent("themeChanged", {
-            detail: { theme: template.id, settings: template.themeSettings }
+            detail: { theme: template.id, settings: template.themeSettings },
           })
         );
       }
@@ -162,7 +200,7 @@ const WebsiteThemes: React.FC = () => {
       setSelectedTemplate(null);
     } catch (error) {
       toast.error("Failed to apply template", {
-        description: "Please try again"
+        description: "Please try again",
       });
     } finally {
       setApplyingTemplate(false);
@@ -190,10 +228,12 @@ const WebsiteThemes: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Template</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Choose Your Template
+        </h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Select a template that matches your brand and tour style. Each template is fully customizable 
-          and optimized for tour operators.
+          Select a template that matches your brand and tour style. Each
+          template is fully customizable and optimized for tour operators.
         </p>
       </div>
 
@@ -235,7 +275,7 @@ const WebsiteThemes: React.FC = () => {
                 {template.description}
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="pt-0">
               {/* Template Preview Image */}
               <div className="relative mb-4">
@@ -253,10 +293,15 @@ const WebsiteThemes: React.FC = () => {
 
               {/* Features */}
               <div className="space-y-2 mb-4">
-                <h4 className="text-sm font-medium text-gray-700">Key Features:</h4>
+                <h4 className="text-sm font-medium text-gray-700">
+                  Key Features:
+                </h4>
                 <ul className="space-y-1">
                   {template.features.map((feature, index) => (
-                    <li key={index} className="text-xs text-gray-600 flex items-center gap-1">
+                    <li
+                      key={index}
+                      className="text-xs text-gray-600 flex items-center gap-1"
+                    >
                       <Check className="h-3 w-3 text-green-500" />
                       {feature}
                     </li>
@@ -291,9 +336,12 @@ const WebsiteThemes: React.FC = () => {
       <Card className="border-dashed border-2 border-gray-300 hover:border-culturin-indigo transition-colors">
         <CardContent className="p-6 text-center">
           <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Custom Template</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Custom Template
+          </h3>
           <p className="text-gray-600 mb-4">
-            Start from scratch and build your perfect website with our drag-and-drop builder.
+            Start from scratch and build your perfect website with our
+            drag-and-drop builder.
           </p>
           <Button variant="outline" className="w-full">
             Start from Scratch

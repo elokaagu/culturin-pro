@@ -25,14 +25,15 @@ import {
 import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ItineraryType } from "@/data/itineraryData";
+import { Itinerary } from "@/lib/itinerary-service";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useUserData } from "../../../src/contexts/UserDataContext";
 
 interface WebsitePreviewProps {
-  itineraries?: ItineraryType[];
+  itineraries?: Itinerary[];
   refreshKey?: number; // Add refresh key prop
-  viewMode?: 'desktop' | 'mobile' | 'tablet';
+  viewMode?: "desktop" | "mobile" | "tablet";
 }
 
 const WebsitePreview: React.FC<WebsitePreviewProps> = ({
@@ -40,27 +41,66 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   refreshKey: externalRefreshKey,
   viewMode: externalViewMode,
 }) => {
-  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'tablet'>(externalViewMode || "desktop");
+  const [viewMode, setViewMode] = useState<"desktop" | "mobile" | "tablet">(
+    externalViewMode || "desktop"
+  );
   const [refreshKey, setRefreshKey] = useState(0);
   const [currentItineraries, setCurrentItineraries] =
-    useState<ItineraryType[]>(itineraries);
+    useState<Itinerary[]>(itineraries);
   const { userData } = useUserData();
 
-  // Get website settings from UserDataContext for real-time updates
-  const { websiteSettings } = userData;
-  const {
-    companyName,
-    tagline,
-    description,
-    primaryColor,
-    headerImage,
-    theme,
-    headerSettings,
-    footerSettings,
-    fontSettings,
-    animationSettings,
-    placedBlocks,
-  } = websiteSettings;
+  // Note: Website settings would be loaded from a separate service in the new structure
+  const companyName = "Your Tour Company";
+  const tagline = "Discover amazing cultural experiences";
+  const description = "We specialize in authentic cultural tours";
+  const primaryColor = "#9b87f5";
+  const headerImage = null;
+  const theme = "classic";
+  const headerSettings = {
+    backgroundColor: "#ffffff",
+    textColor: "#000000",
+    height: 80,
+  };
+  const footerSettings = {
+    backgroundColor: "#f8f9fa",
+    textColor: "#6c757d",
+    showSocialMedia: true,
+    showContactInfo: true,
+    layout: "3-column",
+    showLogo: false,
+    logo: null,
+    copyrightText: "© 2024 Your Tour Company. All rights reserved.",
+    contactInfo: {
+      phone: "+1 (555) 123-4567",
+      email: "contact@yourtourcompany.com",
+      address: "Global Cultural Experiences",
+    },
+    socialMediaLinks: {
+      facebook: "https://facebook.com/yourtourcompany",
+      twitter: "https://twitter.com/yourtourcompany",
+      instagram: "https://instagram.com/yourtourcompany",
+      youtube: "https://youtube.com/yourtourcompany",
+    },
+  };
+  const fontSettings = {
+    headingFont: "Inter",
+    headingFontWeight: "600",
+    headingFontSize: "32",
+    lineHeight: "1.2",
+    letterSpacing: "0",
+    bodyFont: "Inter",
+    bodyFontWeight: "400",
+    bodyFontSize: "16",
+    bodyLetterSpacing: "0",
+  };
+  const animationSettings = {
+    enableAnimations: true,
+    animationSpeed: 0.3,
+    animationType: "fade",
+    enableHoverEffects: true,
+    enableScrollAnimations: true,
+  };
+  const placedBlocks = [];
 
   // Update internal refresh key when external key changes
   useEffect(() => {
@@ -77,7 +117,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   // Update viewMode when external viewMode changes
   useEffect(() => {
     if (externalViewMode) {
-      setViewMode(externalViewMode as 'desktop' | 'mobile' | 'tablet');
+      setViewMode(externalViewMode as "desktop" | "mobile" | "tablet");
     }
   }, [externalViewMode]);
 
@@ -614,7 +654,12 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
             <RefreshCw className="h-4 w-4 mr-1" />
             Refresh
           </Button>
-          <Select defaultValue={viewMode} onValueChange={(value) => setViewMode(value as 'desktop' | 'mobile' | 'tablet')}>
+          <Select
+            defaultValue={viewMode}
+            onValueChange={(value) =>
+              setViewMode(value as "desktop" | "mobile" | "tablet")
+            }
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="View mode" />
             </SelectTrigger>
@@ -814,26 +859,26 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                         </div>
 
                         {/* Social Media Links */}
-                        {footerSettings.showSocial && (
+                        {footerSettings.showSocialMedia && (
                           <div className="space-y-2">
                             <h4 className="font-medium text-sm">Follow Us</h4>
                             <div className="flex gap-2">
-                              {footerSettings.socialLinks.facebook && (
+                              {footerSettings.socialMediaLinks.facebook && (
                                 <div className="w-6 h-6 bg-white bg-opacity-20 rounded flex items-center justify-center">
                                   <Facebook className="h-3 w-3" />
                                 </div>
                               )}
-                              {footerSettings.socialLinks.twitter && (
+                              {footerSettings.socialMediaLinks.twitter && (
                                 <div className="w-6 h-6 bg-white bg-opacity-20 rounded flex items-center justify-center">
                                   <Twitter className="h-3 w-3" />
                                 </div>
                               )}
-                              {footerSettings.socialLinks.instagram && (
+                              {footerSettings.socialMediaLinks.instagram && (
                                 <div className="w-6 h-6 bg-white bg-opacity-20 rounded flex items-center justify-center">
                                   <Instagram className="h-3 w-3" />
                                 </div>
                               )}
-                              {footerSettings.socialLinks.youtube && (
+                              {footerSettings.socialMediaLinks.youtube && (
                                 <div className="w-6 h-6 bg-white bg-opacity-20 rounded flex items-center justify-center">
                                   <Youtube className="h-3 w-3" />
                                 </div>

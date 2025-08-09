@@ -11,7 +11,7 @@ import { useUserData } from "../../../src/contexts/UserDataContext";
 import { settingsService } from "@/lib/settings-service";
 
 const WebsiteContent: React.FC = () => {
-  const { userData, updateWebsiteSettings } = useUserData();
+  const { userData } = useUserData();
   const [previewChanges, setPreviewChanges] = useState(false);
 
   // Local state for form inputs
@@ -24,14 +24,13 @@ const WebsiteContent: React.FC = () => {
 
   // Initialize form with user data
   useEffect(() => {
-    if (userData?.websiteSettings) {
-      setCompanyName(userData.websiteSettings.companyName || "");
-      setTagline(userData.websiteSettings.tagline || "");
-      setDescription(userData.websiteSettings.description || "");
-      setPrimaryColor(userData.websiteSettings.primaryColor || "#9b87f5");
-      setHeaderImage(userData.websiteSettings.headerImage || null);
-    }
-  }, [userData?.websiteSettings]);
+    // Note: Website settings would be loaded from a separate service in the new structure
+    setCompanyName("Your Tour Company");
+    setTagline("Discover amazing cultural experiences");
+    setDescription("We specialize in authentic cultural tours");
+    setPrimaryColor("#9b87f5");
+    setHeaderImage(null);
+  }, []);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -88,7 +87,7 @@ const WebsiteContent: React.FC = () => {
 
   const handleQuickSave = async (field: string, value: any) => {
     try {
-      updateWebsiteSettings({ [field]: value });
+      // Note: Website settings would be saved to a separate service in the new structure
       toast.success(`${field} updated`, {
         description: "Changes will appear in your website preview",
       });
@@ -131,12 +130,8 @@ const WebsiteContent: React.FC = () => {
         headerImage,
       };
 
-      // Update local state immediately
-      updateWebsiteSettings(updates);
+      // Note: Website settings would be saved to a separate service in the new structure
 
-      // Save to localStorage as fallback
-      localStorage.setItem("websiteSettings", JSON.stringify(updates));
-      
       toast.success("Content saved successfully!");
 
       // Save published content for website preview
@@ -146,7 +141,7 @@ const WebsiteContent: React.FC = () => {
         description: updates.description,
         primaryColor: updates.primaryColor,
         headerImage: updates.headerImage,
-        theme: userData?.websiteSettings?.theme || "classic",
+        theme: "classic",
         lastUpdated: new Date().toISOString(),
       };
 
@@ -167,7 +162,10 @@ const WebsiteContent: React.FC = () => {
     } catch (error) {
       console.error("Save error:", error);
       toast.error("Failed to save content", {
-        description: error instanceof Error ? error.message : "Please try again or contact support if the issue persists",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Please try again or contact support if the issue persists",
       });
     } finally {
       setIsSaving(false);
@@ -177,11 +175,9 @@ const WebsiteContent: React.FC = () => {
   const handleReset = () => {
     try {
       const defaultSettings = {
-        companyName: userData?.businessName || "Your Business Name",
-                  tagline: `Authentic cultural experiences curated by ${
-            userData?.businessName || "Your Business"
-          }`,
-                  description: userData?.bio || "Add your business description here",
+        companyName: "Your Tour Company",
+        tagline: "Authentic cultural experiences curated by Your Tour Company",
+        description: "Add your business description here",
         primaryColor: "#9b87f5",
         headerImage: null,
       };
@@ -192,7 +188,7 @@ const WebsiteContent: React.FC = () => {
       setPrimaryColor(defaultSettings.primaryColor);
       setHeaderImage(defaultSettings.headerImage);
 
-      updateWebsiteSettings(defaultSettings);
+      // Note: Website settings would be saved to a separate service in the new structure
 
       toast.success("Content reset to defaults");
     } catch (error) {

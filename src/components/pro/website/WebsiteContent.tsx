@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Upload } from "lucide-react";
 import Image from "@/components/ui/image";
-import { localStorageUtils } from "../../../../lib/localStorage";
+// Note: localStorage utilities have been replaced with Supabase storage
 
 const WebsiteContent: React.FC = () => {
   const [companyName, setCompanyName] = useState("Culturin Tours");
@@ -34,9 +34,7 @@ const WebsiteContent: React.FC = () => {
       localStorage.getItem("websiteDescription") ||
         "We specialize in small group cultural tours that showcase the real Barcelona beyond the tourist spots."
     );
-    setPrimaryColor(
-      localStorage.getItem("websitePrimaryColor") || "#9b87f5"
-    );
+    setPrimaryColor(localStorage.getItem("websitePrimaryColor") || "#9b87f5");
     setHeaderImage(localStorage.getItem("websiteHeaderImage"));
   }, []);
 

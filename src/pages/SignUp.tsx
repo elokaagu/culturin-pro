@@ -82,9 +82,7 @@ export default function SignUp() {
     setError("");
 
     try {
-      const { error } = await signUp(formData.email, formData.password, {
-        full_name: `${formData.firstName} ${formData.lastName}`.trim(),
-      });
+      const { error } = await signUp(formData.email, formData.password);
 
       if (error) {
         setError(error.message);

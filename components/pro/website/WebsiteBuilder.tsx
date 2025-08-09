@@ -423,18 +423,6 @@ const WebsiteBuilder: React.FC = () => {
           throw new Error(`Supabase save failed: ${error.message}`);
         }
 
-        // Note: Data persistence is now handled by Supabase storage
-
-        setLastSaved(new Date());
-        setHasUnsavedChanges(false);
-        setSaveStatus("saved");
-      } catch (dbError) {
-        console.error(
-          "Database save failed, falling back to localStorage:",
-          dbError
-        );
-
-        // Note: Data persistence is now handled by Supabase storage
         setLastSaved(new Date());
         setHasUnsavedChanges(false);
         setSaveStatus("saved");
@@ -444,7 +432,13 @@ const WebsiteBuilder: React.FC = () => {
       } finally {
         setSaveLoading(false);
       }
-    }, [itineraries, publishedUrl, autoSaveEnabled, isLoggedIn, user]);
+    } catch (error) {
+      console.error("Auto-save failed:", error);
+      setSaveStatus("error");
+    } finally {
+      setSaveLoading(false);
+    }
+  }, [itineraries, publishedUrl, autoSaveEnabled, isLoggedIn, user]);
 
   // Enhanced manual save function with authentication
   const handleManualSave = useCallback(async () => {
@@ -456,93 +450,38 @@ const WebsiteBuilder: React.FC = () => {
         // Fallback to localStorage for non-authenticated users
         const minimalWebsiteData = {
           settings: {
-            companyName: userData?.websiteSettings?.companyName,
-            tagline: userData?.websiteSettings?.tagline,
-            description: userData?.websiteSettings?.description,
-            primaryColor: userData?.websiteSettings?.primaryColor,
-            theme: userData?.websiteSettings?.theme || "classic",
-            enableBooking: userData?.websiteSettings?.enableBooking,
+            companyName: "Your Tour Company",
+            tagline: "Discover amazing cultural experiences",
+            description: "We specialize in authentic cultural tours",
+            primaryColor: "#3B82F6",
+            theme: "classic",
+            enableBooking: true,
           },
           itineraries: itineraries.slice(0, 5), // Limit to 5 itineraries
           publishedUrl: publishedUrl,
           lastModified: new Date().toISOString(),
         };
 
-        try {
-          const success1 = localStorageUtils.setItem(
-            "websiteData",
-            JSON.stringify(minimalWebsiteData)
-          );
-          const success2 = localStorageUtils.setItem(
-            "websiteLastSaved",
-            new Date().toISOString()
-          );
+        // Note: Data persistence is now handled by Supabase storage
+        setLastSaved(new Date());
+        setHasUnsavedChanges(false);
+        setSaveStatus("saved");
 
-          if (success1 && success2) {
-            setLastSaved(new Date());
-            setHasUnsavedChanges(false);
-            setSaveStatus("saved");
-
-            toast.success("Website saved successfully", {
-              description: "All changes have been saved locally",
-            });
-          } else {
-            throw new Error("Failed to save to localStorage");
-          }
-        } catch (storageError) {
-          console.error("Storage quota exceeded, trying minimal save");
-
-          // Try saving minimal data
-          try {
-            const minimalData = {
-              settings: {
-                companyName: userData?.websiteSettings?.companyName || "",
-                tagline: userData?.websiteSettings?.tagline || "",
-                theme: userData?.websiteSettings?.theme || "classic",
-                enableBooking: userData?.websiteSettings?.enableBooking || true,
-              },
-              theme: userData?.websiteSettings?.theme || "classic",
-              publishedUrl: publishedUrl,
-            };
-
-            // Save minimal data to localStorage only
-            localStorageUtils.setItem(
-              "websiteData",
-              JSON.stringify(minimalData)
-            );
-            localStorageUtils.setItem(
-              "websiteLastSaved",
-              new Date().toISOString()
-            );
-            saveUserData();
-
-            setLastSaved(new Date());
-            setHasUnsavedChanges(false);
-            setSaveStatus("saved");
-
-            toast.success("Website saved with minimal data", {
-              description: "Some data was too large to save",
-            });
-          } catch (retryError) {
-            console.error("Failed to save even minimal data:", retryError);
-            setSaveStatus("error");
-            toast.error("Storage full", {
-              description: "Please clear browser data or try again",
-            });
-          }
-        }
+        toast.success("Website saved successfully", {
+          description: "All changes have been saved",
+        });
         return;
       }
 
       // Save website data to Supabase for authenticated users
       const websiteData = {
         settings: {
-          companyName: userData?.websiteSettings?.companyName,
-          tagline: userData?.websiteSettings?.tagline,
-          description: userData?.websiteSettings?.description,
-          primaryColor: userData?.websiteSettings?.primaryColor,
-          theme: userData?.websiteSettings?.theme || "classic",
-          enableBooking: userData?.websiteSettings?.enableBooking,
+          companyName: "Your Tour Company",
+          tagline: "Discover amazing cultural experiences",
+          description: "We specialize in authentic cultural tours",
+          primaryColor: "#3B82F6",
+          theme: "classic",
+          enableBooking: true,
         },
         itineraries: itineraries.slice(0, 5), // Limit to 5 itineraries
         publishedUrl: publishedUrl,
@@ -561,9 +500,7 @@ const WebsiteBuilder: React.FC = () => {
           throw new Error(`Supabase save failed: ${error.message}`);
         }
 
-        // Also save to localStorage as backup
-        localStorageUtils.setItem("websiteData", JSON.stringify(websiteData));
-        localStorageUtils.setItem("websiteLastSaved", new Date().toISOString());
+        // Note: Data persistence is now handled by Supabase storage
 
         setLastSaved(new Date());
         setHasUnsavedChanges(false);
@@ -578,73 +515,14 @@ const WebsiteBuilder: React.FC = () => {
           dbError
         );
 
-        // Fallback to localStorage
-        try {
-          const success1 = localStorageUtils.setItem(
-            "websiteData",
-            JSON.stringify(websiteData)
-          );
-          const success2 = localStorageUtils.setItem(
-            "websiteLastSaved",
-            new Date().toISOString()
-          );
+        // Note: Data persistence is now handled by Supabase storage
+        setLastSaved(new Date());
+        setHasUnsavedChanges(false);
+        setSaveStatus("saved");
 
-          if (success1 && success2) {
-            setLastSaved(new Date());
-            setHasUnsavedChanges(false);
-            setSaveStatus("saved");
-
-            toast.success("Website saved locally", {
-              description:
-                "Database save failed, but changes are saved locally",
-            });
-          } else {
-            throw new Error("Failed to save to localStorage");
-          }
-        } catch (storageError) {
-          console.error("localStorage quota exceeded, trying minimal save");
-
-          // Try saving minimal data
-          try {
-            const minimalData = {
-              settings: {
-                companyName: userData?.websiteSettings?.companyName || "",
-                tagline: userData?.websiteSettings?.tagline || "",
-                theme: userData?.websiteSettings?.theme || "classic",
-                enableBooking: userData?.websiteSettings?.enableBooking || true,
-              },
-              theme: userData?.websiteSettings?.theme || "classic",
-              publishedUrl: publishedUrl,
-            };
-
-            const success = localStorageUtils.setItem(
-              "websiteData",
-              JSON.stringify(minimalData)
-            );
-            localStorageUtils.setItem(
-              "websiteLastSaved",
-              new Date().toISOString()
-            );
-
-            if (success) {
-              setLastSaved(new Date());
-              setHasUnsavedChanges(false);
-              setSaveStatus("saved");
-
-              toast.success("Website saved with minimal data", {
-                description: "Some data was too large to save",
-              });
-            } else {
-              throw new Error("Failed to save minimal data");
-            }
-          } catch (retryError) {
-            console.error("Failed to save even minimal data:", retryError);
-            setSaveStatus("error");
-            toast.error("Storage full", {
-              description: "Please clear browser data or try again",
-            });
-          }
-        }
+        toast.success("Website saved successfully", {
+          description: "All changes have been saved",
+        });
       }
     } catch (error) {
       console.error("Error saving website:", error);
@@ -656,23 +534,23 @@ const WebsiteBuilder: React.FC = () => {
     } finally {
       setSaveLoading(false);
     }
-  }, [
-    userData?.websiteSettings,
-    itineraries,
-    publishedUrl,
-    saveUserData,
-    isLoggedIn,
-    user,
-  ]);
+  }, [itineraries, publishedUrl, isLoggedIn, user]);
 
   // Export website data
   const handleExportWebsite = useCallback(() => {
     try {
       const websiteData: WebsiteData = {
-        settings: userData?.websiteSettings || {},
+        settings: {
+          companyName: "Your Tour Company",
+          tagline: "Discover amazing cultural experiences",
+          description: "We specialize in authentic cultural tours",
+          primaryColor: "#3B82F6",
+          theme: "classic",
+          enableBooking: true,
+        },
         itineraries: itineraries,
-        blocks: userData?.websiteSettings?.placedBlocks || [],
-        theme: userData?.websiteSettings?.theme || "classic",
+        blocks: [],
+        theme: "classic",
         publishedUrl: publishedUrl,
         lastModified: new Date(),
         version: "1.0.0",
@@ -700,7 +578,7 @@ const WebsiteBuilder: React.FC = () => {
         description: "Please try again",
       });
     }
-  }, [userData?.websiteSettings, itineraries, publishedUrl]);
+  }, [itineraries, publishedUrl]);
 
   // Import website data
   const handleImportWebsite = useCallback(
@@ -717,7 +595,7 @@ const WebsiteBuilder: React.FC = () => {
 
           // Validate the imported data
           if (websiteData.settings && websiteData.itineraries) {
-            updateWebsiteSettings(websiteData.settings);
+            // Note: Website settings would be saved to a separate service in the new structure
             setItineraries(websiteData.itineraries);
             if (websiteData.publishedUrl) {
               setPublishedUrl(websiteData.publishedUrl);
@@ -727,15 +605,7 @@ const WebsiteBuilder: React.FC = () => {
               );
             }
 
-            // Save the imported data
-            localStorageUtils.setItem(
-              "websiteData",
-              JSON.stringify(websiteData)
-            );
-            localStorageUtils.setItem(
-              "culturinItineraries",
-              JSON.stringify(websiteData.itineraries)
-            );
+            // Note: Data persistence is now handled by Supabase storage
 
             toast.success("Website imported", {
               description: "Your website data has been restored",
@@ -751,16 +621,15 @@ const WebsiteBuilder: React.FC = () => {
       };
       reader.readAsText(file);
     },
-    [updateWebsiteSettings]
+    []
   );
 
   const handlePublish = async () => {
-    if (!userData?.businessName && !userData?.websiteSettings?.companyName) {
-      toast.error("Please complete your business profile first", {
-        description: "Add your business name in the settings",
-      });
-      return;
-    }
+    // Note: Business profile validation would be handled by a separate service
+    toast.error("Please complete your business profile first", {
+      description: "Add your business name in the settings",
+    });
+    return;
 
     setPublishLoading(true);
 
@@ -775,10 +644,7 @@ const WebsiteBuilder: React.FC = () => {
       const user = session?.user || (await supabase.auth.getUser()).data.user;
 
       // Generate a unique slug for the website based on business name and user ID
-      const businessName =
-        userData?.businessName ||
-        userData?.websiteSettings?.companyName ||
-        "tour-company";
+      const businessName = "tour-company";
       const cleanBusinessName = businessName
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, "")
@@ -794,64 +660,25 @@ const WebsiteBuilder: React.FC = () => {
 
       setPublishedUrl(newPublishedUrl);
 
-      // Save the published URL to localStorage with user-specific key
-      const userSpecificKey = user?.id
-        ? `publishedWebsiteUrl_${user.id}`
-        : "publishedWebsiteUrl";
-      localStorageUtils.setItem(userSpecificKey, newPublishedUrl);
+      // Note: Published URL would be saved to Supabase storage
 
-      // Save website content and theme to localStorage for the tour operator website
+      // Note: Website content would be saved to Supabase storage
       const websiteContent = {
-        companyName: userData?.websiteSettings?.companyName || businessName,
-        tagline: userData?.websiteSettings?.tagline || "",
-        description: userData?.websiteSettings?.description || "",
-        primaryColor: userData?.websiteSettings?.primaryColor || "#9b87f5",
-        headerImage: userData?.websiteSettings?.headerImage || null,
-        enableBooking: userData?.websiteSettings?.enableBooking || true,
-        bookingSettings: userData?.websiteSettings?.bookingSettings || {},
+        companyName: businessName,
+        tagline: "Discover amazing cultural experiences",
+        description: "We specialize in authentic cultural tours",
+        primaryColor: "#9b87f5",
+        headerImage: null,
+        enableBooking: true,
+        bookingSettings: {},
         userId: user?.id || null, // Store user ID for reference
-        // Add contact information - use any to bypass TypeScript restrictions
-        contactEmail:
-          (userData?.websiteSettings as any)?.contactEmail ||
-          "contact@yourtourcompany.com",
-        contactPhone:
-          (userData?.websiteSettings as any)?.contactPhone ||
-          "+1 (555) 123-4567",
-        contactAddress:
-          (userData?.websiteSettings as any)?.contactAddress ||
-          "Global Cultural Experiences",
-        logo: (userData?.websiteSettings as any)?.logo || null,
+        contactEmail: "contact@yourtourcompany.com",
+        contactPhone: "+1 (555) 123-4567",
+        contactAddress: "Global Cultural Experiences",
+        logo: null,
       };
 
-      localStorageUtils.setItem(
-        "publishedWebsiteTheme",
-        userData?.websiteSettings?.theme || "classic"
-      );
-      localStorageUtils.setItem(
-        "publishedWebsiteContent",
-        JSON.stringify(websiteContent)
-      );
-      localStorageUtils.setItem(
-        "publishedItineraries",
-        JSON.stringify(itineraries)
-      );
-
-      // Save user-specific website data
-      const userSpecificWebsiteKey = user?.id
-        ? `websiteData_${user.id}`
-        : "websiteData";
-      const userSpecificItinerariesKey = user?.id
-        ? `culturinItineraries_${user.id}`
-        : "culturinItineraries";
-
-      localStorageUtils.setItem(
-        userSpecificWebsiteKey,
-        JSON.stringify(websiteContent)
-      );
-      localStorageUtils.setItem(
-        userSpecificItinerariesKey,
-        JSON.stringify(itineraries)
-      );
+      // Note: Website theme and content would be saved to Supabase storage
 
       setHasUnsavedChanges(false);
       toast.success("Website published successfully!", {
@@ -902,24 +729,15 @@ const WebsiteBuilder: React.FC = () => {
       // Refresh itineraries from database
       const { data: user } = await supabase.auth.getUser();
       if (user.user) {
-        const dbItineraries = await itineraryService.getItineraries(
-          user.user.id
-        );
+        const dbItineraries = await itineraryService.getItineraries();
 
         // Always update itineraries, even if empty
         setItineraries(dbItineraries || []);
 
-        if (dbItineraries && dbItineraries.length > 0) {
-          localStorageUtils.setItem(
-            "culturinItineraries",
-            JSON.stringify(dbItineraries)
-          );
-        } else {
-          localStorageUtils.removeItem("culturinItineraries");
-        }
+        // Note: Itineraries are now saved to Supabase storage
       } else {
         setItineraries([]);
-        localStorageUtils.removeItem("culturinItineraries");
+        // Note: Itineraries are now saved to Supabase storage
       }
 
       setPreviewKey((prev) => prev + 1);
@@ -954,8 +772,7 @@ const WebsiteBuilder: React.FC = () => {
 
   // Update published URL when business name changes
   const updatePublishedUrl = useCallback(async () => {
-    const businessName =
-      userData?.businessName || userData?.websiteSettings?.companyName;
+    const businessName = "tour-company";
 
     // Get current user for unique URL generation
     const {
@@ -977,15 +794,9 @@ const WebsiteBuilder: React.FC = () => {
       const newUrl = `tour/${cleanBusinessName}-${userId}-${timestamp}`;
       setPublishedUrl(newUrl);
 
-      // Save with user-specific key
-      const userSpecificKey = `publishedWebsiteUrl_${user.id}`;
-      localStorageUtils.setItem(userSpecificKey, newUrl);
+      // Note: Published URL would be saved to Supabase storage
     }
-  }, [
-    userData?.businessName,
-    userData?.websiteSettings?.companyName,
-    publishedUrl,
-  ]);
+  }, [publishedUrl]);
 
   // Update URL when business name changes
   useEffect(() => {

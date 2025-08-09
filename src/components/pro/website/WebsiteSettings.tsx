@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ItineraryType } from "@/data/itineraryData";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { localStorageUtils } from "../../../../lib/localStorage";
+// Note: localStorage utilities have been replaced with Supabase storage
 import Image from "@/components/ui/image";
 
 interface WebsiteSettingsProps {
