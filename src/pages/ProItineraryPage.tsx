@@ -19,7 +19,21 @@ const ProItineraryPage: React.FC = () => {
   useEffect(() => {
     // Save current route to Supabase storage
     supabaseStorage.setItem("lastRoute", "/pro-dashboard/itinerary");
-  }, []);
+    
+    // Check if we're returning from creating a new itinerary
+    const checkReturningFromCreate = async () => {
+      const returningFromCreate = await supabaseStorage.getItem('returningFromCreate');
+      if (returningFromCreate === 'true') {
+        console.log("Returning from create, refreshing itineraries...");
+        // Clear the flag
+        await supabaseStorage.removeItem('returningFromCreate');
+        // Force refresh itineraries
+        await refreshItineraries();
+      }
+    };
+    
+    checkReturningFromCreate();
+  }, [refreshItineraries]);
 
   // Check for sample data if no itineraries exist
   useEffect(() => {

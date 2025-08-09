@@ -38,6 +38,7 @@ export const useItineraries = () => {
       if (!isAuthenticated) {
         console.warn("User not authenticated, cannot get itineraries from database");
         setItineraries([]);
+        setLoading(false);
         return;
       }
 
@@ -45,6 +46,7 @@ export const useItineraries = () => {
       if (!userId) {
         console.warn("No user ID found");
         setItineraries([]);
+        setLoading(false);
         return;
       }
 
@@ -60,6 +62,7 @@ export const useItineraries = () => {
         // Fallback to Supabase storage
         const storedItineraries = await supabaseStorage.getItem(`userItineraries_${userId}`);
         setItineraries(storedItineraries || []);
+        setLoading(false);
         return;
       }
 
