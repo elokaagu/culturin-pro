@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Image from "@/components/ui/image";
+import { ThemeAwareImage } from "@/components/ui/theme-aware-image";
 import TranslatableText from "./TranslatableText";
 
 interface HeaderProps {
@@ -68,7 +69,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
               <div className="h-20 mr-2">
                 {" "}
                 {/* Increased height from h-16 to h-20 */}
-                <Image
+                <ThemeAwareImage
                   src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png"
                   alt="Culturin"
                   className="h-full cursor-pointer"

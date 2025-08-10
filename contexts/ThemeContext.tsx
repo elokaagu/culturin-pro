@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = 'light' | 'dark';
+type Theme = "light" | "dark";
 
 interface ThemeContextType {
   theme: Theme;
@@ -13,15 +13,15 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('light');
+  const [theme, setThemeState] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   // Load theme from localStorage on mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem('culturin-theme') as Theme;
+    const savedTheme = localStorage.getItem("culturin-theme") as Theme;
     // Default to light mode instead of system preference
-    const initialTheme = savedTheme || 'light';
-    
+    const initialTheme = savedTheme || "light";
+
     setThemeState(initialTheme);
     setMounted(true);
   }, []);
@@ -31,25 +31,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (!mounted) return;
 
     const root = document.documentElement;
-    
+
     // Remove previous theme classes
-    root.classList.remove('light', 'dark');
-    
+    root.classList.remove("light", "dark");
+
     // Add current theme class
     root.classList.add(theme);
-    
+
     // Save to localStorage
-    localStorage.setItem('culturin-theme', theme);
-    
+    localStorage.setItem("culturin-theme", theme);
+
     // Update meta theme-color for mobile browsers
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
+      metaThemeColor.setAttribute(
+        "content",
+        theme === "dark" ? "#0f172a" : "#ffffff"
+      );
     }
   }, [theme, mounted]);
 
   const toggleTheme = () => {
-    setThemeState(prev => prev === 'light' ? 'dark' : 'light');
+    setThemeState((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   const setTheme = (newTheme: Theme) => {
@@ -73,9 +76,9 @@ export function useTheme() {
   if (context === undefined) {
     // Return default values for SSR compatibility
     return {
-      theme: 'light' as Theme,
+      theme: "light" as Theme,
       toggleTheme: () => {},
-      setTheme: () => {}
+      setTheme: () => {},
     };
   }
   return context;
@@ -84,9 +87,9 @@ export function useTheme() {
 // Hook for theme-aware CSS classes
 export function useThemeClasses() {
   const { theme } = useTheme();
-  
+
   const getThemeClasses = (lightClasses: string, darkClasses: string) => {
-    return theme === 'dark' ? darkClasses : lightClasses;
+    return theme === "dark" ? darkClasses : lightClasses;
   };
 
   return { theme, getThemeClasses };

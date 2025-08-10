@@ -17,6 +17,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import Image from "@/components/ui/image";
+import { useThemeAwareLogo } from "../../hooks/useThemeAwareLogo";
 
 const menuItems = [
   { name: "Dashboard", path: "/pro-dashboard", icon: LayoutDashboard },
@@ -51,6 +52,7 @@ const ProSidebar: React.FC = () => {
   const location = useLocation();
   const [userName, setUserName] = useState<string>("Cultural Host");
   const [planType, setplanType] = useState<string>("Growth Plan");
+  const isDarkMode = useThemeAwareLogo();
 
   useEffect(() => {
     const storedUserName = localStorage.getItem("userName");
@@ -84,7 +86,7 @@ const ProSidebar: React.FC = () => {
             <Image
               src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png"
               alt="Culturin"
-              className="h-full cursor-pointer"
+              className={`h-full cursor-pointer ${isDarkMode ? 'brightness-0 invert' : ''}`}
               width={180} /* Increased from 160 to 180 */
               height={64} /* Increased from 56 to 64 */
             />

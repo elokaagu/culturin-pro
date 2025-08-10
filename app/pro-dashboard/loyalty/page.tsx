@@ -17,12 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CreditCard,
   Wallet,
@@ -48,7 +43,7 @@ import { toast } from "sonner";
 interface Transaction {
   id: string;
   amount: number;
-  type: 'purchase' | 'reward' | 'refund' | 'transfer';
+  type: "purchase" | "reward" | "refund" | "transfer";
   created_at: string;
   bookings?: {
     guest_name: string;
@@ -66,18 +61,18 @@ const LoyaltyDashboard: React.FC = () => {
 
   // Create a default loyalty card since the new UserData type doesn't include it
   const loyaltyCard = {
-    cardId: user?.id || 'default-card',
-    tier: 'bronze' as const,
+    cardId: user?.id || "default-card",
+    tier: "bronze" as const,
     balance: 0,
     rewardsBalance: 0,
-    walletAddress: '',
-    status: 'active' as const,
+    walletAddress: "",
+    status: "active" as const,
     memberSince: new Date(),
-    kycStatus: 'pending' as const,
-    amlCheck: 'pending' as const,
+    kycStatus: "pending" as const,
+    amlCheck: "pending" as const,
     annualFee: 0,
     rewardsRate: 0.1,
-    benefits: ['Free coffee', 'Priority booking'],
+    benefits: ["Free coffee", "Priority booking"],
   };
 
   useEffect(() => {
@@ -88,8 +83,10 @@ const LoyaltyDashboard: React.FC = () => {
     if (!user || !loyaltyCard.cardId) return;
 
     try {
-      const { data, error } = await loyaltyUtils.getLoyaltyTransactions(loyaltyCard.cardId);
-      
+      const { data, error } = await loyaltyUtils.getLoyaltyTransactions(
+        loyaltyCard.cardId
+      );
+
       if (error) {
         console.error("Error loading transactions:", error);
         return;
@@ -102,8 +99,10 @@ const LoyaltyDashboard: React.FC = () => {
   };
 
   const connectWallet = async () => {
-    if (typeof window !== 'undefined' && !(window as any).ethereum) {
-      toast.error("MetaMask not found. Please install MetaMask to connect your wallet.");
+    if (typeof window !== "undefined" && !(window as any).ethereum) {
+      toast.error(
+        "MetaMask not found. Please install MetaMask to connect your wallet."
+      );
       return;
     }
 
@@ -115,12 +114,15 @@ const LoyaltyDashboard: React.FC = () => {
       });
 
       const walletAddress = accounts[0];
-      
+
       // Update loyalty card with wallet address
       if (loyaltyCard.cardId) {
-        const { error } = await loyaltyUtils.updateLoyaltyCard(loyaltyCard.cardId, {
-          wallet_address: walletAddress,
-        });
+        const { error } = await loyaltyUtils.updateLoyaltyCard(
+          loyaltyCard.cardId,
+          {
+            wallet_address: walletAddress,
+          }
+        );
 
         if (error) throw error;
       }
@@ -189,21 +191,17 @@ const LoyaltyDashboard: React.FC = () => {
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {type}
-          </Badge>
-        );
+        return <Badge variant="outline">{type}</Badge>;
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -212,7 +210,9 @@ const LoyaltyDashboard: React.FC = () => {
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground">Loyalty Card Dashboard</h1>
+            <h1 className="text-3xl font-bold text-foreground">
+              Loyalty Card Dashboard
+            </h1>
             <p className="text-muted-foreground">
               Manage your stablecoin loyalty card, rewards, and transactions
             </p>
@@ -222,11 +222,15 @@ const LoyaltyDashboard: React.FC = () => {
             {/* Card Balance */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Card Balance</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Card Balance
+                </CardTitle>
                 <Wallet className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${loyaltyCard.balance.toFixed(2)}</div>
+                <div className="text-2xl font-bold">
+                  ${loyaltyCard.balance.toFixed(2)}
+                </div>
                 <p className="text-xs text-muted-foreground">USDC</p>
               </CardContent>
             </Card>
@@ -234,11 +238,15 @@ const LoyaltyDashboard: React.FC = () => {
             {/* Rewards Balance */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Rewards Balance</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Rewards Balance
+                </CardTitle>
                 <Gift className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${loyaltyCard.rewardsBalance.toFixed(2)}</div>
+                <div className="text-2xl font-bold">
+                  ${loyaltyCard.rewardsBalance.toFixed(2)}
+                </div>
                 <p className="text-xs text-muted-foreground">CLT Tokens</p>
               </CardContent>
             </Card>
@@ -246,12 +254,18 @@ const LoyaltyDashboard: React.FC = () => {
             {/* Rewards Rate */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Cashback Rate</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Cashback Rate
+                </CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{(loyaltyCard.rewardsRate * 100).toFixed(1)}%</div>
-                <p className="text-xs text-muted-foreground">On all purchases</p>
+                <div className="text-2xl font-bold">
+                  {(loyaltyCard.rewardsRate * 100).toFixed(1)}%
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  On all purchases
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -264,7 +278,9 @@ const LoyaltyDashboard: React.FC = () => {
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       {getTierIcon(loyaltyCard.tier)}
-                      {loyaltyCard.tier.charAt(0).toUpperCase() + loyaltyCard.tier.slice(1)} Tier
+                      {loyaltyCard.tier.charAt(0).toUpperCase() +
+                        loyaltyCard.tier.slice(1)}{" "}
+                      Tier
                     </CardTitle>
                     <CardDescription>
                       Card ID: {loyaltyCard.cardId}
@@ -281,12 +297,13 @@ const LoyaltyDashboard: React.FC = () => {
                   <div>
                     <Label className="text-sm font-medium">Member Since</Label>
                     <p className="text-sm text-muted-foreground">
-                      {loyaltyCard.memberSince 
-                        ? (loyaltyCard.memberSince instanceof Date 
-                            ? loyaltyCard.memberSince.toLocaleDateString()
-                            : new Date(loyaltyCard.memberSince).toLocaleDateString())
-                        : "N/A"
-                      }
+                      {loyaltyCard.memberSince
+                        ? loyaltyCard.memberSince instanceof Date
+                          ? loyaltyCard.memberSince.toLocaleDateString()
+                          : new Date(
+                              loyaltyCard.memberSince
+                            ).toLocaleDateString()
+                        : "N/A"}
                     </p>
                   </div>
                   <div>
@@ -299,9 +316,12 @@ const LoyaltyDashboard: React.FC = () => {
 
                 {loyaltyCard.walletAddress ? (
                   <div>
-                    <Label className="text-sm font-medium">Connected Wallet</Label>
+                    <Label className="text-sm font-medium">
+                      Connected Wallet
+                    </Label>
                     <p className="text-sm text-muted-foreground font-mono">
-                      {loyaltyCard.walletAddress.slice(0, 6)}...{loyaltyCard.walletAddress.slice(-4)}
+                      {loyaltyCard.walletAddress.slice(0, 6)}...
+                      {loyaltyCard.walletAddress.slice(-4)}
                     </p>
                   </div>
                 ) : (
@@ -430,4 +450,4 @@ const LoyaltyDashboard: React.FC = () => {
   );
 };
 
-export default LoyaltyDashboard; 
+export default LoyaltyDashboard;

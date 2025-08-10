@@ -471,16 +471,24 @@ export default function ItineraryDetailPage() {
                 </p>
               </div>
             </div>
-            
+
             {/* Right side - Action buttons */}
             <div className="flex items-center gap-3 flex-wrap">
               {isEditing ? (
                 <>
-                  <Button variant="outline" onClick={handleCancel} className="min-w-fit">
+                  <Button
+                    variant="outline"
+                    onClick={handleCancel}
+                    className="min-w-fit"
+                  >
                     <X className="h-4 w-4 mr-2" />
                     Cancel
                   </Button>
-                  <Button onClick={handleSave} disabled={isSaving} className="min-w-fit">
+                  <Button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="min-w-fit"
+                  >
                     {isSaving ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -496,11 +504,19 @@ export default function ItineraryDetailPage() {
                 </>
               ) : (
                 <>
-                  <Button variant="outline" onClick={handleShareLink} className="min-w-fit">
+                  <Button
+                    variant="outline"
+                    onClick={handleShareLink}
+                    className="min-w-fit"
+                  >
                     <Share2 className="h-4 w-4 mr-2" />
                     Share
                   </Button>
-                  <Button variant="outline" onClick={handleDuplicate} className="min-w-fit">
+                  <Button
+                    variant="outline"
+                    onClick={handleDuplicate}
+                    className="min-w-fit"
+                  >
                     <Copy className="h-4 w-4 mr-2" />
                     Duplicate
                   </Button>
@@ -819,32 +835,29 @@ export default function ItineraryDetailPage() {
                       )}
                       <div className="flex flex-col">
                         <span className="text-gray-600">Group Size</span>
-                        <span className="font-medium">
-                          2-8 people
-                        </span>
+                        <span className="font-medium">2-8 people</span>
                       </div>
                       <div className="flex flex-col">
                         <span className="text-gray-600">Difficulty</span>
-                        <span className="font-medium capitalize">
-                          Easy
-                        </span>
+                        <span className="font-medium capitalize">Easy</span>
                       </div>
-                      {itinerary.highlights && itinerary.highlights.length > 0 && (
-                        <div className="flex flex-col">
-                          <span className="text-gray-600">Highlights</span>
-                          <div className="flex gap-1 flex-wrap">
-                            {itinerary.highlights.map((highlight, index) => (
-                              <Badge
-                                key={index}
-                                variant="outline"
-                                className="text-xs"
-                              >
-                                {highlight}
-                              </Badge>
-                            ))}
+                      {itinerary.highlights &&
+                        itinerary.highlights.length > 0 && (
+                          <div className="flex flex-col">
+                            <span className="text-gray-600">Highlights</span>
+                            <div className="flex gap-1 flex-wrap">
+                              {itinerary.highlights.map((highlight, index) => (
+                                <Badge
+                                  key={index}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
+                                  {highlight}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   )}
                 </CardContent>
@@ -936,7 +949,9 @@ export default function ItineraryDetailPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-600">
-                    {itinerary.updated_at ? new Date(itinerary.updated_at).toLocaleDateString() : 'Recently updated'}
+                    {itinerary.updated_at
+                      ? new Date(itinerary.updated_at).toLocaleDateString()
+                      : "Recently updated"}
                   </p>
                 </CardContent>
               </Card>

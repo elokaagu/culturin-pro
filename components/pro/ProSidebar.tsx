@@ -32,6 +32,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Image from "@/components/ui/image";
+import { ThemeAwareImage } from "@/components/ui/theme-aware-image";
 
 const menuItems = [
   { name: "Dashboard", path: "/pro-dashboard", icon: LayoutDashboard },
@@ -131,7 +132,7 @@ const ProSidebar: React.FC = () => {
           <div className="h-16">
             {" "}
             {/* Increased from h-14 to h-16 */}
-            <Image
+            <ThemeAwareImage
               src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png"
               alt="Culturin"
               className="h-full cursor-pointer"
