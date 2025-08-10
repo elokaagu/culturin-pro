@@ -17,7 +17,7 @@ import {
   MapIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ItineraryType } from "@/data/itineraryData";
+import { Itinerary as ItineraryType } from "@/hooks/useItineraries";
 import { userWebsiteService } from "@/components/pro/website/UserWebsiteService";
 
 type Tour = {
@@ -75,196 +75,219 @@ export default function TourOperatorPage({
       setTheme(parsedTheme);
       setLayout(parsedLayout);
 
-    // Extract user ID from URL - try multiple patterns
-    // URL format: tour/businessname-userid or tour/businessname-userid-timestamp
-    let userId = null;
-    
-    // First, try to find the published URL directly in localStorage/database
-    // Check if this exact slug matches a published URL
-    try {
-      // Get all possible published URLs from localStorage
-      const allKeys = Object.keys(localStorage).filter(key => 
-        key.startsWith('publishedWebsiteUrl_') || key.startsWith('userWebsiteSettings_')
-      );
-      
-      for (const key of allKeys) {
-        try {
-          if (key.startsWith('publishedWebsiteUrl_')) {
-            const storedUrl = localStorage.getItem(key);
-            if (storedUrl === `tour/${params.slug}`) {
-              userId = key.replace('publishedWebsiteUrl_', '');
-              console.log('Found user ID from published URL:', userId);
-              break;
-            }
-          } else if (key.startsWith('userWebsiteSettings_')) {
-            const settings = JSON.parse(localStorage.getItem(key) || '{}');
-            if (settings.published_url === `tour/${params.slug}`) {
-              userId = key.replace('userWebsiteSettings_', '');
-              console.log('Found user ID from settings:', userId);
-              break;
-            }
-          }
-        } catch (e) {
-          // Skip invalid entries
-        }
-      }
-    } catch (e) {
-      console.warn('Error searching for published URL:', e);
-    }
-    
-    // Fallback: Extract from URL pattern
-    if (!userId) {
-      const urlParts = params.slug.split("-");
-      if (urlParts.length >= 2) {
-        // Look for a user ID pattern (8 characters, likely alphanumeric)
-        const potentialUserId = urlParts[urlParts.length - 1]; // Last part
-        if (
-          potentialUserId &&
-          potentialUserId.length === 8 &&
-          /^[a-f0-9]+$/.test(potentialUserId)
-        ) {
-          userId = potentialUserId;
-        } else {
-          // Try second to last part
-          const potentialUserId2 = urlParts[urlParts.length - 2];
-          if (
-            potentialUserId2 &&
-            potentialUserId2.length === 8 &&
-            /^[a-f0-9]+$/.test(potentialUserId2)
-          ) {
-            userId = potentialUserId2;
-          }
-        }
-      }
-    }
-    
-    console.log('Extracted user ID:', userId, 'from slug:', params.slug);
+      // Extract user ID from URL - try multiple patterns
+      // URL format: tour/businessname-userid or tour/businessname-userid-timestamp
+      let userId = null;
 
-    // Load website data - prioritize user customizations
-    let websiteData = null;
-    let itineraries: ItineraryType[] = [];
-    let finalWebsiteSettings = null;
-    
-    if (userId) {
-      console.log('Loading data for user:', userId);
-      
-      // Strategy 1: Try localStorage first (most recent changes)
+      // First, try to find the published URL directly in localStorage/database
+      // Check if this exact slug matches a published URL
       try {
-        const savedSettings = localStorage.getItem(`userWebsiteSettings_${userId}`);
-        if (savedSettings) {
-          const settings = JSON.parse(savedSettings);
-          finalWebsiteSettings = {
-            companyName: settings.company_name,
-            tagline: settings.tagline,
-            description: settings.description,
-            primaryColor: settings.branding?.primary_color || "#9b87f5",
-            headerImage: settings.branding?.header_image,
-            theme: settings.branding?.theme || "classic",
-            contactEmail: settings.contact_info?.email,
-            contactPhone: settings.contact_info?.phone,
-            contactAddress: settings.contact_info?.address,
-            logo: settings.branding?.logo_url,
-          };
-          console.log('Loaded from localStorage settings:', finalWebsiteSettings);
+        // Get all possible published URLs from localStorage
+        const allKeys = Object.keys(localStorage).filter(
+          (key) =>
+            key.startsWith("publishedWebsiteUrl_") ||
+            key.startsWith("userWebsiteSettings_")
+        );
+
+        for (const key of allKeys) {
+          try {
+            if (key.startsWith("publishedWebsiteUrl_")) {
+              const storedUrl = localStorage.getItem(key);
+              if (storedUrl === `tour/${params.slug}`) {
+                userId = key.replace("publishedWebsiteUrl_", "");
+                console.log("Found user ID from published URL:", userId);
+                break;
+              }
+            } else if (key.startsWith("userWebsiteSettings_")) {
+              const settings = JSON.parse(localStorage.getItem(key) || "{}");
+              if (settings.published_url === `tour/${params.slug}`) {
+                userId = key.replace("userWebsiteSettings_", "");
+                console.log("Found user ID from settings:", userId);
+                break;
+              }
+            }
+          } catch (e) {
+            // Skip invalid entries
+          }
         }
       } catch (e) {
-        console.error('Error loading localStorage settings:', e);
+        console.warn("Error searching for published URL:", e);
       }
-      
-      // Strategy 2: Try WebsiteBuilder data
-      if (!finalWebsiteSettings) {
-        try {
-          const websiteDataStr = localStorage.getItem(`websiteData_${userId}`);
-          if (websiteDataStr) {
-            const data = JSON.parse(websiteDataStr);
-            if (data.settings) {
-              finalWebsiteSettings = data.settings;
-              console.log('Loaded from websiteData:', finalWebsiteSettings);
+
+      // Fallback: Extract from URL pattern
+      if (!userId) {
+        const urlParts = params.slug.split("-");
+        if (urlParts.length >= 2) {
+          // Look for a user ID pattern (8 characters, likely alphanumeric)
+          const potentialUserId = urlParts[urlParts.length - 1]; // Last part
+          if (
+            potentialUserId &&
+            potentialUserId.length === 8 &&
+            /^[a-f0-9]+$/.test(potentialUserId)
+          ) {
+            userId = potentialUserId;
+          } else {
+            // Try second to last part
+            const potentialUserId2 = urlParts[urlParts.length - 2];
+            if (
+              potentialUserId2 &&
+              potentialUserId2.length === 8 &&
+              /^[a-f0-9]+$/.test(potentialUserId2)
+            ) {
+              userId = potentialUserId2;
             }
           }
-        } catch (e) {
-          console.error('Error loading websiteData:', e);
         }
       }
-      
-      // Strategy 3: Try database
-      if (!finalWebsiteSettings) {
+
+      console.log("Extracted user ID:", userId, "from slug:", params.slug);
+
+      // Load website data - prioritize user customizations
+      let websiteData = null;
+      let itineraries: ItineraryType[] = [];
+      let finalWebsiteSettings = null;
+
+      if (userId) {
+        console.log("Loading data for user:", userId);
+
+        // Strategy 1: Try localStorage first (most recent changes)
         try {
-          const dbWebsiteData = await userWebsiteService.getUserWebsiteData(userId);
-          if (dbWebsiteData && dbWebsiteData.settings) {
+          const savedSettings = localStorage.getItem(
+            `userWebsiteSettings_${userId}`
+          );
+          if (savedSettings) {
+            const settings = JSON.parse(savedSettings);
             finalWebsiteSettings = {
-              companyName: dbWebsiteData.settings.company_name,
-              tagline: dbWebsiteData.settings.tagline,
-              description: dbWebsiteData.settings.description,
-              primaryColor: dbWebsiteData.settings.branding?.primary_color || "#9b87f5",
-              headerImage: dbWebsiteData.settings.branding?.header_image,
-              theme: dbWebsiteData.settings.branding?.theme || "classic",
-              contactEmail: dbWebsiteData.settings.contact_info?.email,
-              contactPhone: dbWebsiteData.settings.contact_info?.phone,
-              contactAddress: dbWebsiteData.settings.contact_info?.address,
-              logo: dbWebsiteData.settings.branding?.logo_url,
+              companyName: settings.company_name,
+              tagline: settings.tagline,
+              description: settings.description,
+              primaryColor: settings.branding?.primary_color || "#9b87f5",
+              headerImage: settings.branding?.header_image,
+              theme: settings.branding?.theme || "classic",
+              contactEmail: settings.contact_info?.email,
+              contactPhone: settings.contact_info?.phone,
+              contactAddress: settings.contact_info?.address,
+              logo: settings.branding?.logo_url,
             };
-            console.log('Loaded from database:', finalWebsiteSettings);
-            
-            // Also load itineraries from database
-            itineraries = dbWebsiteData.itineraries.map(item => ({
-              id: item.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
-              title: item.title,
-              description: item.description || `Experience the best of ${item.title}.`,
-              days: item.days,
-              price: item.price || Math.floor(Math.random() * 50) + 40,
-              image: item.image || "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-              highlights: item.highlights || [],
-              activities: item.activities || [],
-              accommodations: item.accommodations || [],
-              transportation: item.transportation || [],
-              meals: item.meals || [],
-              notes: item.notes || [],
-              difficulty: 'moderate',
-              groupSize: { min: 2, max: 12 },
-              regions: [],
-              tags: [],
-              themeType: 'cultural',
-              operatorId: userId,
-              status: 'published',
-              createdAt: item.created_at || new Date().toISOString(),
-              lastUpdated: item.updated_at || new Date().toISOString(),
-            }));
-          }
-        } catch (error) {
-          console.error("Error loading from database:", error);
-        }
-      }
-      
-      // Load itineraries if not loaded from database
-      if (itineraries.length === 0) {
-        try {
-          const userItinerariesKey = `userItineraries_${userId}`;
-          const itinerariesStr = localStorage.getItem(userItinerariesKey);
-          if (itinerariesStr) {
-            const savedItineraries = JSON.parse(itinerariesStr);
-            itineraries = savedItineraries.filter((item: any) => item.status === 'published');
-            console.log('Loaded itineraries from localStorage:', itineraries.length);
+            console.log(
+              "Loaded from localStorage settings:",
+              finalWebsiteSettings
+            );
           }
         } catch (e) {
-          console.error('Error loading itineraries:', e);
+          console.error("Error loading localStorage settings:", e);
+        }
+
+        // Strategy 2: Try WebsiteBuilder data
+        if (!finalWebsiteSettings) {
+          try {
+            const websiteDataStr = localStorage.getItem(
+              `websiteData_${userId}`
+            );
+            if (websiteDataStr) {
+              const data = JSON.parse(websiteDataStr);
+              if (data.settings) {
+                finalWebsiteSettings = data.settings;
+                console.log("Loaded from websiteData:", finalWebsiteSettings);
+              }
+            }
+          } catch (e) {
+            console.error("Error loading websiteData:", e);
+          }
+        }
+
+        // Strategy 3: Try database
+        if (!finalWebsiteSettings) {
+          try {
+            const dbWebsiteData = await userWebsiteService.getUserWebsiteData(
+              userId
+            );
+            if (dbWebsiteData && dbWebsiteData.settings) {
+              finalWebsiteSettings = {
+                companyName: dbWebsiteData.settings.company_name,
+                tagline: dbWebsiteData.settings.tagline,
+                description: dbWebsiteData.settings.description,
+                primaryColor:
+                  dbWebsiteData.settings.branding?.primary_color || "#9b87f5",
+                headerImage: dbWebsiteData.settings.branding?.header_image,
+                theme: dbWebsiteData.settings.branding?.theme || "classic",
+                contactEmail: dbWebsiteData.settings.contact_info?.email,
+                contactPhone: dbWebsiteData.settings.contact_info?.phone,
+                contactAddress: dbWebsiteData.settings.contact_info?.address,
+                logo: dbWebsiteData.settings.branding?.logo_url,
+              };
+              console.log("Loaded from database:", finalWebsiteSettings);
+
+              // Also load itineraries from database
+              itineraries = dbWebsiteData.itineraries.map((item) => ({
+                id:
+                  item.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
+                title: item.title,
+                description:
+                  item.description || `Experience the best of ${item.title}.`,
+                days: item.days,
+                price: item.price || Math.floor(Math.random() * 50) + 40,
+                image:
+                  item.image ||
+                  "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+                highlights: item.highlights || [],
+                activities: item.activities || [],
+                accommodations: item.accommodations || [],
+                transportation: item.transportation || [],
+                meals: item.meals || [],
+                notes: item.notes || [],
+                difficulty: "moderate",
+                groupSize: { min: 2, max: 12 },
+                regions: [],
+                tags: [],
+                themeType: "cultural",
+                operatorId: userId,
+                status: "published",
+                createdAt: item.created_at || new Date().toISOString(),
+                lastUpdated: item.updated_at || new Date().toISOString(),
+              }));
+            }
+          } catch (error) {
+            console.error("Error loading from database:", error);
+          }
+        }
+
+        // Load itineraries if not loaded from database
+        if (itineraries.length === 0) {
+          try {
+            const userItinerariesKey = `userItineraries_${userId}`;
+            const itinerariesStr = localStorage.getItem(userItinerariesKey);
+            if (itinerariesStr) {
+              const savedItineraries = JSON.parse(itinerariesStr);
+              itineraries = savedItineraries.filter(
+                (item: any) => item.status === "published"
+              );
+              console.log(
+                "Loaded itineraries from localStorage:",
+                itineraries.length
+              );
+            }
+          } catch (e) {
+            console.error("Error loading itineraries:", e);
+          }
         }
       }
-    }
-    
-    // Set the loaded data
-    setPublishedItineraries(itineraries);
-    
-    // Store final settings for use below
-    websiteData = { settings: finalWebsiteSettings };
+
+      // Set the loaded data
+      setPublishedItineraries(itineraries);
+
+      // Store final settings for use below
+      websiteData = { settings: finalWebsiteSettings };
 
       // Load operator data with real user customizations
       const loadedWebsiteSettings = websiteData?.settings;
-      
+
       // If no customizations found, try the old publishedWebsiteContent as fallback
       let fallbackContent = null;
       if (!loadedWebsiteSettings) {
-        const websiteContentStr = localStorage.getItem("publishedWebsiteContent");
+        const websiteContentStr = localStorage.getItem(
+          "publishedWebsiteContent"
+        );
         if (websiteContentStr) {
           try {
             fallbackContent = JSON.parse(websiteContentStr);
@@ -276,44 +299,40 @@ export default function TourOperatorPage({
 
       // Use user customizations first, then fallback content, then defaults
       const websiteSettings = loadedWebsiteSettings || fallbackContent;
-      
-      console.log('Final website settings used for display:', websiteSettings);
 
+      console.log("Final website settings used for display:", websiteSettings);
+
+      // Only show content if it exists from website builder - no fallbacks
       const defaultData: OperatorData = {
         id: params.slug || "demo",
-        name: websiteSettings?.companyName || "Your Cultural Tours",
-        tagline: websiteSettings?.tagline || "Discover Authentic Cultural Experiences",
-        description: websiteSettings?.description || "We specialize in creating immersive cultural experiences that connect you with local traditions and communities.",
-        logo: websiteSettings?.logo || "https://placehold.co/200x80",
+        name: websiteSettings?.companyName || "",
+        tagline: websiteSettings?.tagline || "",
+        description: websiteSettings?.description || "",
+        logo: websiteSettings?.logo || "",
         coverImage: websiteSettings?.headerImage || null,
         theme: websiteSettings?.theme || parsedTheme,
         primaryColor: websiteSettings?.primaryColor || "#9b87f5",
         contact: {
-          email: websiteSettings?.contactEmail || "contact@yourtourcompany.com",
-          phone: websiteSettings?.contactPhone || "+1 (555) 123-4567",
-          address: websiteSettings?.contactAddress || "Global Cultural Experiences",
+          email: websiteSettings?.contactEmail || "",
+          phone: websiteSettings?.contactPhone || "",
+          address: websiteSettings?.contactAddress || "",
         },
         tours: [],
       };
 
-      // Convert real itineraries to tours
+      // Convert real itineraries to tours - only use actual data, no fallbacks
       const toursFromItineraries: Tour[] = itineraries.map((itinerary) => ({
-        id: itinerary.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
-        name: itinerary.title,
-        duration: `${itinerary.days} ${itinerary.days === 1 ? "day" : "days"}`,
-        price: itinerary.price || Math.floor(Math.random() * 50) + 40,
-        image:
-          itinerary.image ||
-          "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-        description:
-          itinerary.description || `Experience the best of ${itinerary.title}.`,
-        highlights: [
-          "Expert local guides",
-          "Small groups of max 10 people",
-          "Authentic cultural experiences",
-        ],
-        rating: +(Math.random() * (5 - 4) + 4).toFixed(1),
-        reviews: Math.floor(Math.random() * 100) + 50,
+        id: itinerary.id || "",
+        name: itinerary.title || "",
+        duration: itinerary.days
+          ? `${itinerary.days} ${itinerary.days === 1 ? "day" : "days"}`
+          : "",
+        price: itinerary.price || 0,
+        image: itinerary.image || "",
+        description: itinerary.description || "",
+        highlights: itinerary.highlights || [],
+        rating: 0, // No fake ratings
+        reviews: 0, // No fake reviews
       }));
 
       // Only use real itineraries, no fallback to sample tours
@@ -405,12 +424,16 @@ export default function TourOperatorPage({
                 }}
               >
                 <div className="text-center max-w-4xl px-4">
-                  <h1 className="text-5xl font-bold mb-4">
-                    {websiteData.settings.companyName || operatorData?.name}
-                  </h1>
-                  <p className="text-xl mb-6">
-                    {websiteData.settings.tagline || operatorData?.tagline}
-                  </p>
+                  {(websiteData.settings.companyName || operatorData?.name) && (
+                    <h1 className="text-5xl font-bold mb-4">
+                      {websiteData.settings.companyName || operatorData?.name}
+                    </h1>
+                  )}
+                  {(websiteData.settings.tagline || operatorData?.tagline) && (
+                    <p className="text-xl mb-6">
+                      {websiteData.settings.tagline || operatorData?.tagline}
+                    </p>
+                  )}
                   {websiteData.settings.enableBooking && (
                     <Button
                       size="lg"
@@ -458,9 +481,11 @@ export default function TourOperatorPage({
                             style={style}
                             className="flex justify-between items-center"
                           >
-                            <div className="font-bold text-xl">
-                              {block.content?.logo || "Your Logo"}
-                            </div>
+                            {block.content?.logo && (
+                              <div className="font-bold text-xl">
+                                {block.content.logo}
+                              </div>
+                            )}
                             <nav className="flex gap-4">
                               {block.content?.navigation?.map(
                                 (item: string, index: number) => (
@@ -472,22 +497,11 @@ export default function TourOperatorPage({
                                     {item}
                                   </a>
                                 )
-                              ) ||
-                                ["Home", "About", "Tours", "Contact"].map(
-                                  (item, index) => (
-                                    <a
-                                      key={index}
-                                      href="#"
-                                      className="hover:text-blue-600"
-                                    >
-                                      {item}
-                                    </a>
-                                  )
-                                )}
+                              )}
                             </nav>
-                            <Button size="sm">
-                              {block.content?.cta || "Book Now"}
-                            </Button>
+                            {block.content?.cta && (
+                              <Button size="sm">{block.content.cta}</Button>
+                            )}
                           </header>
                         );
 
@@ -498,71 +512,68 @@ export default function TourOperatorPage({
                             style={style}
                             className="flex flex-col items-center justify-center min-h-[400px]"
                           >
-                            <h1 className="text-4xl font-bold mb-4">
-                              {block.content?.title ||
-                                "Discover Amazing Experiences"}
-                            </h1>
-                            <p className="text-xl mb-6">
-                              {block.content?.subtitle ||
-                                "Explore unique cultural tours and adventures"}
-                            </p>
-                            <Button size="lg">
-                              {block.content?.ctaText || "Start Exploring"}
-                            </Button>
+                            {block.content?.title && (
+                              <h1 className="text-4xl font-bold mb-4">
+                                {block.content.title}
+                              </h1>
+                            )}
+                            {block.content?.subtitle && (
+                              <p className="text-xl mb-6">
+                                {block.content.subtitle}
+                              </p>
+                            )}
+                            {block.content?.ctaText && (
+                              <Button size="lg">{block.content.ctaText}</Button>
+                            )}
                           </section>
                         );
 
                       case "text":
-                        return (
+                        return block.content?.text ? (
                           <div
                             key={block.id}
                             style={style}
                             className="max-w-3xl mx-auto text-center"
                           >
-                            <p>
-                              {block.content?.text || "Add your content here"}
-                            </p>
+                            <p>{block.content.text}</p>
                           </div>
-                        );
+                        ) : null;
 
                       case "heading":
-                        return (
+                        return block.content?.text ? (
                           <div
                             key={block.id}
                             style={style}
                             className="max-w-3xl mx-auto text-center"
                           >
-                            {block.content?.level === "h1" && (
+                            {block.content.level === "h1" && (
                               <h1 className="text-3xl font-bold text-gray-900 mb-6">
-                                {block.content?.text || "Heading"}
+                                {block.content.text}
                               </h1>
                             )}
-                            {block.content?.level === "h2" && (
+                            {block.content.level === "h2" && (
                               <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                                {block.content?.text || "Heading"}
+                                {block.content.text}
                               </h2>
                             )}
-                            {block.content?.level === "h3" && (
+                            {block.content.level === "h3" && (
                               <h3 className="text-xl font-bold text-gray-900 mb-3">
-                                {block.content?.text || "Heading"}
+                                {block.content.text}
                               </h3>
                             )}
                           </div>
-                        );
+                        ) : null;
 
                       case "image":
-                        return (
+                        return block.content?.src ? (
                           <div
                             key={block.id}
                             style={style}
                             className="max-w-4xl mx-auto"
                           >
                             <img
-                              src={
-                                block.content?.src ||
-                                "https://via.placeholder.com/400x300?text=Add+Image"
-                              }
-                              alt={block.content?.alt || "Image"}
+                              src={block.content.src}
+                              alt={block.content?.alt || ""}
                               className="w-full h-auto rounded-lg"
                             />
                             {block.content?.caption && (
@@ -571,7 +582,7 @@ export default function TourOperatorPage({
                               </p>
                             )}
                           </div>
-                        );
+                        ) : null;
 
                       case "grid":
                         return (
@@ -589,29 +600,26 @@ export default function TourOperatorPage({
                                   <p>{item.content}</p>
                                 </div>
                               )
-                            ) || (
-                              <div className="p-4 border rounded">
-                                <h3 className="font-bold">Sample Item</h3>
-                                <p>Add your content here</p>
-                              </div>
                             )}
                           </div>
                         );
 
                       case "quote":
-                        return (
+                        return block.content?.text ? (
                           <blockquote
                             key={block.id}
                             style={style}
                             className="text-center max-w-3xl mx-auto"
                           >
                             <p className="mb-4 text-xl italic">
-                              "{block.content?.text || "Add your quote here"}"
+                              "{block.content.text}"
                             </p>
                             <footer>
-                              <cite className="font-bold">
-                                {block.content?.author || "Author"}
-                              </cite>
+                              {block.content?.author && (
+                                <cite className="font-bold">
+                                  {block.content.author}
+                                </cite>
+                              )}
                               {block.content?.role && (
                                 <span className="text-gray-600">
                                   , {block.content.role}
@@ -619,18 +627,18 @@ export default function TourOperatorPage({
                               )}
                             </footer>
                           </blockquote>
-                        );
+                        ) : null;
 
                       default:
-                        return (
+                        return block.content?.text ? (
                           <div
                             key={block.id}
                             style={style}
                             className="max-w-3xl mx-auto text-center"
                           >
-                            <p>{block.content?.text || "Content block"}</p>
+                            <p>{block.content.text}</p>
                           </div>
-                        );
+                        ) : null;
                     }
                   })
               ) : (
@@ -668,58 +676,50 @@ export default function TourOperatorPage({
                                 alt={tour.name}
                                 className="w-full h-full object-cover"
                               />
-                              <div className="absolute top-4 right-4">
-                                <Badge className="bg-white text-gray-900">
-                                  €{tour.price}
-                                </Badge>
-                              </div>
+                              {tour.price > 0 && (
+                                <div className="absolute top-4 right-4">
+                                  <Badge className="bg-white text-gray-900">
+                                    €{tour.price}
+                                  </Badge>
+                                </div>
+                              )}
                             </div>
                             <CardContent className="p-6">
-                              <div className="flex items-center gap-2 mb-2">
-                                <div className="flex items-center">
-                                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                  <span className="text-sm font-medium ml-1">
-                                    {tour.rating}
-                                  </span>
-                                </div>
-                                <span className="text-sm text-gray-500">
-                                  ({tour.reviews} reviews)
-                                </span>
-                              </div>
                               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                                 {tour.name}
                               </h3>
                               <p className="text-gray-600 mb-4 line-clamp-2">
                                 {tour.description}
                               </p>
-                              <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
-                                <div className="flex items-center gap-1">
-                                  <Clock className="h-4 w-4" />
-                                  <span>{tour.duration}</span>
+                              {tour.duration && (
+                                <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{tour.duration}</span>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                  <Users className="h-4 w-4" />
-                                  <span>Small group</span>
-                                </div>
-                              </div>
-                              <div className="mb-4">
-                                <h4 className="font-medium text-gray-900 mb-2">
-                                  Highlights:
-                                </h4>
-                                <ul className="space-y-1">
-                                  {tour.highlights
-                                    .slice(0, 3)
-                                    .map((highlight, index) => (
-                                      <li
-                                        key={index}
-                                        className="flex items-center gap-2 text-sm text-gray-600"
-                                      >
-                                        <Check className="h-3 w-3 text-green-500 flex-shrink-0" />
-                                        <span>{highlight}</span>
-                                      </li>
-                                    ))}
-                                </ul>
-                              </div>
+                              )}
+                              {tour.highlights &&
+                                tour.highlights.length > 0 && (
+                                  <div className="mb-4">
+                                    <h4 className="font-medium text-gray-900 mb-2">
+                                      Highlights:
+                                    </h4>
+                                    <ul className="space-y-1">
+                                      {tour.highlights
+                                        .slice(0, 3)
+                                        .map((highlight, index) => (
+                                          <li
+                                            key={index}
+                                            className="flex items-center gap-2 text-sm text-gray-600"
+                                          >
+                                            <Check className="h-3 w-3 text-green-500 flex-shrink-0" />
+                                            <span>{highlight}</span>
+                                          </li>
+                                        ))}
+                                    </ul>
+                                  </div>
+                                )}
                               <Button
                                 className="w-full rounded-md"
                                 style={{
@@ -729,7 +729,9 @@ export default function TourOperatorPage({
                                 }}
                                 onClick={() => handleBookNow(tour.id)}
                               >
-                                Book Now - €{tour.price}
+                                {tour.price > 0
+                                  ? `Book Now - €${tour.price}`
+                                  : "Book Now"}
                                 <ChevronRight className="h-4 w-4 ml-2" />
                               </Button>
                             </CardContent>
