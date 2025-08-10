@@ -203,7 +203,7 @@ const ProSidebar: React.FC = () => {
             {isMounted && (
               <DropdownMenuItem onClick={toggleTheme}>
                 {theme === 'light' ? (
-                  <Moon className="h-4 w-4 mr-2 text-blue-400" />
+                  <Moon className="h-4 w-4 mr-2 text-primary" />
                 ) : (
                   <Sun className="h-4 w-4 mr-2 text-yellow-500" />
                 )}
