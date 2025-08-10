@@ -75,146 +75,223 @@ export default function TourOperatorPage({
       setTheme(parsedTheme);
       setLayout(parsedLayout);
 
-    // Extract user ID from URL if present
-    // URL format: tour/businessname-userid-timestamp
-    const urlParts = params.slug.split("-");
+    // Extract user ID from URL - try multiple patterns
+    // URL format: tour/businessname-userid or tour/businessname-userid-timestamp
     let userId = null;
-    if (urlParts.length >= 2) {
-      // Look for a user ID pattern (8 characters, likely alphanumeric)
-      const potentialUserId = urlParts[urlParts.length - 1]; // Last part
-      if (
-        potentialUserId &&
-        potentialUserId.length === 8 &&
-        /^[a-f0-9]+$/.test(potentialUserId)
-      ) {
-        userId = potentialUserId;
-      } else {
-        // Try second to last part
-        const potentialUserId2 = urlParts[urlParts.length - 2];
+    
+    // First, try to find the published URL directly in localStorage/database
+    // Check if this exact slug matches a published URL
+    try {
+      // Get all possible published URLs from localStorage
+      const allKeys = Object.keys(localStorage).filter(key => 
+        key.startsWith('publishedWebsiteUrl_') || key.startsWith('userWebsiteSettings_')
+      );
+      
+      for (const key of allKeys) {
+        try {
+          if (key.startsWith('publishedWebsiteUrl_')) {
+            const storedUrl = localStorage.getItem(key);
+            if (storedUrl === `tour/${params.slug}`) {
+              userId = key.replace('publishedWebsiteUrl_', '');
+              console.log('Found user ID from published URL:', userId);
+              break;
+            }
+          } else if (key.startsWith('userWebsiteSettings_')) {
+            const settings = JSON.parse(localStorage.getItem(key) || '{}');
+            if (settings.published_url === `tour/${params.slug}`) {
+              userId = key.replace('userWebsiteSettings_', '');
+              console.log('Found user ID from settings:', userId);
+              break;
+            }
+          }
+        } catch (e) {
+          // Skip invalid entries
+        }
+      }
+    } catch (e) {
+      console.warn('Error searching for published URL:', e);
+    }
+    
+    // Fallback: Extract from URL pattern
+    if (!userId) {
+      const urlParts = params.slug.split("-");
+      if (urlParts.length >= 2) {
+        // Look for a user ID pattern (8 characters, likely alphanumeric)
+        const potentialUserId = urlParts[urlParts.length - 1]; // Last part
         if (
-          potentialUserId2 &&
-          potentialUserId2.length === 8 &&
-          /^[a-f0-9]+$/.test(potentialUserId2)
+          potentialUserId &&
+          potentialUserId.length === 8 &&
+          /^[a-f0-9]+$/.test(potentialUserId)
         ) {
-          userId = potentialUserId2;
+          userId = potentialUserId;
+        } else {
+          // Try second to last part
+          const potentialUserId2 = urlParts[urlParts.length - 2];
+          if (
+            potentialUserId2 &&
+            potentialUserId2.length === 8 &&
+            /^[a-f0-9]+$/.test(potentialUserId2)
+          ) {
+            userId = potentialUserId2;
+          }
         }
       }
     }
+    
+    console.log('Extracted user ID:', userId, 'from slug:', params.slug);
 
-    // Load website data - try database first for published sites, then localStorage
+    // Load website data - prioritize user customizations
     let websiteData = null;
     let itineraries: ItineraryType[] = [];
+    let finalWebsiteSettings = null;
     
     if (userId) {
+      console.log('Loading data for user:', userId);
+      
+      // Strategy 1: Try localStorage first (most recent changes)
       try {
-        // Try to load from database for published website
-        const dbWebsiteData = await userWebsiteService.getUserWebsiteData(userId);
-        if (dbWebsiteData && dbWebsiteData.settings.published_url) {
-          websiteData = {
-            settings: {
+        const savedSettings = localStorage.getItem(`userWebsiteSettings_${userId}`);
+        if (savedSettings) {
+          const settings = JSON.parse(savedSettings);
+          finalWebsiteSettings = {
+            companyName: settings.company_name,
+            tagline: settings.tagline,
+            description: settings.description,
+            primaryColor: settings.branding?.primary_color || "#9b87f5",
+            headerImage: settings.branding?.header_image,
+            theme: settings.branding?.theme || "classic",
+            contactEmail: settings.contact_info?.email,
+            contactPhone: settings.contact_info?.phone,
+            contactAddress: settings.contact_info?.address,
+            logo: settings.branding?.logo_url,
+          };
+          console.log('Loaded from localStorage settings:', finalWebsiteSettings);
+        }
+      } catch (e) {
+        console.error('Error loading localStorage settings:', e);
+      }
+      
+      // Strategy 2: Try WebsiteBuilder data
+      if (!finalWebsiteSettings) {
+        try {
+          const websiteDataStr = localStorage.getItem(`websiteData_${userId}`);
+          if (websiteDataStr) {
+            const data = JSON.parse(websiteDataStr);
+            if (data.settings) {
+              finalWebsiteSettings = data.settings;
+              console.log('Loaded from websiteData:', finalWebsiteSettings);
+            }
+          }
+        } catch (e) {
+          console.error('Error loading websiteData:', e);
+        }
+      }
+      
+      // Strategy 3: Try database
+      if (!finalWebsiteSettings) {
+        try {
+          const dbWebsiteData = await userWebsiteService.getUserWebsiteData(userId);
+          if (dbWebsiteData && dbWebsiteData.settings) {
+            finalWebsiteSettings = {
               companyName: dbWebsiteData.settings.company_name,
               tagline: dbWebsiteData.settings.tagline,
               description: dbWebsiteData.settings.description,
-              primaryColor: dbWebsiteData.settings.branding.primary_color,
-              headerImage: dbWebsiteData.settings.branding.header_image,
-              theme: dbWebsiteData.settings.branding.theme,
-              contactEmail: dbWebsiteData.settings.contact_info.email,
-              contactPhone: dbWebsiteData.settings.contact_info.phone,
-              contactAddress: dbWebsiteData.settings.contact_info.address,
-            }
-          };
-          
-          // Convert database itineraries to ItineraryType format
-          itineraries = dbWebsiteData.itineraries.map(item => ({
-            id: item.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
-            title: item.title,
-            description: item.description || `Experience the best of ${item.title}.`,
-            days: item.days,
-            price: item.price || Math.floor(Math.random() * 50) + 40,
-            image: item.image || "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-            highlights: item.highlights || [],
-            activities: item.activities || [],
-            accommodations: item.accommodations || [],
-            transportation: item.transportation || [],
-            meals: item.meals || [],
-            notes: item.notes || [],
-            // Add any missing ItineraryType fields with defaults
-            difficulty: 'moderate',
-            groupSize: { min: 2, max: 12 },
-            regions: [],
-            tags: [],
-            themeType: 'cultural',
-            operatorId: userId,
-            status: 'published',
-            createdAt: item.created_at || new Date().toISOString(),
-            lastUpdated: item.updated_at || new Date().toISOString(),
-          }));
-          
-          setPublishedItineraries(itineraries);
-        }
-      } catch (error) {
-        console.error("Error loading from database:", error);
-      }
-    }
-
-    // Fallback to localStorage if database load failed or no userId
-    if (!websiteData) {
-      const userSpecificWebsiteKey = userId ? `websiteData_${userId}` : "websiteData";
-      const userSpecificItinerariesKey = userId ? `culturinItineraries_${userId}` : "culturinItineraries";
-
-      const websiteDataStr = localStorage.getItem(userSpecificWebsiteKey);
-      const itinerariesStr = localStorage.getItem(userSpecificItinerariesKey);
-
-      if (websiteDataStr) {
-        try {
-          websiteData = JSON.parse(websiteDataStr);
-        } catch (e) {
-          console.error("Error parsing website data:", e);
+              primaryColor: dbWebsiteData.settings.branding?.primary_color || "#9b87f5",
+              headerImage: dbWebsiteData.settings.branding?.header_image,
+              theme: dbWebsiteData.settings.branding?.theme || "classic",
+              contactEmail: dbWebsiteData.settings.contact_info?.email,
+              contactPhone: dbWebsiteData.settings.contact_info?.phone,
+              contactAddress: dbWebsiteData.settings.contact_info?.address,
+              logo: dbWebsiteData.settings.branding?.logo_url,
+            };
+            console.log('Loaded from database:', finalWebsiteSettings);
+            
+            // Also load itineraries from database
+            itineraries = dbWebsiteData.itineraries.map(item => ({
+              id: item.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
+              title: item.title,
+              description: item.description || `Experience the best of ${item.title}.`,
+              days: item.days,
+              price: item.price || Math.floor(Math.random() * 50) + 40,
+              image: item.image || "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+              highlights: item.highlights || [],
+              activities: item.activities || [],
+              accommodations: item.accommodations || [],
+              transportation: item.transportation || [],
+              meals: item.meals || [],
+              notes: item.notes || [],
+              difficulty: 'moderate',
+              groupSize: { min: 2, max: 12 },
+              regions: [],
+              tags: [],
+              themeType: 'cultural',
+              operatorId: userId,
+              status: 'published',
+              createdAt: item.created_at || new Date().toISOString(),
+              lastUpdated: item.updated_at || new Date().toISOString(),
+            }));
+          }
+        } catch (error) {
+          console.error("Error loading from database:", error);
         }
       }
-
-      if (itinerariesStr) {
+      
+      // Load itineraries if not loaded from database
+      if (itineraries.length === 0) {
         try {
-          itineraries = JSON.parse(itinerariesStr);
-          setPublishedItineraries(itineraries);
+          const userItinerariesKey = `userItineraries_${userId}`;
+          const itinerariesStr = localStorage.getItem(userItinerariesKey);
+          if (itinerariesStr) {
+            const savedItineraries = JSON.parse(itinerariesStr);
+            itineraries = savedItineraries.filter((item: any) => item.status === 'published');
+            console.log('Loaded itineraries from localStorage:', itineraries.length);
+          }
         } catch (e) {
-          console.error("Error parsing itineraries:", e);
+          console.error('Error loading itineraries:', e);
         }
       }
     }
+    
+    // Set the loaded data
+    setPublishedItineraries(itineraries);
+    
+    // Store final settings for use below
+    websiteData = { settings: finalWebsiteSettings };
 
-      // Load operator data with real content
-      // Get the actual website content from the builder
-      const websiteContentStr = localStorage.getItem("publishedWebsiteContent");
-      const websiteTheme = localStorage.getItem("publishedWebsiteTheme");
-
-      let websiteContent = null;
-      if (websiteContentStr) {
-        try {
-          websiteContent = JSON.parse(websiteContentStr);
-        } catch (e) {
-          console.error("Error parsing website content:", e);
+      // Load operator data with real user customizations
+      const loadedWebsiteSettings = websiteData?.settings;
+      
+      // If no customizations found, try the old publishedWebsiteContent as fallback
+      let fallbackContent = null;
+      if (!loadedWebsiteSettings) {
+        const websiteContentStr = localStorage.getItem("publishedWebsiteContent");
+        if (websiteContentStr) {
+          try {
+            fallbackContent = JSON.parse(websiteContentStr);
+          } catch (e) {
+            console.error("Error parsing fallback website content:", e);
+          }
         }
       }
 
-      // Use websiteData from database if available, otherwise use localStorage content
-      const finalWebsiteData = websiteData?.settings || websiteContent;
+      // Use user customizations first, then fallback content, then defaults
+      const websiteSettings = loadedWebsiteSettings || fallbackContent;
+      
+      console.log('Final website settings used for display:', websiteSettings);
 
       const defaultData: OperatorData = {
         id: params.slug || "demo",
-        name: finalWebsiteData?.companyName || "Your Tour Company",
-        tagline:
-          finalWebsiteData?.tagline || "Discover amazing cultural experiences",
-        description: finalWebsiteData?.description || "",
-        logo: finalWebsiteData?.logo || "https://placehold.co/200x80",
-        coverImage: finalWebsiteData?.headerImage || null,
-        theme: websiteTheme || parsedTheme,
-        primaryColor: finalWebsiteData?.primaryColor || "#9b87f5",
+        name: websiteSettings?.companyName || "Your Cultural Tours",
+        tagline: websiteSettings?.tagline || "Discover Authentic Cultural Experiences",
+        description: websiteSettings?.description || "We specialize in creating immersive cultural experiences that connect you with local traditions and communities.",
+        logo: websiteSettings?.logo || "https://placehold.co/200x80",
+        coverImage: websiteSettings?.headerImage || null,
+        theme: websiteSettings?.theme || parsedTheme,
+        primaryColor: websiteSettings?.primaryColor || "#9b87f5",
         contact: {
-          email: finalWebsiteData?.contactEmail || "contact@yourtourcompany.com",
-          phone: finalWebsiteData?.contactPhone || "+1 (555) 123-4567",
-          address:
-            finalWebsiteData?.contactAddress || "Global Cultural Experiences",
+          email: websiteSettings?.contactEmail || "contact@yourtourcompany.com",
+          phone: websiteSettings?.contactPhone || "+1 (555) 123-4567",
+          address: websiteSettings?.contactAddress || "Global Cultural Experiences",
         },
         tours: [],
       };

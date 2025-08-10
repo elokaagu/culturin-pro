@@ -639,6 +639,30 @@ const WebsiteBuilder: React.FC = () => {
         // Store published URL for persistence
         localStorage.setItem(`publishedWebsiteUrl_${user.id}`, result.url);
         
+        // Also update the user settings to include the published URL
+        try {
+          const currentSettings = await userWebsiteService.getUserWebsiteSettings(user.id);
+          const savedSettings = localStorage.getItem(`userWebsiteSettings_${user.id}`);
+          
+          let settingsToSave = currentSettings;
+          if (savedSettings) {
+            try {
+              const parsed = JSON.parse(savedSettings);
+              settingsToSave = { ...parsed, published_url: result.url, is_published: true };
+            } catch (e) {
+              console.error('Error parsing saved settings:', e);
+            }
+          }
+          
+          // Save the updated settings with published URL
+          localStorage.setItem(`userWebsiteSettings_${user.id}`, JSON.stringify(settingsToSave));
+          
+          // Also save to database if possible
+          await userWebsiteService.saveUserWebsiteSettings(settingsToSave);
+        } catch (error) {
+          console.warn('Error updating published URL in settings:', error);
+        }
+        
         toast.success("Website published successfully!", {
           description: `Your website is now live at: ${window.location.origin}/${result.url}`,
           action: {

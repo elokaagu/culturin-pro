@@ -179,6 +179,9 @@ const WebsiteContent: React.FC = () => {
           settings: updatedSettings,
           lastSaved: new Date().toISOString()
         }));
+        
+        // Also update the userWebsiteSettings format for the published site
+        localStorage.setItem(`userWebsiteSettings_${userData.id}`, JSON.stringify(updatedSettings));
 
         // Trigger preview refresh by dispatching a custom event
         window.dispatchEvent(new CustomEvent('websiteContentUpdated', { 
