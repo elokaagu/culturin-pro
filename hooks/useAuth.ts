@@ -125,7 +125,21 @@ export const useAuth = () => {
       }
     };
 
-    initAuth();
+    // Add a timeout failsafe to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (mounted) {
+        console.warn("Auth initialization timeout - forcing ready state");
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          isReady: true,
+        }));
+      }
+    }, 5000); // 5 second timeout
+
+    initAuth().finally(() => {
+      clearTimeout(timeoutId);
+    });
 
     // Listen for auth changes
     const {
@@ -195,6 +209,7 @@ export const useAuth = () => {
 
     return () => {
       mounted = false;
+      clearTimeout(timeoutId);
       subscription.unsubscribe();
     };
   }, []); // Remove loadUserData dependency to prevent infinite loops
