@@ -300,10 +300,10 @@ const ProItineraryPage: React.FC = () => {
       <div className="p-6">
         <div className="mb-6 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
               Itineraries
             </h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Create and manage your experience itineraries
             </p>
           </div>
@@ -318,10 +318,10 @@ const ProItineraryPage: React.FC = () => {
         {itineraries.length === 0 ? (
           <div className="text-center py-12">
             <div className="max-w-md mx-auto">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-foreground mb-2">
                 No itineraries yet
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Create your first itinerary to get started with your cultural experiences.
               </p>
               <Button onClick={handleCreateNew} className="flex items-center gap-2 mx-auto">

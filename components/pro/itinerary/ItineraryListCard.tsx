@@ -135,10 +135,10 @@ const ItineraryListCard: React.FC<ItineraryListCardProps> = ({
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-gray-900 truncate">
+                  <h3 className="text-lg font-semibold text-foreground truncate">
                     {title}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                     {description}
                   </p>
                 </div>
@@ -146,12 +146,12 @@ const ItineraryListCard: React.FC<ItineraryListCardProps> = ({
                 {/* Status Badge */}
                 <div className="flex items-center gap-2 ml-4">
                   <div className={`w-2 h-2 rounded-full ${getStatusColor()}`} />
-                  <span className="text-xs text-gray-600">{getStatusText()}</span>
+                  <span className="text-xs text-muted-foreground">{getStatusText()}</span>
                 </div>
               </div>
 
               {/* Details */}
-              <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+              <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {days} days

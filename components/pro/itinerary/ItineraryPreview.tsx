@@ -473,11 +473,11 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                           </div>
                         </div>
                         {module.description && (
-                          <p className="text-gray-600 mb-2">
+                          <p className="text-muted-foreground mb-2">
                             {module.description}
                           </p>
                         )}
-                        <div className="flex flex-wrap gap-2 text-sm text-gray-500">
+                        <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
                           {module.location && (
                             <span className="flex items-center gap-1">
                               <MapPin className="h-3 w-3" />
@@ -491,7 +491,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                           )}
                         </div>
                         {module.notes && (
-                          <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
+                          <div className="mt-2 p-2 bg-muted rounded text-sm">
                             <strong>Notes:</strong> {module.notes}
                           </div>
                         )}
