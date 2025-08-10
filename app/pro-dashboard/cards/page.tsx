@@ -45,8 +45,8 @@ export default function CardsPage() {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Cards</h1>
-                  <p className="text-gray-600">
+                  <h1 className="text-2xl font-bold text-foreground">Cards</h1>
+                  <p className="text-muted-foreground">
                     Manage your virtual and physical cards
                   </p>
                 </div>

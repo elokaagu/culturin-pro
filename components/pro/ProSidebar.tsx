@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "../../lib/navigation";
 import { useAuth } from "@/src/components/auth/AuthProvider";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   LayoutDashboard,
   PencilRuler,
@@ -20,6 +21,8 @@ import {
   BarChart3,
   Calendar,
   Map,
+  Moon,
+  Sun,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -58,6 +61,13 @@ const ProSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout, isLoading, isReady } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Client-side hydration fix
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -111,9 +121,9 @@ const ProSidebar: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 h-full flex flex-col fixed left-0 top-0 bottom-0 font-sans shadow-lg">
+    <div className="w-64 bg-background border-r border-border h-full flex flex-col fixed left-0 top-0 bottom-0 font-sans shadow-lg theme-transition">
       {/* Logo & Header */}
-      <div className="p-4 border-b border-gray-200 bg-white">
+      <div className="p-4 border-b border-border bg-background theme-transition">
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
@@ -130,7 +140,7 @@ const ProSidebar: React.FC = () => {
             />
           </div>
         </button>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Cultural Experience Platform
         </p>
       </div>
@@ -145,8 +155,8 @@ const ProSidebar: React.FC = () => {
               className={cn(
                 "flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-all duration-300 text-sm font-medium",
                 location.pathname === item.path
-                  ? "bg-blue-600 text-white shadow-lg"
-                  : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  ? "bg-primary text-primary-foreground shadow-lg"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               )}
             >
               <item.icon className="h-4 w-4" />
@@ -157,23 +167,23 @@ const ProSidebar: React.FC = () => {
       </div>
 
       {/* Plan & Account Section */}
-      <div className="p-4 border-t border-gray-200 bg-white">
+      <div className="p-4 border-t border-border bg-background theme-transition">
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex w-full items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-all duration-300">
-            <div className="w-8 h-8 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
-              <Users className="h-4 w-4 text-gray-600" />
+          <DropdownMenuTrigger className="flex w-full items-center gap-2 p-2 rounded-md hover:bg-accent transition-all duration-300">
+            <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center">
+              <Users className="h-4 w-4 text-muted-foreground" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-black">{userName}</p>
-              <p className="text-xs text-gray-600">{planType}</p>
+              <p className="text-sm font-medium text-foreground">{userName}</p>
+              <p className="text-xs text-muted-foreground">{planType}</p>
             </div>
-            <ChevronDown className="h-4 w-4 text-gray-600" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56 mb-2">
-            <div className="px-3 py-2 text-sm text-gray-500">
+          <DropdownMenuContent className="w-56 mb-2 glass-card border-border/50">
+            <div className="px-3 py-2 text-sm text-muted-foreground">
               {user?.email || ""}
             </div>
-            <div className="px-3 py-1 text-xs text-gray-400 capitalize">
+            <div className="px-3 py-1 text-xs text-muted-foreground/70 capitalize">
               {user ? (user.role === "admin" ? "Admin" : "User") : ""} • Studio
               Access
             </div>
@@ -190,6 +200,16 @@ const ProSidebar: React.FC = () => {
               <Settings className="h-4 w-4 mr-2" />
               Settings
             </DropdownMenuItem>
+            {isMounted && (
+              <DropdownMenuItem onClick={toggleTheme}>
+                {theme === 'light' ? (
+                  <Moon className="h-4 w-4 mr-2 text-blue-400" />
+                ) : (
+                  <Sun className="h-4 w-4 mr-2 text-yellow-500" />
+                )}
+                {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={async () => {
@@ -207,7 +227,7 @@ const ProSidebar: React.FC = () => {
         {/* Back to Culturin Home link */}
         <button
           onClick={() => navigate("/")}
-          className="mt-4 flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-colors text-sm text-blue-600 hover:bg-blue-50 border border-blue-100"
+          className="mt-4 flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-colors text-sm text-primary hover:bg-primary/10 border border-primary/20"
         >
           <Home className="h-4 w-4" />
           <span>Back to Culturin Home</span>

@@ -13,13 +13,13 @@ const ProDashboardLayout: React.FC<ProDashboardLayoutProps> = ({
   subtitle,
 }) => {
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-background min-h-screen theme-transition">
       <ProSidebar />
       <div className="ml-64 p-6 lg:p-8 min-h-screen">
         {(title || subtitle) && (
           <div className="mb-6">
-            {title && <h1 className="text-2xl font-bold">{title}</h1>}
-            {subtitle && <p className="text-gray-600 mt-1">{subtitle}</p>}
+            {title && <h1 className="text-2xl font-bold text-foreground">{title}</h1>}
+            {subtitle && <p className="text-muted-foreground mt-1">{subtitle}</p>}
           </div>
         )}
         {children}
