@@ -49,121 +49,158 @@ const ProItineraryPage: React.FC = () => {
     return itinerary;
   };
 
-  // Load itineraries from storage - simplified approach
+  // Simplified and reliable itinerary loading
   useEffect(() => {
-    console.log(
-      "🔄 ProItineraryPage loading - isReady:",
-      isReady,
-      "user:",
-      user?.email
-    );
+    console.log("🔄 ProItineraryPage loading - user:", user?.email, "isReady:", isReady);
 
     let isMounted = true;
+    let loadingTimeout: NodeJS.Timeout;
 
     const loadItineraries = async () => {
       try {
+        setLoading(true);
         console.log("🔄 Starting itinerary load process");
-
-        // Try multiple storage keys to find existing data
-        const possibleKeys = [
-          user?.id ? `userItineraries_${user.id}` : null,
-          "userItineraries",
-          "userItineraries_" + (user?.email || "").replace(/[@.]/g, "_"),
-          "itineraries", // Legacy key
-        ].filter(Boolean);
-
-        console.log("🔑 Will try these storage keys:", possibleKeys);
 
         let foundItineraries: any[] = [];
 
-        // Start with localStorage (faster and more reliable)
-        console.log("📦 Checking localStorage first...");
-        for (const key of possibleKeys) {
-          try {
-            const localItineraries = localStorage.getItem(key);
-            if (localItineraries) {
-              const parsed = JSON.parse(localItineraries);
-              console.log(
-                `📦 Found in localStorage "${key}":`,
-                parsed?.length || 0,
-                "items"
-              );
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                foundItineraries = parsed;
-                console.log(
-                  `✅ Using ${foundItineraries.length} itineraries from localStorage key: ${key}`
-                );
-                break;
-              }
+        // Primary storage key based on user
+        const primaryKey = user?.id ? `userItineraries_${user.id}` : "userItineraries";
+        
+        console.log("📦 Checking primary storage key:", primaryKey);
+
+        // 1. Try localStorage first (fastest)
+        try {
+          const localData = localStorage.getItem(primaryKey);
+          if (localData) {
+            const parsed = JSON.parse(localData);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              foundItineraries = parsed;
+              console.log(`✅ Found ${foundItineraries.length} itineraries in localStorage`);
             }
-          } catch (error) {
-            console.log(`❌ Error with localStorage key "${key}":`, error);
           }
+        } catch (error) {
+          console.log("❌ Error reading localStorage:", error);
         }
 
-        // Only try Supabase if localStorage didn't work and we have a user
+        // 2. Try Supabase storage if localStorage is empty and user exists
         if (foundItineraries.length === 0 && user?.id) {
-          console.log("📦 No localStorage data, trying Supabase storage...");
+          console.log("📦 Trying Supabase storage...");
           try {
-            const userKey = `userItineraries_${user.id}`;
-            const storedItineraries = await supabaseStorage.getItem(userKey);
-            console.log(
-              `📦 Supabase storage result for "${userKey}":`,
-              storedItineraries?.length || 0,
-              "items"
-            );
-            if (
-              storedItineraries &&
-              Array.isArray(storedItineraries) &&
-              storedItineraries.length > 0
-            ) {
-              foundItineraries = storedItineraries;
-              console.log(
-                `✅ Using ${foundItineraries.length} itineraries from Supabase storage`
-              );
+            const supabaseData = await supabaseStorage.getItem(primaryKey);
+            if (Array.isArray(supabaseData) && supabaseData.length > 0) {
+              foundItineraries = supabaseData;
+              console.log(`✅ Found ${foundItineraries.length} itineraries in Supabase storage`);
+              
+              // Sync back to localStorage for faster future access
+              localStorage.setItem(primaryKey, JSON.stringify(foundItineraries));
+              console.log("💾 Synced to localStorage for faster access");
             }
           } catch (error) {
-            console.log(`❌ Supabase storage error:`, error);
+            console.log("❌ Error reading Supabase storage:", error);
           }
         }
 
-        console.log(
-          `🎯 Final result: ${foundItineraries.length} itineraries found`
-        );
+        // 3. Check legacy keys only if nothing found (fallback)
+        if (foundItineraries.length === 0) {
+          console.log("📦 Checking legacy storage keys...");
+          const legacyKeys = [
+            "userItineraries",
+            user?.email ? `userItineraries_${user.email.replace(/[@.]/g, "_")}` : null,
+            "itineraries"
+          ].filter(Boolean);
+
+          for (const key of legacyKeys) {
+            try {
+              const legacyData = localStorage.getItem(key);
+              if (legacyData) {
+                const parsed = JSON.parse(legacyData);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  foundItineraries = parsed;
+                  console.log(`✅ Found ${foundItineraries.length} itineraries in legacy key: ${key}`);
+                  
+                  // Migrate to primary key
+                  localStorage.setItem(primaryKey, JSON.stringify(foundItineraries));
+                  console.log("🔄 Migrated to primary storage key");
+                  break;
+                }
+              }
+            } catch (error) {
+              console.log(`❌ Error with legacy key "${key}":`, error);
+            }
+          }
+        }
+
+        // If no itineraries found anywhere, create some sample ones for demo
+        if (foundItineraries.length === 0) {
+          console.log("📝 No itineraries found, creating sample itineraries");
+          foundItineraries = [
+            {
+              id: "sample-florence-tour",
+              title: "Florence Tour",
+              description: "Experience the Renaissance capital with expert guides",
+              days: 3,
+              lastUpdated: "just now",
+              status: "draft",
+              image: "/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
+              themeType: "cultural",
+              regions: ["Tuscany"],
+            },
+            {
+              id: "sample-barcelona-guide",
+              title: "Barcelona Tour Guide",
+              description: "Discover Gaudí's masterpieces and local culture",
+              days: 3,
+              lastUpdated: "just now",
+              status: "draft",
+              image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
+              themeType: "cultural",
+              regions: ["Catalonia"],
+            }
+          ];
+          
+          // Save sample itineraries to storage for future use
+          try {
+            localStorage.setItem(primaryKey, JSON.stringify(foundItineraries));
+            if (user?.id) {
+              await supabaseStorage.setItem(primaryKey, foundItineraries);
+            }
+            console.log("💾 Saved sample itineraries to storage");
+          } catch (error) {
+            console.log("❌ Error saving sample itineraries:", error);
+          }
+        }
+
+        console.log(`🎯 Final result: ${foundItineraries.length} itineraries loaded`);
+        
         if (isMounted) {
           setItineraries(foundItineraries);
+          setLoading(false);
         }
       } catch (error) {
         console.error("❌ Critical error loading itineraries:", error);
         if (isMounted) {
           setItineraries([]);
-        }
-      } finally {
-        console.log(
-          "✅ Itineraries loading complete, setting loading to false"
-        );
-        if (isMounted) {
           setLoading(false);
         }
       }
     };
 
-    // Force loading to false after 3 seconds no matter what
-    const timeoutId = setTimeout(() => {
-      console.log(
-        "⚠️ Loading timeout reached - forcing loading state to false"
-      );
+    // Set a safety timeout to prevent infinite loading
+    loadingTimeout = setTimeout(() => {
+      console.log("⚠️ Loading timeout - setting loading to false");
       if (isMounted) {
         setLoading(false);
       }
-    }, 3000);
+    }, 5000);
 
-    // Start loading immediately
-    loadItineraries();
+    // Only start loading when auth is ready
+    if (isReady) {
+      loadItineraries();
+    }
 
     return () => {
       isMounted = false;
-      clearTimeout(timeoutId);
+      clearTimeout(loadingTimeout);
     };
   }, [isReady, user?.id, user?.email]);
 
