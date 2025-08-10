@@ -774,14 +774,14 @@ Description 2: ${data.content.description2 || ""}`;
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                       message.type === 'user' 
                         ? 'bg-blue-500 text-white' 
-                        : 'bg-gray-100 text-gray-600'
+                        : 'bg-muted text-muted-foreground'
                     }`}>
                       {message.type === 'user' ? <User className="h-4 w-4" /> : <MessageSquare className="h-4 w-4" />}
                     </div>
                     <div className={`rounded-lg px-4 py-3 ${
                       message.type === 'user'
                         ? 'bg-blue-500 text-white'
-                        : 'bg-gray-50 text-gray-900'
+                        : 'bg-muted text-foreground'
                     }`}>
                       <div className="flex items-center gap-2 mb-2">
                         {message.isGenerating && (
@@ -1208,48 +1208,48 @@ Description 2: ${data.content.description2 || ""}`;
     <div className="h-full flex flex-col p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Studio</h1>
-        <p className="text-gray-600">Create amazing marketing content with Rigo, your AI assistant</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Studio</h1>
+        <p className="text-muted-foreground">Create amazing marketing content with Rigo, your AI assistant</p>
       </div>
 
       {/* New Project Options */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Button
           onClick={handleStartChat}
-          className="h-32 flex flex-col items-center justify-center gap-3 bg-white border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all"
+          className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
-          <Pencil className="h-8 w-8 text-gray-600" />
-          <span className="font-medium text-gray-900">Start from scratch</span>
+          <Pencil className="h-8 w-8 text-muted-foreground" />
+          <span className="font-medium text-foreground">Start from scratch</span>
         </Button>
         
         <Button
           onClick={handleStartChat}
-          className="h-32 flex flex-col items-center justify-center gap-3 bg-white border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all"
+          className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
-          <BookOpen className="h-8 w-8 text-gray-600" />
-          <span className="font-medium text-gray-900">Create a blog post</span>
+          <BookOpen className="h-8 w-8 text-muted-foreground" />
+          <span className="font-medium text-foreground">Create a blog post</span>
         </Button>
         
         <Button
           onClick={handleStartChat}
-          className="h-32 flex flex-col items-center justify-center gap-3 bg-white border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all"
+          className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
-          <Mic className="h-8 w-8 text-gray-600" />
-          <span className="font-medium text-gray-900">Create social content</span>
+          <Mic className="h-8 w-8 text-muted-foreground" />
+          <span className="font-medium text-foreground">Create social content</span>
         </Button>
         
         <Button
           onClick={handleStartChat}
-          className="h-32 flex flex-col items-center justify-center gap-3 bg-white border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all"
+          className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
-          <Link className="h-8 w-8 text-gray-600" />
-          <span className="font-medium text-gray-900">Import from URL</span>
+          <Link className="h-8 w-8 text-muted-foreground" />
+          <span className="font-medium text-foreground">Import from URL</span>
         </Button>
       </div>
 
       {/* Search Bar */}
       <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -1272,8 +1272,8 @@ Description 2: ${data.content.description2 || ""}`;
                   {getPlatformIcon(project.platform)}
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">{project.title}</h3>
-                  <p className="text-sm text-gray-500">{project.timestamp}</p>
+                  <h3 className="font-medium text-foreground">{project.title}</h3>
+                  <p className="text-sm text-muted-foreground">{project.timestamp}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">

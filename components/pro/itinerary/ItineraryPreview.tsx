@@ -80,7 +80,6 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
 
   // Reset modules when itinerary changes
   useEffect(() => {
-
     if (itinerary.id && itinerary.modules) {
       setModules(itinerary.modules);
       setActiveDay(1);
@@ -124,13 +123,11 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, day: number) => {
     e.preventDefault();
-    
 
     try {
       const moduleData = e.dataTransfer.getData("moduleData");
-      
+
       if (!moduleData) {
-        
         return;
       }
 
@@ -418,9 +415,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
           <Card key={day}>
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle className="text-lg">
-                  Day {day}
-                </CardTitle>
+                <CardTitle className="text-lg">Day {day}</CardTitle>
                 <div className="flex gap-2">
                   {totalDuration > 0 && (
                     <Badge
@@ -563,9 +558,7 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                       value={String(day)}
                       className="flex flex-col min-w-[80px]"
                     >
-                      <span>
-                        Day {day}
-                      </span>
+                      <span>Day {day}</span>
                       <div className="flex gap-1 text-xs">
                         <span>{dayModules.length} items</span>
                         {dayTotal > 0 && <span>${dayTotal}</span>}
@@ -580,12 +573,12 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
           <ScrollArea className="flex-1">
             {dayTabs.map((day) => (
               <TabsContent key={day} value={String(day)} className="m-0 p-0">
-                <div 
+                <div
                   className="min-h-[400px] p-4 hover:bg-blue-50/50 transition-colors duration-200"
                   onDrop={(e) => handleDrop(e, day)}
                   onDragOver={handleDragOver}
                 >
-                  <div 
+                  <div
                     className={`border-2 border-dashed rounded-lg p-8 mb-4 text-center transition-all duration-200 ${
                       modules.filter((m) => m.day === day).length === 0
                         ? "bg-blue-50 border-blue-200 hover:bg-blue-100"
@@ -600,96 +593,99 @@ const ItineraryPreview: React.FC<ItineraryPreviewProps> = ({
                           : "Drag more modules or rearrange existing ones"}
                       </p>
                       <p className="text-sm text-gray-500">
-                        Available modules: Accommodation, Meal, Attraction, Transportation, Activity, Photo, Break, Location
+                        Available modules: Accommodation, Meal, Attraction,
+                        Transportation, Activity, Photo, Break, Location
                       </p>
                     </div>
                   </div>
 
                   {(() => {
-                    const dayModules = modules.filter((module) => module.day === day);
-              
+                    const dayModules = modules.filter(
+                      (module) => module.day === day
+                    );
+
                     return dayModules
                       .sort((a, b) => (a.position || 0) - (b.position || 0))
                       .map((module) => (
-                      <div
-                        key={module.id}
-                        className="border rounded-lg mb-4 overflow-hidden"
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, module.id)}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => handleReorder(e, module.id)}
-                      >
-                        <div className="bg-white p-3 flex justify-between items-center">
-                          <div className="flex items-center gap-2">
-                            <GripVertical className="h-4 w-4 text-gray-400 cursor-move" />
-                            {getModuleIcon(module.type)}
-                            <div>
-                              <span className="font-medium">
-                                {module.title}
-                              </span>
-                              <div className="flex items-center gap-2 text-sm text-gray-500">
-                                {module.time && (
+                        <div
+                          key={module.id}
+                          className="border rounded-lg mb-4 overflow-hidden"
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, module.id)}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => handleReorder(e, module.id)}
+                        >
+                          <div className="bg-white p-3 flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <GripVertical className="h-4 w-4 text-gray-400 cursor-move" />
+                              {getModuleIcon(module.type)}
+                              <div>
+                                <span className="font-medium">
+                                  {module.title}
+                                </span>
+                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                  {module.time && (
+                                    <span className="flex items-center gap-1">
+                                      <Clock className="h-3 w-3" />
+                                      {module.time}
+                                    </span>
+                                  )}
+                                  {module.duration && (
+                                    <span>
+                                      ({formatDuration(module.duration)})
+                                    </span>
+                                  )}
+                                  {module.price && module.price > 0 && (
+                                    <span className="flex items-center gap-1">
+                                      <DollarSign className="h-3 w-3" />$
+                                      {module.price}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleEdit(module.id)}
+                              >
+                                <Edit className="h-3 w-3 mr-1" />
+                                {editingModule === module.id ? "Done" : "Edit"}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDelete(module.id)}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          {editingModule === module.id && (
+                            <ModuleEditForm module={module} />
+                          )}
+
+                          {editingModule !== module.id && (
+                            <div className="px-3 pb-3">
+                              {module.description && (
+                                <p className="text-sm text-gray-600 mb-2">
+                                  {module.description}
+                                </p>
+                              )}
+                              <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                                {module.location && (
                                   <span className="flex items-center gap-1">
-                                    <Clock className="h-3 w-3" />
-                                    {module.time}
-                                  </span>
-                                )}
-                                {module.duration && (
-                                  <span>
-                                    ({formatDuration(module.duration)})
-                                  </span>
-                                )}
-                                {module.price && module.price > 0 && (
-                                  <span className="flex items-center gap-1">
-                                    <DollarSign className="h-3 w-3" />$
-                                    {module.price}
+                                    <MapPin className="h-3 w-3" />
+                                    {module.location}
                                   </span>
                                 )}
                               </div>
                             </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleEdit(module.id)}
-                            >
-                              <Edit className="h-3 w-3 mr-1" />
-                              {editingModule === module.id ? "Done" : "Edit"}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDelete(module.id)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
+                          )}
                         </div>
-
-                        {editingModule === module.id && (
-                          <ModuleEditForm module={module} />
-                        )}
-
-                        {editingModule !== module.id && (
-                          <div className="px-3 pb-3">
-                            {module.description && (
-                              <p className="text-sm text-gray-600 mb-2">
-                                {module.description}
-                              </p>
-                            )}
-                            <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-                              {module.location && (
-                                <span className="flex items-center gap-1">
-                                  <MapPin className="h-3 w-3" />
-                                  {module.location}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
                       ));
                   })()}
                 </div>
