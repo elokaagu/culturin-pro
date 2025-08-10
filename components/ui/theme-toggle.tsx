@@ -75,9 +75,9 @@ export function ThemeToggle({
           >
             {theme === "light" ? (
               <Sun className={cn(iconSizes[size], "text-yellow-500")} />
-                         ) : (
-               <Moon className={cn(iconSizes[size], "text-blue-400")} />
-             )}
+            ) : (
+              <Moon className={cn(iconSizes[size], "text-blue-400")} />
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -122,11 +122,11 @@ export function ThemeToggle({
               <span className="hidden sm:inline">Light</span>
             </>
           ) : (
-                          <>
-                <Moon className={cn(iconSizes[size], "text-blue-400")} />
-                <span className="hidden sm:inline">Dark</span>
-              </>
-            )}
+            <>
+              <Moon className={cn(iconSizes[size], "text-blue-400")} />
+              <span className="hidden sm:inline">Dark</span>
+            </>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -173,11 +173,11 @@ export function QuickThemeToggle({ className }: { className?: string }) {
       )}
       aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
     >
-             {theme === "light" ? (
-         <Moon className="h-4 w-4 text-muted-foreground hover:text-blue-400 transition-colors" />
-       ) : (
-         <Sun className="h-4 w-4 text-muted-foreground hover:text-yellow-500 transition-colors" />
-       )}
+      {theme === "light" ? (
+        <Moon className="h-4 w-4 text-muted-foreground hover:text-blue-400 transition-colors" />
+      ) : (
+        <Sun className="h-4 w-4 text-muted-foreground hover:text-yellow-500 transition-colors" />
+      )}
     </Button>
   );
 }

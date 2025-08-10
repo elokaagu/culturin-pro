@@ -212,8 +212,8 @@ const LoyaltyDashboard: React.FC = () => {
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold">Loyalty Card Dashboard</h1>
-            <p className="text-gray-600">
+            <h1 className="text-3xl font-bold text-foreground">Loyalty Card Dashboard</h1>
+            <p className="text-muted-foreground">
               Manage your stablecoin loyalty card, rewards, and transactions
             </p>
           </div>
@@ -280,7 +280,7 @@ const LoyaltyDashboard: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="text-sm font-medium">Member Since</Label>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       {loyaltyCard.memberSince 
                         ? (loyaltyCard.memberSince instanceof Date 
                             ? loyaltyCard.memberSince.toLocaleDateString()
@@ -291,7 +291,7 @@ const LoyaltyDashboard: React.FC = () => {
                   </div>
                   <div>
                     <Label className="text-sm font-medium">Annual Fee</Label>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       ${loyaltyCard.annualFee}
                     </p>
                   </div>
@@ -300,7 +300,7 @@ const LoyaltyDashboard: React.FC = () => {
                 {loyaltyCard.walletAddress ? (
                   <div>
                     <Label className="text-sm font-medium">Connected Wallet</Label>
-                    <p className="text-sm text-gray-600 font-mono">
+                    <p className="text-sm text-muted-foreground font-mono">
                       {loyaltyCard.walletAddress.slice(0, 6)}...{loyaltyCard.walletAddress.slice(-4)}
                     </p>
                   </div>
@@ -388,9 +388,9 @@ const LoyaltyDashboard: React.FC = () => {
             <CardContent>
               {transactions.length === 0 ? (
                 <div className="text-center py-8">
-                  <History className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No transactions yet</p>
-                  <p className="text-sm text-gray-400">
+                  <History className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No transactions yet</p>
+                  <p className="text-sm text-muted-foreground/70">
                     Your transaction history will appear here
                   </p>
                 </div>
@@ -407,7 +407,7 @@ const LoyaltyDashboard: React.FC = () => {
                           <p className="font-medium">
                             {transaction.bookings?.guest_name || "Transaction"}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-muted-foreground">
                             {formatDate(transaction.created_at)}
                           </p>
                         </div>

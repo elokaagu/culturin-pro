@@ -19,8 +19,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Load theme from localStorage on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('culturin-theme') as Theme;
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const initialTheme = savedTheme || systemTheme;
+    // Default to light mode instead of system preference
+    const initialTheme = savedTheme || 'light';
     
     setThemeState(initialTheme);
     setMounted(true);

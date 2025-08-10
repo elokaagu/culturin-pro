@@ -14,8 +14,8 @@ export default function Settings() {
       <div className="p-6">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold">Settings</h1>
-            <p className="text-gray-600">Configure your account preferences</p>
+            <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+            <p className="text-muted-foreground">Configure your account preferences</p>
           </div>
 
           <Tabs defaultValue="general" className="w-full">

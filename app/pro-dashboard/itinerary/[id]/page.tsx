@@ -459,10 +459,10 @@ export default function ItineraryDetailPage() {
                 Back to Itineraries
               </Button>
               <div className="min-w-0 flex-1">
-                <h1 className="text-2xl font-bold text-gray-900 truncate">
+                <h1 className="text-2xl font-bold text-foreground truncate">
                   {isEditing ? "Edit Itinerary" : itinerary.title}
                 </h1>
-                <p className="text-gray-600 text-sm">
+                <p className="text-muted-foreground text-sm">
                   {isEditing
                     ? "Make changes to your itinerary"
                     : `${itinerary.days} days • ${
