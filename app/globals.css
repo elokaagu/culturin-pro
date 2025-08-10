@@ -72,8 +72,8 @@
   }
 
   .dark .glass-hover:hover {
-    background: rgba(255, 215, 0, 0.1);
-    border-color: rgba(255, 215, 0, 0.3);
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
   }
 
   .glass-active {
@@ -83,8 +83,8 @@
   }
 
   .dark .glass-active {
-    background: rgba(255, 215, 0, 0.15);
-    border-color: rgba(255, 215, 0, 0.4);
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
   }
 
   .glass-focus {
@@ -93,7 +93,7 @@
   }
 
   .dark .glass-focus {
-    ring-color: rgba(255, 215, 0, 0.5);
+    ring-color: rgba(59, 130, 246, 0.5);
   }
 
   /* Glass Variants by Opacity */
@@ -185,29 +185,29 @@
   }
 
   .dark {
-    --background: 0 0% 2%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 45 100% 60%;
-    --primary-foreground: 0 0% 8%;
-    --secondary: 0 0% 8%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 10%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 5%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 8%;
     --muted-foreground: 0 0% 65%;
-    --accent: 45 100% 60%;
-    --accent-foreground: 0 0% 8%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 15%;
-    --input: 0 0% 12%;
-    --ring: 45 100% 60%;
-    --chart-1: 45 100% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 10%;
+    --input: 0 0% 5%;
+    --ring: 217 91% 60%;
+    --chart-1: 217 91% 60%;
     --chart-2: 0 0% 70%;
     --chart-3: 0 0% 85%;
-    --chart-4: 45 100% 70%;
+    --chart-4: 217 91% 70%;
     --chart-5: 0 0% 95%;
   }
 }
@@ -573,10 +573,12 @@ header.sticky {
 
   /* Dark Mode Transition Utilities */
   .theme-transition {
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease,
+      color 0.3s ease;
   }
 
   .glass-transition {
-    transition: background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
+    transition: background 0.3s ease, border-color 0.3s ease,
+      backdrop-filter 0.3s ease;
   }
 }

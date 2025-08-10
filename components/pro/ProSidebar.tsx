@@ -78,7 +78,7 @@ const ProSidebar: React.FC = () => {
       const timer = setTimeout(() => {
         navigate("/");
       }, 500);
-      
+
       return () => clearTimeout(timer);
     }
   }, [isReady, isLoading, user, navigate]);
@@ -202,12 +202,12 @@ const ProSidebar: React.FC = () => {
             </DropdownMenuItem>
             {isMounted && (
               <DropdownMenuItem onClick={toggleTheme}>
-                {theme === 'light' ? (
-                  <Moon className="h-4 w-4 mr-2 text-primary" />
-                ) : (
-                  <Sun className="h-4 w-4 mr-2 text-yellow-500" />
-                )}
-                {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+                                 {theme === "light" ? (
+                   <Moon className="h-4 w-4 mr-2 text-blue-400" />
+                 ) : (
+                   <Sun className="h-4 w-4 mr-2 text-yellow-500" />
+                 )}
+                {theme === "light" ? "Dark Mode" : "Light Mode"}
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
