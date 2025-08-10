@@ -12,7 +12,13 @@ interface ThemeAwareImageProps {
   height: number;
 }
 
-export function ThemeAwareImage({ src, alt, className = "", width, height }: ThemeAwareImageProps) {
+export function ThemeAwareImage({
+  src,
+  alt,
+  className = "",
+  width,
+  height,
+}: ThemeAwareImageProps) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -23,23 +29,22 @@ export function ThemeAwareImage({ src, alt, className = "", width, height }: The
   // Don't render anything on the server or before hydration
   if (!mounted) {
     return (
-      <div 
-        style={{ width, height }} 
+      <div
+        style={{ width, height }}
         className={`${className} bg-transparent`}
       />
     );
   }
 
   // Apply filter to make logo white in dark mode
-  const themeAwareClassName = theme === 'dark' 
-    ? `${className} brightness-0 invert` 
-    : className;
+  const themeAwareClassName =
+    theme === "dark" ? `${className} brightness-0 invert` : className;
 
   return (
     <Image
       src={src}
       alt={alt}
-      className={themeAwareClassName}
+      className={`${themeAwareClassName} object-contain`}
       width={width}
       height={height}
     />

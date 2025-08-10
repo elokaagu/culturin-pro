@@ -135,7 +135,7 @@ const ProSidebar: React.FC = () => {
             <ThemeAwareImage
               src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png"
               alt="Culturin"
-              className="h-full cursor-pointer"
+              className="h-full w-auto cursor-pointer"
               width={180} /* Increased from 160 to 180 */
               height={64} /* Increased from 56 to 64 */
             />

@@ -72,7 +72,7 @@ export const Header = ({ type = "default" }: HeaderProps) => {
                 <ThemeAwareImage
                   src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png"
                   alt="Culturin"
-                  className="h-full cursor-pointer"
+                  className="h-full w-auto cursor-pointer"
                   width={220} /* Increased from 180 to 220 */
                   height={80} /* Increased from 64 to 80 */
                 />
