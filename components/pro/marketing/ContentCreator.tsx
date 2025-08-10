@@ -49,7 +49,7 @@ import { toast } from "sonner";
 
 interface ChatMessage {
   id: string;
-  type: 'user' | 'bot';
+  type: "user" | "bot";
   content: string;
   timestamp: Date;
   options?: string[];
@@ -68,14 +68,21 @@ interface ChatMessage {
 interface UploadedFile {
   id: string;
   name: string;
-  type: 'image' | 'document' | 'url';
+  type: "image" | "document" | "url";
   url?: string;
   file?: File;
   preview?: string;
 }
 
 interface ConversationState {
-  step: 'welcome' | 'content-type' | 'experience-details' | 'target-audience' | 'tone' | 'generating' | 'result';
+  step:
+    | "welcome"
+    | "content-type"
+    | "experience-details"
+    | "target-audience"
+    | "tone"
+    | "generating"
+    | "result";
   experienceTitle?: string;
   location?: string;
   keyCulturalElements?: string;
@@ -105,20 +112,25 @@ interface RecentProject {
 
 const ContentCreator: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [conversationState, setConversationState] = useState<ConversationState>({
-    step: 'welcome'
-  });
+  const [conversationState, setConversationState] = useState<ConversationState>(
+    {
+      step: "welcome",
+    }
+  );
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
-  const [inputValue, setInputValue] = useState('');
+  const [generatedContent, setGeneratedContent] =
+    useState<GeneratedContent | null>(null);
+  const [inputValue, setInputValue] = useState("");
   const [attachments, setAttachments] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [showUploadMenu, setShowUploadMenu] = useState(false);
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(
+    null
+  );
   const [showChat, setShowChat] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
@@ -130,63 +142,74 @@ const ContentCreator: React.FC = () => {
       title: "Barcelona Tapas Experience Marketing Campaign",
       type: "Instagram Caption",
       timestamp: "1 hour ago",
-      platform: "Instagram"
+      platform: "Instagram",
     },
     {
-      id: "2", 
+      id: "2",
       title: "Traditional Moroccan Cooking Class Promotion",
       type: "Facebook Ad",
       timestamp: "3 hours ago",
-      platform: "Facebook"
+      platform: "Facebook",
     },
     {
       id: "3",
       title: "Kyoto Tea Ceremony Cultural Experience",
       type: "Google Ad Copy",
       timestamp: "6 hours ago",
-      platform: "Google Ads"
+      platform: "Google Ads",
     },
     {
       id: "4",
       title: "Venice Gondola Ride Social Media Content",
       type: "TikTok Hook",
       timestamp: "2 days ago",
-      platform: "TikTok"
+      platform: "TikTok",
     },
     {
       id: "5",
       title: "Istanbul Bazaar Cultural Tour Email Newsletter",
       type: "Email Newsletter",
       timestamp: "3 weeks ago",
-      platform: "Email"
-    }
+      platform: "Email",
+    },
   ]);
 
   // Scroll to bottom when new messages are added
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // Initialize chat on component mount
   useEffect(() => {
     if (messages.length === 0 && showChat) {
-      addBotMessage("Ahoy! I'm Rigo, your AI marketing assistant. Ready to discover amazing content together? What kind of marketing content would you like to create today?", [
-        "Instagram Caption",
-        "TikTok Hook", 
-        "Google Ad Copy",
-        "Facebook Ad",
-        "Blog Post",
-        "Email Newsletter",
-        "WhatsApp Script",
-        "Event Flyer"
-      ]);
+      addBotMessage(
+        "Ahoy! I'm Rigo, your AI marketing assistant. Ready to discover amazing content together? What kind of marketing content would you like to create today?",
+        [
+          "Instagram Caption",
+          "TikTok Hook",
+          "Google Ad Copy",
+          "Facebook Ad",
+          "Blog Post",
+          "Email Newsletter",
+          "WhatsApp Script",
+          "Event Flyer",
+        ]
+      );
     }
   }, [showChat]);
 
-  const addBotMessage = (content: string, options?: string[], isGenerating: boolean = false, attachments?: UploadedFile[], generatedImage?: string, imagePrompt?: string, generatedData?: any) => {
+  const addBotMessage = (
+    content: string,
+    options?: string[],
+    isGenerating: boolean = false,
+    attachments?: UploadedFile[],
+    generatedImage?: string,
+    imagePrompt?: string,
+    generatedData?: any
+  ) => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
-      type: 'bot',
+      type: "bot",
       content,
       timestamp: new Date(),
       options,
@@ -197,20 +220,23 @@ const ContentCreator: React.FC = () => {
       generatedContent: generatedData?.generatedContent,
       flyerDesign: generatedData?.flyerDesign,
       contentType: generatedData?.contentType,
-      platform: generatedData?.platform
+      platform: generatedData?.platform,
     };
-    setMessages(prev => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
   };
 
-  const addUserMessage = (content: string, userAttachments?: UploadedFile[]) => {
+  const addUserMessage = (
+    content: string,
+    userAttachments?: UploadedFile[]
+  ) => {
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
-      type: 'user',
+      type: "user",
       content,
       timestamp: new Date(),
-      attachments: userAttachments
+      attachments: userAttachments,
     };
-    setMessages(prev => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
   };
 
   const generateSpeech = async (text: string): Promise<string | null> => {
@@ -276,67 +302,81 @@ const ContentCreator: React.FC = () => {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const fileId = Date.now() + i;
-      
+
       // Create preview for images
       let preview: string | undefined;
-      if (file.type.startsWith('image/')) {
+      if (file.type.startsWith("image/")) {
         preview = URL.createObjectURL(file);
       }
 
       const attachment: UploadedFile = {
         id: fileId.toString(),
         name: file.name,
-        type: file.type.startsWith('image/') ? 'image' : 'document',
+        type: file.type.startsWith("image/") ? "image" : "document",
         file,
-        preview
+        preview,
       };
 
       newAttachments.push(attachment);
     }
 
-    setAttachments(prev => [...prev, ...newAttachments]);
+    setAttachments((prev) => [...prev, ...newAttachments]);
     setIsUploading(false);
     setShowUploadMenu(false);
-    
+
     // Add message with attachments
-    addUserMessage(`I've uploaded ${newAttachments.length} reference file${newAttachments.length > 1 ? 's' : ''} for you to analyze.`, newAttachments);
-    
+    addUserMessage(
+      `I've uploaded ${newAttachments.length} reference file${
+        newAttachments.length > 1 ? "s" : ""
+      } for you to analyze.`,
+      newAttachments
+    );
+
     // Get AI response about the uploaded files
-    const fileNames = newAttachments.map(f => f.name).join(', ');
-    const aiResponse = await callOpenAI(`I've uploaded these reference files: ${fileNames}. Can you analyze them and help me create content based on what you see?`, messages);
+    const fileNames = newAttachments.map((f) => f.name).join(", ");
+    const aiResponse = await callOpenAI(
+      `I've uploaded these reference files: ${fileNames}. Can you analyze them and help me create content based on what you see?`,
+      messages
+    );
     addBotMessage(aiResponse);
   };
 
   const handleUrlUpload = async (url: string) => {
     if (!url.trim()) return;
-    
+
     setIsUploading(true);
     const urlId = Date.now().toString();
-    
+
     const attachment: UploadedFile = {
       id: urlId,
       name: url,
-      type: 'url',
-      url: url
+      type: "url",
+      url: url,
     };
 
-    setAttachments(prev => [...prev, attachment]);
+    setAttachments((prev) => [...prev, attachment]);
     setIsUploading(false);
     setShowUploadMenu(false);
-    
+
     // Add message with URL
     addUserMessage(`I've shared this reference URL: ${url}`, [attachment]);
-    
+
     // Get AI response about the URL
-    const aiResponse = await callOpenAI(`I've shared this reference URL: ${url}. Can you analyze it and help me create content based on what you find?`, messages);
+    const aiResponse = await callOpenAI(
+      `I've shared this reference URL: ${url}. Can you analyze it and help me create content based on what you find?`,
+      messages
+    );
     addBotMessage(aiResponse);
   };
 
   const removeAttachment = (attachmentId: string) => {
-    setAttachments(prev => prev.filter(att => att.id !== attachmentId));
+    setAttachments((prev) => prev.filter((att) => att.id !== attachmentId));
   };
 
-  const callOpenAI = async (userInput: string, conversationHistory: ChatMessage[]) => {
+  const callOpenAI = async (
+    userInput: string,
+    conversationHistory: ChatMessage[]
+  ) => {
     try {
       const response = await fetch("/api/generate-content", {
         method: "POST",
@@ -345,13 +385,13 @@ const ContentCreator: React.FC = () => {
         },
         body: JSON.stringify({
           userInput,
-          conversationHistory: conversationHistory.map(msg => ({
-            role: msg.type === 'user' ? 'user' : 'assistant',
+          conversationHistory: conversationHistory.map((msg) => ({
+            role: msg.type === "user" ? "user" : "assistant",
             content: msg.content,
-            attachments: msg.attachments
+            attachments: msg.attachments,
           })),
           isConversation: true,
-          attachments: attachments
+          attachments: attachments,
         }),
       });
 
@@ -383,53 +423,72 @@ const ContentCreator: React.FC = () => {
     }
 
     addUserMessage(option);
-    
+
     // Add a temporary "thinking" message
     const thinkingMessageId = Date.now().toString();
-    setMessages(prev => [...prev, {
-      id: thinkingMessageId,
-      type: 'bot',
-      content: "Let me think about that...",
-      timestamp: new Date(),
-      isGenerating: true
-    }]);
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: thinkingMessageId,
+        type: "bot",
+        content: "Let me think about that...",
+        timestamp: new Date(),
+        isGenerating: true,
+      },
+    ]);
 
     // Get AI response
     const aiResponse = await callOpenAI(option, messages);
-    
+
     // Remove thinking message and add real response
-    setMessages(prev => prev.filter(msg => msg.id !== thinkingMessageId));
-    
+    setMessages((prev) => prev.filter((msg) => msg.id !== thinkingMessageId));
+
     if (aiResponse.generatedImage && !aiResponse.flyerDesign) {
       // Pure image generation (not flyer with image)
-      addBotMessage(aiResponse.response, undefined, false, undefined, aiResponse.generatedImage, aiResponse.imagePrompt);
+      addBotMessage(
+        aiResponse.response,
+        undefined,
+        false,
+        undefined,
+        aiResponse.generatedImage,
+        aiResponse.imagePrompt
+      );
     } else if (aiResponse.generatedContent || aiResponse.flyerDesign) {
       // Handle generated content or flyer (with or without image)
-      const responseText = aiResponse.response || "Here's your generated content:";
-      addBotMessage(responseText, [
-        "Copy Content",
-        "Save to Library", 
-        "Generate Images",
-        "Create Another"
-      ], false, undefined, undefined, undefined, aiResponse);
+      const responseText =
+        aiResponse.response || "Here's your generated content:";
+      addBotMessage(
+        responseText,
+        [
+          "Copy Content",
+          "Save to Library",
+          "Generate Images",
+          "Create Another",
+        ],
+        false,
+        undefined,
+        undefined,
+        undefined,
+        aiResponse
+      );
     } else {
       const responseText = aiResponse.response || aiResponse;
       addBotMessage(responseText);
-      
+
       // Generate speech if voice is enabled
       if (isVoiceEnabled && responseText) {
         const audioUrl = await generateSpeech(responseText);
         if (audioUrl) {
           // Update the last message with audio
-          setMessages(prev => {
+          setMessages((prev) => {
             const newMessages = [...prev];
             const lastMessage = newMessages[newMessages.length - 1];
-            if (lastMessage && lastMessage.type === 'bot') {
+            if (lastMessage && lastMessage.type === "bot") {
               lastMessage.audioUrl = audioUrl;
             }
             return newMessages;
           });
-          
+
           // Auto-play the audio
           playAudio(audioUrl);
         }
@@ -439,56 +498,75 @@ const ContentCreator: React.FC = () => {
 
   const handleUserInput = async (input: string) => {
     if (!input.trim()) return;
-    
+
     addUserMessage(input);
-    setInputValue('');
-    
+    setInputValue("");
+
     // Add a temporary "thinking" message
     const thinkingMessageId = Date.now().toString();
-    setMessages(prev => [...prev, {
-      id: thinkingMessageId,
-      type: 'bot',
-      content: "Let me think about that...",
-      timestamp: new Date(),
-      isGenerating: true
-    }]);
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: thinkingMessageId,
+        type: "bot",
+        content: "Let me think about that...",
+        timestamp: new Date(),
+        isGenerating: true,
+      },
+    ]);
 
     // Get AI response
     const aiResponse = await callOpenAI(input, messages);
-    
+
     // Remove thinking message and add real response
-    setMessages(prev => prev.filter(msg => msg.id !== thinkingMessageId));
-    
+    setMessages((prev) => prev.filter((msg) => msg.id !== thinkingMessageId));
+
     if (aiResponse.generatedImage && !aiResponse.flyerDesign) {
       // Pure image generation (not flyer with image)
-      addBotMessage(aiResponse.response, undefined, false, undefined, aiResponse.generatedImage, aiResponse.imagePrompt);
+      addBotMessage(
+        aiResponse.response,
+        undefined,
+        false,
+        undefined,
+        aiResponse.generatedImage,
+        aiResponse.imagePrompt
+      );
     } else if (aiResponse.generatedContent || aiResponse.flyerDesign) {
       // Handle generated content or flyer (with or without image)
-      const responseText = aiResponse.response || "Here's your generated content:";
-      addBotMessage(responseText, [
-        "Copy Content",
-        "Save to Library", 
-        "Generate Images",
-        "Create Another"
-      ], false, undefined, undefined, undefined, aiResponse);
+      const responseText =
+        aiResponse.response || "Here's your generated content:";
+      addBotMessage(
+        responseText,
+        [
+          "Copy Content",
+          "Save to Library",
+          "Generate Images",
+          "Create Another",
+        ],
+        false,
+        undefined,
+        undefined,
+        undefined,
+        aiResponse
+      );
     } else {
       const responseText = aiResponse.response || aiResponse;
       addBotMessage(responseText);
-      
+
       // Generate speech if voice is enabled
       if (isVoiceEnabled && responseText) {
         const audioUrl = await generateSpeech(responseText);
         if (audioUrl) {
           // Update the last message with audio
-          setMessages(prev => {
+          setMessages((prev) => {
             const newMessages = [...prev];
             const lastMessage = newMessages[newMessages.length - 1];
-            if (lastMessage && lastMessage.type === 'bot') {
+            if (lastMessage && lastMessage.type === "bot") {
               lastMessage.audioUrl = audioUrl;
             }
             return newMessages;
           });
-          
+
           // Auto-play the audio
           playAudio(audioUrl);
         }
@@ -497,9 +575,15 @@ const ContentCreator: React.FC = () => {
   };
 
   const handleGenerateContent = async () => {
-    if (!conversationState.contentType || !conversationState.experienceTitle || !conversationState.location) {
-      addBotMessage("I need a bit more information to create your content. Let's start over!");
-      setConversationState({ step: 'welcome' });
+    if (
+      !conversationState.contentType ||
+      !conversationState.experienceTitle ||
+      !conversationState.location
+    ) {
+      addBotMessage(
+        "I need a bit more information to create your content. Let's start over!"
+      );
+      setConversationState({ step: "welcome" });
       return;
     }
 
@@ -512,12 +596,20 @@ const ContentCreator: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          contentType: conversationState.contentType?.toLowerCase().replace(' ', '-'),
+          contentType: conversationState.contentType
+            ?.toLowerCase()
+            .replace(" ", "-"),
           experienceTitle: conversationState.experienceTitle,
           location: conversationState.location,
           keyCulturalElements: conversationState.keyCulturalElements || "",
-          targetAudience: conversationState.targetAudience?.toLowerCase().replace(' ', '-') || "cultural-travelers",
-          tone: conversationState.tone?.toLowerCase().replace(' & ', '-').replace(' ', '-') || "friendly",
+          targetAudience:
+            conversationState.targetAudience?.toLowerCase().replace(" ", "-") ||
+            "cultural-travelers",
+          tone:
+            conversationState.tone
+              ?.toLowerCase()
+              .replace(" & ", "-")
+              .replace(" ", "-") || "friendly",
         }),
       });
 
@@ -527,11 +619,14 @@ const ContentCreator: React.FC = () => {
       }
 
       const data = await response.json();
-      
+
       let content = "";
       let wordCount = 0;
-      
-      if (conversationState.contentType?.toLowerCase().includes("google") && typeof data.content === "object") {
+
+      if (
+        conversationState.contentType?.toLowerCase().includes("google") &&
+        typeof data.content === "object"
+      ) {
         content = `Headline 1: ${data.content.headline1 || ""}
 Headline 2: ${data.content.headline2 || ""}
 Headline 3: ${data.content.headline3 || ""}
@@ -555,19 +650,20 @@ Description 2: ${data.content.description2 || ""}`;
       };
 
       setGeneratedContent(generatedContent);
-      setConversationState(prev => ({ ...prev, step: 'result' }));
-      
+      setConversationState((prev) => ({ ...prev, step: "result" }));
+
       addBotMessage("Here's your content! What would you like to do with it?", [
         "Copy to Clipboard",
         "Save to Library",
         "Create Another",
-        "Generate Images"
+        "Generate Images",
       ]);
-      
     } catch (error) {
       console.error("Error generating content:", error);
-      addBotMessage("Sorry, I encountered an error while generating your content. Let's try again!");
-      setConversationState({ step: 'welcome' });
+      addBotMessage(
+        "Sorry, I encountered an error while generating your content. Let's try again!"
+      );
+      setConversationState({ step: "welcome" });
     } finally {
       setIsGenerating(false);
     }
@@ -593,32 +689,39 @@ Description 2: ${data.content.description2 || ""}`;
 
   const handleSaveContent = async () => {
     if (!generatedContent) return;
-    
+
     try {
       // Save to localStorage as fallback
-      localStorage.setItem("marketingContent", JSON.stringify(generatedContent));
-      
+      localStorage.setItem(
+        "marketingContent",
+        JSON.stringify(generatedContent)
+      );
+
       toast.success("Content saved to library!");
     } catch (error) {
-      console.error('Error saving marketing content:', error);
+      console.error("Error saving marketing content:", error);
       addBotMessage("Failed to save content. Please try again.");
     }
   };
 
   const handleCopyGeneratedContent = () => {
     // Find the last message with generated content
-    const lastMessageWithContent = messages.reverse().find(msg => 
-      msg.generatedContent || msg.flyerDesign
-    );
-    
+    const lastMessageWithContent = messages
+      .reverse()
+      .find((msg) => msg.generatedContent || msg.flyerDesign);
+
     if (lastMessageWithContent) {
-      let contentToCopy = '';
+      let contentToCopy = "";
       if (lastMessageWithContent.generatedContent) {
         contentToCopy = lastMessageWithContent.generatedContent;
       } else if (lastMessageWithContent.flyerDesign) {
-        contentToCopy = JSON.stringify(lastMessageWithContent.flyerDesign, null, 2);
+        contentToCopy = JSON.stringify(
+          lastMessageWithContent.flyerDesign,
+          null,
+          2
+        );
       }
-      
+
       navigator.clipboard.writeText(contentToCopy);
       addBotMessage("Content copied to clipboard!");
       toast.success("Content copied to clipboard!");
@@ -629,25 +732,32 @@ Description 2: ${data.content.description2 || ""}`;
 
   const handleSaveGeneratedContent = () => {
     // Find the last message with generated content
-    const lastMessageWithContent = messages.reverse().find(msg => 
-      msg.generatedContent || msg.flyerDesign
-    );
-    
+    const lastMessageWithContent = messages
+      .reverse()
+      .find((msg) => msg.generatedContent || msg.flyerDesign);
+
     if (lastMessageWithContent) {
       const contentToSave = {
         id: Date.now().toString(),
-        type: lastMessageWithContent.contentType || 'content',
-        platform: lastMessageWithContent.platform || 'general',
-        content: lastMessageWithContent.generatedContent || lastMessageWithContent.flyerDesign,
-        createdAt: new Date().toISOString()
+        type: lastMessageWithContent.contentType || "content",
+        platform: lastMessageWithContent.platform || "general",
+        content:
+          lastMessageWithContent.generatedContent ||
+          lastMessageWithContent.flyerDesign,
+        createdAt: new Date().toISOString(),
       };
-      
+
       // Save to localStorage
       try {
-        const existingContent = JSON.parse(localStorage.getItem('rigoGeneratedContent') || '[]');
+        const existingContent = JSON.parse(
+          localStorage.getItem("rigoGeneratedContent") || "[]"
+        );
         existingContent.push(contentToSave);
-        localStorage.setItem('rigoGeneratedContent', JSON.stringify(existingContent));
-        
+        localStorage.setItem(
+          "rigoGeneratedContent",
+          JSON.stringify(existingContent)
+        );
+
         addBotMessage("Content saved to your library!");
         toast.success("Content saved to library!");
       } catch (error) {
@@ -661,51 +771,64 @@ Description 2: ${data.content.description2 || ""}`;
 
   const handleGenerateImagesForContent = async () => {
     // Find the last message with generated content
-    const lastMessageWithContent = messages.reverse().find(msg => 
-      msg.generatedContent || msg.flyerDesign
-    );
-    
+    const lastMessageWithContent = messages
+      .reverse()
+      .find((msg) => msg.generatedContent || msg.flyerDesign);
+
     if (lastMessageWithContent) {
-      addBotMessage("Let me generate some images for your content...", undefined, true);
-      
+      addBotMessage(
+        "Let me generate some images for your content...",
+        undefined,
+        true
+      );
+
       try {
         const imagePrompt = `Create a professional marketing image for: ${
-          lastMessageWithContent.generatedContent || 
+          lastMessageWithContent.generatedContent ||
           JSON.stringify(lastMessageWithContent.flyerDesign)
         }`;
-        
+
         const response = await fetch("/api/generate-images", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             prompt: imagePrompt,
-            assetType: "social-media"
+            assetType: "social-media",
           }),
         });
-        
+
         const data = await response.json();
-        
+
         if (data.images && data.images.length > 0) {
-          addBotMessage("Here are some images for your content:", [
-            "Copy Content",
-            "Save to Library",
-            "Create Another"
-          ], false, undefined, data.images[0], imagePrompt);
+          addBotMessage(
+            "Here are some images for your content:",
+            ["Copy Content", "Save to Library", "Create Another"],
+            false,
+            undefined,
+            data.images[0],
+            imagePrompt
+          );
         } else {
-          addBotMessage("Sorry, I couldn't generate images right now. Please try again later.");
+          addBotMessage(
+            "Sorry, I couldn't generate images right now. Please try again later."
+          );
         }
       } catch (error) {
         console.error("Error generating images:", error);
-        addBotMessage("Sorry, I encountered an error generating images. Please try again.");
+        addBotMessage(
+          "Sorry, I encountered an error generating images. Please try again."
+        );
       }
     } else {
-      addBotMessage("Please generate some content first, then I can create images for it.");
+      addBotMessage(
+        "Please generate some content first, then I can create images for it."
+      );
     }
   };
 
   const handleCreateAnother = () => {
     setGeneratedContent(null);
-    setConversationState({ step: 'welcome' });
+    setConversationState({ step: "welcome" });
     setMessages([]);
     setAttachments([]);
     stopAudio();
@@ -718,24 +841,25 @@ Description 2: ${data.content.description2 || ""}`;
 
   const getPlatformIcon = (platform?: string) => {
     switch (platform?.toLowerCase()) {
-      case 'instagram':
+      case "instagram":
         return <Instagram className="h-4 w-4" />;
-      case 'facebook':
+      case "facebook":
         return <Facebook className="h-4 w-4" />;
-      case 'tiktok':
+      case "tiktok":
         return <TrendingUp className="h-4 w-4" />;
-      case 'google ads':
+      case "google ads":
         return <Target className="h-4 w-4" />;
-      case 'email':
+      case "email":
         return <Mail className="h-4 w-4" />;
       default:
         return <MessageCircle className="h-4 w-4" />;
     }
   };
 
-  const filteredProjects = recentProjects.filter(project =>
-    project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    project.type.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredProjects = recentProjects.filter(
+    (project) =>
+      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (showChat) {
@@ -745,13 +869,17 @@ Description 2: ${data.content.description2 || ""}`;
         <div className="flex justify-between items-center mb-6 pl-8">
           <h2 className="text-lg font-medium">Rigo - AI Marketing Assistant</h2>
           <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setIsVoiceEnabled(!isVoiceEnabled)}
               className={isVoiceEnabled ? "text-blue-600" : "text-gray-400"}
             >
-              {isVoiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+              {isVoiceEnabled ? (
+                <Volume2 className="h-4 w-4" />
+              ) : (
+                <VolumeX className="h-4 w-4" />
+              )}
             </Button>
             <Button variant="ghost" size="sm" onClick={handleCreateAnother}>
               <Sparkles className="h-4 w-4 mr-2" />
@@ -767,45 +895,71 @@ Description 2: ${data.content.description2 || ""}`;
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${
+                  message.type === "user" ? "justify-end" : "justify-start"
+                }`}
               >
-                <div className={`max-w-[80%] ${message.type === 'user' ? 'order-2' : 'order-1'}`}>
-                  <div className={`flex items-start gap-3 ${message.type === 'user' ? 'flex-row-reverse' : ''}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      message.type === 'user' 
-                        ? 'bg-blue-500 text-white' 
-                        : 'bg-muted text-muted-foreground'
-                    }`}>
-                      {message.type === 'user' ? <User className="h-4 w-4" /> : <MessageSquare className="h-4 w-4" />}
+                <div
+                  className={`max-w-[80%] ${
+                    message.type === "user" ? "order-2" : "order-1"
+                  }`}
+                >
+                  <div
+                    className={`flex items-start gap-3 ${
+                      message.type === "user" ? "flex-row-reverse" : ""
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        message.type === "user"
+                          ? "bg-blue-500 text-white"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {message.type === "user" ? (
+                        <User className="h-4 w-4" />
+                      ) : (
+                        <MessageSquare className="h-4 w-4" />
+                      )}
                     </div>
-                    <div className={`rounded-lg px-4 py-3 ${
-                      message.type === 'user'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-muted text-foreground'
-                    }`}>
+                    <div
+                      className={`rounded-lg px-4 py-3 ${
+                        message.type === "user"
+                          ? "bg-blue-500 text-white"
+                          : "bg-muted text-foreground"
+                      }`}
+                    >
                       <div className="flex items-center gap-2 mb-2">
                         {message.isGenerating && (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         )}
                         <p className="text-sm">{message.content}</p>
-                        {message.type === 'bot' && message.audioUrl && (
+                        {message.type === "bot" && message.audioUrl && (
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => isPlaying ? stopAudio() : playAudio(message.audioUrl!)}
+                            onClick={() =>
+                              isPlaying
+                                ? stopAudio()
+                                : playAudio(message.audioUrl!)
+                            }
                             className="ml-2"
                           >
-                            {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                            {isPlaying ? (
+                              <Pause className="h-3 w-3" />
+                            ) : (
+                              <Play className="h-3 w-3" />
+                            )}
                           </Button>
                         )}
                       </div>
-                      
+
                       {/* Generated Image */}
                       {message.generatedImage && (
                         <div className="mt-3">
                           <div className="bg-white p-3 rounded border">
-                            <img 
-                              src={message.generatedImage} 
+                            <img
+                              src={message.generatedImage}
                               alt="Generated marketing image"
                               className="w-full h-auto rounded-lg"
                             />
@@ -815,25 +969,29 @@ Description 2: ${data.content.description2 || ""}`;
                               </p>
                             )}
                             <div className="flex gap-2 mt-3">
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 variant="outline"
                                 onClick={() => {
-                                  const link = document.createElement('a');
+                                  const link = document.createElement("a");
                                   link.href = message.generatedImage!;
-                                  link.download = 'marketing-image.png';
+                                  link.download = "marketing-image.png";
                                   link.click();
                                 }}
                               >
                                 <Download className="h-3 w-3 mr-1" />
                                 Download
                               </Button>
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 variant="outline"
                                 onClick={() => {
-                                  navigator.clipboard.writeText(message.generatedImage!);
-                                  toast.success("Image URL copied to clipboard!");
+                                  navigator.clipboard.writeText(
+                                    message.generatedImage!
+                                  );
+                                  toast.success(
+                                    "Image URL copied to clipboard!"
+                                  );
                                 }}
                               >
                                 <Copy className="h-3 w-3 mr-1" />
@@ -843,31 +1001,40 @@ Description 2: ${data.content.description2 || ""}`;
                           </div>
                         </div>
                       )}
-                      
+
                       {/* Generated Content Canvas */}
                       {message.generatedContent && (
                         <div className="mt-3">
                           <ContentCanvas
                             content={message.generatedContent}
-                            contentType={message.contentType || 'content'}
+                            contentType={message.contentType || "content"}
                             platform={message.platform}
                             onCopy={() => {
-                              navigator.clipboard.writeText(message.generatedContent);
+                              navigator.clipboard.writeText(
+                                message.generatedContent
+                              );
                               toast.success("Content copied to clipboard!");
                             }}
                             onSave={() => {
                               const contentToSave = {
                                 id: Date.now().toString(),
-                                type: message.contentType || 'content',
-                                platform: message.platform || 'general',
+                                type: message.contentType || "content",
+                                platform: message.platform || "general",
                                 content: message.generatedContent,
-                                createdAt: new Date().toISOString()
+                                createdAt: new Date().toISOString(),
                               };
-                              
+
                               try {
-                                const existingContent = JSON.parse(localStorage.getItem('rigoGeneratedContent') || '[]');
+                                const existingContent = JSON.parse(
+                                  localStorage.getItem(
+                                    "rigoGeneratedContent"
+                                  ) || "[]"
+                                );
                                 existingContent.push(contentToSave);
-                                localStorage.setItem('rigoGeneratedContent', JSON.stringify(existingContent));
+                                localStorage.setItem(
+                                  "rigoGeneratedContent",
+                                  JSON.stringify(existingContent)
+                                );
                                 toast.success("Content saved to library!");
                               } catch (error) {
                                 toast.error("Failed to save content");
@@ -876,7 +1043,7 @@ Description 2: ${data.content.description2 || ""}`;
                           />
                         </div>
                       )}
-                      
+
                       {/* Generated Flyer Canvas */}
                       {message.flyerDesign && (
                         <div className="mt-3">
@@ -889,8 +1056,8 @@ Description 2: ${data.content.description2 || ""}`;
                                     🎨 AI-Generated Flyer Design
                                   </span>
                                 </div>
-                                <img 
-                                  src={message.generatedImage} 
+                                <img
+                                  src={message.generatedImage}
                                   alt="Generated flyer design"
                                   className="w-full h-auto rounded-lg border"
                                 />
@@ -900,25 +1067,29 @@ Description 2: ${data.content.description2 || ""}`;
                                   </p>
                                 )}
                                 <div className="flex gap-2 mt-3">
-                                  <Button 
-                                    size="sm" 
+                                  <Button
+                                    size="sm"
                                     variant="outline"
                                     onClick={() => {
-                                      const link = document.createElement('a');
+                                      const link = document.createElement("a");
                                       link.href = message.generatedImage!;
-                                      link.download = 'flyer-design.png';
+                                      link.download = "flyer-design.png";
                                       link.click();
                                       toast.success("Flyer image downloaded!");
                                     }}
                                   >
                                     📥 Download Image
                                   </Button>
-                                  <Button 
-                                    size="sm" 
+                                  <Button
+                                    size="sm"
                                     variant="outline"
                                     onClick={() => {
-                                      navigator.clipboard.writeText(message.generatedImage!);
-                                      toast.success("Image URL copied to clipboard!");
+                                      navigator.clipboard.writeText(
+                                        message.generatedImage!
+                                      );
+                                      toast.success(
+                                        "Image URL copied to clipboard!"
+                                      );
                                     }}
                                   >
                                     📋 Copy URL
@@ -927,33 +1098,47 @@ Description 2: ${data.content.description2 || ""}`;
                               </div>
                             </div>
                           )}
-                          
+
                           {/* Show structured flyer content */}
                           <FlyerCanvas
                             flyerDesign={message.flyerDesign}
                             colorTheme="blue-ocean"
                             templateStyle="modern"
                             onCopy={() => {
-                              const text = typeof message.flyerDesign === 'string' 
-                                ? message.flyerDesign 
-                                : JSON.stringify(message.flyerDesign, null, 2);
+                              const text =
+                                typeof message.flyerDesign === "string"
+                                  ? message.flyerDesign
+                                  : JSON.stringify(
+                                      message.flyerDesign,
+                                      null,
+                                      2
+                                    );
                               navigator.clipboard.writeText(text);
-                              toast.success("Flyer content copied to clipboard!");
+                              toast.success(
+                                "Flyer content copied to clipboard!"
+                              );
                             }}
                             onSave={() => {
                               const contentToSave = {
                                 id: Date.now().toString(),
-                                type: 'flyer',
-                                platform: 'print/digital',
+                                type: "flyer",
+                                platform: "print/digital",
                                 content: message.flyerDesign,
                                 generatedImage: message.generatedImage,
-                                createdAt: new Date().toISOString()
+                                createdAt: new Date().toISOString(),
                               };
-                              
+
                               try {
-                                const existingContent = JSON.parse(localStorage.getItem('rigoGeneratedContent') || '[]');
+                                const existingContent = JSON.parse(
+                                  localStorage.getItem(
+                                    "rigoGeneratedContent"
+                                  ) || "[]"
+                                );
                                 existingContent.push(contentToSave);
-                                localStorage.setItem('rigoGeneratedContent', JSON.stringify(existingContent));
+                                localStorage.setItem(
+                                  "rigoGeneratedContent",
+                                  JSON.stringify(existingContent)
+                                );
                                 toast.success("Flyer saved to library!");
                               } catch (error) {
                                 toast.error("Failed to save flyer");
@@ -962,51 +1147,66 @@ Description 2: ${data.content.description2 || ""}`;
                           />
                         </div>
                       )}
-                      
+
                       {/* Attachments */}
-                      {message.attachments && message.attachments.length > 0 && (
-                        <div className="mt-3 space-y-2">
-                          {message.attachments.map((attachment) => (
-                            <div key={attachment.id} className="flex items-center gap-2 p-2 bg-white/50 rounded border">
-                              {attachment.type === 'image' && attachment.preview ? (
-                                <div className="relative">
-                                  <img 
-                                    src={attachment.preview} 
-                                    alt={attachment.name}
-                                    className="w-12 h-12 object-cover rounded"
-                                  />
-                                  <button
-                                    onClick={() => removeAttachment(attachment.id)}
-                                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </div>
-                              ) : (
-                                <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
-                                  {attachment.type === 'image' ? <Image className="h-6 w-6 text-gray-500" /> : <File className="h-6 w-6 text-gray-500" />}
-                                </div>
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <p className="text-xs font-medium truncate">{attachment.name}</p>
-                                <p className="text-xs text-gray-500">{attachment.type}</p>
-                              </div>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => {
-                                  if (attachment.preview) {
-                                    window.open(attachment.preview, '_blank');
-                                  }
-                                }}
+                      {message.attachments &&
+                        message.attachments.length > 0 && (
+                          <div className="mt-3 space-y-2">
+                            {message.attachments.map((attachment) => (
+                              <div
+                                key={attachment.id}
+                                className="flex items-center gap-2 p-2 bg-white/50 rounded border"
                               >
-                                <Eye className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      
+                                {attachment.type === "image" &&
+                                attachment.preview ? (
+                                  <div className="relative">
+                                    <img
+                                      src={attachment.preview}
+                                      alt={attachment.name}
+                                      className="w-12 h-12 object-cover rounded"
+                                    />
+                                    <button
+                                      onClick={() =>
+                                        removeAttachment(attachment.id)
+                                      }
+                                      className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                    {attachment.type === "image" ? (
+                                      <Image className="h-6 w-6 text-gray-500" />
+                                    ) : (
+                                      <File className="h-6 w-6 text-gray-500" />
+                                    )}
+                                  </div>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-medium truncate">
+                                    {attachment.name}
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    {attachment.type}
+                                  </p>
+                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    if (attachment.preview) {
+                                      window.open(attachment.preview, "_blank");
+                                    }
+                                  }}
+                                >
+                                  <Eye className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
                       {/* Options */}
                       {message.options && (
                         <div className="mt-3 space-y-2">
@@ -1026,7 +1226,7 @@ Description 2: ${data.content.description2 || ""}`;
                 </div>
               </div>
             ))}
-            
+
             {/* Generated Content Display */}
             {generatedContent && (
               <div className="flex justify-start">
@@ -1037,7 +1237,9 @@ Description 2: ${data.content.description2 || ""}`;
                     </div>
                     <div className="bg-green-50 rounded-lg p-4 border border-green-200">
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-medium text-green-900">{generatedContent.title}</h4>
+                        <h4 className="font-medium text-green-900">
+                          {generatedContent.title}
+                        </h4>
                         <Badge variant="outline" className="text-xs">
                           {generatedContent.wordCount} words
                         </Badge>
@@ -1048,11 +1250,19 @@ Description 2: ${data.content.description2 || ""}`;
                         </pre>
                       </div>
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={handleCopyContent}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleCopyContent}
+                        >
                           <Copy className="h-3 w-3 mr-1" />
                           Copy
                         </Button>
-                        <Button size="sm" variant="outline" onClick={handleSaveContent}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleSaveContent}
+                        >
                           <Save className="h-3 w-3 mr-1" />
                           Save
                         </Button>
@@ -1062,7 +1272,7 @@ Description 2: ${data.content.description2 || ""}`;
                 </div>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
 
@@ -1079,7 +1289,9 @@ Description 2: ${data.content.description2 || ""}`;
                     type="file"
                     multiple
                     accept="image/*,.pdf,.doc,.docx,.txt"
-                    onChange={(e) => e.target.files && handleFileUpload(e.target.files)}
+                    onChange={(e) =>
+                      e.target.files && handleFileUpload(e.target.files)
+                    }
                     className="hidden"
                   />
                   <Button
@@ -1092,7 +1304,7 @@ Description 2: ${data.content.description2 || ""}`;
                     {isUploading ? "Uploading..." : "Choose Files"}
                   </Button>
                 </div>
-                
+
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span className="text-gray-500 sm:text-sm">🔗</span>
@@ -1103,10 +1315,10 @@ Description 2: ${data.content.description2 || ""}`;
                     placeholder="Paste a URL reference..."
                     className="block w-full pl-10 pr-12 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         const url = (e.target as HTMLInputElement).value;
                         handleUrlUpload(url);
-                        (e.target as HTMLInputElement).value = '';
+                        (e.target as HTMLInputElement).value = "";
                       }
                     }}
                   />
@@ -1116,7 +1328,7 @@ Description 2: ${data.content.description2 || ""}`;
                         const url = urlInputRef.current?.value;
                         if (url) {
                           handleUrlUpload(url);
-                          urlInputRef.current!.value = '';
+                          urlInputRef.current!.value = "";
                         }
                       }}
                       size="sm"
@@ -1126,7 +1338,7 @@ Description 2: ${data.content.description2 || ""}`;
                     </Button>
                   </div>
                 </div>
-                
+
                 <Button
                   onClick={() => setShowUploadMenu(false)}
                   variant="ghost"
@@ -1154,7 +1366,7 @@ Description 2: ${data.content.description2 || ""}`;
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     handleUserInput(inputValue);
                   }
                 }}
@@ -1162,7 +1374,7 @@ Description 2: ${data.content.description2 || ""}`;
                 className="flex-1"
                 disabled={isGenerating}
               />
-              <Button 
+              <Button
                 onClick={() => handleUserInput(inputValue)}
                 disabled={!inputValue.trim() || isGenerating}
                 size="sm"
@@ -1170,24 +1382,33 @@ Description 2: ${data.content.description2 || ""}`;
                 <Send className="h-4 w-4" />
               </Button>
             </div>
-            
+
             {/* Current Attachments */}
             {attachments.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {attachments.map((attachment) => (
-                  <div key={attachment.id} className="flex items-center gap-2 p-2 bg-gray-100 rounded border">
-                    {attachment.type === 'image' && attachment.preview ? (
-                      <img 
-                        src={attachment.preview} 
+                  <div
+                    key={attachment.id}
+                    className="flex items-center gap-2 p-2 bg-gray-100 rounded border"
+                  >
+                    {attachment.type === "image" && attachment.preview ? (
+                      <img
+                        src={attachment.preview}
                         alt={attachment.name}
                         className="w-6 h-6 object-cover rounded"
                       />
                     ) : (
                       <div className="w-6 h-6 bg-gray-200 rounded flex items-center justify-center">
-                        {attachment.type === 'image' ? <Image className="h-4 w-4 text-gray-500" /> : <File className="h-4 w-4 text-gray-500" />}
+                        {attachment.type === "image" ? (
+                          <Image className="h-4 w-4 text-gray-500" />
+                        ) : (
+                          <File className="h-4 w-4 text-gray-500" />
+                        )}
                       </div>
                     )}
-                    <span className="text-xs font-medium truncate max-w-20">{attachment.name}</span>
+                    <span className="text-xs font-medium truncate max-w-20">
+                      {attachment.name}
+                    </span>
                     <button
                       onClick={() => removeAttachment(attachment.id)}
                       className="text-red-500 hover:text-red-700"
@@ -1209,7 +1430,9 @@ Description 2: ${data.content.description2 || ""}`;
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground mb-2">Studio</h1>
-        <p className="text-muted-foreground">Create amazing marketing content with Rigo, your AI assistant</p>
+        <p className="text-muted-foreground">
+          Create amazing marketing content with Rigo, your AI assistant
+        </p>
       </div>
 
       {/* New Project Options */}
@@ -1219,25 +1442,31 @@ Description 2: ${data.content.description2 || ""}`;
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
           <Pencil className="h-8 w-8 text-muted-foreground" />
-          <span className="font-medium text-foreground">Start from scratch</span>
+          <span className="font-medium text-foreground">
+            Start from scratch
+          </span>
         </Button>
-        
+
         <Button
           onClick={handleStartChat}
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
           <BookOpen className="h-8 w-8 text-muted-foreground" />
-          <span className="font-medium text-foreground">Create a blog post</span>
+          <span className="font-medium text-foreground">
+            Create a blog post
+          </span>
         </Button>
-        
+
         <Button
           onClick={handleStartChat}
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
           <Mic className="h-8 w-8 text-muted-foreground" />
-          <span className="font-medium text-foreground">Create social content</span>
+          <span className="font-medium text-foreground">
+            Create social content
+          </span>
         </Button>
-        
+
         <Button
           onClick={handleStartChat}
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
@@ -1272,8 +1501,12 @@ Description 2: ${data.content.description2 || ""}`;
                   {getPlatformIcon(project.platform)}
                 </div>
                 <div>
-                  <h3 className="font-medium text-foreground">{project.title}</h3>
-                  <p className="text-sm text-muted-foreground">{project.timestamp}</p>
+                  <h3 className="font-medium text-foreground">
+                    {project.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {project.timestamp}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -1287,7 +1520,7 @@ Description 2: ${data.content.description2 || ""}`;
             </div>
           ))}
         </div>
-        
+
         {/* Fade overlay at the bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
       </div>
