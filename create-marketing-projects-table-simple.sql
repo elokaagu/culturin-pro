@@ -1,3 +1,6 @@
+-- Simple marketing projects table creation (no sample data)
+-- Run this in your Supabase SQL Editor
+
 -- Create marketing projects table for persistent storage
 CREATE TABLE IF NOT EXISTS marketing_projects (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -97,20 +100,5 @@ CREATE TRIGGER trigger_update_marketing_projects_last_accessed
     FOR EACH ROW
     EXECUTE FUNCTION update_marketing_projects_last_accessed();
 
--- Note: Sample data insertion removed to avoid foreign key constraint issues
--- Projects will be created automatically when users interact with the Studio
--- You can add sample data later by:
--- 1. Creating a user account through your app
--- 2. Using that user's ID in the INSERT statements below
--- 3. Or simply let the app create projects naturally as users use it
-
--- Example of how to add sample data later (replace 'actual-user-uuid' with a real user ID):
-/*
-INSERT INTO marketing_projects (user_id, title, type, platform, content, metadata) VALUES
-    ('actual-user-uuid', 'Barcelona Tapas Experience Marketing Campaign', 'social', 'instagram', 'Marketing campaign for Barcelona tapas experience', '{"tags": ["barcelona", "tapas", "food", "culture"]}'),
-    ('actual-user-uuid', 'Traditional Moroccan Cooking Class Promotion', 'social', 'facebook', 'Promotion for Moroccan cooking class', '{"tags": ["morocco", "cooking", "culture", "food"]}'),
-    ('actual-user-uuid', 'Kyoto Tea Ceremony Cultural Experience', 'blog', 'general', 'Blog post about Kyoto tea ceremony', '{"tags": ["kyoto", "tea", "japan", "culture"]}'),
-    ('actual-user-uuid', 'Venice Gondola Ride Social Media Content', 'social', 'instagram', 'Social media content for Venice gondola rides', '{"tags": ["venice", "gondola", "italy", "romance"]}'),
-    ('actual-user-uuid', 'Istanbul Bazaar Cultural Tour Email Newsletter', 'email', 'email', 'Email newsletter for Istanbul bazaar tour', '{"tags": ["istanbul", "bazaar", "turkey", "culture"]}')
-ON CONFLICT DO NOTHING;
-*/
+-- Success message
+SELECT 'Marketing database tables created successfully!' as status;

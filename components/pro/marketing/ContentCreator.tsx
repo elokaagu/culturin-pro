@@ -129,6 +129,9 @@ const ContentCreator: React.FC = () => {
     refreshProjects
   } = useMarketingProjects();
 
+  // Add loading state for project creation
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [conversationState, setConversationState] = useState<ConversationState>(
     {
@@ -855,6 +858,15 @@ Description 2: ${data.content.description2 || ""}`;
 
   const handleStartChat = async (projectType?: string, projectTitle?: string) => {
     try {
+      setIsCreatingProject(true);
+      
+      // Check if user is authenticated
+      if (!user) {
+        toast.error('Please sign in to create projects');
+        setIsCreatingProject(false);
+        return;
+      }
+
       let projectId = currentProject;
       
       // If no current project, create a new one
@@ -868,10 +880,17 @@ Description 2: ${data.content.description2 || ""}`;
                    projectType === 'url_import' ? 'general' : undefined) as any
         };
         
+        console.log('Creating project with data:', projectData);
         const newProject = await createProject(projectData);
+        
         if (newProject) {
           projectId = newProject.id;
           setCurrentProject(projectId);
+          console.log('Project created successfully:', newProject);
+        } else {
+          toast.error('Failed to create project. Please try again.');
+          setIsCreatingProject(false);
+          return;
         }
       }
       
@@ -893,7 +912,7 @@ Description 2: ${data.content.description2 || ""}`;
         
         // Add welcome message if no existing conversations
         if (chatMessages.length === 0) {
-          addBotMessage(
+          await addBotMessage(
             "Ahoy! I'm Rigo, your AI marketing assistant. Ready to discover amazing content together? What kind of marketing content would you like to create today?",
             [
               "Instagram Caption",
@@ -907,10 +926,14 @@ Description 2: ${data.content.description2 || ""}`;
             ]
           );
         }
+        
+        toast.success('Project started successfully!');
       }
     } catch (error) {
       console.error('Error starting chat:', error);
-      toast.error('Failed to start chat');
+      toast.error('Failed to start chat. Please check your connection and try again.');
+    } finally {
+      setIsCreatingProject(false);
     }
   };
 
@@ -1504,46 +1527,80 @@ Description 2: ${data.content.description2 || ""}`;
         <p className="text-muted-foreground">
           Create amazing marketing content with Rigo, your AI assistant
         </p>
+        
+        {/* Authentication Status */}
+        {!user && (
+          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+              <p className="text-yellow-800 text-sm">
+                Please sign in to create and manage marketing projects
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* New Project Options */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Button
           onClick={() => handleStartChat('scratch', 'Start from scratch')}
+          disabled={isCreatingProject}
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
-          <Pencil className="h-8 w-8 text-muted-foreground" />
+          {isCreatingProject ? (
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          ) : (
+            <Pencil className="h-8 w-8 text-muted-foreground" />
+          )}
           <span className="font-medium text-foreground">
-            Start from scratch
+            {isCreatingProject ? 'Creating...' : 'Start from scratch'}
           </span>
         </Button>
 
         <Button
           onClick={() => handleStartChat('blog', 'Create a blog post')}
+          disabled={isCreatingProject}
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
-          <BookOpen className="h-8 w-8 text-muted-foreground" />
+          {isCreatingProject ? (
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          ) : (
+            <BookOpen className="h-8 w-8 text-muted-foreground" />
+          )}
           <span className="font-medium text-foreground">
-            Create a blog post
+            {isCreatingProject ? 'Creating...' : 'Create a blog post'}
           </span>
         </Button>
 
         <Button
           onClick={() => handleStartChat('social', 'Create social content')}
+          disabled={isCreatingProject}
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
-          <Mic className="h-8 w-8 text-muted-foreground" />
+          {isCreatingProject ? (
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          ) : (
+            <Mic className="h-8 w-8 text-muted-foreground" />
+          )}
           <span className="font-medium text-foreground">
-            Create social content
+            {isCreatingProject ? 'Creating...' : 'Create social content'}
           </span>
         </Button>
 
         <Button
           onClick={() => handleStartChat('url_import', 'Import from URL')}
+          disabled={isCreatingProject}
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
-          <Link className="h-8 w-8 text-muted-foreground" />
-          <span className="font-medium text-foreground">Import from URL</span>
+          {isCreatingProject ? (
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          ) : (
+            <Link className="h-8 w-8 text-muted-foreground" />
+          )}
+          <span className="font-medium text-foreground">
+            {isCreatingProject ? 'Creating...' : 'Import from URL'}
+          </span>
         </Button>
       </div>
 
