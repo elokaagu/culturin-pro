@@ -48,6 +48,7 @@ import FlyerCanvas from "./FlyerCanvas";
 import { toast } from "sonner";
 import { useMarketingProjects } from "@/hooks/useMarketingProjects";
 import { useAuth } from "@/src/components/auth/AuthProvider";
+import { StudioSettings } from "./StudioSettings";
 
 interface ChatMessage {
   id: string;
@@ -145,13 +146,15 @@ const ContentCreator: React.FC = () => {
   const [attachments, setAttachments] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [showUploadMenu, setShowUploadMenu] = useState(false);
-  const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(
     null
   );
   const [showChat, setShowChat] = useState(false);
   const [currentProject, setCurrentProject] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showAllProjects, setShowAllProjects] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
@@ -179,6 +182,22 @@ const ContentCreator: React.FC = () => {
       );
     }
   }, [showChat]);
+
+  // Check ElevenLabs setting on mount
+  useEffect(() => {
+    const checkVoiceSettings = async () => {
+      try {
+        const settings = await settingsService.getSettings();
+        if (settings?.elevenLabsEnabled) {
+          setIsVoiceEnabled(true);
+        }
+      } catch (error) {
+        console.error("Error checking voice settings:", error);
+      }
+    };
+    
+    checkVoiceSettings();
+  }, []);
 
   const addBotMessage = async (
     content: string,
@@ -261,6 +280,13 @@ const ContentCreator: React.FC = () => {
 
   const generateSpeech = async (text: string): Promise<string | null> => {
     try {
+      // Check if ElevenLabs is enabled in settings
+      const settings = await settingsService.getSettings();
+      if (!settings?.elevenLabsEnabled) {
+        toast.info("Text-to-speech is disabled. Enable it in Studio Settings to generate voiceovers.");
+        return null;
+      }
+
       const response = await fetch("/api/generate-speech", {
         method: "POST",
         headers: {
@@ -280,6 +306,7 @@ const ContentCreator: React.FC = () => {
       return data.audioUrl;
     } catch (error) {
       console.error("Error generating speech:", error);
+      toast.error("Failed to generate speech");
       return null;
     }
   };
@@ -966,8 +993,16 @@ Description 2: ${data.content.description2 || ""}`;
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setIsVoiceEnabled(!isVoiceEnabled)}
+              onClick={async () => {
+                const settings = await settingsService.getSettings();
+                if (settings?.elevenLabsEnabled) {
+                  setIsVoiceEnabled(!isVoiceEnabled);
+                } else {
+                  toast.info("Enable ElevenLabs in Studio Settings to use text-to-speech");
+                }
+              }}
               className={isVoiceEnabled ? "text-blue-600" : "text-gray-400"}
+              disabled={!isVoiceEnabled}
             >
               {isVoiceEnabled ? (
                 <Volume2 className="h-4 w-4" />
@@ -1520,189 +1555,196 @@ Description 2: ${data.content.description2 || ""}`;
   }
 
   return (
-    <div className="h-full flex flex-col p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Studio</h1>
-        <p className="text-muted-foreground">
-          Create amazing marketing content with Rigo, your AI assistant
-        </p>
+    <div className="h-full flex flex-col">
+      {/* Top Bar with Settings */}
+      <div className="flex justify-between items-center p-6 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl font-semibold text-foreground">Studio</h1>
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        </div>
         
-        {/* Authentication Status */}
-        {!user && (
-          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-              <p className="text-yellow-800 text-sm">
-                Please sign in to create and manage marketing projects
-              </p>
+        <div className="flex items-center gap-3">
+          {/* Authentication Status */}
+          {!user ? (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-100 border border-yellow-200 rounded-full">
+              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              <span className="text-xs text-yellow-700">Sign in required</span>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 border border-green-200 rounded-full">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-xs text-green-700">Ready</span>
+            </div>
+          )}
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowSettings(true)}
+            className="h-8 w-8 p-0"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
-      {/* New Project Options */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Button
-          onClick={() => handleStartChat('scratch', 'Start from scratch')}
-          disabled={isCreatingProject}
-          className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
-        >
-          {isCreatingProject ? (
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          ) : (
-            <Pencil className="h-8 w-8 text-muted-foreground" />
-          )}
-          <span className="font-medium text-foreground">
-            {isCreatingProject ? 'Creating...' : 'Start from scratch'}
-          </span>
-        </Button>
-
-        <Button
-          onClick={() => handleStartChat('blog', 'Create a blog post')}
-          disabled={isCreatingProject}
-          className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
-        >
-          {isCreatingProject ? (
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          ) : (
-            <BookOpen className="h-8 w-8 text-muted-foreground" />
-          )}
-          <span className="font-medium text-foreground">
-            {isCreatingProject ? 'Creating...' : 'Create a blog post'}
-          </span>
-        </Button>
-
-        <Button
-          onClick={() => handleStartChat('social', 'Create social content')}
-          disabled={isCreatingProject}
-          className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
-        >
-          {isCreatingProject ? (
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          ) : (
-            <Mic className="h-8 w-8 text-muted-foreground" />
-          )}
-          <span className="font-medium text-foreground">
-            {isCreatingProject ? 'Creating...' : 'Create social content'}
-          </span>
-        </Button>
-
-        <Button
-          onClick={() => handleStartChat('url_import', 'Import from URL')}
-          disabled={isCreatingProject}
-          className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
-        >
-          {isCreatingProject ? (
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          ) : (
-            <Link className="h-8 w-8 text-muted-foreground" />
-          )}
-          <span className="font-medium text-foreground">
-            {isCreatingProject ? 'Creating...' : 'Import from URL'}
-          </span>
-        </Button>
-      </div>
-
-      {/* Search Bar */}
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          value={searchQuery}
-          onChange={(e) => {
-            const query = e.target.value;
-            setSearchQuery(query);
-            if (query.trim()) {
-              searchProjects(query);
-            } else {
-              refreshProjects();
-            }
-          }}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              const query = e.currentTarget.value;
-              if (query.trim()) {
-                searchProjects(query);
-              } else {
-                refreshProjects();
-              }
-            }
-          }}
-          placeholder="Search projects..."
-          className="pl-10"
-        />
-      </div>
-
-      {/* Recent Projects */}
-      <div className="relative">
-        {projectsLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <span className="ml-2 text-muted-foreground">Loading projects...</span>
+      {/* Main Content - Centered Minimalist Interface */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-2xl space-y-8">
+          {/* Welcome Message */}
+          <div className="text-center space-y-3">
+            <h2 className="text-2xl font-medium text-foreground">
+              What can I help with?
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              Create marketing content, generate ideas, or start a new project
+            </p>
           </div>
-        ) : projectsError ? (
-          <div className="text-center py-8 text-red-600">
-            <p>Error loading projects: {projectsError}</p>
-            <Button onClick={refreshProjects} variant="outline" className="mt-2">
-              Try Again
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-2 max-h-96 overflow-y-auto">
-            {filteredProjects.map((project) => (
-              <div
-                key={project.id}
-                className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <div 
-                  className="flex items-center gap-3 flex-1 cursor-pointer"
-                  onClick={() => handleStartChat(project.type, project.title)}
-                >
-                  <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                    {getPlatformIcon(project.platform)}
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-foreground">
-                      {project.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(project.last_accessed).toLocaleDateString()} • {project.type}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // TODO: Implement download functionality
-                      toast.info('Download feature coming soon!');
-                    }}
-                  >
-                    <Download className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (confirm('Are you sure you want to delete this project?')) {
-                        deleteProject(project.id);
-                      }
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+
+          {/* Main Input Field */}
+          <div className="relative">
+            <div className="relative">
+              {/* Plus Icon */}
+              <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-muted-foreground">+</span>
                 </div>
               </div>
-            ))}
+              
+              {/* Main Input */}
+              <Input
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && inputValue.trim()) {
+                    handleUserInput(inputValue);
+                  }
+                }}
+                placeholder="Ask anything..."
+                className="h-14 pl-14 pr-20 text-base bg-card border-2 border-border hover:border-primary focus:border-primary transition-colors"
+              />
+              
+              {/* Right Side Icons */}
+              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-muted"
+                >
+                  <Mic className="h-4 w-4 text-muted-foreground" />
+                </Button>
+                <div className="flex items-center gap-1">
+                  <div className="w-1 h-3 bg-muted-foreground rounded-full"></div>
+                  <div className="w-1 h-5 bg-muted-foreground rounded-full"></div>
+                  <div className="w-1 h-2 bg-muted-foreground rounded-full"></div>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
 
-        {/* Fade overlay at the bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+          {/* Quick Actions */}
+          <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleStartChat('scratch', 'Start from scratch')}
+              disabled={isCreatingProject}
+              className="h-10 text-xs"
+            >
+              {isCreatingProject ? 'Creating...' : 'New Project'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowUploadMenu(true)}
+              className="h-10 text-xs"
+            >
+              Upload Files
+            </Button>
+          </div>
+
+          {/* Recent Projects Section */}
+          {filteredProjects.length > 0 && (
+            <div className="space-y-3">
+              <div className="text-center">
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">Recent Projects</h3>
+              </div>
+              
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {filteredProjects.slice(0, 3).map((project) => (
+                  <div
+                    key={project.id}
+                    className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
+                    onClick={() => handleStartChat(project.type, project.title)}
+                  >
+                    <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
+                      {getPlatformIcon(project.platform)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-medium text-foreground truncate">
+                        {project.title}
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(project.last_accessed).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm('Delete this project?')) {
+                          deleteProject(project.id);
+                        }
+                      }}
+                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              
+              {filteredProjects.length > 3 && (
+                <div className="text-center">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowAllProjects(true)}
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    View all {filteredProjects.length} projects
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Loading State */}
+          {projectsLoading && (
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+              <p className="text-sm text-muted-foreground mt-2">Loading projects...</p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {projectsError && (
+            <div className="text-center p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600 mb-2">Error loading projects</p>
+              <Button onClick={refreshProjects} variant="outline" size="sm">
+                Try Again
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Settings Modal */}
+      <StudioSettings 
+        isOpen={showSettings} 
+        onClose={() => setShowSettings(false)} 
+      />
     </div>
   );
 };

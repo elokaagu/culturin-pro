@@ -8,6 +8,7 @@ export interface UserSettings {
   language: string;
   timezone: string;
   currency: string;
+  elevenLabsEnabled: boolean;
   [key: string]: any;
 }
 
@@ -93,6 +94,7 @@ class SettingsService {
       language: "en",
       timezone: "UTC",
       currency: "USD",
+      elevenLabsEnabled: false,
     };
 
     return await this.saveSettings(defaultSettings);
