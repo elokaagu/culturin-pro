@@ -46,6 +46,8 @@ import { settingsService } from "@/lib/settings-service";
 import ContentCanvas from "./ContentCanvas";
 import FlyerCanvas from "./FlyerCanvas";
 import { toast } from "sonner";
+import { useMarketingProjects } from "@/hooks/useMarketingProjects";
+import { useAuth } from "@/src/components/auth/AuthProvider";
 
 interface ChatMessage {
   id: string;
@@ -111,6 +113,22 @@ interface RecentProject {
 }
 
 const ContentCreator: React.FC = () => {
+  const { user } = useAuth();
+  const {
+    projects: recentProjects,
+    filteredProjects,
+    loading: projectsLoading,
+    error: projectsError,
+    searchQuery,
+    setSearchQuery,
+    createProject,
+    deleteProject,
+    searchProjects,
+    getProjectConversations,
+    addConversationMessage,
+    refreshProjects
+  } = useMarketingProjects();
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [conversationState, setConversationState] = useState<ConversationState>(
     {
@@ -130,49 +148,10 @@ const ContentCreator: React.FC = () => {
     null
   );
   const [showChat, setShowChat] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [currentProject, setCurrentProject] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
-
-  // Mock recent projects
-  const [recentProjects] = useState<RecentProject[]>([
-    {
-      id: "1",
-      title: "Barcelona Tapas Experience Marketing Campaign",
-      type: "Instagram Caption",
-      timestamp: "1 hour ago",
-      platform: "Instagram",
-    },
-    {
-      id: "2",
-      title: "Traditional Moroccan Cooking Class Promotion",
-      type: "Facebook Ad",
-      timestamp: "3 hours ago",
-      platform: "Facebook",
-    },
-    {
-      id: "3",
-      title: "Kyoto Tea Ceremony Cultural Experience",
-      type: "Google Ad Copy",
-      timestamp: "6 hours ago",
-      platform: "Google Ads",
-    },
-    {
-      id: "4",
-      title: "Venice Gondola Ride Social Media Content",
-      type: "TikTok Hook",
-      timestamp: "2 days ago",
-      platform: "TikTok",
-    },
-    {
-      id: "5",
-      title: "Istanbul Bazaar Cultural Tour Email Newsletter",
-      type: "Email Newsletter",
-      timestamp: "3 weeks ago",
-      platform: "Email",
-    },
-  ]);
 
   // Scroll to bottom when new messages are added
   useEffect(() => {
@@ -198,7 +177,7 @@ const ContentCreator: React.FC = () => {
     }
   }, [showChat]);
 
-  const addBotMessage = (
+  const addBotMessage = async (
     content: string,
     options?: string[],
     isGenerating: boolean = false,
@@ -223,9 +202,33 @@ const ContentCreator: React.FC = () => {
       platform: generatedData?.platform,
     };
     setMessages((prev) => [...prev, newMessage]);
+
+    // Save bot message to database if we have a current project
+    if (currentProject && user) {
+      try {
+        await addConversationMessage({
+          project_id: currentProject,
+          message_type: 'bot',
+          content,
+          metadata: {
+            options,
+            isGenerating,
+            attachments,
+            generatedImage,
+            imagePrompt,
+            generatedContent: generatedData?.generatedContent,
+            flyerDesign: generatedData?.flyerDesign,
+            contentType: generatedData?.contentType,
+            platform: generatedData?.platform
+          }
+        });
+      } catch (error) {
+        console.error('Error saving bot message to database:', error);
+      }
+    }
   };
 
-  const addUserMessage = (
+  const addUserMessage = async (
     content: string,
     userAttachments?: UploadedFile[]
   ) => {
@@ -237,6 +240,20 @@ const ContentCreator: React.FC = () => {
       attachments: userAttachments,
     };
     setMessages((prev) => [...prev, newMessage]);
+
+    // Save message to database if we have a current project
+    if (currentProject && user) {
+      try {
+        await addConversationMessage({
+          project_id: currentProject,
+          message_type: 'user',
+          content,
+          metadata: userAttachments ? { attachments: userAttachments } : undefined
+        });
+      } catch (error) {
+        console.error('Error saving user message to database:', error);
+      }
+    }
   };
 
   const generateSpeech = async (text: string): Promise<string | null> => {
@@ -833,10 +850,68 @@ Description 2: ${data.content.description2 || ""}`;
     setAttachments([]);
     stopAudio();
     setShowChat(false);
+    setCurrentProject(null);
   };
 
-  const handleStartChat = () => {
-    setShowChat(true);
+  const handleStartChat = async (projectType?: string, projectTitle?: string) => {
+    try {
+      let projectId = currentProject;
+      
+      // If no current project, create a new one
+      if (!projectId) {
+        const projectData = {
+          title: projectTitle || `New ${projectType || 'Marketing'} Project`,
+          type: (projectType as any) || 'scratch',
+          platform: (projectType === 'blog' ? 'general' : 
+                   projectType === 'email' ? 'email' : 
+                   projectType === 'social' ? 'instagram' : 
+                   projectType === 'url_import' ? 'general' : undefined) as any
+        };
+        
+        const newProject = await createProject(projectData);
+        if (newProject) {
+          projectId = newProject.id;
+          setCurrentProject(projectId);
+        }
+      }
+      
+      if (projectId) {
+        // Load existing conversations for this project
+        const conversations = await getProjectConversations(projectId);
+        const chatMessages: ChatMessage[] = conversations.map(conv => ({
+          id: conv.id,
+          type: conv.message_type as 'user' | 'bot',
+          content: conv.content,
+          timestamp: new Date(conv.timestamp),
+          metadata: conv.metadata
+        }));
+        
+        setMessages(chatMessages);
+        setShowChat(true);
+        setGeneratedContent(null);
+        setConversationState({ step: "welcome" });
+        
+        // Add welcome message if no existing conversations
+        if (chatMessages.length === 0) {
+          addBotMessage(
+            "Ahoy! I'm Rigo, your AI marketing assistant. Ready to discover amazing content together? What kind of marketing content would you like to create today?",
+            [
+              "Instagram Caption",
+              "TikTok Hook",
+              "Google Ad Copy",
+              "Facebook Ad",
+              "Blog Post",
+              "Email Newsletter",
+              "WhatsApp Script",
+              "Event Flyer",
+            ]
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error);
+      toast.error('Failed to start chat');
+    }
   };
 
   const getPlatformIcon = (platform?: string) => {
@@ -856,11 +931,7 @@ Description 2: ${data.content.description2 || ""}`;
     }
   };
 
-  const filteredProjects = recentProjects.filter(
-    (project) =>
-      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.type.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+
 
   if (showChat) {
     return (
@@ -1438,7 +1509,7 @@ Description 2: ${data.content.description2 || ""}`;
       {/* New Project Options */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Button
-          onClick={handleStartChat}
+          onClick={() => handleStartChat('scratch', 'Start from scratch')}
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
           <Pencil className="h-8 w-8 text-muted-foreground" />
@@ -1448,7 +1519,7 @@ Description 2: ${data.content.description2 || ""}`;
         </Button>
 
         <Button
-          onClick={handleStartChat}
+          onClick={() => handleStartChat('blog', 'Create a blog post')}
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
           <BookOpen className="h-8 w-8 text-muted-foreground" />
@@ -1458,7 +1529,7 @@ Description 2: ${data.content.description2 || ""}`;
         </Button>
 
         <Button
-          onClick={handleStartChat}
+          onClick={() => handleStartChat('social', 'Create social content')}
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
           <Mic className="h-8 w-8 text-muted-foreground" />
@@ -1468,7 +1539,7 @@ Description 2: ${data.content.description2 || ""}`;
         </Button>
 
         <Button
-          onClick={handleStartChat}
+          onClick={() => handleStartChat('url_import', 'Import from URL')}
           className="h-32 flex flex-col items-center justify-center gap-3 bg-card border-2 border-border hover:border-primary hover:bg-accent transition-all"
         >
           <Link className="h-8 w-8 text-muted-foreground" />
@@ -1481,7 +1552,25 @@ Description 2: ${data.content.description2 || ""}`;
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            const query = e.target.value;
+            setSearchQuery(query);
+            if (query.trim()) {
+              searchProjects(query);
+            } else {
+              refreshProjects();
+            }
+          }}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              const query = e.currentTarget.value;
+              if (query.trim()) {
+                searchProjects(query);
+              } else {
+                refreshProjects();
+              }
+            }
+          }}
           placeholder="Search projects..."
           className="pl-10"
         />
@@ -1489,37 +1578,70 @@ Description 2: ${data.content.description2 || ""}`;
 
       {/* Recent Projects */}
       <div className="relative">
-        <div className="space-y-2 max-h-96 overflow-y-auto">
-          {filteredProjects.map((project) => (
-            <div
-              key={project.id}
-              className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-              onClick={handleStartChat}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                  {getPlatformIcon(project.platform)}
+        {projectsLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span className="ml-2 text-muted-foreground">Loading projects...</span>
+          </div>
+        ) : projectsError ? (
+          <div className="text-center py-8 text-red-600">
+            <p>Error loading projects: {projectsError}</p>
+            <Button onClick={refreshProjects} variant="outline" className="mt-2">
+              Try Again
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {filteredProjects.map((project) => (
+              <div
+                key={project.id}
+                className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <div 
+                  className="flex items-center gap-3 flex-1 cursor-pointer"
+                  onClick={() => handleStartChat(project.type, project.title)}
+                >
+                  <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                    {getPlatformIcon(project.platform)}
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-foreground">
+                      {project.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(project.last_accessed).toLocaleDateString()} • {project.type}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-medium text-foreground">
-                    {project.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {project.timestamp}
-                  </p>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // TODO: Implement download functionality
+                      toast.info('Download feature coming soon!');
+                    }}
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm('Are you sure you want to delete this project?')) {
+                        deleteProject(project.id);
+                      }
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm">
-                  <Download className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm">
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Fade overlay at the bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
