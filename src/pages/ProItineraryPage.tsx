@@ -51,7 +51,12 @@ const ProItineraryPage: React.FC = () => {
 
   // Simplified and reliable itinerary loading
   useEffect(() => {
-    console.log("🔄 ProItineraryPage loading - user:", user?.email, "isReady:", isReady);
+    console.log(
+      "🔄 ProItineraryPage loading - user:",
+      user?.email,
+      "isReady:",
+      isReady
+    );
 
     let isMounted = true;
     let loadingTimeout: NodeJS.Timeout;
@@ -64,8 +69,10 @@ const ProItineraryPage: React.FC = () => {
         let foundItineraries: any[] = [];
 
         // Primary storage key based on user
-        const primaryKey = user?.id ? `userItineraries_${user.id}` : "userItineraries";
-        
+        const primaryKey = user?.id
+          ? `userItineraries_${user.id}`
+          : "userItineraries";
+
         console.log("📦 Checking primary storage key:", primaryKey);
 
         // 1. Try localStorage first (fastest)
@@ -75,7 +82,9 @@ const ProItineraryPage: React.FC = () => {
             const parsed = JSON.parse(localData);
             if (Array.isArray(parsed) && parsed.length > 0) {
               foundItineraries = parsed;
-              console.log(`✅ Found ${foundItineraries.length} itineraries in localStorage`);
+              console.log(
+                `✅ Found ${foundItineraries.length} itineraries in localStorage`
+              );
             }
           }
         } catch (error) {
@@ -89,10 +98,15 @@ const ProItineraryPage: React.FC = () => {
             const supabaseData = await supabaseStorage.getItem(primaryKey);
             if (Array.isArray(supabaseData) && supabaseData.length > 0) {
               foundItineraries = supabaseData;
-              console.log(`✅ Found ${foundItineraries.length} itineraries in Supabase storage`);
-              
+              console.log(
+                `✅ Found ${foundItineraries.length} itineraries in Supabase storage`
+              );
+
               // Sync back to localStorage for faster future access
-              localStorage.setItem(primaryKey, JSON.stringify(foundItineraries));
+              localStorage.setItem(
+                primaryKey,
+                JSON.stringify(foundItineraries)
+              );
               console.log("💾 Synced to localStorage for faster access");
             }
           } catch (error) {
@@ -105,8 +119,10 @@ const ProItineraryPage: React.FC = () => {
           console.log("📦 Checking legacy storage keys...");
           const legacyKeys = [
             "userItineraries",
-            user?.email ? `userItineraries_${user.email.replace(/[@.]/g, "_")}` : null,
-            "itineraries"
+            user?.email
+              ? `userItineraries_${user.email.replace(/[@.]/g, "_")}`
+              : null,
+            "itineraries",
           ].filter(Boolean);
 
           for (const key of legacyKeys) {
@@ -116,10 +132,15 @@ const ProItineraryPage: React.FC = () => {
                 const parsed = JSON.parse(legacyData);
                 if (Array.isArray(parsed) && parsed.length > 0) {
                   foundItineraries = parsed;
-                  console.log(`✅ Found ${foundItineraries.length} itineraries in legacy key: ${key}`);
-                  
+                  console.log(
+                    `✅ Found ${foundItineraries.length} itineraries in legacy key: ${key}`
+                  );
+
                   // Migrate to primary key
-                  localStorage.setItem(primaryKey, JSON.stringify(foundItineraries));
+                  localStorage.setItem(
+                    primaryKey,
+                    JSON.stringify(foundItineraries)
+                  );
                   console.log("🔄 Migrated to primary storage key");
                   break;
                 }
@@ -137,11 +158,13 @@ const ProItineraryPage: React.FC = () => {
             {
               id: "sample-florence-tour",
               title: "Florence Tour",
-              description: "Experience the Renaissance capital with expert guides",
+              description:
+                "Experience the Renaissance capital with expert guides",
               days: 3,
               lastUpdated: "just now",
               status: "draft",
-              image: "/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
+              image:
+                "/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
               themeType: "cultural",
               regions: ["Tuscany"],
             },
@@ -152,12 +175,13 @@ const ProItineraryPage: React.FC = () => {
               days: 3,
               lastUpdated: "just now",
               status: "draft",
-              image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
+              image:
+                "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
               themeType: "cultural",
               regions: ["Catalonia"],
-            }
+            },
           ];
-          
+
           // Save sample itineraries to storage for future use
           try {
             localStorage.setItem(primaryKey, JSON.stringify(foundItineraries));
@@ -170,8 +194,10 @@ const ProItineraryPage: React.FC = () => {
           }
         }
 
-        console.log(`🎯 Final result: ${foundItineraries.length} itineraries loaded`);
-        
+        console.log(
+          `🎯 Final result: ${foundItineraries.length} itineraries loaded`
+        );
+
         if (isMounted) {
           setItineraries(foundItineraries);
           setLoading(false);
@@ -434,7 +460,7 @@ const ProItineraryPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {itineraries.map((itinerary, index) => {
               const itineraryWithImage = ensureItineraryHasImage(
                 itinerary,
