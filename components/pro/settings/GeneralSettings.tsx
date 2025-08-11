@@ -126,6 +126,7 @@ const GeneralSettings: React.FC = () => {
         language: "en",
         timezone: values.timezone || "UTC",
         currency: "USD",
+        elevenLabsEnabled: false, // Default to disabled
         // Include form values as additional properties
         email: values.email,
         address: values.address,

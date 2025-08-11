@@ -41,6 +41,7 @@ import {
   Globe,
   FileImage,
   TrendingUp,
+  Settings,
 } from "lucide-react";
 import { settingsService } from "@/lib/settings-service";
 import ContentCanvas from "./ContentCanvas";
@@ -127,7 +128,7 @@ const ContentCreator: React.FC = () => {
     searchProjects,
     getProjectConversations,
     addConversationMessage,
-    refreshProjects
+    refreshProjects,
   } = useMarketingProjects();
 
   // Add loading state for project creation
@@ -195,7 +196,7 @@ const ContentCreator: React.FC = () => {
         console.error("Error checking voice settings:", error);
       }
     };
-    
+
     checkVoiceSettings();
   }, []);
 
@@ -230,7 +231,7 @@ const ContentCreator: React.FC = () => {
       try {
         await addConversationMessage({
           project_id: currentProject,
-          message_type: 'bot',
+          message_type: "bot",
           content,
           metadata: {
             options,
@@ -241,11 +242,11 @@ const ContentCreator: React.FC = () => {
             generatedContent: generatedData?.generatedContent,
             flyerDesign: generatedData?.flyerDesign,
             contentType: generatedData?.contentType,
-            platform: generatedData?.platform
-          }
+            platform: generatedData?.platform,
+          },
         });
       } catch (error) {
-        console.error('Error saving bot message to database:', error);
+        console.error("Error saving bot message to database:", error);
       }
     }
   };
@@ -268,12 +269,14 @@ const ContentCreator: React.FC = () => {
       try {
         await addConversationMessage({
           project_id: currentProject,
-          message_type: 'user',
+          message_type: "user",
           content,
-          metadata: userAttachments ? { attachments: userAttachments } : undefined
+          metadata: userAttachments
+            ? { attachments: userAttachments }
+            : undefined,
         });
       } catch (error) {
-        console.error('Error saving user message to database:', error);
+        console.error("Error saving user message to database:", error);
       }
     }
   };
@@ -283,7 +286,9 @@ const ContentCreator: React.FC = () => {
       // Check if ElevenLabs is enabled in settings
       const settings = await settingsService.getSettings();
       if (!settings?.elevenLabsEnabled) {
-        toast.info("Text-to-speech is disabled. Enable it in Studio Settings to generate voiceovers.");
+        toast.info(
+          "Text-to-speech is disabled. Enable it in Studio Settings to generate voiceovers."
+        );
         return null;
       }
 
@@ -883,60 +888,68 @@ Description 2: ${data.content.description2 || ""}`;
     setCurrentProject(null);
   };
 
-  const handleStartChat = async (projectType?: string, projectTitle?: string) => {
+  const handleStartChat = async (
+    projectType?: string,
+    projectTitle?: string
+  ) => {
     try {
       setIsCreatingProject(true);
-      
+
       // Check if user is authenticated
       if (!user) {
-        toast.error('Please sign in to create projects');
+        toast.error("Please sign in to create projects");
         setIsCreatingProject(false);
         return;
       }
 
       let projectId = currentProject;
-      
+
       // If no current project, create a new one
       if (!projectId) {
         const projectData = {
-          title: projectTitle || `New ${projectType || 'Marketing'} Project`,
-          type: (projectType as any) || 'scratch',
-          platform: (projectType === 'blog' ? 'general' : 
-                   projectType === 'email' ? 'email' : 
-                   projectType === 'social' ? 'instagram' : 
-                   projectType === 'url_import' ? 'general' : undefined) as any
+          title: projectTitle || `New ${projectType || "Marketing"} Project`,
+          type: (projectType as any) || "scratch",
+          platform: (projectType === "blog"
+            ? "general"
+            : projectType === "email"
+            ? "email"
+            : projectType === "social"
+            ? "instagram"
+            : projectType === "url_import"
+            ? "general"
+            : undefined) as any,
         };
-        
-        console.log('Creating project with data:', projectData);
+
+        console.log("Creating project with data:", projectData);
         const newProject = await createProject(projectData);
-        
+
         if (newProject) {
           projectId = newProject.id;
           setCurrentProject(projectId);
-          console.log('Project created successfully:', newProject);
+          console.log("Project created successfully:", newProject);
         } else {
-          toast.error('Failed to create project. Please try again.');
+          toast.error("Failed to create project. Please try again.");
           setIsCreatingProject(false);
           return;
         }
       }
-      
+
       if (projectId) {
         // Load existing conversations for this project
         const conversations = await getProjectConversations(projectId);
-        const chatMessages: ChatMessage[] = conversations.map(conv => ({
+        const chatMessages: ChatMessage[] = conversations.map((conv) => ({
           id: conv.id,
-          type: conv.message_type as 'user' | 'bot',
+          type: conv.message_type as "user" | "bot",
           content: conv.content,
           timestamp: new Date(conv.timestamp),
-          metadata: conv.metadata
+          metadata: conv.metadata,
         }));
-        
+
         setMessages(chatMessages);
         setShowChat(true);
         setGeneratedContent(null);
         setConversationState({ step: "welcome" });
-        
+
         // Add welcome message if no existing conversations
         if (chatMessages.length === 0) {
           await addBotMessage(
@@ -953,12 +966,14 @@ Description 2: ${data.content.description2 || ""}`;
             ]
           );
         }
-        
-        toast.success('Project started successfully!');
+
+        toast.success("Project started successfully!");
       }
     } catch (error) {
-      console.error('Error starting chat:', error);
-      toast.error('Failed to start chat. Please check your connection and try again.');
+      console.error("Error starting chat:", error);
+      toast.error(
+        "Failed to start chat. Please check your connection and try again."
+      );
     } finally {
       setIsCreatingProject(false);
     }
@@ -981,8 +996,6 @@ Description 2: ${data.content.description2 || ""}`;
     }
   };
 
-
-
   if (showChat) {
     return (
       <div className="h-full flex flex-col">
@@ -998,7 +1011,9 @@ Description 2: ${data.content.description2 || ""}`;
                 if (settings?.elevenLabsEnabled) {
                   setIsVoiceEnabled(!isVoiceEnabled);
                 } else {
-                  toast.info("Enable ElevenLabs in Studio Settings to use text-to-speech");
+                  toast.info(
+                    "Enable ElevenLabs in Studio Settings to use text-to-speech"
+                  );
                 }
               }}
               className={isVoiceEnabled ? "text-blue-600" : "text-gray-400"}
@@ -1562,7 +1577,7 @@ Description 2: ${data.content.description2 || ""}`;
           <h1 className="text-xl font-semibold text-foreground">Studio</h1>
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
         </div>
-        
+
         <div className="flex items-center gap-3">
           {/* Authentication Status */}
           {!user ? (
@@ -1576,7 +1591,7 @@ Description 2: ${data.content.description2 || ""}`;
               <span className="text-xs text-green-700">Ready</span>
             </div>
           )}
-          
+
           <Button
             variant="ghost"
             size="sm"
@@ -1607,23 +1622,25 @@ Description 2: ${data.content.description2 || ""}`;
               {/* Plus Icon */}
               <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
                 <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-muted-foreground">+</span>
+                  <span className="text-sm font-medium text-muted-foreground">
+                    +
+                  </span>
                 </div>
               </div>
-              
+
               {/* Main Input */}
               <Input
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter' && inputValue.trim()) {
+                  if (e.key === "Enter" && inputValue.trim()) {
                     handleUserInput(inputValue);
                   }
                 }}
                 placeholder="Ask anything..."
                 className="h-14 pl-14 pr-20 text-base bg-card border-2 border-border hover:border-primary focus:border-primary transition-colors"
               />
-              
+
               {/* Right Side Icons */}
               <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center gap-3">
                 <Button
@@ -1647,11 +1664,11 @@ Description 2: ${data.content.description2 || ""}`;
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleStartChat('scratch', 'Start from scratch')}
+              onClick={() => handleStartChat("scratch", "Start from scratch")}
               disabled={isCreatingProject}
               className="h-10 text-xs"
             >
-              {isCreatingProject ? 'Creating...' : 'New Project'}
+              {isCreatingProject ? "Creating..." : "New Project"}
             </Button>
             <Button
               variant="outline"
@@ -1667,9 +1684,11 @@ Description 2: ${data.content.description2 || ""}`;
           {filteredProjects.length > 0 && (
             <div className="space-y-3">
               <div className="text-center">
-                <h3 className="text-sm font-medium text-muted-foreground mb-3">Recent Projects</h3>
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                  Recent Projects
+                </h3>
               </div>
-              
+
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {filteredProjects.slice(0, 3).map((project) => (
                   <div
@@ -1693,7 +1712,7 @@ Description 2: ${data.content.description2 || ""}`;
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm('Delete this project?')) {
+                        if (confirm("Delete this project?")) {
                           deleteProject(project.id);
                         }
                       }}
@@ -1704,7 +1723,7 @@ Description 2: ${data.content.description2 || ""}`;
                   </div>
                 ))}
               </div>
-              
+
               {filteredProjects.length > 3 && (
                 <div className="text-center">
                   <Button
@@ -1724,14 +1743,18 @@ Description 2: ${data.content.description2 || ""}`;
           {projectsLoading && (
             <div className="text-center">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-              <p className="text-sm text-muted-foreground mt-2">Loading projects...</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Loading projects...
+              </p>
             </div>
           )}
 
           {/* Error State */}
           {projectsError && (
             <div className="text-center p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600 mb-2">Error loading projects</p>
+              <p className="text-sm text-red-600 mb-2">
+                Error loading projects
+              </p>
               <Button onClick={refreshProjects} variant="outline" size="sm">
                 Try Again
               </Button>
@@ -1741,9 +1764,9 @@ Description 2: ${data.content.description2 || ""}`;
       </div>
 
       {/* Settings Modal */}
-      <StudioSettings 
-        isOpen={showSettings} 
-        onClose={() => setShowSettings(false)} 
+      <StudioSettings
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
       />
     </div>
   );
