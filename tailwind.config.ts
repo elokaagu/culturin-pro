@@ -67,6 +67,30 @@ export default {
           highlight: "#8E9196", // Neutral Gray
           subtle: "#F1F1F1", // Light Gray
         },
+        // New sophisticated dark mode colors
+        dark: {
+          bg: {
+            primary: "#1A1A1A",    // Main background - very dark
+            secondary: "#242424",   // Card/popover background
+            sidebar: "#2C2C2C",     // Sidebar background
+            muted: "#3A3A3A",       // Secondary button background
+          },
+          text: {
+            primary: "#FFFFFF",     // Main text - white
+            secondary: "#CCCCCC",   // Secondary text - light grey
+            muted: "#B0B0B0",       // Muted text - medium grey
+          },
+          border: {
+            primary: "#333333",     // Main borders
+            secondary: "#404040",   // Secondary borders
+            accent: "#6366F1",      // Blue accent borders
+          },
+          accent: {
+            blue: "#6366F1",        // Primary blue
+            "blue-light": "#818CF8", // Lighter blue
+            "blue-dark": "#4F46E5",  // Darker blue
+          }
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

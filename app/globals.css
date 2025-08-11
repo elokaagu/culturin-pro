@@ -13,7 +13,7 @@
   }
 
   .dark .glass-base {
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(26, 26, 26, 0.8); /* #1A1A1A with opacity */
     border-color: rgba(255, 255, 255, 0.1);
   }
 
@@ -24,7 +24,7 @@
   }
 
   .dark .glass-card {
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(36, 36, 36, 0.85); /* #242424 with opacity */
     border-color: rgba(255, 255, 255, 0.15);
   }
 
@@ -35,7 +35,7 @@
   }
 
   .dark .glass-modal {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(26, 26, 26, 0.9); /* #1A1A1A with opacity */
     border-color: rgba(255, 255, 255, 0.2);
   }
 
@@ -46,7 +46,7 @@
   }
 
   .dark .glass-nav {
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(26, 26, 26, 0.8); /* #1A1A1A with opacity */
     border-color: rgba(255, 255, 255, 0.1);
   }
 
@@ -57,7 +57,7 @@
   }
 
   .dark .glass-sidebar {
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(44, 44, 44, 0.85); /* #2C2C2C with opacity */
     border-color: rgba(255, 255, 255, 0.1);
   }
 
@@ -185,30 +185,47 @@
   }
 
   .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 0%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 0%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 5%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 8%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 10%;
-    --input: 0 0% 5%;
-    --ring: 217 91% 60%;
-    --chart-1: 217 91% 60%;
-    --chart-2: 0 0% 70%;
-    --chart-3: 0 0% 85%;
-    --chart-4: 217 91% 70%;
-    --chart-5: 0 0% 95%;
+    /* Main Background - Very dark, almost black */
+    --background: 0 0% 10%; /* #1A1A1A */
+    --foreground: 0 0% 100%; /* #FFFFFF */
+    
+    /* Card and Popover Backgrounds - Slightly lighter dark grey */
+    --card: 0 0% 14%; /* #242424 */
+    --card-foreground: 0 0% 100%; /* #FFFFFF */
+    --popover: 0 0% 14%; /* #242424 */
+    --popover-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    /* Primary Colors - White for main text and blue for actions */
+    --primary: 221 83% 53%; /* #6366F1 - Blue for primary buttons */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    /* Secondary Colors - Dark grey for secondary elements */
+    --secondary: 0 0% 23%; /* #3A3A3A - Dark grey for secondary buttons */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    /* Muted Colors - Light grey for secondary text */
+    --muted: 0 0% 17%; /* #2C2C2C - Sidebar background */
+    --muted-foreground: 0 0% 80%; /* #CCCCCC - Secondary text */
+    
+    /* Accent Colors - Blue for interactive elements */
+    --accent: 221 83% 53%; /* #6366F1 - Blue for accents */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    /* Destructive Colors - Red for errors */
+    --destructive: 0 84% 60%; /* #EF4444 */
+    --destructive-foreground: 0 0% 100%; /* #FFFFFF */
+    
+    /* Border and Input Colors - Subtle dark grey */
+    --border: 0 0% 20%; /* #333333 - Subtle borders */
+    --input: 0 0% 17%; /* #2C2C2C - Input backgrounds */
+    --ring: 221 83% 53%; /* #6366F1 - Focus rings */
+    
+    /* Chart Colors - Blue and grey variations */
+    --chart-1: 221 83% 53%; /* #6366F1 - Primary blue */
+    --chart-2: 0 0% 70%; /* #B0B0B0 - Light grey */
+    --chart-3: 0 0% 85%; /* #D9D9D9 - Lighter grey */
+    --chart-4: 221 83% 70%; /* #818CF8 - Lighter blue */
+    --chart-5: 0 0% 95%; /* #F2F2F2 - Very light grey */
   }
 }
 
@@ -580,5 +597,56 @@ header.sticky {
   .glass-transition {
     transition: background 0.3s ease, border-color 0.3s ease,
       backdrop-filter 0.3s ease;
+  }
+
+  /* New Dark Mode Color Utilities */
+  .dark .bg-dark-primary { background-color: #1A1A1A; }
+  .dark .bg-dark-secondary { background-color: #242424; }
+  .dark .bg-dark-sidebar { background-color: #2C2C2C; }
+  .dark .bg-dark-muted { background-color: #3A3A3A; }
+  
+  .dark .text-dark-primary { color: #FFFFFF; }
+  .dark .text-dark-secondary { color: #CCCCCC; }
+  .dark .text-dark-muted { color: #B0B0B0; }
+  
+  .dark .border-dark-primary { border-color: #333333; }
+  .dark .border-dark-secondary { border-color: #404040; }
+  .dark .border-dark-accent { border-color: #6366F1; }
+  
+  .dark .bg-dark-accent-blue { background-color: #6366F1; }
+  .dark .bg-dark-accent-blue-light { background-color: #818CF8; }
+  .dark .bg-dark-accent-blue-dark { background-color: #4F46E5; }
+
+  /* Enhanced Dark Mode Hover States */
+  .dark .hover\:bg-dark-secondary:hover { background-color: #2C2C2C; }
+  .dark .hover\:bg-dark-muted:hover { background-color: #404040; }
+  .dark .hover\:bg-dark-accent-blue:hover { background-color: #4F46E5; }
+  
+  /* Dark Mode Focus States */
+  .dark .focus\:ring-dark-accent:focus { --tw-ring-color: #6366F1; }
+  .dark .focus\:border-dark-accent:focus { border-color: #6366F1; }
+  
+  /* Dark Mode Selection */
+  .dark ::selection {
+    background-color: rgba(99, 102, 241, 0.3);
+    color: #FFFFFF;
+  }
+  
+  /* Dark Mode Scrollbar */
+  .dark ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .dark ::-webkit-scrollbar-track {
+    background: #1A1A1A;
+  }
+  
+  .dark ::-webkit-scrollbar-thumb {
+    background: #404040;
+    border-radius: 4px;
+  }
+  
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #6366F1;
   }
 }
