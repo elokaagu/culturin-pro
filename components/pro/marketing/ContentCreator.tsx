@@ -430,28 +430,43 @@ const ContentCreator: React.FC = () => {
     conversationHistory: ChatMessage[]
   ) => {
     try {
+      console.log("Calling OpenAI API with:", {
+        userInput,
+        conversationHistoryLength: conversationHistory?.length || 0,
+        attachments: attachments?.length || 0
+      });
+
+      const requestBody = {
+        userInput,
+        conversationHistory: conversationHistory.map((msg) => ({
+          role: msg.type === "user" ? "user" : "assistant",
+          content: msg.content,
+          attachments: msg.attachments,
+        })),
+        isConversation: true,
+        attachments: attachments,
+      };
+
+      console.log("Request body:", requestBody);
+
       const response = await fetch("/api/generate-content", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          userInput,
-          conversationHistory: conversationHistory.map((msg) => ({
-            role: msg.type === "user" ? "user" : "assistant",
-            content: msg.content,
-            attachments: msg.attachments,
-          })),
-          isConversation: true,
-          attachments: attachments,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
+      console.log("API Response status:", response.status, response.statusText);
+
       if (!response.ok) {
-        throw new Error("Failed to get response from Rigo");
+        const errorText = await response.text();
+        console.error("API Error response:", errorText);
+        throw new Error(`Failed to get response from Rigo: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
+      console.log("API Response data:", data);
       return data;
     } catch (error) {
       console.error("Error calling OpenAI:", error);
@@ -551,6 +566,31 @@ const ContentCreator: React.FC = () => {
   const handleUserInput = async (input: string) => {
     if (!input.trim()) return;
 
+    // Check if we have a current project, if not, create one first
+    if (!currentProject) {
+      console.log("No current project, creating one first...");
+      const projectData = {
+        title: `Chat about: ${input.substring(0, 50)}...`,
+        type: "scratch" as const,
+        platform: "general" as any,
+      };
+      
+      try {
+        const newProject = await createProject(projectData);
+        if (newProject) {
+          setCurrentProject(newProject.id);
+          console.log("Project created successfully:", newProject.id);
+        } else {
+          toast.error("Failed to create project. Please try again.");
+          return;
+        }
+      } catch (error) {
+        console.error("Error creating project:", error);
+        toast.error("Failed to create project. Please try again.");
+        return;
+      }
+    }
+
     addUserMessage(input);
     setInputValue("");
 
@@ -567,8 +607,9 @@ const ContentCreator: React.FC = () => {
       },
     ]);
 
-    // Get AI response
-    const aiResponse = await callOpenAI(input, messages);
+    // Get AI response - use current messages array
+    const currentMessages = messages || [];
+    const aiResponse = await callOpenAI(input, currentMessages);
 
     // Remove thinking message and add real response
     setMessages((prev) => prev.filter((msg) => msg.id !== thinkingMessageId));
