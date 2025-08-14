@@ -169,17 +169,8 @@ const ContentCreator: React.FC = () => {
   useEffect(() => {
     if (messages.length === 0 && showChat) {
       addBotMessage(
-        "Ahoy! I'm Rigo, your AI marketing assistant. Ready to discover amazing content together? What kind of marketing content would you like to create today?",
-        [
-          "Instagram Caption",
-          "TikTok Hook",
-          "Google Ad Copy",
-          "Facebook Ad",
-          "Blog Post",
-          "Email Newsletter",
-          "WhatsApp Script",
-          "Event Flyer",
-        ]
+        "Hi! I'm Rigo, your AI marketing assistant. I'm here to help you create amazing marketing content for your cultural tourism business. What would you like to work on today?",
+        undefined
       );
     }
   }, [showChat]);
@@ -994,17 +985,8 @@ Description 2: ${data.content.description2 || ""}`;
         // Add welcome message if no existing conversations
         if (chatMessages.length === 0) {
           await addBotMessage(
-            "Ahoy! I'm Rigo, your AI marketing assistant. Ready to discover amazing content together? What kind of marketing content would you like to create today?",
-            [
-              "Instagram Caption",
-              "TikTok Hook",
-              "Google Ad Copy",
-              "Facebook Ad",
-              "Blog Post",
-              "Email Newsletter",
-              "WhatsApp Script",
-              "Event Flyer",
-            ]
+            "Hi! I'm Rigo, your AI marketing assistant. I'm here to help you create amazing marketing content for your cultural tourism business. What would you like to work on today?",
+            undefined
           );
         }
 
