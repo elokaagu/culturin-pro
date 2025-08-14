@@ -42,9 +42,9 @@ const ProDashboardPage: React.FC = () => {
         </RevealOnScroll>
 
         {/* Metrics Cards with stagger animation */}
-        <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <MotionCard className="h-full">
-            <div className="glass-card rounded-2xl p-6 glass-hover h-full">
+            <div className="glass-card rounded-2xl p-4 sm:p-6 glass-hover h-full">
               <DashboardMetricCard
                 title="Revenue"
                 value="$3,490"
@@ -56,7 +56,7 @@ const ProDashboardPage: React.FC = () => {
             </div>
           </MotionCard>
           <MotionCard className="h-full">
-            <div className="glass-card rounded-2xl p-6 glass-hover h-full">
+            <div className="glass-card rounded-2xl p-4 sm:p-6 glass-hover h-full">
               <DashboardMetricCard
                 title="Bookings"
                 value="128"
@@ -68,7 +68,7 @@ const ProDashboardPage: React.FC = () => {
             </div>
           </MotionCard>
           <MotionCard className="h-full">
-            <div className="glass-card rounded-2xl p-6 glass-hover h-full">
+            <div className="glass-card rounded-2xl p-4 sm:p-6 glass-hover h-full">
               <DashboardMetricCard
                 title="Guests"
                 value="456"
@@ -80,7 +80,7 @@ const ProDashboardPage: React.FC = () => {
             </div>
           </MotionCard>
           <MotionCard className="h-full">
-            <div className="glass-card rounded-2xl p-6 glass-hover h-full">
+            <div className="glass-card rounded-2xl p-4 sm:p-6 glass-hover h-full">
               <DashboardMetricCard
                 title="Rating"
                 value="4.8"

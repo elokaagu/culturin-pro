@@ -52,6 +52,7 @@ const ProSidebar: React.FC = () => {
   const location = useLocation();
   const [userName, setUserName] = useState<string>("Cultural Host");
   const [planType, setplanType] = useState<string>("Growth Plan");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isDarkMode = useThemeAwareLogo();
 
   useEffect(() => {
@@ -73,29 +74,49 @@ const ProSidebar: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-64 bg-white h-full border-r border-gray-200 flex flex-col fixed left-0 top-0 bottom-0 font-sans">
-      {/* Logo & Header */}
-      <div className="p-4 border-b border-gray-100">
-        <button
-          onClick={() => navigate("/")}
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-        >
-          <div className="h-16">
-            {" "}
-            {/* Increased from h-14 to h-16 */}
-            <Image
-              src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png"
-              alt="Culturin"
-              className={`h-full w-auto object-contain cursor-pointer ${
-                isDarkMode ? "brightness-0 invert" : ""
-              }`}
-              width={180} /* Increased from 160 to 180 */
-              height={64} /* Increased from 56 to 64 */
-            />
-          </div>
-        </button>
-        <p className="text-xs text-gray-500 mt-1">Culturin Studio</p>
-      </div>
+    <>
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="fixed top-4 left-4 z-50 md:hidden bg-white p-2 rounded-lg shadow-lg border border-gray-200"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      {/* Sidebar */}
+      <div className={`fixed left-0 top-0 bottom-0 z-40 transform transition-transform duration-300 ease-in-out ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      } w-64 bg-white h-full border-r border-gray-200 flex flex-col font-sans`}>
+        {/* Logo & Header */}
+        <div className="p-4 border-b border-gray-100">
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
+            <div className="h-12 sm:h-16">
+              <Image
+                src="/lovable-uploads/3d2a4fd6-0242-4fb3-bfba-8d3a44eb6e71.png"
+                alt="Culturin"
+                className={`h-full w-auto object-contain cursor-pointer ${
+                  isDarkMode ? "brightness-0 invert" : ""
+                }`}
+                width={180}
+                height={64}
+              />
+            </div>
+          </button>
+          <p className="text-xs text-gray-500 mt-1">Culturin Studio</p>
+        </div>
 
       {/* Navigation Items */}
       <div className="flex-1 overflow-auto py-2">
@@ -103,7 +124,13 @@ const ProSidebar: React.FC = () => {
           {menuItems.map((item) => (
             <button
               key={item.name}
-              onClick={() => navigate(item.path)}
+              onClick={() => {
+                navigate(item.path);
+                // Close mobile menu on navigation
+                if (window.innerWidth < 768) {
+                  setIsMobileMenuOpen(false);
+                }
+              }}
               className={cn(
                 "flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-colors text-sm",
                 location.pathname === item.path
@@ -132,7 +159,13 @@ const ProSidebar: React.FC = () => {
 
         {/* Back to Culturin Home link */}
         <button
-          onClick={() => navigate("/")}
+          onClick={() => {
+            navigate("/");
+            // Close mobile menu on navigation
+            if (window.innerWidth < 768) {
+              setIsMobileMenuOpen(false);
+            }
+          }}
           className="mt-4 flex w-full items-center gap-2 px-3 py-2 rounded-md text-left transition-colors text-sm text-blue-600 hover:bg-blue-50 border border-blue-100"
         >
           <Home className="h-4 w-4" />
@@ -140,6 +173,7 @@ const ProSidebar: React.FC = () => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

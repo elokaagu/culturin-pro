@@ -74,9 +74,11 @@ export default function BookingPage({
     const loadBookingData = async () => {
       try {
         setLoading(true);
-        
+
         // Load operator data from localStorage
-        const publishedContentStr = localStorage.getItem("publishedWebsiteContent");
+        const publishedContentStr = localStorage.getItem(
+          "publishedWebsiteContent"
+        );
         if (publishedContentStr) {
           try {
             const publishedContent = JSON.parse(publishedContentStr);
@@ -96,13 +98,18 @@ export default function BookingPage({
           ?.split("_")[1];
 
         if (userId) {
-          const selectedTourStr = localStorage.getItem(`selectedTour_${userId}`);
+          const selectedTourStr = localStorage.getItem(
+            `selectedTour_${userId}`
+          );
           const websiteSlug = localStorage.getItem(`websiteSlug_${userId}`);
 
           if (selectedTourStr && websiteSlug === params.slug) {
             try {
               realTour = JSON.parse(selectedTourStr);
-              console.log("✅ Tour loaded from selectedTour localStorage:", realTour);
+              console.log(
+                "✅ Tour loaded from selectedTour localStorage:",
+                realTour
+              );
             } catch (e) {
               console.error("Error parsing selectedTour data:", e);
             }
@@ -111,18 +118,26 @@ export default function BookingPage({
 
         // Method 2: Try to load from websiteData localStorage (fallback)
         if (!realTour) {
-          const websiteDataStr = localStorage.getItem(`websiteData_${userId || 'default'}`);
+          const websiteDataStr = localStorage.getItem(
+            `websiteData_${userId || "default"}`
+          );
           if (websiteDataStr) {
             try {
               const websiteData = JSON.parse(websiteDataStr);
-              if (websiteData.itineraries && websiteData.itineraries.length > 0) {
+              if (
+                websiteData.itineraries &&
+                websiteData.itineraries.length > 0
+              ) {
                 // Find the specific tour by ID
                 const foundItinerary = websiteData.itineraries.find(
                   (it: any) => it.id === params.tourId
                 );
                 if (foundItinerary) {
                   realTour = foundItinerary;
-                  console.log("✅ Tour loaded from websiteData localStorage:", realTour);
+                  console.log(
+                    "✅ Tour loaded from websiteData localStorage:",
+                    realTour
+                  );
                 }
               }
             } catch (e) {
@@ -133,13 +148,18 @@ export default function BookingPage({
 
         // Method 3: Try to load from currentTour localStorage (new method)
         if (!realTour) {
-          const currentTourStr = localStorage.getItem(`currentTour_${params.tourId}`);
+          const currentTourStr = localStorage.getItem(
+            `currentTour_${params.tourId}`
+          );
           const currentWebsiteSlug = localStorage.getItem("currentWebsiteSlug");
-          
+
           if (currentTourStr && currentWebsiteSlug === params.slug) {
             try {
               realTour = JSON.parse(currentTourStr);
-              console.log("✅ Tour loaded from currentTour localStorage:", realTour);
+              console.log(
+                "✅ Tour loaded from currentTour localStorage:",
+                realTour
+              );
             } catch (e) {
               console.error("Error parsing currentTour data:", e);
             }
@@ -148,7 +168,9 @@ export default function BookingPage({
 
         // Method 4: Try to load from publishedItineraries localStorage
         if (!realTour) {
-          const publishedItinerariesStr = localStorage.getItem("publishedItineraries");
+          const publishedItinerariesStr = localStorage.getItem(
+            "publishedItineraries"
+          );
           if (publishedItinerariesStr) {
             try {
               const publishedItineraries = JSON.parse(publishedItinerariesStr);
@@ -157,7 +179,10 @@ export default function BookingPage({
               );
               if (foundItinerary) {
                 realTour = foundItinerary;
-                console.log("✅ Tour loaded from publishedItineraries localStorage:", realTour);
+                console.log(
+                  "✅ Tour loaded from publishedItineraries localStorage:",
+                  realTour
+                );
               }
             } catch (e) {
               console.error("Error parsing publishedItineraries:", e);
@@ -165,32 +190,34 @@ export default function BookingPage({
           }
         }
 
-                    // Transform real tour data to match Tour interface
-            if (realTour) {
-              const transformedTour: Tour = {
-                id: realTour.id || params.tourId,
-                name: realTour.title || realTour.name || "Tour",
-                duration: realTour.days
-                  ? `${realTour.days} day${realTour.days !== 1 ? "s" : ""}`
-                  : realTour.duration || "1 day",
-                price: realTour.price || 99,
-                image: realTour.image || "",
-                description: realTour.description || "Experience this amazing tour",
-                highlights: realTour.highlights || [
-                  "Professional guide",
-                  "Small groups",
-                  "Cultural experience",
-                ],
-                rating: realTour.rating || 0,
-                reviews: realTour.reviews || 0,
-                source: "Real Itinerary Data",
-              };
+        // Transform real tour data to match Tour interface
+        if (realTour) {
+          const transformedTour: Tour = {
+            id: realTour.id || params.tourId,
+            name: realTour.title || realTour.name || "Tour",
+            duration: realTour.days
+              ? `${realTour.days} day${realTour.days !== 1 ? "s" : ""}`
+              : realTour.duration || "1 day",
+            price: realTour.price || 99,
+            image: realTour.image || "",
+            description: realTour.description || "Experience this amazing tour",
+            highlights: realTour.highlights || [
+              "Professional guide",
+              "Small groups",
+              "Cultural experience",
+            ],
+            rating: realTour.rating || 0,
+            reviews: realTour.reviews || 0,
+            source: "Real Itinerary Data",
+          };
 
           setTour(transformedTour);
           console.log("🎯 Final transformed tour:", transformedTour);
         } else {
           // Only fallback to sample data if no real data found
-          console.warn("⚠️ No real tour data found, using fallback sample data");
+          console.warn(
+            "⚠️ No real tour data found, using fallback sample data"
+          );
           const sampleTours: Tour[] = [
             {
               id: "gaudi-tour",
@@ -212,7 +239,8 @@ export default function BookingPage({
             },
           ];
 
-          const foundTour = sampleTours.find((t) => t.id === params.tourId) || sampleTours[0];
+          const foundTour =
+            sampleTours.find((t) => t.id === params.tourId) || sampleTours[0];
           setTour(foundTour);
         }
       } catch (error) {
@@ -295,10 +323,10 @@ export default function BookingPage({
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Booking Form */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 order-2 lg:order-1">
             {step === 1 && (
               <Card>
                 <CardHeader>
@@ -306,7 +334,7 @@ export default function BookingPage({
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="firstName">First Name</Label>
                         <Input
@@ -316,6 +344,7 @@ export default function BookingPage({
                             handleInputChange("firstName", e.target.value)
                           }
                           required
+                          className="text-sm sm:text-base"
                         />
                       </div>
                       <div>
@@ -327,6 +356,7 @@ export default function BookingPage({
                             handleInputChange("lastName", e.target.value)
                           }
                           required
+                          className="text-sm sm:text-base"
                         />
                       </div>
                     </div>
@@ -341,6 +371,7 @@ export default function BookingPage({
                           handleInputChange("email", e.target.value)
                         }
                         required
+                        className="text-sm sm:text-base"
                       />
                     </div>
 
@@ -354,10 +385,11 @@ export default function BookingPage({
                           handleInputChange("phone", e.target.value)
                         }
                         required
+                        className="text-sm sm:text-base"
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="participants">
                           Number of Participants
@@ -368,7 +400,7 @@ export default function BookingPage({
                             handleInputChange("participants", parseInt(value))
                           }
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="text-sm sm:text-base">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -391,6 +423,7 @@ export default function BookingPage({
                           }
                           min={new Date().toISOString().split("T")[0]}
                           required
+                          className="text-sm sm:text-base"
                         />
                       </div>
                     </div>
@@ -407,12 +440,13 @@ export default function BookingPage({
                         }
                         placeholder="Any dietary restrictions, accessibility needs, or special requests..."
                         rows={3}
+                        className="text-sm sm:text-base"
                       />
                     </div>
 
                     <Button
                       type="submit"
-                      className="w-full"
+                      className="w-full text-sm sm:text-base py-3 sm:py-4"
                       style={{ backgroundColor: primaryColor }}
                     >
                       Continue to Payment
@@ -524,8 +558,8 @@ export default function BookingPage({
           </div>
 
           {/* Tour Summary */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-8">
+          <div className="lg:col-span-1 order-1 lg:order-2">
+            <Card className="sticky top-4 sm:top-8">
               <CardContent className="p-0">
                 <div className="aspect-video relative">
                   <img
@@ -550,9 +584,9 @@ export default function BookingPage({
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     {tour.name}
                   </h3>
-                  
+
                   {/* Debug Info - Only show in development */}
-                  {process.env.NODE_ENV === 'development' && (
+                  {process.env.NODE_ENV === "development" && (
                     <div className="text-left bg-gray-100 p-3 rounded-lg mb-4 text-xs">
                       <p className="font-medium mb-2">Debug Info:</p>
                       <p>Tour ID: {tour.id}</p>

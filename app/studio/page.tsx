@@ -105,7 +105,8 @@ function StudioContent() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          {/* Desktop Buttons */}
+          <div className="hidden md:flex items-center space-x-3">
             <Button
               variant="outline"
               size="sm"
@@ -143,47 +144,69 @@ function StudioContent() {
               Sign Out
             </Button>
           </div>
+
+          {/* Mobile Buttons */}
+          <div className="md:hidden flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/pro-dashboard")}
+              className="text-xs px-2 py-1"
+            >
+              <Globe className="h-3 w-3 mr-1" />
+              Dashboard
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="text-xs px-2 py-1 text-red-600 border-red-200 hover:bg-red-50"
+            >
+              <LogOut className="h-3 w-3 mr-1" />
+              Sign Out
+            </Button>
+          </div>
         </div>
       </div>
 
       {activeTab === "overview" ? (
         // Split Screen Layout for Overview
-        <div className="min-h-screen flex">
+        <div className="min-h-screen flex flex-col lg:flex-row">
           {/* Left Side - Welcome Content */}
-          <div className="w-1/2 flex items-center justify-center px-12 pt-24">
-            <div className="max-w-lg">
-              <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          <div className="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-8 lg:px-12 pt-16 sm:pt-20 lg:pt-24">
+            <div className="max-w-lg text-center lg:text-left">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
                 Welcome to Culturin Studio
               </h1>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-6 sm:mb-8 leading-relaxed">
                 Your all-in-one creative workspace for designing, managing, and
                 growing your cultural tourism business.
               </p>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3 sm:gap-4">
                 <Button
                   onClick={handleLaunchDashboard}
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 px-8 rounded-lg h-auto group transition-all duration-300"
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-base sm:text-lg py-4 sm:py-6 px-6 sm:px-8 rounded-lg h-auto group transition-all duration-300 w-full sm:w-auto"
                 >
                   Launch Dashboard
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setActiveTab("booking-preview")}
-                  className="text-lg py-6 px-8 rounded-lg h-auto border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="text-base sm:text-lg py-4 sm:py-6 px-6 sm:px-8 rounded-lg h-auto border-gray-300 text-gray-700 hover:bg-gray-50 w-full sm:w-auto"
                 >
-                  <Eye className="mr-2 h-5 w-5" />
+                  <Eye className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Preview Booking Experience
                 </Button>
               </div>
-              <p className="text-sm text-gray-500 mt-6">
+              <p className="text-sm text-gray-500 mt-4 sm:mt-6">
                 Trusted by cultural experience creators worldwide
               </p>
             </div>
           </div>
 
           {/* Right Side - Image with Overlay Buttons */}
-          <div className="w-1/2 relative">
+          <div className="w-full lg:w-1/2 relative h-64 sm:h-80 lg:h-full">
             <div className="absolute inset-0">
               <Image
                 src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=2000&auto=format&fit=crop"
@@ -195,28 +218,28 @@ function StudioContent() {
             </div>
 
             {/* Overlay Buttons */}
-            <div className="absolute inset-0 flex flex-col justify-center items-center space-y-6 p-12">
+            <div className="absolute inset-0 flex flex-col justify-center items-center space-y-3 sm:space-y-6 p-4 sm:p-8 lg:p-12">
               <Button
                 onClick={() => handleTabChange("overview")}
-                className="w-64 h-16 text-lg font-semibold transition-all duration-300 bg-white text-blue-600 shadow-lg scale-105"
+                className="w-full sm:w-64 h-12 sm:h-16 text-sm sm:text-lg font-semibold transition-all duration-300 bg-white text-blue-600 shadow-lg scale-105"
               >
-                <Palette className="mr-3 h-5 w-5" />
+                <Palette className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
                 Studio Overview
               </Button>
 
               <Button
                 onClick={() => handleTabChange("booking-builder")}
-                className="w-64 h-16 text-lg font-semibold transition-all duration-300 bg-white/90 text-gray-700 hover:bg-white hover:shadow-lg"
+                className="w-full sm:w-64 h-12 sm:h-16 text-sm sm:text-lg font-semibold transition-all duration-300 bg-white/90 text-gray-700 hover:bg-white hover:shadow-lg"
               >
-                <Settings className="mr-3 h-5 w-5" />
+                <Settings className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
                 Booking Builder
               </Button>
 
               <Button
                 onClick={() => handleTabChange("booking-preview")}
-                className="w-64 h-16 text-lg font-semibold transition-all duration-300 bg-white/90 text-gray-700 hover:bg-white hover:shadow-lg"
+                className="w-full sm:w-64 h-12 sm:h-16 text-sm sm:text-lg font-semibold transition-all duration-300 bg-white/90 text-gray-700 hover:bg-white hover:shadow-lg"
               >
-                <Calendar className="mr-3 h-5 w-5" />
+                <Calendar className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
                 Booking Experience
               </Button>
             </div>
@@ -224,16 +247,16 @@ function StudioContent() {
         </div>
       ) : (
         // Tabbed Layout for Other Sections
-        <div className="pt-24 pb-12 container mx-auto px-4 md:px-6">
+        <div className="pt-16 sm:pt-20 lg:pt-24 pb-8 sm:pb-12 container mx-auto px-4 sm:px-6">
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="overview">Studio Overview</TabsTrigger>
-              <TabsTrigger value="booking-builder">Booking Builder</TabsTrigger>
-              <TabsTrigger value="booking-preview">
+            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 gap-2">
+              <TabsTrigger value="overview" className="text-xs sm:text-sm">Studio Overview</TabsTrigger>
+              <TabsTrigger value="booking-builder" className="text-xs sm:text-sm">Booking Builder</TabsTrigger>
+              <TabsTrigger value="booking-preview" className="text-xs sm:text-sm">
                 Booking Experience
               </TabsTrigger>
             </TabsList>
@@ -243,28 +266,28 @@ function StudioContent() {
               className="space-y-12 animate-fade-in"
             >
               {/* Hero Section */}
-              <div className="text-center max-w-3xl mx-auto mb-12">
-                <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
                   Welcome to Culturin Studio
                 </h1>
-                <p className="text-lg text-gray-600 mb-8">
+                <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 px-4">
                   Your all-in-one creative workspace for designing, managing,
                   and growing your cultural tourism business.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
                   <Button
                     onClick={handleLaunchDashboard}
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-lg py-6 px-8 rounded-lg h-auto group transition-all duration-300"
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-base sm:text-lg py-4 sm:py-6 px-6 sm:px-8 rounded-lg h-auto group transition-all duration-300 w-full sm:w-auto"
                   >
                     Launch Dashboard
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => setActiveTab("booking-preview")}
-                    className="text-lg py-6 px-8 rounded-lg h-auto"
+                    className="text-base sm:text-lg py-4 sm:py-6 px-6 sm:px-8 rounded-lg h-auto w-full sm:w-auto"
                   >
-                    <Eye className="mr-2 h-5 w-5" />
+                    <Eye className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     Preview Booking Experience
                   </Button>
                 </div>
@@ -274,25 +297,26 @@ function StudioContent() {
               </div>
             </TabsContent>
 
-            <TabsContent value="booking-builder" className="space-y-6">
-              <div className="flex justify-between items-center">
+            <TabsContent value="booking-builder" className="space-y-4 sm:space-y-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">
+                  <h2 className="text-xl sm:text-2xl font-bold mb-2">
                     Booking Flow Builder
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-sm sm:text-base text-gray-600">
                     Configure your booking experience and payment settings
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                   <Button
                     variant="outline"
                     onClick={() => setActiveTab("booking-preview")}
+                    className="w-full sm:w-auto text-sm"
                   >
                     <Eye className="mr-2 h-4 w-4" />
                     Preview Experience
                   </Button>
-                  <Button onClick={handleLaunchDashboard}>
+                  <Button onClick={handleLaunchDashboard} className="w-full sm:w-auto text-sm">
                     <Globe className="mr-2 h-4 w-4" />
                     Go to Website Builder
                   </Button>

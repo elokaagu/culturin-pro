@@ -33,7 +33,10 @@ export default function RootLayout({
 
   return (
     <html lang={currentLang} dir={currentLang === "ar" ? "rtl" : "ltr"}>
-      <body>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      </head>
+      <body className="antialiased">
         <ThemeProvider>
           <AuthProvider>
             <UserDataProvider>
