@@ -46,14 +46,22 @@ export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) 
 
   // Load user data when user changes
   useEffect(() => {
+    let isMounted = true;
+    let loadingTimeout: NodeJS.Timeout;
+
     const loadUserData = async () => {
       if (!user || !isLoggedIn) {
-        setUserData(null);
-        setIsLoading(false);
+        if (isMounted) {
+          setUserData(null);
+          setIsLoading(false);
+        }
         return;
       }
 
-      setIsLoading(true);
+      if (isMounted) {
+        setIsLoading(true);
+      }
+
       try {
         console.log("Loading user data for:", user.email);
 
@@ -88,20 +96,39 @@ export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) 
           lastLogin: lastLogin || new Date().toISOString(),
         };
 
-        setUserData(completeUserData);
-        console.log("User data loaded successfully:", completeUserData);
+        if (isMounted) {
+          setUserData(completeUserData);
+          console.log("User data loaded successfully:", completeUserData);
+        }
 
         // Save last login time
         await supabaseStorage.setItem(`userLastLogin_${user.id}`, completeUserData.lastLogin);
       } catch (error) {
         console.error("Error loading user data:", error);
-        setUserData(null);
+        if (isMounted) {
+          setUserData(null);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
+    // Set a timeout to prevent infinite loading
+    loadingTimeout = setTimeout(() => {
+      if (isMounted) {
+        console.warn("User data loading timeout - forcing loading to false");
+        setIsLoading(false);
+      }
+    }, 10000); // 10 second timeout
+
     loadUserData();
+
+    return () => {
+      isMounted = false;
+      clearTimeout(loadingTimeout);
+    };
   }, [user, isLoggedIn]);
 
   // Update user data

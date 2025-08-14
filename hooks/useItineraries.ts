@@ -202,15 +202,44 @@ export const useItineraries = () => {
   };
 
   useEffect(() => {
-    fetchItineraries();
+    let isMounted = true;
+    
+    const loadItineraries = async () => {
+      try {
+        if (isMounted) {
+          setLoading(true);
+          setError(null);
+        }
+        
+        await fetchItineraries();
+        
+        if (isMounted) {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error in loadItineraries effect:", error);
+        if (isMounted) {
+          setError("Failed to load itineraries");
+          setLoading(false);
+        }
+      }
+    };
+
+    loadItineraries();
     
     // Fallback timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
-      console.warn("Itineraries fetch timeout - setting loading to false");
-      setLoading(false);
-    }, 10000); // 10 second timeout
+      if (isMounted) {
+        console.warn("Itineraries fetch timeout - setting loading to false");
+        setLoading(false);
+        setError("Loading timeout - please refresh the page");
+      }
+    }, 8000); // Reduced from 10 to 8 seconds
     
-    return () => clearTimeout(timeoutId);
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
   }, [fetchItineraries]);
 
   return {

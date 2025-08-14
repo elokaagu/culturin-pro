@@ -49,7 +49,7 @@ const ProItineraryPage: React.FC = () => {
     return itinerary;
   };
 
-  // Simplified and reliable itinerary loading
+  // Simplified and reliable itinerary loading with timeout protection
   useEffect(() => {
     console.log(
       "🔄 ProItineraryPage loading - user:",
@@ -63,7 +63,9 @@ const ProItineraryPage: React.FC = () => {
 
     const loadItineraries = async () => {
       try {
-        setLoading(true);
+        if (isMounted) {
+          setLoading(true);
+        }
         console.log("🔄 Starting itinerary load process");
 
         let foundItineraries: any[] = [];

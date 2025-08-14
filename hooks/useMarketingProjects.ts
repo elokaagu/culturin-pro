@@ -18,13 +18,32 @@ export function useMarketingProjects() {
 
   // Load projects on mount and when user changes
   useEffect(() => {
+    let isMounted = true;
+    let loadingTimeout: NodeJS.Timeout;
+
     if (user) {
       loadProjects();
+      
+      // Set a timeout to prevent infinite loading
+      loadingTimeout = setTimeout(() => {
+        if (isMounted && loading) {
+          console.warn("Projects loading timeout - forcing loading to false");
+          setLoading(false);
+          setError("Loading timeout - please refresh the page");
+        }
+      }, 8000); // 8 second timeout
     } else {
-      setProjects([]);
-      setLoading(false);
+      if (isMounted) {
+        setProjects([]);
+        setLoading(false);
+      }
     }
-  }, [user]);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(loadingTimeout);
+    };
+  }, [user, loading]);
 
   // Load all projects for the current user
   const loadProjects = useCallback(async () => {
@@ -34,7 +53,11 @@ export function useMarketingProjects() {
       setLoading(true);
       setError(null);
       const userProjects = await marketingProjectService.getProjects();
-      setProjects(userProjects);
+      
+      // Check if component is still mounted before updating state
+      if (userProjects !== null) {
+        setProjects(userProjects);
+      }
     } catch (err) {
       setError("Failed to load projects");
       console.error("Error loading projects:", err);

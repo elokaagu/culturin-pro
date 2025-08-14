@@ -50,6 +50,7 @@ import { toast } from "sonner";
 import { useMarketingProjects } from "@/hooks/useMarketingProjects";
 import { useAuth } from "@/src/components/auth/AuthProvider";
 import { StudioSettings } from "./StudioSettings";
+import { LoadingStateManager } from "@/components/ui/LoadingStateManager";
 
 interface ChatMessage {
   id: string;
@@ -1776,27 +1777,19 @@ Description 2: ${data.content.description2 || ""}`;
             </div>
           )}
 
-          {/* Loading State */}
-          {projectsLoading && (
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-              <p className="text-sm text-muted-foreground mt-2">
-                Loading projects...
-              </p>
+          {/* Loading State Manager */}
+          <LoadingStateManager
+            loading={projectsLoading}
+            error={projectsError}
+            onRetry={refreshProjects}
+            timeout={8000}
+            loadingMessage="Loading your projects..."
+            errorMessage="Failed to load projects"
+          >
+            <div className="text-center text-sm text-muted-foreground">
+              Projects loaded successfully
             </div>
-          )}
-
-          {/* Error State */}
-          {projectsError && (
-            <div className="text-center p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600 mb-2">
-                Error loading projects
-              </p>
-              <Button onClick={refreshProjects} variant="outline" size="sm">
-                Try Again
-              </Button>
-            </div>
-          )}
+          </LoadingStateManager>
         </div>
       </div>
 
