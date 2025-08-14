@@ -42,6 +42,7 @@ import {
   MessageCircle,
   Maximize,
   Minimize,
+  X,
 } from "lucide-react";
 import { useNavigate } from "../../../lib/navigation";
 import { Itinerary } from "@/hooks/useItineraries";
@@ -95,6 +96,10 @@ const WebsiteBuilder: React.FC = () => {
     "desktop"
   );
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [selectedTour, setSelectedTour] = useState<Itinerary | null>(null);
+  const [showBookingPreview, setShowBookingPreview] = useState(false);
+  const [itinerariesLoading, setItinerariesLoading] = useState(false);
+  const [itinerariesError, setItinerariesError] = useState<string | null>(null);
 
   // History management
   const [history, setHistory] = useState<HistoryState[]>([]);
@@ -116,13 +121,19 @@ const WebsiteBuilder: React.FC = () => {
           setItineraries([]);
           setPublishedUrl("tour/demo");
           setHasUnsavedChanges(false);
+          setItinerariesLoading(false);
           return;
         }
 
+        setItinerariesLoading(true);
+        setItinerariesError(null);
+
         // Try to load user website data using UserWebsiteService
         try {
-          const websiteData = await userWebsiteService.getUserWebsiteData(user.id);
-          
+          const websiteData = await userWebsiteService.getUserWebsiteData(
+            user.id
+          );
+
           if (websiteData) {
             // Set published URL from settings
             if (websiteData.settings.published_url) {
@@ -130,7 +141,7 @@ const WebsiteBuilder: React.FC = () => {
             } else {
               // Generate default URL if none exists
               const defaultUrl = userWebsiteService.generateWebsiteUrl(
-                user.id, 
+                user.id,
                 websiteData.settings.company_name
               );
               setPublishedUrl(defaultUrl);
@@ -138,37 +149,54 @@ const WebsiteBuilder: React.FC = () => {
 
             // Set itineraries
             setItineraries(websiteData.itineraries || []);
+            console.log("✅ Itineraries loaded successfully:", websiteData.itineraries?.length || 0);
 
             // Store in localStorage for compatibility
-            localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
-              settings: websiteData.settings,
-              itineraries: websiteData.itineraries,
-              publishedUrl: websiteData.settings.published_url,
-              lastLoaded: new Date().toISOString()
-            }));
+            localStorage.setItem(
+              `websiteData_${user.id}`,
+              JSON.stringify({
+                settings: websiteData.settings,
+                itineraries: websiteData.itineraries,
+                publishedUrl: websiteData.settings.published_url,
+                lastLoaded: new Date().toISOString(),
+              })
+            );
 
             // Store published URL for persistence
             if (websiteData.settings.published_url) {
-              localStorage.setItem(`publishedWebsiteUrl_${user.id}`, websiteData.settings.published_url);
+              localStorage.setItem(
+                `publishedWebsiteUrl_${user.id}`,
+                websiteData.settings.published_url
+              );
             }
           }
         } catch (dbError) {
-          console.warn("Database unavailable, using localStorage fallback:", dbError);
-          
+          console.warn(
+            "Database unavailable, using localStorage fallback:",
+            dbError
+          );
+
           // Fallback to localStorage
           const savedData = localStorage.getItem(`websiteData_${user.id}`);
-          const savedUrl = localStorage.getItem(`publishedWebsiteUrl_${user.id}`);
-          
+          const savedUrl = localStorage.getItem(
+            `publishedWebsiteUrl_${user.id}`
+          );
+
           if (savedData) {
             try {
               const parsed = JSON.parse(savedData);
               setItineraries(parsed.itineraries || []);
+              console.log("📦 Itineraries loaded from localStorage:", parsed.itineraries?.length || 0);
               if (parsed.publishedUrl) setPublishedUrl(parsed.publishedUrl);
             } catch (e) {
               console.error("Error parsing saved data:", e);
+              setItinerariesError("Failed to load saved data");
             }
+          } else {
+            setItineraries([]);
+            console.log("📭 No saved data found, starting with empty itineraries");
           }
-          
+
           if (savedUrl) {
             setPublishedUrl(savedUrl);
           }
@@ -191,7 +219,9 @@ const WebsiteBuilder: React.FC = () => {
         console.error("Error loading website data:", error);
         setItineraries([]);
         setPublishedUrl("tour/demo");
-        setHasUnsavedChanges(false);
+        setItinerariesError("Failed to load website data");
+      } finally {
+        setItinerariesLoading(false);
       }
     };
 
@@ -435,32 +465,40 @@ const WebsiteBuilder: React.FC = () => {
 
     setSaveLoading(true);
     setSaveStatus("saving");
-    
+
     try {
       // Get current website settings
-      const currentSettings = await userWebsiteService.getUserWebsiteSettings(user.id);
-      
+      const currentSettings = await userWebsiteService.getUserWebsiteSettings(
+        user.id
+      );
+
       // Get any customizations from localStorage
       const websiteContentStr = localStorage.getItem("publishedWebsiteContent");
       const websiteDataStr = localStorage.getItem(`websiteData_${user.id}`);
-      
+
       let updatedSettings = { ...currentSettings };
-      
+
       // Apply customizations from WebsiteContent component
       if (websiteContentStr) {
         try {
           const websiteContent = JSON.parse(websiteContentStr);
           updatedSettings = {
             ...updatedSettings,
-            company_name: websiteContent.companyName || updatedSettings.company_name,
+            company_name:
+              websiteContent.companyName || updatedSettings.company_name,
             tagline: websiteContent.tagline || updatedSettings.tagline,
-            description: websiteContent.description || updatedSettings.description,
+            description:
+              websiteContent.description || updatedSettings.description,
             branding: {
               ...updatedSettings.branding,
-              primary_color: websiteContent.primaryColor || updatedSettings.branding.primary_color,
-              header_image: websiteContent.headerImage || updatedSettings.branding.header_image,
+              primary_color:
+                websiteContent.primaryColor ||
+                updatedSettings.branding.primary_color,
+              header_image:
+                websiteContent.headerImage ||
+                updatedSettings.branding.header_image,
               theme: websiteContent.theme || updatedSettings.branding.theme,
-            }
+            },
           };
         } catch (e) {
           console.error("Error parsing website content:", e);
@@ -484,34 +522,40 @@ const WebsiteBuilder: React.FC = () => {
       }
 
       // Save to UserWebsiteService
-      const success = await userWebsiteService.saveUserWebsiteSettings(updatedSettings);
-      
+      const success = await userWebsiteService.saveUserWebsiteSettings(
+        updatedSettings
+      );
+
       if (success) {
         toast.success("Website saved successfully!", {
           description: "All changes have been saved to your account",
         });
-        
+
         setHasUnsavedChanges(false);
         setLastSaved(new Date());
         setSaveStatus("saved");
-        
+
         // Update localStorage with consistent data
-        localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
-          settings: updatedSettings,
-          itineraries: itineraries.slice(0, 10), // Save current itineraries
-          publishedUrl: publishedUrl,
-          lastSaved: new Date().toISOString()
-        }));
+        localStorage.setItem(
+          `websiteData_${user.id}`,
+          JSON.stringify({
+            settings: updatedSettings,
+            itineraries: itineraries.slice(0, 10), // Save current itineraries
+            publishedUrl: publishedUrl,
+            lastSaved: new Date().toISOString(),
+          })
+        );
 
         // Force preview refresh
-        setPreviewKey(prev => prev + 1);
+        setPreviewKey((prev) => prev + 1);
       } else {
         throw new Error("Failed to save to database");
       }
     } catch (error) {
       console.error("Save error:", error);
       toast.error("Failed to save website", {
-        description: "Please try again or contact support if the issue persists",
+        description:
+          "Please try again or contact support if the issue persists",
       });
       setSaveStatus("error");
     } finally {
@@ -620,10 +664,15 @@ const WebsiteBuilder: React.FC = () => {
       await handleManualSave();
 
       // Get current website settings
-      const currentSettings = await userWebsiteService.getUserWebsiteSettings(user.id);
-      
+      const currentSettings = await userWebsiteService.getUserWebsiteSettings(
+        user.id
+      );
+
       // Validate required fields
-      if (!currentSettings.company_name || currentSettings.company_name === "Your Cultural Tours") {
+      if (
+        !currentSettings.company_name ||
+        currentSettings.company_name === "Your Cultural Tours"
+      ) {
         toast.error("Please set your company name before publishing", {
           description: "Go to Content tab and add your business details",
         });
@@ -632,43 +681,53 @@ const WebsiteBuilder: React.FC = () => {
 
       // Publish website using UserWebsiteService
       const result = await userWebsiteService.publishWebsite(user.id);
-      
+
       if (result.success && result.url) {
         setPublishedUrl(result.url);
-        
+
         // Store published URL for persistence
         localStorage.setItem(`publishedWebsiteUrl_${user.id}`, result.url);
-        
+
         // Also update the user settings to include the published URL
         try {
-          const currentSettings = await userWebsiteService.getUserWebsiteSettings(user.id);
-          const savedSettings = localStorage.getItem(`userWebsiteSettings_${user.id}`);
-          
+          const currentSettings =
+            await userWebsiteService.getUserWebsiteSettings(user.id);
+          const savedSettings = localStorage.getItem(
+            `userWebsiteSettings_${user.id}`
+          );
+
           let settingsToSave = currentSettings;
           if (savedSettings) {
             try {
               const parsed = JSON.parse(savedSettings);
-              settingsToSave = { ...parsed, published_url: result.url, is_published: true };
+              settingsToSave = {
+                ...parsed,
+                published_url: result.url,
+                is_published: true,
+              };
             } catch (e) {
-              console.error('Error parsing saved settings:', e);
+              console.error("Error parsing saved settings:", e);
             }
           }
-          
+
           // Save the updated settings with published URL
-          localStorage.setItem(`userWebsiteSettings_${user.id}`, JSON.stringify(settingsToSave));
-          
+          localStorage.setItem(
+            `userWebsiteSettings_${user.id}`,
+            JSON.stringify(settingsToSave)
+          );
+
           // Also save to database if possible
           await userWebsiteService.saveUserWebsiteSettings(settingsToSave);
         } catch (error) {
-          console.warn('Error updating published URL in settings:', error);
+          console.warn("Error updating published URL in settings:", error);
         }
-        
+
         toast.success("Website published successfully!", {
           description: `Your website is now live at: ${window.location.origin}/${result.url}`,
           action: {
             label: "View Website",
-            onClick: () => window.open(`/${result.url}`, '_blank')
-          }
+            onClick: () => window.open(`/${result.url}`, "_blank"),
+          },
         });
 
         setHasUnsavedChanges(false);
@@ -747,7 +806,7 @@ const WebsiteBuilder: React.FC = () => {
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    
+
     // Reset loading states when switching tabs
     if (value === "preview") {
       // Force a refresh of the preview when coming back to it
@@ -765,6 +824,47 @@ const WebsiteBuilder: React.FC = () => {
           : "Website builder now takes full page",
       }
     );
+  };
+
+  const handleTourSelect = (tour: Itinerary) => {
+    setSelectedTour(tour);
+    setShowBookingPreview(true);
+    // Store tour data in localStorage for the booking page to access
+    if (user?.id) {
+      localStorage.setItem(`selectedTour_${user.id}`, JSON.stringify(tour));
+      localStorage.setItem(`websiteSlug_${user.id}`, publishedUrl);
+    }
+  };
+
+  const retryLoadItineraries = async () => {
+    if (!user?.id) return;
+    
+    setItinerariesError(null);
+    setItinerariesLoading(true);
+    
+    try {
+      // Clear localStorage and try fresh load
+      localStorage.removeItem(`websiteData_${user.id}`);
+      
+      const websiteData = await userWebsiteService.getUserWebsiteData(user.id);
+      if (websiteData) {
+        setItineraries(websiteData.itineraries || []);
+        console.log("🔄 Retry successful - itineraries loaded:", websiteData.itineraries?.length || 0);
+        
+        // Update localStorage with fresh data
+        localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
+          settings: websiteData.settings,
+          itineraries: websiteData.itineraries,
+          publishedUrl: websiteData.settings.published_url,
+          lastLoaded: new Date().toISOString(),
+        }));
+      }
+    } catch (error) {
+      console.error("Retry failed:", error);
+      setItinerariesError("Retry failed - please refresh the page");
+    } finally {
+      setItinerariesLoading(false);
+    }
   };
 
   // Update published URL when business name changes
@@ -1105,7 +1205,143 @@ const WebsiteBuilder: React.FC = () => {
                 key={`preview-${previewKey}-${activeTab}`}
                 itineraries={itineraries}
                 viewMode={viewMode}
+                onTourSelect={handleTourSelect}
+                websiteSlug={publishedUrl}
+                isLoading={itinerariesLoading}
+                error={itinerariesError}
+                onRetry={retryLoadItineraries}
               />
+
+              {/* Booking Preview Modal */}
+              {showBookingPreview && selectedTour && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                  <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-semibold text-gray-900">
+                          Booking Preview - {selectedTour.title}
+                        </h3>
+                        <button
+                          onClick={() => setShowBookingPreview(false)}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Tour Details */}
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-3">
+                            Tour Details
+                          </h4>
+                          {selectedTour.image && (
+                            <img
+                              src={selectedTour.image}
+                              alt={selectedTour.title}
+                              className="w-full h-48 object-cover rounded-lg mb-4"
+                            />
+                          )}
+                          <div className="space-y-2">
+                            <p className="text-sm text-gray-600">
+                              <span className="font-medium">Duration:</span>{" "}
+                              {selectedTour.days} day
+                              {selectedTour.days !== 1 ? "s" : ""}
+                            </p>
+                            {selectedTour.price && (
+                              <p className="text-sm text-gray-600">
+                                <span className="font-medium">Price:</span> $
+                                {selectedTour.price}
+                              </p>
+                            )}
+                            <p className="text-sm text-gray-600">
+                              <span className="font-medium">Description:</span>{" "}
+                              {selectedTour.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Booking Form Preview */}
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-3">
+                            Booking Form
+                          </h4>
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                First Name
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Enter first name"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                disabled
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Last Name
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Enter last name"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                disabled
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Email
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Enter email"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                disabled
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Participants
+                              </label>
+                              <select
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                disabled
+                              >
+                                <option>2 people</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Date
+                              </label>
+                              <input
+                                type="date"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                disabled
+                              />
+                            </div>
+                          </div>
+
+                          <div className="mt-6">
+                            <Button
+                              className="w-full"
+                              style={{ backgroundColor: "#9b87f5" }}
+                              onClick={() => {
+                                // Navigate to the actual booking page
+                                const bookingUrl = `/tour/${publishedUrl}/booking/${selectedTour.id}`;
+                                window.open(bookingUrl, "_blank");
+                              }}
+                            >
+                              Continue to Full Booking Page
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

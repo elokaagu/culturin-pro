@@ -81,8 +81,50 @@ export default function BookingPage({
       }
     }
 
-    // Load tour data - in a real app this would come from an API
-    setTimeout(() => {
+    // Try to load real tour data from localStorage first
+    const loadRealTourData = () => {
+      // Get user ID from URL or try to find it in localStorage
+      const userId = Object.keys(localStorage)
+        .find((key) => key.startsWith("selectedTour_"))
+        ?.split("_")[1];
+
+      if (userId) {
+        const selectedTourStr = localStorage.getItem(`selectedTour_${userId}`);
+        const websiteSlug = localStorage.getItem(`websiteSlug_${userId}`);
+
+        if (selectedTourStr && websiteSlug === params.slug) {
+          try {
+            const realTour = JSON.parse(selectedTourStr);
+            // Transform real tour data to match Tour interface
+            const transformedTour: Tour = {
+              id: realTour.id || params.tourId,
+              name: realTour.title || "Tour",
+              duration: realTour.days
+                ? `${realTour.days} day${realTour.days !== 1 ? "s" : ""}`
+                : "1 day",
+              price: realTour.price || 99,
+              image: realTour.image || "",
+              description:
+                realTour.description || "Experience this amazing tour",
+              highlights: realTour.highlights || [
+                "Professional guide",
+                "Small groups",
+                "Cultural experience",
+              ],
+              rating: 0, // Will be calculated from real reviews
+              reviews: 0, // Will be calculated from real reviews
+            };
+
+            setTour(transformedTour);
+            setLoading(false);
+            return;
+          } catch (e) {
+            console.error("Error parsing real tour data:", e);
+          }
+        }
+      }
+
+      // Fallback to sample data if real data not available
       const sampleTours: Tour[] = [
         {
           id: "gaudi-tour",
@@ -101,47 +143,18 @@ export default function BookingPage({
           rating: 4.9,
           reviews: 215,
         },
-        {
-          id: "tapas-tour",
-          name: "Evening Tapas & Wine Tour",
-          duration: "3 hours",
-          price: 80,
-          image:
-            "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-          description:
-            "Discover Barcelona's culinary scene with this guided walking tour of the best tapas bars in the Gothic Quarter and El Born.",
-          highlights: [
-            "Visit to 4 authentic tapas bars",
-            "Wine pairing with each tapa",
-            "Food history and cultural insights",
-          ],
-          rating: 4.8,
-          reviews: 182,
-        },
-        {
-          id: "gothic-tour",
-          name: "Gothic Quarter Hidden Gems",
-          duration: "2.5 hours",
-          price: 45,
-          image:
-            "https://images.unsplash.com/photo-1543783207-ec63e4900aba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-          description:
-            "Wander through the labyrinthine streets of Barcelona's Gothic Quarter discovering secret squares and hidden history.",
-          highlights: [
-            "Ancient Roman ruins",
-            "Medieval architecture",
-            "Local legends and stories",
-          ],
-          rating: 4.7,
-          reviews: 158,
-        },
       ];
 
-      const foundTour = sampleTours.find((t) => t.id === params.tourId);
-      setTour(foundTour || sampleTours[0]);
+      // Find the tour by ID
+      const foundTour =
+        sampleTours.find((t) => t.id === params.tourId) || sampleTours[0];
+      setTour(foundTour);
       setLoading(false);
-    }, 500);
-  }, [params.tourId]);
+    };
+
+    // Try to load real data first, then fallback
+    loadRealTourData();
+  }, [params.slug, params.tourId]);
 
   const handleInputChange = (
     field: keyof BookingFormData,

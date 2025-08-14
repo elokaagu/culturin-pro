@@ -38,12 +38,22 @@ interface WebsitePreviewProps {
   itineraries?: Itinerary[];
   refreshKey?: number;
   viewMode?: "desktop" | "mobile" | "tablet";
+  onTourSelect?: (tour: Itinerary) => void;
+  websiteSlug?: string;
+  isLoading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
 }
 
 const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   itineraries = [],
   refreshKey: externalRefreshKey,
   viewMode: externalViewMode,
+  onTourSelect,
+  websiteSlug,
+  isLoading = false,
+  error = null,
+  onRetry,
 }) => {
   const [viewMode, setViewMode] = useState<"desktop" | "mobile" | "tablet">(
     externalViewMode || "desktop"
@@ -59,7 +69,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   // Load user's website data
   useEffect(() => {
     let isMounted = true;
-    
+
     const loadWebsiteData = async () => {
       if (!user?.id) {
         if (isMounted) {
@@ -73,7 +83,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
           setLoading(true);
         }
         const data = await userWebsiteService.getUserWebsiteData(user.id);
-        
+
         if (isMounted) {
           setWebsiteData(data);
           setCurrentItineraries(data.itineraries);
@@ -255,7 +265,12 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">View:</span>
-          <Select value={viewMode} onValueChange={(value) => setViewMode(value as "desktop" | "mobile" | "tablet")}>
+          <Select
+            value={viewMode}
+            onValueChange={(value) =>
+              setViewMode(value as "desktop" | "mobile" | "tablet")
+            }
+          >
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
@@ -301,7 +316,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
                       <p className="text-sm text-gray-600">
-                        Loading your website...
+                        Loading your website and itineraries...
                       </p>
                     </div>
                   </div>
@@ -346,7 +361,31 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                         Our Tours
                       </h2>
 
-                      {currentItineraries.length > 0 ? (
+                      {/* Loading State */}
+                      {isLoading && (
+                        <div className="text-center py-8">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+                          <p className="text-sm text-gray-600">Loading tours...</p>
+                        </div>
+                      )}
+
+                      {/* Error State */}
+                      {error && !isLoading && (
+                        <div className="text-center py-8 border rounded-lg bg-red-50">
+                          <p className="text-sm text-red-600 mb-4">{error}</p>
+                          {onRetry && (
+                            <button
+                              onClick={onRetry}
+                              className="px-4 py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700 transition-colors"
+                            >
+                              Try Again
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Tours Grid */}
+                      {!isLoading && !error && currentItineraries.length > 0 ? (
                         <div
                           className={cn(
                             "grid gap-4 mb-4",
@@ -365,6 +404,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                                 animationClasses.animationClass
                               )}
                               style={{ animationDelay: `${index * 0.1}s` }}
+                              onClick={() => onTourSelect?.(item)}
                             >
                               {item.image && (
                                 <img
@@ -399,6 +439,17 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                                     </span>
                                   )}
                                 </div>
+                                {/* Book Now Button */}
+                                <button
+                                  className="w-full mt-2 px-3 py-1.5 text-xs font-medium text-white rounded transition-colors"
+                                  style={{ backgroundColor: primaryColor }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onTourSelect?.(item);
+                                  }}
+                                >
+                                  Book Now
+                                </button>
                               </div>
                             </div>
                           ))}

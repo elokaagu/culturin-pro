@@ -2008,19 +2008,20 @@ Description 2: ${data.content.description2 || ""}`;
             </div>
           )}
 
-          {/* Loading State Manager */}
-          <LoadingStateManager
-            loading={projectsLoading}
-            error={projectsError}
-            onRetry={refreshProjects}
-            timeout={8000}
-            loadingMessage="Loading your projects..."
-            errorMessage="Failed to load projects"
-          >
-            <div className="text-center text-sm text-muted-foreground">
-              Projects loaded successfully
-            </div>
-          </LoadingStateManager>
+          {/* Loading State Manager - Only show when there's an actual error */}
+          {projectsError && (
+            <LoadingStateManager
+              loading={false}
+              error={projectsError}
+              onRetry={refreshProjects}
+              timeout={8000}
+              errorMessage="Failed to load projects"
+            >
+              <div className="text-center text-sm text-muted-foreground">
+                Projects loaded successfully
+              </div>
+            </LoadingStateManager>
+          )}
         </div>
       </div>
 
