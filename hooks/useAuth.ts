@@ -63,7 +63,7 @@ export const useAuth = () => {
         }
 
         // Get current session
-        const {
+        let {
           data: { session },
           error,
         } = await supabase.auth.getSession();
@@ -79,6 +79,18 @@ export const useAuth = () => {
         if (session) {
           console.log("Session expires at:", session.expires_at);
           console.log("Session user:", session.user?.email);
+          
+          // Check if session is expired and refresh if needed
+          if (session.expires_at && new Date(session.expires_at * 1000) < new Date()) {
+            console.log("Session expired, attempting refresh...");
+            const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+            if (refreshError) {
+              console.error("Session refresh failed:", refreshError);
+            } else if (refreshData.session) {
+              console.log("Session refreshed successfully");
+              session = refreshData.session;
+            }
+          }
         }
 
         if (mounted) {
@@ -141,6 +153,27 @@ export const useAuth = () => {
       clearTimeout(timeoutId);
     });
 
+    // Set up periodic session refresh to prevent expiration
+    const refreshInterval = setInterval(async () => {
+      if (mounted && state.session) {
+        try {
+          const { data, error } = await supabase.auth.refreshSession();
+          if (error) {
+            console.error("Periodic session refresh failed:", error);
+          } else if (data.session) {
+            console.log("Periodic session refresh successful");
+            // Update session without triggering full state change
+            setState((prev) => ({
+              ...prev,
+              session: data.session,
+            }));
+          }
+        } catch (error) {
+          console.error("Error in periodic session refresh:", error);
+        }
+      }
+    }, 10 * 60 * 1000); // Refresh every 10 minutes
+
     // Listen for auth changes
     const {
       data: { subscription },
@@ -156,22 +189,41 @@ export const useAuth = () => {
       if (mounted) {
         console.log("Setting state for event:", event);
 
-        // Don't clear user data on INITIAL_SESSION if we already have a user
-        if (event === "INITIAL_SESSION" && !session && state.user) {
-          console.log(
-            "Ignoring INITIAL_SESSION with no session - keeping existing user"
-          );
+        // Handle different auth events appropriately
+        if (event === "INITIAL_SESSION") {
+          // Don't change state on initial session check if we already have a user
+          if (!session && state.user) {
+            console.log(
+              "Ignoring INITIAL_SESSION with no session - keeping existing user"
+            );
+            return;
+          }
+        } else if (event === "TOKEN_REFRESHED") {
+          // Don't clear user data on token refresh
+          console.log("Token refreshed - keeping existing user data");
+          return;
+        } else if (event === "SIGNED_OUT") {
+          // Only clear data on actual sign out
+          console.log("User signed out - clearing data");
+          setState({
+            user: null,
+            session: null,
+            userData: null,
+            isLoading: false,
+            isReady: true,
+          });
           return;
         }
 
-        // Update state immediately
+        // For other events, update state but preserve user data if possible
         setState((prev) => ({
           ...prev,
           user: session?.user || null,
           session: session,
-          userData: null, // Reset user data, will be loaded if needed
           isLoading: false,
           isReady: true,
+          // Only clear userData if we actually lost the user
+          userData: session?.user ? prev.userData : null,
         }));
 
         if (session?.user) {
@@ -195,12 +247,6 @@ export const useAuth = () => {
           } catch (error) {
             console.error("Error loading user data:", error);
           }
-        } else if (event !== "INITIAL_SESSION") {
-          // Only clear data on actual logout, not initial session check
-          console.log(
-            "Clearing user data - no session at",
-            new Date().toISOString()
-          );
         }
       } else {
         console.log("Component unmounted, ignoring auth change");
@@ -210,6 +256,7 @@ export const useAuth = () => {
     return () => {
       mounted = false;
       clearTimeout(timeoutId);
+      clearInterval(refreshInterval);
       subscription.unsubscribe();
     };
   }, []); // Remove loadUserData dependency to prevent infinite loops

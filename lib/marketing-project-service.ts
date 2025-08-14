@@ -55,6 +55,14 @@ class MarketingProjectService {
   // Get all projects for the current user
   async getProjects(): Promise<MarketingProject[]> {
     try {
+      // Check if user is authenticated
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.log("User not authenticated, returning empty projects list");
+        return [];
+      }
+
       const { data: projects, error } = await supabase
         .from("marketing_projects")
         .select("*")

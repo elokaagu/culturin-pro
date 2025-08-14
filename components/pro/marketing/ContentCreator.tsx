@@ -117,16 +117,16 @@ interface RecentProject {
 
 const ContentCreator: React.FC = () => {
   const { user } = useAuth();
-  
+
   // Debug auth state
   useEffect(() => {
     console.log("ContentCreator - Auth state:", {
       user: user ? user.email : null,
       userExists: !!user,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }, [user]);
-  
+
   const {
     projects: recentProjects,
     filteredProjects,
@@ -173,6 +173,17 @@ const ContentCreator: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
+
+  // Debug marketing projects state
+  useEffect(() => {
+    console.log("ContentCreator - Marketing projects state:", {
+      projectsCount: recentProjects?.length || 0,
+      loading: projectsLoading,
+      error: projectsError,
+      currentProject,
+      timestamp: new Date().toISOString()
+    });
+  }, [recentProjects, projectsLoading, projectsError, currentProject]);
 
   // Scroll to bottom when new messages are added
   useEffect(() => {
@@ -287,41 +298,57 @@ const ContentCreator: React.FC = () => {
   };
 
   // Function to format AI responses with proper paragraphs and tool recommendations
-  const formatAIResponse = (content: string): { formattedContent: string; toolRecommendations: string[] } => {
+  const formatAIResponse = (
+    content: string
+  ): { formattedContent: string; toolRecommendations: string[] } => {
     // Split content by double line breaks to identify paragraphs
     const paragraphs = content.split(/\n\s*\n/);
-    
+
     // Check if there are tool recommendations (after the --- separator)
-    const hasToolRecommendations = content.includes('---') && content.includes('Recommended Marketing Tools:');
-    
+    const hasToolRecommendations =
+      content.includes("---") &&
+      content.includes("Recommended Marketing Tools:");
+
     let formattedContent = content;
     let toolRecommendations: string[] = [];
-    
+
     if (hasToolRecommendations) {
-      const parts = content.split('---');
+      const parts = content.split("---");
       formattedContent = parts[0].trim();
-      
+
       // Extract tool recommendations
       const toolsSection = parts[1];
       if (toolsSection) {
         const toolLines = toolsSection
-          .split('\n')
-          .filter(line => line.trim().startsWith('📱') || line.trim().startsWith('📊') || 
-                         line.trim().startsWith('🎨') || line.trim().startsWith('🎵') ||
-                         line.trim().startsWith('📘') || line.trim().startsWith('🔍') ||
-                         line.trim().startsWith('📧') || line.trim().startsWith('✍️') ||
-                         line.trim().startsWith('📝') || line.trim().startsWith('🔍') ||
-                         line.trim().startsWith('📚') || line.trim().startsWith('📸') ||
-                         line.trim().startsWith('📱') || line.trim().startsWith('🎬') ||
-                         line.trim().startsWith('🎯') || line.trim().startsWith('📈') ||
-                         line.trim().startsWith('🖼️') || line.trim().startsWith('📐') ||
-                         line.trim().startsWith('🎭'))
-          .map(line => line.trim());
-        
+          .split("\n")
+          .filter(
+            (line) =>
+              line.trim().startsWith("📱") ||
+              line.trim().startsWith("📊") ||
+              line.trim().startsWith("🎨") ||
+              line.trim().startsWith("🎵") ||
+              line.trim().startsWith("📘") ||
+              line.trim().startsWith("🔍") ||
+              line.trim().startsWith("📧") ||
+              line.trim().startsWith("✍️") ||
+              line.trim().startsWith("📝") ||
+              line.trim().startsWith("🔍") ||
+              line.trim().startsWith("📚") ||
+              line.trim().startsWith("📸") ||
+              line.trim().startsWith("📱") ||
+              line.trim().startsWith("🎬") ||
+              line.trim().startsWith("🎯") ||
+              line.trim().startsWith("📈") ||
+              line.trim().startsWith("🖼️") ||
+              line.trim().startsWith("📐") ||
+              line.trim().startsWith("🎭")
+          )
+          .map((line) => line.trim());
+
         toolRecommendations = toolLines;
       }
     }
-    
+
     return { formattedContent, toolRecommendations };
   };
 
@@ -396,15 +423,21 @@ const ContentCreator: React.FC = () => {
     const newAttachments: UploadedFile[] = [];
     const maxFileSize = 10 * 1024 * 1024; // 10MB limit
     const allowedTypes = [
-      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
-      'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain'
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain",
     ];
 
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
+
         // Validate file size
         if (file.size > maxFileSize) {
           toast.error(`File ${file.name} is too large. Maximum size is 10MB.`);
@@ -456,7 +489,11 @@ const ContentCreator: React.FC = () => {
         );
         addBotMessage(aiResponse);
 
-        toast.success(`Successfully uploaded ${newAttachments.length} file${newAttachments.length > 1 ? 's' : ''}`);
+        toast.success(
+          `Successfully uploaded ${newAttachments.length} file${
+            newAttachments.length > 1 ? "s" : ""
+          }`
+        );
       }
     } catch (error) {
       console.error("Error uploading files:", error);
@@ -548,7 +585,7 @@ const ContentCreator: React.FC = () => {
       console.log("Calling OpenAI API with:", {
         userInput,
         conversationHistoryLength: conversationHistory?.length || 0,
-        attachments: attachments?.length || 0
+        attachments: attachments?.length || 0,
       });
 
       const requestBody = {
@@ -577,7 +614,9 @@ const ContentCreator: React.FC = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("API Error response:", errorText);
-        throw new Error(`Failed to get response from Rigo: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to get response from Rigo: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
@@ -689,7 +728,7 @@ const ContentCreator: React.FC = () => {
         type: "scratch" as const,
         platform: "general" as any,
       };
-      
+
       try {
         const newProject = await createProject(projectData);
         if (newProject) {
@@ -1229,35 +1268,49 @@ Description 2: ${data.content.description2 || ""}`;
                           {message.type === "bot" ? (
                             <>
                               {(() => {
-                                const { formattedContent, toolRecommendations } = formatAIResponse(message.content);
+                                const {
+                                  formattedContent,
+                                  toolRecommendations,
+                                } = formatAIResponse(message.content);
                                 return (
                                   <>
                                     {/* Display formatted content with paragraphs */}
                                     <div className="whitespace-pre-wrap">
-                                      {formattedContent.split('\n').map((paragraph, index) => (
-                                        paragraph.trim() ? (
-                                          <p key={index} className="mb-3 last:mb-0">
-                                            {paragraph}
-                                          </p>
-                                        ) : null
-                                      ))}
+                                      {formattedContent
+                                        .split("\n")
+                                        .map((paragraph, index) =>
+                                          paragraph.trim() ? (
+                                            <p
+                                              key={index}
+                                              className="mb-3 last:mb-0"
+                                            >
+                                              {paragraph}
+                                            </p>
+                                          ) : null
+                                        )}
                                     </div>
-                                    
-                                                                            {/* Display tool recommendations if available */}
-                                        {toolRecommendations.length > 0 && (
-                                          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                            <h4 className="text-sm font-medium text-blue-800 mb-2">
-                                              Recommended Marketing Tools
-                                            </h4>
+
+                                    {/* Display tool recommendations if available */}
+                                    {toolRecommendations.length > 0 && (
+                                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <h4 className="text-sm font-medium text-blue-800 mb-2">
+                                          Recommended Marketing Tools
+                                        </h4>
                                         <div className="space-y-2">
-                                          {toolRecommendations.map((tool, index) => (
-                                            <div key={index} className="text-xs text-blue-700">
-                                              {tool}
-                                            </div>
-                                          ))}
+                                          {toolRecommendations.map(
+                                            (tool, index) => (
+                                              <div
+                                                key={index}
+                                                className="text-xs text-blue-700"
+                                              >
+                                                {tool}
+                                              </div>
+                                            )
+                                          )}
                                         </div>
                                         <p className="text-xs text-blue-600 mt-2 italic">
-                                          These tools can help you implement the strategies we discussed.
+                                          These tools can help you implement the
+                                          strategies we discussed.
                                         </p>
                                       </div>
                                     )}
@@ -1620,19 +1673,28 @@ Description 2: ${data.content.description2 || ""}`;
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Upload Files
                   </label>
-                  <div 
+                  <div
                     className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors"
                     onDragOver={(e) => {
                       e.preventDefault();
-                      e.currentTarget.classList.add('border-blue-400', 'bg-blue-50');
+                      e.currentTarget.classList.add(
+                        "border-blue-400",
+                        "bg-blue-50"
+                      );
                     }}
                     onDragLeave={(e) => {
                       e.preventDefault();
-                      e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50');
+                      e.currentTarget.classList.remove(
+                        "border-blue-400",
+                        "bg-blue-50"
+                      );
                     }}
                     onDrop={(e) => {
                       e.preventDefault();
-                      e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50');
+                      e.currentTarget.classList.remove(
+                        "border-blue-400",
+                        "bg-blue-50"
+                      );
                       const files = e.dataTransfer.files;
                       if (files.length > 0) {
                         handleFileUpload(files);
@@ -1654,7 +1716,8 @@ Description 2: ${data.content.description2 || ""}`;
                       Drag and drop files here, or click to browse
                     </p>
                     <p className="text-xs text-gray-500 mb-4">
-                      Supports: Images (JPG, PNG, GIF, WebP), PDFs, Word docs, Text files
+                      Supports: Images (JPG, PNG, GIF, WebP), PDFs, Word docs,
+                      Text files
                       <br />
                       Max size: 10MB per file
                     </p>
@@ -1850,7 +1913,7 @@ Description 2: ${data.content.description2 || ""}`;
             <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-100 border border-yellow-200 rounded-full">
               <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
               <span className="text-xs text-yellow-700">
-                Sign in required (User: {user ? user.email : 'null'})
+                Sign in required (User: {user ? user.email : "null"})
               </span>
             </div>
           ) : (
@@ -2049,11 +2112,12 @@ Description 2: ${data.content.description2 || ""}`;
                   </p>
                 </div>
               </div>
-              
+
               <p className="text-gray-700 mb-6">
-                Are you sure you want to delete this project? All associated conversations and data will be permanently removed.
+                Are you sure you want to delete this project? All associated
+                conversations and data will be permanently removed.
               </p>
-              
+
               <div className="flex gap-3 justify-end">
                 <Button
                   variant="outline"
