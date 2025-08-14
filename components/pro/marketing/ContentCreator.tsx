@@ -116,6 +116,16 @@ interface RecentProject {
 
 const ContentCreator: React.FC = () => {
   const { user } = useAuth();
+  
+  // Debug auth state
+  useEffect(() => {
+    console.log("ContentCreator - Auth state:", {
+      user: user ? user.email : null,
+      userExists: !!user,
+      timestamp: new Date().toISOString()
+    });
+  }, [user]);
+  
   const {
     projects: recentProjects,
     filteredProjects,
@@ -1606,12 +1616,16 @@ Description 2: ${data.content.description2 || ""}`;
           {!user ? (
             <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-100 border border-yellow-200 rounded-full">
               <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-              <span className="text-xs text-yellow-700">Sign in required</span>
+              <span className="text-xs text-yellow-700">
+                Sign in required (User: {user ? user.email : 'null'})
+              </span>
             </div>
           ) : (
             <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 border border-green-200 rounded-full">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-xs text-green-700">Ready</span>
+              <span className="text-xs text-green-700">
+                Ready ({user.email})
+              </span>
             </div>
           )}
 
