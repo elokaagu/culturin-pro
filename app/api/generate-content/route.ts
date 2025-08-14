@@ -331,6 +331,13 @@ When helping users:
 6. When users upload materials, analyze them and provide insights
 7. Offer to generate images when it would be helpful
 
+Response formatting:
+- Use proper paragraphs with clear spacing
+- Break up long responses into digestible sections
+- Use bullet points or numbered lists when appropriate
+- Include relevant marketing tool recommendations when helpful
+- Suggest specific platforms or resources that could benefit their strategy
+
 Keep responses conversational and natural. Don't use emojis or overly formal language. Just be helpful and conversational.`;
 
   // Prepare conversation messages
@@ -402,7 +409,13 @@ Keep responses conversational and natural. Don't use emojis or overly formal lan
       );
     }
 
-    return NextResponse.json({ response: aiResponse });
+    // Enhance response with relevant marketing tools and resources
+    const enhancedResponse = enhanceResponseWithResources(aiResponse, userInput);
+
+    return NextResponse.json({ 
+      response: enhancedResponse,
+      originalResponse: aiResponse
+    });
   } catch (error) {
     console.error("Error in conversation:", error);
     return NextResponse.json(
@@ -1008,4 +1021,107 @@ Immerse yourself in local traditions and discover the heart of ${location} throu
 
 Book your spot today and create memories that last a lifetime!`;
   }
-} 
+}
+
+// Function to enhance responses with relevant marketing tools and resources
+function enhanceResponseWithResources(response: string, userInput: string): string {
+  const lowerInput = userInput.toLowerCase();
+  const lowerResponse = response.toLowerCase();
+  
+  // Marketing tool recommendations based on user input and response content
+  const toolRecommendations: { [key: string]: string[] } = {
+    'social media': [
+      '📱 **Hootsuite** - Schedule and manage all your social media posts',
+      '📊 **Buffer** - Analytics and social media management',
+      '🎨 **Canva** - Create stunning social media graphics',
+      '📈 **Later** - Visual social media planning'
+    ],
+    'instagram': [
+      '📸 **Instagram Insights** - Track your post performance',
+      '🎨 **Canva** - Instagram post templates and design',
+      '📱 **Planoly** - Visual Instagram planning',
+      '📊 **Iconosquare** - Advanced Instagram analytics'
+    ],
+    'tiktok': [
+      '🎵 **TikTok Creator Studio** - Manage your TikTok content',
+      '📱 **CapCut** - TikTok\'s official video editor',
+      '📊 **TikTok Analytics** - Track your video performance',
+      '🎬 **InShot** - Professional video editing for mobile'
+    ],
+    'facebook': [
+      '📘 **Facebook Business Manager** - Manage your business pages',
+      '📊 **Facebook Ads Manager** - Create and track ad campaigns',
+      '🎯 **Facebook Pixel** - Track conversions and optimize ads',
+      '📈 **Facebook Insights** - Page performance analytics'
+    ],
+    'google ads': [
+      '🔍 **Google Ads Editor** - Bulk edit your campaigns',
+      '📊 **Google Analytics** - Track website traffic and conversions',
+      '🎯 **Google Tag Manager** - Manage tracking codes',
+      '📈 **Google Data Studio** - Create custom reports'
+    ],
+    'email': [
+      '📧 **Mailchimp** - Email marketing automation',
+      '📊 **ConvertKit** - Creator-focused email marketing',
+      '🎯 **ActiveCampaign** - Advanced email automation',
+      '📈 **Klaviyo** - E-commerce email marketing'
+    ],
+    'analytics': [
+      '📊 **Google Analytics** - Website traffic and user behavior',
+      '📈 **Hotjar** - User behavior and heatmaps',
+      '🎯 **Mixpanel** - Product analytics and user insights',
+      '📱 **Amplitude** - User journey analysis'
+    ],
+    'design': [
+      '🎨 **Canva** - Easy graphic design for non-designers',
+      '🖼️ **Figma** - Collaborative design and prototyping',
+      '📐 **Adobe Creative Suite** - Professional design tools',
+      '🎭 **Crello** - Marketing design templates'
+    ],
+    'content': [
+      '✍️ **Grammarly** - Writing assistance and grammar checking',
+      '📝 **Hemingway Editor** - Improve writing clarity',
+      '🔍 **Yoast SEO** - Content optimization for SEO',
+      '📚 **BuzzSumo** - Content research and trending topics'
+    ]
+  };
+
+  // Find relevant tools based on user input and response content
+  let relevantTools: string[] = [];
+  
+  for (const [category, tools] of Object.entries(toolRecommendations)) {
+    if (lowerInput.includes(category) || lowerResponse.includes(category)) {
+      relevantTools.push(...tools);
+    }
+  }
+
+  // Add general marketing tools if no specific category found
+  if (relevantTools.length === 0) {
+    relevantTools = [
+      '📊 **Google Analytics** - Track your marketing performance',
+      '🎨 **Canva** - Create professional marketing materials',
+      '📱 **Hootsuite** - Manage all your social media accounts',
+      '📧 **Mailchimp** - Email marketing campaigns'
+    ];
+  }
+
+  // Remove duplicates and limit to 4 tools
+  relevantTools = [...new Set(relevantTools)].slice(0, 4);
+
+  // Enhance the response with tool recommendations
+  if (relevantTools.length > 0) {
+    const enhancedResponse = `${response}
+
+---
+
+**💡 Recommended Marketing Tools:**
+
+${relevantTools.join('\n')}
+
+*These tools can help you implement the strategies we discussed and improve your marketing results.*`;
+    
+    return enhancedResponse;
+  }
+
+  return response;
+}

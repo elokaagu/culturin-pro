@@ -283,6 +283,45 @@ const ContentCreator: React.FC = () => {
     }
   };
 
+  // Function to format AI responses with proper paragraphs and tool recommendations
+  const formatAIResponse = (content: string): { formattedContent: string; toolRecommendations: string[] } => {
+    // Split content by double line breaks to identify paragraphs
+    const paragraphs = content.split(/\n\s*\n/);
+    
+    // Check if there are tool recommendations (after the --- separator)
+    const hasToolRecommendations = content.includes('---') && content.includes('Recommended Marketing Tools:');
+    
+    let formattedContent = content;
+    let toolRecommendations: string[] = [];
+    
+    if (hasToolRecommendations) {
+      const parts = content.split('---');
+      formattedContent = parts[0].trim();
+      
+      // Extract tool recommendations
+      const toolsSection = parts[1];
+      if (toolsSection) {
+        const toolLines = toolsSection
+          .split('\n')
+          .filter(line => line.trim().startsWith('📱') || line.trim().startsWith('📊') || 
+                         line.trim().startsWith('🎨') || line.trim().startsWith('🎵') ||
+                         line.trim().startsWith('📘') || line.trim().startsWith('🔍') ||
+                         line.trim().startsWith('📧') || line.trim().startsWith('✍️') ||
+                         line.trim().startsWith('📝') || line.trim().startsWith('🔍') ||
+                         line.trim().startsWith('📚') || line.trim().startsWith('📸') ||
+                         line.trim().startsWith('📱') || line.trim().startsWith('🎬') ||
+                         line.trim().startsWith('🎯') || line.trim().startsWith('📈') ||
+                         line.trim().startsWith('🖼️') || line.trim().startsWith('📐') ||
+                         line.trim().startsWith('🎭'))
+          .map(line => line.trim());
+        
+        toolRecommendations = toolLines;
+      }
+    }
+    
+    return { formattedContent, toolRecommendations };
+  };
+
   const generateSpeech = async (text: string): Promise<string | null> => {
     try {
       // Check if ElevenLabs is enabled in settings
@@ -1111,7 +1150,51 @@ Description 2: ${data.content.description2 || ""}`;
                         {message.isGenerating && (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         )}
-                        <p className="text-sm">{message.content}</p>
+                        <div className="text-sm space-y-2">
+                          {/* Format AI response with proper paragraphs */}
+                          {message.type === "bot" ? (
+                            <>
+                              {(() => {
+                                const { formattedContent, toolRecommendations } = formatAIResponse(message.content);
+                                return (
+                                  <>
+                                    {/* Display formatted content with paragraphs */}
+                                    <div className="whitespace-pre-wrap">
+                                      {formattedContent.split('\n').map((paragraph, index) => (
+                                        paragraph.trim() ? (
+                                          <p key={index} className="mb-3 last:mb-0">
+                                            {paragraph}
+                                          </p>
+                                        ) : null
+                                      ))}
+                                    </div>
+                                    
+                                    {/* Display tool recommendations if available */}
+                                    {toolRecommendations.length > 0 && (
+                                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <h4 className="text-sm font-medium text-blue-800 mb-2">
+                                          💡 Recommended Marketing Tools
+                                        </h4>
+                                        <div className="space-y-2">
+                                          {toolRecommendations.map((tool, index) => (
+                                            <div key={index} className="text-xs text-blue-700">
+                                              {tool}
+                                            </div>
+                                          ))}
+                                        </div>
+                                        <p className="text-xs text-blue-600 mt-2 italic">
+                                          These tools can help you implement the strategies we discussed.
+                                        </p>
+                                      </div>
+                                    )}
+                                  </>
+                                );
+                              })()}
+                            </>
+                          ) : (
+                            <p>{message.content}</p>
+                          )}
+                        </div>
                         {message.type === "bot" && message.audioUrl && (
                           <Button
                             size="sm"
