@@ -167,6 +167,9 @@ const ContentCreator: React.FC = () => {
   const [currentProject, setCurrentProject] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+  const [isDeletingProject, setIsDeletingProject] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
@@ -391,79 +394,150 @@ const ContentCreator: React.FC = () => {
   const handleFileUpload = async (files: FileList) => {
     setIsUploading(true);
     const newAttachments: UploadedFile[] = [];
+    const maxFileSize = 10 * 1024 * 1024; // 10MB limit
+    const allowedTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+      'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain'
+    ];
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const fileId = Date.now() + i;
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // Validate file size
+        if (file.size > maxFileSize) {
+          toast.error(`File ${file.name} is too large. Maximum size is 10MB.`);
+          continue;
+        }
 
-      // Create preview for images
-      let preview: string | undefined;
-      if (file.type.startsWith("image/")) {
-        preview = URL.createObjectURL(file);
+        // Validate file type
+        if (!allowedTypes.includes(file.type)) {
+          toast.error(`File type ${file.type} is not supported.`);
+          continue;
+        }
+
+        const fileId = Date.now() + i;
+
+        // Create preview for images
+        let preview: string | undefined;
+        if (file.type.startsWith("image/")) {
+          preview = URL.createObjectURL(file);
+        }
+
+        const attachment: UploadedFile = {
+          id: fileId.toString(),
+          name: file.name,
+          type: file.type.startsWith("image/") ? "image" : "document",
+          file,
+          preview,
+        };
+
+        newAttachments.push(attachment);
       }
 
-      const attachment: UploadedFile = {
-        id: fileId.toString(),
-        name: file.name,
-        type: file.type.startsWith("image/") ? "image" : "document",
-        file,
-        preview,
-      };
+      if (newAttachments.length > 0) {
+        setAttachments((prev) => [...prev, ...newAttachments]);
+        setShowUploadMenu(false);
 
-      newAttachments.push(attachment);
+        // Add message with attachments
+        addUserMessage(
+          `I've uploaded ${newAttachments.length} reference file${
+            newAttachments.length > 1 ? "s" : ""
+          } for you to analyze.`,
+          newAttachments
+        );
+
+        // Get AI response about the uploaded files
+        const fileNames = newAttachments.map((f) => f.name).join(", ");
+        const aiResponse = await callOpenAI(
+          `I've uploaded these reference files: ${fileNames}. Can you analyze them and help me create content based on what you see?`,
+          messages
+        );
+        addBotMessage(aiResponse);
+
+        toast.success(`Successfully uploaded ${newAttachments.length} file${newAttachments.length > 1 ? 's' : ''}`);
+      }
+    } catch (error) {
+      console.error("Error uploading files:", error);
+      toast.error("Failed to upload files. Please try again.");
+    } finally {
+      setIsUploading(false);
     }
-
-    setAttachments((prev) => [...prev, ...newAttachments]);
-    setIsUploading(false);
-    setShowUploadMenu(false);
-
-    // Add message with attachments
-    addUserMessage(
-      `I've uploaded ${newAttachments.length} reference file${
-        newAttachments.length > 1 ? "s" : ""
-      } for you to analyze.`,
-      newAttachments
-    );
-
-    // Get AI response about the uploaded files
-    const fileNames = newAttachments.map((f) => f.name).join(", ");
-    const aiResponse = await callOpenAI(
-      `I've uploaded these reference files: ${fileNames}. Can you analyze them and help me create content based on what you see?`,
-      messages
-    );
-    addBotMessage(aiResponse);
   };
 
   const handleUrlUpload = async (url: string) => {
     if (!url.trim()) return;
 
+    // Basic URL validation
+    try {
+      new URL(url);
+    } catch {
+      toast.error("Please enter a valid URL");
+      return;
+    }
+
     setIsUploading(true);
     const urlId = Date.now().toString();
 
-    const attachment: UploadedFile = {
-      id: urlId,
-      name: url,
-      type: "url",
-      url: url,
-    };
+    try {
+      const attachment: UploadedFile = {
+        id: urlId,
+        name: url,
+        type: "url",
+        url: url,
+      };
 
-    setAttachments((prev) => [...prev, attachment]);
-    setIsUploading(false);
-    setShowUploadMenu(false);
+      setAttachments((prev) => [...prev, attachment]);
+      setShowUploadMenu(false);
 
-    // Add message with URL
-    addUserMessage(`I've shared this reference URL: ${url}`, [attachment]);
+      // Add message with URL
+      addUserMessage(`I've shared this reference URL: ${url}`, [attachment]);
 
-    // Get AI response about the URL
-    const aiResponse = await callOpenAI(
-      `I've shared this reference URL: ${url}. Can you analyze it and help me create content based on what you find?`,
-      messages
-    );
-    addBotMessage(aiResponse);
+      // Get AI response about the URL
+      const aiResponse = await callOpenAI(
+        `I've shared this reference URL: ${url}. Can you analyze it and help me create content based on what you find?`,
+        messages
+      );
+      addBotMessage(aiResponse);
+
+      toast.success("URL added successfully");
+    } catch (error) {
+      console.error("Error adding URL:", error);
+      toast.error("Failed to add URL. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const removeAttachment = (attachmentId: string) => {
     setAttachments((prev) => prev.filter((att) => att.id !== attachmentId));
+  };
+
+  const handleDeleteProject = (projectId: string) => {
+    setProjectToDelete(projectId);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteProject = async () => {
+    if (!projectToDelete) return;
+
+    setIsDeletingProject(true);
+    try {
+      const success = await deleteProject(projectToDelete);
+      if (success) {
+        toast.success("Project deleted successfully");
+        setShowDeleteConfirm(false);
+        setProjectToDelete(null);
+      } else {
+        toast.error("Failed to delete project");
+      }
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      toast.error("Failed to delete project");
+    } finally {
+      setIsDeletingProject(false);
+    }
   };
 
   const callOpenAI = async (
@@ -1540,65 +1614,140 @@ Description 2: ${data.content.description2 || ""}`;
           {/* Upload Menu */}
           {showUploadMenu && (
             <div className="border-t border-gray-200 p-4 bg-gray-50">
-              <div className="space-y-3">
+              <div className="space-y-4">
+                {/* File Upload Section */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Upload Files
                   </label>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept="image/*,.pdf,.doc,.docx,.txt"
-                    onChange={(e) =>
-                      e.target.files && handleFileUpload(e.target.files)
-                    }
-                    className="hidden"
-                  />
-                  <Button
-                    onClick={() => fileInputRef.current?.click()}
-                    variant="outline"
-                    className="w-full"
-                    disabled={isUploading}
-                  >
-                    <Upload className="h-4 w-4 mr-2" />
-                    {isUploading ? "Uploading..." : "Choose Files"}
-                  </Button>
-                </div>
-
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 sm:text-sm">🔗</span>
-                  </div>
-                  <input
-                    ref={urlInputRef}
-                    type="url"
-                    placeholder="Paste a URL reference..."
-                    className="block w-full pl-10 pr-12 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        const url = (e.target as HTMLInputElement).value;
-                        handleUrlUpload(url);
-                        (e.target as HTMLInputElement).value = "";
+                  <div 
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors"
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.add('border-blue-400', 'bg-blue-50');
+                    }}
+                    onDragLeave={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50');
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.remove('border-blue-400', 'bg-blue-50');
+                      const files = e.dataTransfer.files;
+                      if (files.length > 0) {
+                        handleFileUpload(files);
                       }
                     }}
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center">
+                  >
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      accept="image/*,.pdf,.doc,.docx,.txt"
+                      onChange={(e) =>
+                        e.target.files && handleFileUpload(e.target.files)
+                      }
+                      className="hidden"
+                    />
+                    <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <p className="text-sm text-gray-600 mb-2">
+                      Drag and drop files here, or click to browse
+                    </p>
+                    <p className="text-xs text-gray-500 mb-4">
+                      Supports: Images (JPG, PNG, GIF, WebP), PDFs, Word docs, Text files
+                      <br />
+                      Max size: 10MB per file
+                    </p>
                     <Button
-                      onClick={() => {
-                        const url = urlInputRef.current?.value;
-                        if (url) {
-                          handleUrlUpload(url);
-                          urlInputRef.current!.value = "";
-                        }
-                      }}
-                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      variant="outline"
                       disabled={isUploading}
                     >
-                      Add
+                      <Upload className="h-4 w-4 mr-2" />
+                      {isUploading ? "Uploading..." : "Choose Files"}
                     </Button>
                   </div>
                 </div>
+
+                {/* URL Input Section */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Add Reference URL
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Link className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <input
+                      ref={urlInputRef}
+                      type="url"
+                      placeholder="Paste a URL reference (e.g., competitor website, inspiration source)..."
+                      className="block w-full pl-10 pr-20 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          const url = (e.target as HTMLInputElement).value;
+                          handleUrlUpload(url);
+                          (e.target as HTMLInputElement).value = "";
+                        }
+                      }}
+                    />
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+                      <Button
+                        onClick={() => {
+                          const url = urlInputRef.current?.value;
+                          if (url) {
+                            handleUrlUpload(url);
+                            urlInputRef.current!.value = "";
+                          }
+                        }}
+                        size="sm"
+                        disabled={isUploading}
+                        className="h-8"
+                      >
+                        Add URL
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Current Attachments Preview */}
+                {attachments.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Current Attachments ({attachments.length})
+                    </label>
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {attachments.map((attachment) => (
+                        <div
+                          key={attachment.id}
+                          className="flex items-center gap-2 p-2 bg-white border border-gray-200 rounded-md"
+                        >
+                          {attachment.type === "image" && attachment.preview ? (
+                            <img
+                              src={attachment.preview}
+                              alt={attachment.name}
+                              className="w-6 h-6 object-cover rounded"
+                            />
+                          ) : attachment.type === "url" ? (
+                            <Link className="w-6 h-6 text-blue-500" />
+                          ) : (
+                            <File className="w-6 h-6 text-gray-500" />
+                          )}
+                          <span className="text-xs font-medium truncate flex-1">
+                            {attachment.name}
+                          </span>
+                          <button
+                            onClick={() => removeAttachment(attachment.id)}
+                            className="text-red-500 hover:text-red-700 p-1"
+                            title="Remove attachment"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <Button
                   onClick={() => setShowUploadMenu(false)}
@@ -1606,7 +1755,7 @@ Description 2: ${data.content.description2 || ""}`;
                   size="sm"
                   className="w-full"
                 >
-                  Cancel
+                  Done
                 </Button>
               </div>
             </div>
@@ -1833,11 +1982,10 @@ Description 2: ${data.content.description2 || ""}`;
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm("Delete this project?")) {
-                          deleteProject(project.id);
-                        }
+                        handleDeleteProject(project.id);
                       }}
-                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-600"
+                      title="Delete project"
                     >
                       <X className="h-3 w-3" />
                     </Button>
@@ -1881,6 +2029,60 @@ Description 2: ${data.content.description2 || ""}`;
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
       />
+
+      {/* Delete Project Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <X className="h-5 w-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Delete Project
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    This action cannot be undone
+                  </p>
+                </div>
+              </div>
+              
+              <p className="text-gray-700 mb-6">
+                Are you sure you want to delete this project? All associated conversations and data will be permanently removed.
+              </p>
+              
+              <div className="flex gap-3 justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setProjectToDelete(null);
+                  }}
+                  disabled={isDeletingProject}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={confirmDeleteProject}
+                  disabled={isDeletingProject}
+                >
+                  {isDeletingProject ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete Project"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
