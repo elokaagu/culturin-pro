@@ -833,6 +833,17 @@ const WebsiteBuilder: React.FC = () => {
     if (user?.id) {
       localStorage.setItem(`selectedTour_${user.id}`, JSON.stringify(tour));
       localStorage.setItem(`websiteSlug_${user.id}`, publishedUrl);
+      
+      // Also store in a more accessible location for the booking page
+      localStorage.setItem(`currentTour_${tour.id}`, JSON.stringify(tour));
+      localStorage.setItem(`currentWebsiteSlug`, publishedUrl);
+      
+      console.log("🎯 Tour selected and stored:", {
+        tour: tour.title,
+        id: tour.id,
+        websiteSlug: publishedUrl,
+        stored: true
+      });
     }
   };
 

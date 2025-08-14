@@ -25,6 +25,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 type Tour = {
   id: string;
@@ -36,6 +37,7 @@ type Tour = {
   highlights: string[];
   rating: number;
   reviews: number;
+  source?: string; // Track where the tour data came from
 };
 
 type BookingFormData = {
@@ -69,91 +71,159 @@ export default function BookingPage({
   });
 
   useEffect(() => {
-    // Load operator data from localStorage
-    const publishedContentStr = localStorage.getItem("publishedWebsiteContent");
-    if (publishedContentStr) {
+    const loadBookingData = async () => {
       try {
-        const publishedContent = JSON.parse(publishedContentStr);
-        setOperatorName(publishedContent.companyName || "Culturin Tours");
-        setPrimaryColor(publishedContent.primaryColor || "#9b87f5");
-      } catch (e) {
-        console.error("Error parsing published content:", e);
-      }
-    }
-
-    // Try to load real tour data from localStorage first
-    const loadRealTourData = () => {
-      // Get user ID from URL or try to find it in localStorage
-      const userId = Object.keys(localStorage)
-        .find((key) => key.startsWith("selectedTour_"))
-        ?.split("_")[1];
-
-      if (userId) {
-        const selectedTourStr = localStorage.getItem(`selectedTour_${userId}`);
-        const websiteSlug = localStorage.getItem(`websiteSlug_${userId}`);
-
-        if (selectedTourStr && websiteSlug === params.slug) {
+        setLoading(true);
+        
+        // Load operator data from localStorage
+        const publishedContentStr = localStorage.getItem("publishedWebsiteContent");
+        if (publishedContentStr) {
           try {
-            const realTour = JSON.parse(selectedTourStr);
-            // Transform real tour data to match Tour interface
-            const transformedTour: Tour = {
-              id: realTour.id || params.tourId,
-              name: realTour.title || "Tour",
-              duration: realTour.days
-                ? `${realTour.days} day${realTour.days !== 1 ? "s" : ""}`
-                : "1 day",
-              price: realTour.price || 99,
-              image: realTour.image || "",
-              description:
-                realTour.description || "Experience this amazing tour",
-              highlights: realTour.highlights || [
-                "Professional guide",
-                "Small groups",
-                "Cultural experience",
-              ],
-              rating: 0, // Will be calculated from real reviews
-              reviews: 0, // Will be calculated from real reviews
-            };
-
-            setTour(transformedTour);
-            setLoading(false);
-            return;
+            const publishedContent = JSON.parse(publishedContentStr);
+            setOperatorName(publishedContent.companyName || "Culturin Tours");
+            setPrimaryColor(publishedContent.primaryColor || "#9b87f5");
           } catch (e) {
-            console.error("Error parsing real tour data:", e);
+            console.error("Error parsing published content:", e);
           }
         }
+
+        // Try multiple methods to load real tour data
+        let realTour = null;
+
+        // Method 1: Try to load from selectedTour localStorage (from website builder)
+        const userId = Object.keys(localStorage)
+          .find((key) => key.startsWith("selectedTour_"))
+          ?.split("_")[1];
+
+        if (userId) {
+          const selectedTourStr = localStorage.getItem(`selectedTour_${userId}`);
+          const websiteSlug = localStorage.getItem(`websiteSlug_${userId}`);
+
+          if (selectedTourStr && websiteSlug === params.slug) {
+            try {
+              realTour = JSON.parse(selectedTourStr);
+              console.log("✅ Tour loaded from selectedTour localStorage:", realTour);
+            } catch (e) {
+              console.error("Error parsing selectedTour data:", e);
+            }
+          }
+        }
+
+        // Method 2: Try to load from websiteData localStorage (fallback)
+        if (!realTour) {
+          const websiteDataStr = localStorage.getItem(`websiteData_${userId || 'default'}`);
+          if (websiteDataStr) {
+            try {
+              const websiteData = JSON.parse(websiteDataStr);
+              if (websiteData.itineraries && websiteData.itineraries.length > 0) {
+                // Find the specific tour by ID
+                const foundItinerary = websiteData.itineraries.find(
+                  (it: any) => it.id === params.tourId
+                );
+                if (foundItinerary) {
+                  realTour = foundItinerary;
+                  console.log("✅ Tour loaded from websiteData localStorage:", realTour);
+                }
+              }
+            } catch (e) {
+              console.error("Error parsing websiteData:", e);
+            }
+          }
+        }
+
+        // Method 3: Try to load from currentTour localStorage (new method)
+        if (!realTour) {
+          const currentTourStr = localStorage.getItem(`currentTour_${params.tourId}`);
+          const currentWebsiteSlug = localStorage.getItem("currentWebsiteSlug");
+          
+          if (currentTourStr && currentWebsiteSlug === params.slug) {
+            try {
+              realTour = JSON.parse(currentTourStr);
+              console.log("✅ Tour loaded from currentTour localStorage:", realTour);
+            } catch (e) {
+              console.error("Error parsing currentTour data:", e);
+            }
+          }
+        }
+
+        // Method 4: Try to load from publishedItineraries localStorage
+        if (!realTour) {
+          const publishedItinerariesStr = localStorage.getItem("publishedItineraries");
+          if (publishedItinerariesStr) {
+            try {
+              const publishedItineraries = JSON.parse(publishedItinerariesStr);
+              const foundItinerary = publishedItineraries.find(
+                (it: any) => it.id === params.tourId
+              );
+              if (foundItinerary) {
+                realTour = foundItinerary;
+                console.log("✅ Tour loaded from publishedItineraries localStorage:", realTour);
+              }
+            } catch (e) {
+              console.error("Error parsing publishedItineraries:", e);
+            }
+          }
+        }
+
+                    // Transform real tour data to match Tour interface
+            if (realTour) {
+              const transformedTour: Tour = {
+                id: realTour.id || params.tourId,
+                name: realTour.title || realTour.name || "Tour",
+                duration: realTour.days
+                  ? `${realTour.days} day${realTour.days !== 1 ? "s" : ""}`
+                  : realTour.duration || "1 day",
+                price: realTour.price || 99,
+                image: realTour.image || "",
+                description: realTour.description || "Experience this amazing tour",
+                highlights: realTour.highlights || [
+                  "Professional guide",
+                  "Small groups",
+                  "Cultural experience",
+                ],
+                rating: realTour.rating || 0,
+                reviews: realTour.reviews || 0,
+                source: "Real Itinerary Data",
+              };
+
+          setTour(transformedTour);
+          console.log("🎯 Final transformed tour:", transformedTour);
+        } else {
+          // Only fallback to sample data if no real data found
+          console.warn("⚠️ No real tour data found, using fallback sample data");
+          const sampleTours: Tour[] = [
+            {
+              id: "gaudi-tour",
+              name: "Gaudí Masterpieces Tour",
+              duration: "4 hours",
+              price: 65,
+              image:
+                "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+              description:
+                "Explore Antoni Gaudí's most famous architectural works including Sagrada Familia and Park Güell with skip-the-line access.",
+              highlights: [
+                "Skip-the-line Sagrada Familia tickets",
+                "Expert architecture guide",
+                "Small groups of max 10 people",
+              ],
+              rating: 4.9,
+              reviews: 215,
+              source: "Sample Data (Fallback)",
+            },
+          ];
+
+          const foundTour = sampleTours.find((t) => t.id === params.tourId) || sampleTours[0];
+          setTour(foundTour);
+        }
+      } catch (error) {
+        console.error("Error loading booking data:", error);
+        toast.error("Failed to load tour information");
+      } finally {
+        setLoading(false);
       }
-
-      // Fallback to sample data if real data not available
-      const sampleTours: Tour[] = [
-        {
-          id: "gaudi-tour",
-          name: "Gaudí Masterpieces Tour",
-          duration: "4 hours",
-          price: 65,
-          image:
-            "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-          description:
-            "Explore Antoni Gaudí's most famous architectural works including Sagrada Familia and Park Güell with skip-the-line access.",
-          highlights: [
-            "Skip-the-line Sagrada Familia tickets",
-            "Expert architecture guide",
-            "Small groups of max 10 people",
-          ],
-          rating: 4.9,
-          reviews: 215,
-        },
-      ];
-
-      // Find the tour by ID
-      const foundTour =
-        sampleTours.find((t) => t.id === params.tourId) || sampleTours[0];
-      setTour(foundTour);
-      setLoading(false);
     };
 
-    // Try to load real data first, then fallback
-    loadRealTourData();
+    loadBookingData();
   }, [params.slug, params.tourId]);
 
   const handleInputChange = (
@@ -480,6 +550,17 @@ export default function BookingPage({
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     {tour.name}
                   </h3>
+                  
+                  {/* Debug Info - Only show in development */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <div className="text-left bg-gray-100 p-3 rounded-lg mb-4 text-xs">
+                      <p className="font-medium mb-2">Debug Info:</p>
+                      <p>Tour ID: {tour.id}</p>
+                      <p>Price: €{tour.price}</p>
+                      <p>Duration: {tour.duration}</p>
+                      <p>Reviews: {tour.reviews}</p>
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
                     <div className="flex items-center gap-1">
