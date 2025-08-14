@@ -15,7 +15,7 @@ const ProDashboardLayout: React.FC<ProDashboardLayoutProps> = ({
   return (
     <div className="bg-gray-50 min-h-screen">
       <ProSidebar />
-      <div className="ml-0 md:ml-64 p-4 sm:p-6 lg:p-8 min-h-screen transition-all duration-300">
+      <div className="pt-16 md:pt-20 p-4 sm:p-6 lg:p-8 min-h-screen transition-all duration-300">
         {(title || subtitle) && (
           <div className="mb-4 sm:mb-6">
             {title && <h1 className="text-xl sm:text-2xl font-bold">{title}</h1>}
