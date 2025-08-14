@@ -58,26 +58,42 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
 
   // Load user's website data
   useEffect(() => {
+    let isMounted = true;
+    
     const loadWebsiteData = async () => {
       if (!user?.id) {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
         return;
       }
 
       try {
-        setLoading(true);
+        if (isMounted) {
+          setLoading(true);
+        }
         const data = await userWebsiteService.getUserWebsiteData(user.id);
-        setWebsiteData(data);
-        setCurrentItineraries(data.itineraries);
+        
+        if (isMounted) {
+          setWebsiteData(data);
+          setCurrentItineraries(data.itineraries);
+          setLoading(false);
+        }
       } catch (error) {
         console.error("Error loading website data:", error);
-        toast.error("Failed to load website data");
-      } finally {
-        setLoading(false);
+        if (isMounted) {
+          toast.error("Failed to load website data");
+          setLoading(false);
+        }
       }
     };
 
     loadWebsiteData();
+
+    // Cleanup function to prevent state updates on unmounted component
+    return () => {
+      isMounted = false;
+    };
   }, [user?.id, externalRefreshKey]);
 
   // Dynamic settings from user data
@@ -145,6 +161,8 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   useEffect(() => {
     if (externalRefreshKey !== undefined) {
       setRefreshKey(externalRefreshKey);
+      // Reset loading state when refresh key changes
+      setLoading(true);
     }
   }, [externalRefreshKey]);
 

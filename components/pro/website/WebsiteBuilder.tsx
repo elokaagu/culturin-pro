@@ -747,6 +747,12 @@ const WebsiteBuilder: React.FC = () => {
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
+    
+    // Reset loading states when switching tabs
+    if (value === "preview") {
+      // Force a refresh of the preview when coming back to it
+      setPreviewKey((prev) => prev + 1);
+    }
   };
 
   const handleToggleFullScreen = () => {
@@ -1096,7 +1102,7 @@ const WebsiteBuilder: React.FC = () => {
           {activeTab === "preview" && (
             <div className="h-full">
               <WebsitePreview
-                key={previewKey}
+                key={`preview-${previewKey}-${activeTab}`}
                 itineraries={itineraries}
                 viewMode={viewMode}
               />
