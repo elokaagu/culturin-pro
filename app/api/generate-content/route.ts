@@ -54,16 +54,17 @@ Tone: ${tone || "friendly and approachable"}
 
 Please create an Instagram caption that:
 - Is 50-100 words
-- Uses relevant emojis strategically
 - Includes a compelling hook
 - Describes the experience authentically
 - Uses the specified tone
 - Includes a call to action
 - Is optimized for Instagram engagement
 - Incorporates cultural authenticity
-- Uses hashtags relevant to cultural travel
+- Uses clean, professional language
 
-Format the response as plain text with proper line breaks and emojis.`;
+Important: Do NOT use emojis, hashtags, or special characters. Keep the text clean and professional.
+
+Format the response as plain text with proper line breaks.`;
     } else if (contentType === "tiktok-hook") {
       systemPrompt = "You are an expert TikTok content creator specializing in cultural tourism. You create attention-grabbing hooks that capture viewers in the first 3 seconds.";
       prompt = `Create an attention-grabbing TikTok hook for a cultural experience with the following details:
@@ -80,8 +81,10 @@ Please create a TikTok hook that:
 - Uses the specified tone
 - Is perfect for TikTok's short-form format
 - Creates curiosity and interest
-- Uses trending language and style
+- Uses clean, professional language
 - Is shareable and engaging
+
+Important: Do NOT use emojis, hashtags, or special characters. Keep the text clean and professional.
 
 Format as a single, impactful sentence.`;
     } else if (contentType === "google-ad-copy") {
@@ -337,8 +340,10 @@ Response formatting:
 - Use bullet points or numbered lists when appropriate
 - Include relevant marketing tool recommendations when helpful
 - Suggest specific platforms or resources that could benefit their strategy
+- Do NOT use emojis, hashtags, or special characters
+- Keep text clean and professional without decorative elements
 
-Keep responses conversational and natural. Don't use emojis or overly formal language. Just be helpful and conversational.`;
+Keep responses conversational and natural. Use plain text only - no emojis, hashtags, or special formatting. Just be helpful and conversational.`;
 
   // Prepare conversation messages
   const messages = [
@@ -922,18 +927,16 @@ function generateFallbackContentForType(contentType: string, experienceTitle: st
   switch (contentType) {
     case "instagram-caption":
     case "instagram-post":
-      return `🌟 Experience the authentic magic of ${location} with our ${experienceTitle}! 
+      return `Experience the authentic magic of ${location} with our ${experienceTitle}! 
 
 Immerse yourself in local traditions and discover the heart of ${location} through authentic cultural experiences. From traditional activities to hidden gem discoveries, every moment is crafted to connect you with the local community.
 
 Perfect for cultural travelers who want more than just a tour - they want a genuine connection to the culture and people of ${location}.
 
-Ready to create memories that last a lifetime? Book your spot today! ✨
-
-#CulturalTravel #${location.replace(/\s+/g, '')} #AuthenticExperiences #CulturalImmersion #TravelWithPurpose #${experienceTitle.replace(/\s+/g, '')}`;
+Ready to create memories that last a lifetime? Book your spot today!`;
 
     case "tiktok-hook":
-      return `You won't believe what we discovered in ${location}... 🤯`;
+      return `You won't believe what we discovered in ${location}...`;
 
     case "google-ad-copy":
       return JSON.stringify({
@@ -947,10 +950,10 @@ Ready to create memories that last a lifetime? Book your spot today! ✨
     case "facebook-ad":
       return `Experience the authentic magic of ${location} with our ${experienceTitle}! 
 
-🌍 Authentic cultural immersion
-👥 Expert local guides  
-⭐ Small group experiences
-💫 Unforgettable memories
+Authentic cultural immersion
+Expert local guides  
+Small group experiences
+Unforgettable memories
 
 Book now and save 20% on your cultural adventure!`;
 
@@ -995,17 +998,15 @@ function generateFallbackContent(
   tone: string
 ) {
   if (contentType === "instagram-caption") {
-    return `🌟 Experience the authentic magic of ${location} with our ${experienceTitle}! 
+    return `Experience the authentic magic of ${location} with our ${experienceTitle}! 
 
 Immerse yourself in local traditions and discover the heart of ${location} through authentic cultural experiences. From traditional cooking classes to hidden gem discoveries, every moment is crafted to connect you with the local community.
 
 Perfect for ${targetAudience || "cultural travelers"} who want more than just a tour - they want a genuine connection to the culture and people of ${location}.
 
-Ready to create memories that last a lifetime? Book your spot today and save 20% with code: CULTURE20 ✨
-
-#CulturalTravel #${location.replace(/\s+/g, '')} #AuthenticExperiences #CulturalImmersion #TravelWithPurpose`;
+Ready to create memories that last a lifetime? Book your spot today and save 20% with code: CULTURE20`;
   } else if (contentType === "tiktok-hook") {
-    return `You won't believe what we discovered in ${location}... 🤯`;
+    return `You won't believe what we discovered in ${location}...`;
   } else if (contentType === "google-ad-copy") {
     return {
       headline1: `Authentic ${location} Experience`,
@@ -1031,58 +1032,58 @@ function enhanceResponseWithResources(response: string, userInput: string): stri
   // Marketing tool recommendations based on user input and response content
   const toolRecommendations: { [key: string]: string[] } = {
     'social media': [
-      '📱 **Hootsuite** - Schedule and manage all your social media posts',
-      '📊 **Buffer** - Analytics and social media management',
-      '🎨 **Canva** - Create stunning social media graphics',
-      '📈 **Later** - Visual social media planning'
+      '**Hootsuite** - Schedule and manage all your social media posts',
+      '**Buffer** - Analytics and social media management',
+      '**Canva** - Create stunning social media graphics',
+      '**Later** - Visual social media planning'
     ],
     'instagram': [
-      '📸 **Instagram Insights** - Track your post performance',
-      '🎨 **Canva** - Instagram post templates and design',
-      '📱 **Planoly** - Visual Instagram planning',
-      '📊 **Iconosquare** - Advanced Instagram analytics'
+      '**Instagram Insights** - Track your post performance',
+      '**Canva** - Instagram post templates and design',
+      '**Planoly** - Visual Instagram planning',
+      '**Iconosquare** - Advanced Instagram analytics'
     ],
     'tiktok': [
-      '🎵 **TikTok Creator Studio** - Manage your TikTok content',
-      '📱 **CapCut** - TikTok\'s official video editor',
-      '📊 **TikTok Analytics** - Track your video performance',
-      '🎬 **InShot** - Professional video editing for mobile'
+      '**TikTok Creator Studio** - Manage your TikTok content',
+      '**CapCut** - TikTok\'s official video editor',
+      '**TikTok Analytics** - Track your video performance',
+      '**InShot** - Professional video editing for mobile'
     ],
     'facebook': [
-      '📘 **Facebook Business Manager** - Manage your business pages',
-      '📊 **Facebook Ads Manager** - Create and track ad campaigns',
-      '🎯 **Facebook Pixel** - Track conversions and optimize ads',
-      '📈 **Facebook Insights** - Page performance analytics'
+      '**Facebook Business Manager** - Manage your business pages',
+      '**Facebook Ads Manager** - Create and track ad campaigns',
+      '**Facebook Pixel** - Track conversions and optimize ads',
+      '**Facebook Insights** - Page performance analytics'
     ],
     'google ads': [
-      '🔍 **Google Ads Editor** - Bulk edit your campaigns',
-      '📊 **Google Analytics** - Track website traffic and conversions',
-      '🎯 **Google Tag Manager** - Manage tracking codes',
-      '📈 **Google Data Studio** - Create custom reports'
+      '**Google Ads Editor** - Bulk edit your campaigns',
+      '**Google Analytics** - Track website traffic and conversions',
+      '**Google Tag Manager** - Manage tracking codes',
+      '**Google Data Studio** - Create custom reports'
     ],
     'email': [
-      '📧 **Mailchimp** - Email marketing automation',
-      '📊 **ConvertKit** - Creator-focused email marketing',
-      '🎯 **ActiveCampaign** - Advanced email automation',
-      '📈 **Klaviyo** - E-commerce email marketing'
+      '**Mailchimp** - Email marketing automation',
+      '**ConvertKit** - Creator-focused email marketing',
+      '**ActiveCampaign** - Advanced email automation',
+      '**Klaviyo** - E-commerce email marketing'
     ],
     'analytics': [
-      '📊 **Google Analytics** - Website traffic and user behavior',
-      '📈 **Hotjar** - User behavior and heatmaps',
-      '🎯 **Mixpanel** - Product analytics and user insights',
-      '📱 **Amplitude** - User journey analysis'
+      '**Google Analytics** - Website traffic and user behavior',
+      '**Hotjar** - User behavior and heatmaps',
+      '**Mixpanel** - Product analytics and user insights',
+      '**Amplitude** - User journey analysis'
     ],
     'design': [
-      '🎨 **Canva** - Easy graphic design for non-designers',
-      '🖼️ **Figma** - Collaborative design and prototyping',
-      '📐 **Adobe Creative Suite** - Professional design tools',
-      '🎭 **Crello** - Marketing design templates'
+      '**Canva** - Easy graphic design for non-designers',
+      '**Figma** - Collaborative design and prototyping',
+      '**Adobe Creative Suite** - Professional design tools',
+      '**Crello** - Marketing design templates'
     ],
     'content': [
-      '✍️ **Grammarly** - Writing assistance and grammar checking',
-      '📝 **Hemingway Editor** - Improve writing clarity',
-      '🔍 **Yoast SEO** - Content optimization for SEO',
-      '📚 **BuzzSumo** - Content research and trending topics'
+      '**Grammarly** - Writing assistance and grammar checking',
+      '**Hemingway Editor** - Improve writing clarity',
+      '**Yoast SEO** - Content optimization for SEO',
+      '**BuzzSumo** - Content research and trending topics'
     ]
   };
 

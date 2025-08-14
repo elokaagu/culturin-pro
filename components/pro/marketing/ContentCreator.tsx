@@ -1169,12 +1169,12 @@ Description 2: ${data.content.description2 || ""}`;
                                       ))}
                                     </div>
                                     
-                                    {/* Display tool recommendations if available */}
-                                    {toolRecommendations.length > 0 && (
-                                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                        <h4 className="text-sm font-medium text-blue-800 mb-2">
-                                          💡 Recommended Marketing Tools
-                                        </h4>
+                                                                            {/* Display tool recommendations if available */}
+                                        {toolRecommendations.length > 0 && (
+                                          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                            <h4 className="text-sm font-medium text-blue-800 mb-2">
+                                              Recommended Marketing Tools
+                                            </h4>
                                         <div className="space-y-2">
                                           {toolRecommendations.map((tool, index) => (
                                             <div key={index} className="text-xs text-blue-700">
