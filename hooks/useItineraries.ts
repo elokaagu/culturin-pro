@@ -68,6 +68,24 @@ export const useItineraries = () => {
 
       if (error) {
         console.error("Database error:", error);
+        console.log("🔄 Trying localStorage fallback for itineraries");
+        
+        // Try localStorage fallback
+        try {
+          const localData = localStorage.getItem(`userItineraries_${userId}`);
+          if (localData) {
+            const parsed = JSON.parse(localData);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              console.log(`✅ Found ${parsed.length} itineraries in localStorage fallback`);
+              setItineraries(parsed);
+              setLoading(false);
+              return;
+            }
+          }
+        } catch (localError) {
+          console.error("LocalStorage fallback failed:", localError);
+        }
+        
         setError("Failed to load itineraries from database");
         setItineraries([]);
         setLoading(false);
@@ -95,7 +113,15 @@ export const useItineraries = () => {
         status: item.status || "draft",
       }));
 
+      console.log(`✅ Successfully loaded ${transformedItineraries.length} itineraries from database`);
       setItineraries(transformedItineraries);
+      
+      // Save to localStorage for future fallback
+      try {
+        localStorage.setItem(`userItineraries_${userId}`, JSON.stringify(transformedItineraries));
+      } catch (localError) {
+        console.warn("Failed to save itineraries to localStorage:", localError);
+      }
     } catch (err) {
       console.error("Error fetching itineraries:", err);
       setError("Failed to load itineraries");
@@ -234,7 +260,7 @@ export const useItineraries = () => {
         setLoading(false);
         setError("Loading timeout - please refresh the page");
       }
-    }, 8000); // Reduced from 10 to 8 seconds
+    }, 15000); // Increased to 15 seconds for better reliability
     
     return () => {
       isMounted = false;

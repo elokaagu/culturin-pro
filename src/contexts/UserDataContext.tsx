@@ -99,6 +99,13 @@ export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) 
         if (isMounted) {
           setUserData(completeUserData);
           console.log("User data loaded successfully:", completeUserData);
+          
+          // Save to localStorage for fallback
+          try {
+            localStorage.setItem(`userData_${user.id}`, JSON.stringify(completeUserData));
+          } catch (localError) {
+            console.warn("Failed to save user data to localStorage:", localError);
+          }
         }
 
         // Save last login time
@@ -120,8 +127,20 @@ export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) 
       if (isMounted) {
         console.warn("User data loading timeout - forcing loading to false");
         setIsLoading(false);
+        
+        // Try to load from localStorage as fallback
+        try {
+          const localData = localStorage.getItem(`userData_${user.id}`);
+          if (localData) {
+            const parsed = JSON.parse(localData);
+            setUserData(parsed);
+            console.log("✅ Loaded user data from localStorage fallback");
+          }
+        } catch (localError) {
+          console.error("LocalStorage fallback failed:", localError);
+        }
       }
-    }, 5000); // Reduced to 5 second timeout
+    }, 10000); // Increased to 10 seconds for better reliability
 
     loadUserData().finally(() => {
       // Clear timeout when data loading completes (success or failure)

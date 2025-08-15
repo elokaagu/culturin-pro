@@ -150,6 +150,14 @@ const WebsiteBuilder: React.FC = () => {
             // Set itineraries
             setItineraries(websiteData.itineraries || []);
             console.log("✅ Itineraries loaded successfully:", websiteData.itineraries?.length || 0);
+            
+            // Save to localStorage for fallback
+            localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
+              settings: websiteData.settings,
+              itineraries: websiteData.itineraries,
+              publishedUrl: websiteData.settings.published_url,
+              lastLoaded: new Date().toISOString(),
+            }));
 
             // Store in localStorage for compatibility
             localStorage.setItem(
@@ -193,8 +201,57 @@ const WebsiteBuilder: React.FC = () => {
               setItinerariesError("Failed to load saved data");
             }
           } else {
-            setItineraries([]);
-            console.log("📭 No saved data found, starting with empty itineraries");
+            // Try to load itineraries from the itinerary service as fallback
+            try {
+              console.log("🔄 Trying itinerary service fallback...");
+              const { data: { session } } = await supabase.auth.getSession();
+              if (session?.user) {
+                const { data: dbItineraries, error: itineraryError } = await supabase
+                  .from("itineraries")
+                  .select("*")
+                  .eq("operator_id", session.user.id)
+                  .order("created_at", { ascending: false });
+
+                if (!itineraryError && dbItineraries) {
+                  const transformedItineraries = dbItineraries.map((item: any) => ({
+                    id: item.id,
+                    title: item.title,
+                    description: item.description,
+                    days: item.days,
+                    price: item.price,
+                    currency: item.currency || "USD",
+                    image: item.image,
+                    highlights: item.highlights || [],
+                    activities: item.activities || [],
+                    accommodations: item.accommodations || [],
+                    transportation: item.transportation || [],
+                    meals: item.meals || [],
+                    notes: item.notes || [],
+                    created_at: item.created_at,
+                    updated_at: item.updated_at,
+                    operator_id: item.operator_id,
+                    status: item.status || "draft",
+                  }));
+                  
+                  setItineraries(transformedItineraries);
+                  console.log("✅ Itineraries loaded from direct database query:", transformedItineraries.length);
+                  
+                  // Save to localStorage for future use
+                  localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
+                    settings: {},
+                    itineraries: transformedItineraries,
+                    publishedUrl: "tour/demo",
+                    lastLoaded: new Date().toISOString(),
+                  }));
+                } else {
+                  console.log("📭 No itineraries found in database, starting with empty list");
+                  setItineraries([]);
+                }
+              }
+            } catch (fallbackError) {
+              console.error("Itinerary service fallback failed:", fallbackError);
+              setItineraries([]);
+            }
           }
 
           if (savedUrl) {

@@ -157,11 +157,13 @@ export const useAuth = () => {
     const refreshInterval = setInterval(async () => {
       if (mounted && state.session) {
         try {
+          console.log("🔄 Refreshing session to prevent expiration...");
           const { data, error } = await supabase.auth.refreshSession();
           if (error) {
             console.error("Periodic session refresh failed:", error);
+            // Don't log out on refresh failure, just log the error
           } else if (data.session) {
-            console.log("Periodic session refresh successful");
+            console.log("✅ Periodic session refresh successful");
             // Update session without triggering full state change
             setState((prev) => ({
               ...prev,
@@ -170,9 +172,10 @@ export const useAuth = () => {
           }
         } catch (error) {
           console.error("Error in periodic session refresh:", error);
+          // Don't log out on refresh failure, just log the error
         }
       }
-    }, 10 * 60 * 1000); // Refresh every 10 minutes
+    }, 5 * 60 * 1000); // Refresh every 5 minutes instead of 10
 
     // Listen for auth changes
     const {
@@ -216,15 +219,24 @@ export const useAuth = () => {
         }
 
         // For other events, update state but preserve user data if possible
-        setState((prev) => ({
-          ...prev,
-          user: session?.user || null,
-          session: session,
-          isLoading: false,
-          isReady: true,
-          // Only clear userData if we actually lost the user
-          userData: session?.user ? prev.userData : null,
-        }));
+        setState((prev) => {
+          // Only clear user data if we're actually losing the user
+          const shouldClearUserData = !session?.user && prev.user;
+          
+          if (shouldClearUserData) {
+            console.log("⚠️ User session lost, but preserving data for potential recovery");
+          }
+          
+          return {
+            ...prev,
+            user: session?.user || null,
+            session: session,
+            isLoading: false,
+            isReady: true,
+            // Only clear userData if we actually lost the user
+            userData: shouldClearUserData ? null : prev.userData,
+          };
+        });
 
         if (session?.user) {
           console.log(
