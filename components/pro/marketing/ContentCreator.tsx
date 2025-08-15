@@ -597,7 +597,7 @@ const ContentCreator: React.FC = () => {
     conversationHistory: ChatMessage[]
   ) => {
     try {
-      console.log("Calling OpenAI API with:", {
+      console.log("🔄 Calling OpenAI API with:", {
         userInput,
         conversationHistoryLength: conversationHistory?.length || 0,
         attachments: attachments?.length || 0,
@@ -614,7 +614,7 @@ const ContentCreator: React.FC = () => {
         attachments: attachments,
       };
 
-      console.log("Request body:", requestBody);
+      console.log("📤 Request body:", requestBody);
 
       const response = await fetch("/api/generate-content", {
         method: "POST",
@@ -624,22 +624,44 @@ const ContentCreator: React.FC = () => {
         body: JSON.stringify(requestBody),
       });
 
-      console.log("API Response status:", response.status, response.statusText);
+      console.log("📥 API Response status:", response.status, response.statusText);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("API Error response:", errorText);
+        console.error("❌ API Error response:", errorText);
+        
+        // Try to parse error details
+        let errorDetails = "Unknown error";
+        try {
+          const errorData = JSON.parse(errorText);
+          errorDetails = errorData.error || errorData.message || errorText;
+        } catch (e) {
+          errorDetails = errorText;
+        }
+        
         throw new Error(
-          `Failed to get response from Rigo: ${response.status} ${response.statusText}`
+          `Failed to get response from Rigo: ${response.status} ${response.statusText} - ${errorDetails}`
         );
       }
 
       const data = await response.json();
-      console.log("API Response data:", data);
+      console.log("✅ API Response data:", data);
       return data;
     } catch (error) {
-      console.error("Error calling OpenAI:", error);
-      return "I apologize, but I'm having trouble connecting right now. Let's try again!";
+      console.error("❌ Error calling OpenAI:", error);
+      
+      // Provide more specific error messages
+      if (error instanceof Error) {
+        if (error.message.includes("OpenAI API key not configured")) {
+          return "I'm sorry, but the AI service is not properly configured. Please contact support to set up the OpenAI integration.";
+        } else if (error.message.includes("insufficient_quota")) {
+          return "I'm sorry, but the AI service has reached its usage limit. Please try again later or contact support.";
+        } else if (error.message.includes("Failed to get response from Rigo")) {
+          return "I'm having trouble connecting to the AI service right now. Please check your internet connection and try again.";
+        }
+      }
+      
+      return "I apologize, but I'm experiencing technical difficulties. Please try again in a moment.";
     }
   };
 

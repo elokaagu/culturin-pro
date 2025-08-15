@@ -114,6 +114,8 @@ const WebsiteBuilder: React.FC = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    let loadingTimeout: NodeJS.Timeout;
+
     const loadWebsiteData = async () => {
       try {
         if (!user?.id) {
@@ -127,6 +129,27 @@ const WebsiteBuilder: React.FC = () => {
 
         setItinerariesLoading(true);
         setItinerariesError(null);
+
+        // Set a timeout to prevent infinite loading
+        loadingTimeout = setTimeout(() => {
+          console.warn("Website data loading timeout - forcing loading to false");
+          setItinerariesLoading(false);
+          setItinerariesError("Loading timeout - please refresh the page");
+          
+          // Try to load from localStorage as fallback
+          try {
+            const savedData = localStorage.getItem(`websiteData_${user.id}`);
+            if (savedData) {
+              const parsed = JSON.parse(savedData);
+              if (parsed.itineraries && Array.isArray(parsed.itineraries)) {
+                setItineraries(parsed.itineraries);
+                console.log("✅ Loaded itineraries from localStorage fallback:", parsed.itineraries.length);
+              }
+            }
+          } catch (localError) {
+            console.error("LocalStorage fallback failed:", localError);
+          }
+        }, 15000); // 15 second timeout
 
         // Try to load user website data using UserWebsiteService
         try {
@@ -279,10 +302,20 @@ const WebsiteBuilder: React.FC = () => {
         setItinerariesError("Failed to load website data");
       } finally {
         setItinerariesLoading(false);
+        if (loadingTimeout) {
+          clearTimeout(loadingTimeout);
+        }
       }
     };
 
     loadWebsiteData();
+
+    // Cleanup function
+    return () => {
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+      }
+    };
   }, [user?.id]);
 
   // Auto-refresh preview when user data changes
@@ -597,17 +630,29 @@ const WebsiteBuilder: React.FC = () => {
     setHasUnsavedChanges(true);
     setSaveStatus("saving");
     
-    // Trigger auto-save if enabled
-    if (autoSaveEnabled) {
-      const timeoutId = setTimeout(() => {
-        // Call handleAutoSave directly to avoid circular dependency
-        if (user?.id && isLoggedIn) {
-          handleAutoSave();
-        }
-      }, 2000);
-      
-      return () => clearTimeout(timeoutId);
-    }
+                  // Trigger auto-save if enabled
+              if (autoSaveEnabled) {
+                const timeoutId = setTimeout(() => {
+                  // Call handleAutoSave directly to avoid circular dependency
+                  if (user?.id && isLoggedIn) {
+                    handleAutoSave();
+                  }
+                }, 2000);
+
+                // Set a timeout to reset save status if it gets stuck
+                const saveStatusTimeout = setTimeout(() => {
+                  if (saveStatus === "saving") {
+                    console.warn("Save status timeout - resetting to saved");
+                    setSaveStatus("saved");
+                    setHasUnsavedChanges(false);
+                  }
+                }, 10000); // Reset after 10 seconds
+
+                return () => {
+                  clearTimeout(timeoutId);
+                  clearTimeout(saveStatusTimeout);
+                };
+              }
   }, [autoSaveEnabled, user?.id, isLoggedIn]);
 
   // Enhanced manual save function with authentication

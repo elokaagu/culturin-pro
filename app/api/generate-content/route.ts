@@ -32,8 +32,18 @@ export async function POST(request: NextRequest) {
 
     // Check if OpenAI API key is configured
     if (!process.env.OPENAI_API_KEY) {
+      console.error("❌ OpenAI API key not configured in environment variables");
       return NextResponse.json(
-        { error: "OpenAI API key not configured" },
+        { error: "OpenAI API key not configured. Please check your environment variables." },
+        { status: 500 }
+      );
+    }
+
+    // Validate API key format
+    if (!process.env.OPENAI_API_KEY.startsWith('sk-')) {
+      console.error("❌ Invalid OpenAI API key format");
+      return NextResponse.json(
+        { error: "Invalid OpenAI API key format. Please check your configuration." },
         { status: 500 }
       );
     }
@@ -421,13 +431,26 @@ Keep responses conversational and natural. Use plain text only - no emojis, hash
       response: enhancedResponse,
       originalResponse: aiResponse
     });
-  } catch (error) {
-    console.error("Error in conversation:", error);
-    return NextResponse.json(
-      { error: "Failed to get response from Rigo. Please try again." },
-      { status: 500 }
-    );
-  }
+      } catch (error) {
+      console.error("❌ Error in conversation:", error);
+      
+      // Provide fallback response when API fails
+      const fallbackResponse = `I understand you're asking about "${userInput}". While I'm experiencing some technical difficulties with my AI service right now, I'd be happy to help you with some general guidance about cultural tourism marketing.
+
+Here are some tips for creating engaging content:
+- Focus on authentic cultural experiences
+- Use vivid, descriptive language
+- Include local traditions and customs
+- Highlight what makes the experience unique
+- Add a clear call to action
+
+Would you like me to help you craft specific content once the service is restored?`;
+      
+      return NextResponse.json({ 
+        response: fallbackResponse,
+        note: "Using fallback response due to API issues"
+      });
+    }
 }
 
 async function handleContentGeneration(userInput: string, conversationHistory: any[], attachments: any[]) {

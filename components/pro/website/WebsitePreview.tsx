@@ -69,6 +69,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   // Load user's website data
   useEffect(() => {
     let isMounted = true;
+    let loadingTimeout: NodeJS.Timeout;
 
     const loadWebsiteData = async () => {
       if (!user?.id) {
@@ -82,18 +83,33 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
         if (isMounted) {
           setLoading(true);
         }
+        
+        // Set a timeout to prevent infinite loading
+        loadingTimeout = setTimeout(() => {
+          if (isMounted && loading) {
+            console.warn("Website data loading timeout - forcing loading to false");
+            setLoading(false);
+            toast.error("Loading timeout - please refresh the page");
+          }
+        }, 10000); // 10 second timeout
+
         const data = await userWebsiteService.getUserWebsiteData(user.id);
 
         if (isMounted) {
           setWebsiteData(data);
-          setCurrentItineraries(data.itineraries);
+          setCurrentItineraries(data.itineraries || []);
           setLoading(false);
+          console.log("✅ Website data loaded successfully:", data);
         }
       } catch (error) {
-        console.error("Error loading website data:", error);
+        console.error("❌ Error loading website data:", error);
         if (isMounted) {
           toast.error("Failed to load website data");
           setLoading(false);
+        }
+      } finally {
+        if (loadingTimeout) {
+          clearTimeout(loadingTimeout);
         }
       }
     };
@@ -103,6 +119,9 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     // Cleanup function to prevent state updates on unmounted component
     return () => {
       isMounted = false;
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+      }
     };
   }, [user?.id, externalRefreshKey]);
 
@@ -311,13 +330,21 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
           >
             <div className="h-full overflow-auto">
               <div className="p-0 bg-white h-full overflow-auto">
-                {loading ? (
+                {loading || isLoading ? (
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
                       <p className="text-sm text-gray-600">
-                        Loading your website and itineraries...
+                        {isLoading ? "Loading your website and itineraries..." : "Loading website data..."}
                       </p>
+                      {loading && !isLoading && (
+                        <button 
+                          onClick={() => window.location.reload()} 
+                          className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
+                        >
+                          Refresh if stuck
+                        </button>
+                      )}
                     </div>
                   </div>
                 ) : (
