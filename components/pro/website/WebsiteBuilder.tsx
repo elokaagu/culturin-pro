@@ -247,6 +247,17 @@ const WebsiteBuilder: React.FC = () => {
     setIsUndoRedoAction(false);
   }, [autoSaveEnabled]);
 
+  // Auto-save when itineraries or website data changes
+  useEffect(() => {
+    if (autoSaveEnabled && hasUnsavedChanges && !isUndoRedoAction) {
+      const timeoutId = setTimeout(() => {
+        handleAutoSave();
+      }, 3000); // Auto-save after 3 seconds of changes
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [itineraries, publishedUrl, autoSaveEnabled, hasUnsavedChanges, isUndoRedoAction]);
+
   // Listen for website settings changes
   useEffect(() => {
     const handleSettingsChange = (event: CustomEvent) => {
@@ -412,17 +423,57 @@ const WebsiteBuilder: React.FC = () => {
 
       // Note: User data is now handled by Supabase storage
 
+      // Get current website settings from localStorage or use defaults
+      const websiteContentStr = localStorage.getItem("publishedWebsiteContent");
+      const websiteDataStr = localStorage.getItem(`websiteData_${user.id}`);
+      
+      let currentSettings = {
+        companyName: "Your Tour Company",
+        tagline: "Discover amazing cultural experiences",
+        description: "We specialize in authentic cultural tours",
+        primaryColor: "#3B82F6",
+        theme: "classic",
+        enableBooking: true,
+      };
+
+      // Apply customizations from WebsiteContent component
+      if (websiteContentStr) {
+        try {
+          const websiteContent = JSON.parse(websiteContentStr);
+          currentSettings = { ...currentSettings, ...websiteContent };
+        } catch (e) {
+          console.error("Error parsing website content:", e);
+        }
+      }
+
+      // Apply any builder-specific settings
+      if (websiteDataStr) {
+        try {
+          const websiteData = JSON.parse(websiteDataStr);
+          if (websiteData.settings) {
+            currentSettings = { ...currentSettings, ...websiteData.settings };
+          }
+        } catch (e) {
+          console.error("Error parsing website data:", e);
+        }
+      }
+
+      // Get saved blocks from localStorage
+      const savedBlocks = localStorage.getItem(`websiteBlocks_${user.id}`);
+      let blocks = [];
+      if (savedBlocks) {
+        try {
+          blocks = JSON.parse(savedBlocks);
+        } catch (e) {
+          console.error("Error parsing saved blocks:", e);
+        }
+      }
+
       // Save website data to Supabase for authenticated users
       const websiteData = {
-        settings: {
-          companyName: "Your Tour Company",
-          tagline: "Discover amazing cultural experiences",
-          description: "We specialize in authentic cultural tours",
-          primaryColor: "#3B82F6",
-          theme: "classic",
-          enableBooking: true,
-        },
+        settings: currentSettings,
         itineraries: itineraries.slice(0, 5), // Limit to 5 itineraries
+        blocks: blocks, // Include block data
         publishedUrl: publishedUrl,
         lastModified: new Date().toISOString(),
       };
@@ -455,6 +506,21 @@ const WebsiteBuilder: React.FC = () => {
       setSaveLoading(false);
     }
   }, [itineraries, publishedUrl, autoSaveEnabled, isLoggedIn, user]);
+
+  // Function to mark changes and trigger auto-save
+  const markChanges = useCallback(() => {
+    setHasUnsavedChanges(true);
+    setSaveStatus("saving");
+    
+    // Trigger auto-save if enabled
+    if (autoSaveEnabled) {
+      const timeoutId = setTimeout(() => {
+        handleAutoSave();
+      }, 2000);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [autoSaveEnabled]);
 
   // Enhanced manual save function with authentication
   const handleManualSave = useCallback(async () => {
@@ -535,12 +601,24 @@ const WebsiteBuilder: React.FC = () => {
         setLastSaved(new Date());
         setSaveStatus("saved");
 
+        // Get saved blocks from localStorage
+        const savedBlocks = localStorage.getItem(`websiteBlocks_${user.id}`);
+        let blocks = [];
+        if (savedBlocks) {
+          try {
+            blocks = JSON.parse(savedBlocks);
+          } catch (e) {
+            console.error("Error parsing saved blocks:", e);
+          }
+        }
+
         // Update localStorage with consistent data
         localStorage.setItem(
           `websiteData_${user.id}`,
           JSON.stringify({
             settings: updatedSettings,
             itineraries: itineraries.slice(0, 10), // Save current itineraries
+            blocks: blocks, // Include block data
             publishedUrl: publishedUrl,
             lastSaved: new Date().toISOString(),
           })
@@ -562,6 +640,12 @@ const WebsiteBuilder: React.FC = () => {
       setSaveLoading(false);
     }
   }, [user?.id, itineraries, publishedUrl]);
+
+  // Handle block changes in the website builder
+  const handleBlockChange = useCallback(() => {
+    markChanges();
+    setPreviewKey((prev) => prev + 1);
+  }, [markChanges]);
 
   // Export website data
   const handleExportWebsite = useCallback(() => {
@@ -1402,7 +1486,7 @@ const WebsiteBuilder: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex-1 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <DragDropBuilder />
+                  <DragDropBuilder onBlockChange={handleBlockChange} />
                 </div>
               </div>
             </div>

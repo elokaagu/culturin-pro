@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -315,7 +315,11 @@ const buildingBlocks: BuildingBlock[] = [
 // Categories for organization
 const categories = ["Layout", "Content", "Interactive"];
 
-export default function DragDropBuilder() {
+interface DragDropBuilderProps {
+  onBlockChange?: () => void;
+}
+
+export default function DragDropBuilder({ onBlockChange }: DragDropBuilderProps) {
   const { toast } = useToast();
   const { userData, updateUserData } = useUserData();
 
@@ -325,6 +329,28 @@ export default function DragDropBuilder() {
   const [dragOver, setDragOver] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [editingBlock, setEditingBlock] = useState<PlacedBlock | null>(null);
+
+  // Load saved blocks from localStorage on mount
+  useEffect(() => {
+    if (userData?.id) {
+      const savedBlocks = localStorage.getItem(`websiteBlocks_${userData.id}`);
+      if (savedBlocks) {
+        try {
+          const parsed = JSON.parse(savedBlocks);
+          setPlacedBlocks(parsed);
+        } catch (e) {
+          console.error("Error loading saved blocks:", e);
+        }
+      }
+    }
+  }, [userData?.id]);
+
+  // Save blocks to localStorage whenever they change
+  useEffect(() => {
+    if (userData?.id && placedBlocks.length > 0) {
+      localStorage.setItem(`websiteBlocks_${userData.id}`, JSON.stringify(placedBlocks));
+    }
+  }, [placedBlocks, userData?.id]);
 
   // Handle drag start
   const handleDragStart = useCallback(
@@ -372,6 +398,9 @@ export default function DragDropBuilder() {
         const updatedBlocks = [...placedBlocks, newBlock];
         setPlacedBlocks(updatedBlocks);
 
+        // Notify parent component of changes
+        onBlockChange?.();
+
         // Update user data
         // Note: Website settings would be saved to a separate service in the new structure
 
@@ -391,6 +420,9 @@ export default function DragDropBuilder() {
         (block) => block.id !== blockId
       );
       setPlacedBlocks(updatedBlocks);
+
+      // Notify parent component of changes
+      onBlockChange?.();
 
       // Note: Website settings would be saved to a separate service in the new structure
 
@@ -413,6 +445,9 @@ export default function DragDropBuilder() {
 
       const updatedBlocks = [...placedBlocks, newBlock];
       setPlacedBlocks(updatedBlocks);
+
+      // Notify parent component of changes
+      onBlockChange?.();
 
       // Note: Website settings would be saved to a separate service in the new structure
 
@@ -437,6 +472,9 @@ export default function DragDropBuilder() {
         block.id === updatedBlock.id ? updatedBlock : block
       );
       setPlacedBlocks(updatedBlocks);
+
+      // Notify parent component of changes
+      onBlockChange?.();
 
       // Note: Website settings would be saved to a separate service in the new structure
     },
