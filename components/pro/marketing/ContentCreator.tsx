@@ -1964,9 +1964,14 @@ Description 2: ${data.content.description2 || ""}`;
               {/* Main Input */}
               <Input
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => {
+                  console.log("Input changed:", e.target.value);
+                  setInputValue(e.target.value);
+                }}
                 onKeyPress={(e) => {
+                  console.log("Key pressed:", e.key, "Input value:", inputValue);
                   if (e.key === "Enter" && inputValue.trim()) {
+                    console.log("Submitting input:", inputValue);
                     handleUserInput(inputValue);
                   }
                 }}
@@ -1983,6 +1988,20 @@ Description 2: ${data.content.description2 || ""}`;
                 >
                   <Mic className="h-4 w-4 text-muted-foreground" />
                 </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    console.log("Submit button clicked, input value:", inputValue);
+                    if (inputValue.trim()) {
+                      handleUserInput(inputValue);
+                    }
+                  }}
+                  disabled={!inputValue.trim()}
+                  className="h-8 w-8 p-0 hover:bg-muted"
+                >
+                  <Send className="h-4 w-4 text-muted-foreground" />
+                </Button>
                 <div className="flex items-center gap-1">
                   <div className="w-1 h-3 bg-muted-foreground rounded-full"></div>
                   <div className="w-1 h-5 bg-muted-foreground rounded-full"></div>
@@ -1997,7 +2016,10 @@ Description 2: ${data.content.description2 || ""}`;
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleStartChat("scratch", "Start from scratch")}
+              onClick={() => {
+                console.log("New Project button clicked");
+                handleStartChat("scratch", "Start from scratch");
+              }}
               disabled={isCreatingProject}
               className="h-10 text-xs"
             >
@@ -2006,7 +2028,10 @@ Description 2: ${data.content.description2 || ""}`;
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setShowUploadMenu(true)}
+              onClick={() => {
+                console.log("Upload Files button clicked");
+                setShowUploadMenu(true);
+              }}
               className="h-10 text-xs"
             >
               Upload Files
