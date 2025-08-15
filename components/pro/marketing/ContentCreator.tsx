@@ -1104,12 +1104,27 @@ Description 2: ${data.content.description2 || ""}`;
     setCurrentProject(null);
   };
 
+  const resetStuckStates = () => {
+    console.log("Resetting stuck states");
+    setIsCreatingProject(false);
+    setIsGenerating(false);
+    toast.info("States reset - try again");
+  };
+
   const handleStartChat = async (
     projectType?: string,
     projectTitle?: string
   ) => {
+    console.log("Starting handleStartChat with:", { projectType, projectTitle });
+    setIsCreatingProject(true);
+    
+    // Add a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.warn("handleStartChat timeout - forcing isCreatingProject to false");
+      setIsCreatingProject(false);
+    }, 10000); // 10 second timeout
+    
     try {
-      setIsCreatingProject(true);
 
       // Check if user is authenticated
       if (!user) {
@@ -1182,7 +1197,9 @@ Description 2: ${data.content.description2 || ""}`;
         "Failed to start chat. Please check your connection and try again."
       );
     } finally {
+      clearTimeout(timeoutId);
       setIsCreatingProject(false);
+      console.log("handleStartChat completed, isCreatingProject set to false");
     }
   };
 
@@ -2033,14 +2050,18 @@ Description 2: ${data.content.description2 || ""}`;
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                    {/* Quick Actions */}
+          <div className="grid grid-cols-3 gap-3 max-w-md mx-auto">
             <Button
               variant="outline"
               size="sm"
               onClick={() => {
                 console.log("New Project button clicked");
-                handleStartChat("scratch", "Start from scratch");
+                if (!isCreatingProject) {
+                  handleStartChat("scratch", "Start from scratch");
+                } else {
+                  console.log("Already creating project, ignoring click");
+                }
               }}
               disabled={isCreatingProject}
               className="h-10 text-xs"
@@ -2057,6 +2078,14 @@ Description 2: ${data.content.description2 || ""}`;
               className="h-10 text-xs"
             >
               Upload Files
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetStuckStates}
+              className="h-10 text-xs text-orange-600 hover:text-orange-700"
+            >
+              Reset
             </Button>
           </div>
 
