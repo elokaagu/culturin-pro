@@ -16,6 +16,27 @@ export function useMarketingProjects() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Load all projects for the current user
+  const loadProjects = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      const userProjects = await marketingProjectService.getProjects();
+      
+      // Check if component is still mounted before updating state
+      if (userProjects !== null) {
+        setProjects(userProjects);
+      }
+    } catch (err) {
+      setError("Failed to load projects");
+      console.error("Error loading projects:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
   // Load projects on mount and when user changes
   useEffect(() => {
     let isMounted = true;
@@ -43,28 +64,7 @@ export function useMarketingProjects() {
       isMounted = false;
       clearTimeout(loadingTimeout);
     };
-  }, [user, loading]);
-
-  // Load all projects for the current user
-  const loadProjects = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-      const userProjects = await marketingProjectService.getProjects();
-      
-      // Check if component is still mounted before updating state
-      if (userProjects !== null) {
-        setProjects(userProjects);
-      }
-    } catch (err) {
-      setError("Failed to load projects");
-      console.error("Error loading projects:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+  }, [user, loadProjects]);
 
   // Create a new project
   const createProject = useCallback(
