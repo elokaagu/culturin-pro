@@ -307,8 +307,15 @@ const ContentCreator: React.FC = () => {
 
   // Function to format AI responses with proper paragraphs and tool recommendations
   const formatAIResponse = (
-    content: string
+    content: any
   ): { formattedContent: string; toolRecommendations: string[] } => {
+    // Ensure content is a string
+    if (typeof content !== 'string') {
+      console.warn('formatAIResponse received non-string content:', content);
+      const stringContent = String(content || '');
+      return { formattedContent: stringContent, toolRecommendations: [] };
+    }
+
     // Split content by double line breaks to identify paragraphs
     const paragraphs = content.split(/\n\s*\n/);
 
@@ -1330,7 +1337,7 @@ Description 2: ${data.content.description2 || ""}`;
                                   <>
                                     {/* Display formatted content with paragraphs */}
                                     <div className="whitespace-pre-wrap">
-                                      {formattedContent
+                                      {typeof formattedContent === 'string' && formattedContent
                                         .split("\n")
                                         .map((paragraph, index) =>
                                           paragraph.trim() ? (
