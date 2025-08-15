@@ -263,7 +263,11 @@ const ContentCreator: React.FC = () => {
         });
       } catch (error) {
         console.error("Error saving bot message to database:", error);
+        // Don't let database errors break the UI
+        toast.warning("Message saved locally but couldn't sync to database");
       }
+    } else {
+      console.log("No current project or user, bot message saved locally only");
     }
   };
 
@@ -293,7 +297,11 @@ const ContentCreator: React.FC = () => {
         });
       } catch (error) {
         console.error("Error saving user message to database:", error);
+        // Don't let database errors break the UI
+        toast.warning("Message saved locally but couldn't sync to database");
       }
+    } else {
+      console.log("No current project or user, message saved locally only");
     }
   };
 
@@ -736,13 +744,16 @@ const ContentCreator: React.FC = () => {
         if (newProject) {
           setCurrentProject(newProject.id);
           console.log("Project created successfully:", newProject.id);
+          toast.success("New project created for this conversation");
         } else {
           console.log("Project creation failed, continuing without project");
+          toast.warning("Project creation failed, but continuing with chat");
           // Continue without a project - we'll still process the input
         }
       } catch (error) {
         console.error("Error creating project:", error);
         console.log("Continuing without project due to error");
+        toast.warning("Project creation failed, but continuing with chat");
         // Continue without a project - we'll still process the input
       }
     }
@@ -835,8 +846,13 @@ const ContentCreator: React.FC = () => {
       // Remove thinking message on error
       setMessages((prev) => prev.filter((msg) => msg.id !== thinkingMessageId));
       
-      // Add error message
-      addBotMessage("I apologize, but I'm having trouble processing your request right now. Please try again.");
+      // Add error message with more helpful information
+      const errorMessage = error instanceof Error 
+        ? `I apologize, but I'm having trouble processing your request: ${error.message}. Please try again.`
+        : "I apologize, but I'm having trouble processing your request right now. Please try again.";
+      
+      addBotMessage(errorMessage);
+      toast.error("Failed to get AI response. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -2016,6 +2032,7 @@ Description 2: ${data.content.description2 || ""}`;
                 placeholder="Ask anything..."
                 className="h-14 pl-14 pr-20 text-base bg-card border-2 border-border hover:border-primary focus:border-primary transition-colors"
                 disabled={false} // Never disable the input
+                autoFocus // Add auto-focus to make it clear the input is active
               />
 
               {/* Right Side Icons */}
@@ -2051,7 +2068,7 @@ Description 2: ${data.content.description2 || ""}`;
           </div>
 
                     {/* Quick Actions */}
-          <div className="grid grid-cols-3 gap-3 max-w-md mx-auto">
+          <div className="grid grid-cols-4 gap-3 max-w-md mx-auto">
             <Button
               variant="outline"
               size="sm"
@@ -2086,6 +2103,20 @@ Description 2: ${data.content.description2 || ""}`;
               className="h-10 text-xs text-orange-600 hover:text-orange-700"
             >
               Reset
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                console.log("Test button clicked");
+                const testInput = "This is a test message";
+                setInputValue(testInput);
+                console.log("Input value set to:", testInput);
+                toast.info("Test input set. Press Enter to submit.");
+              }}
+              className="h-10 text-xs text-blue-600 hover:text-blue-700"
+            >
+              Test
             </Button>
           </div>
 

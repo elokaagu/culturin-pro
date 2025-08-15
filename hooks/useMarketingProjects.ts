@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "@/src/components/auth/AuthProvider";
+import { useAuth } from "@/hooks/useAuth";
 import {
   marketingProjectService,
   MarketingProject,
