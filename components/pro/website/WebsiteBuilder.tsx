@@ -52,7 +52,7 @@ import { settingsService } from "@/lib/settings-service";
 import { itineraryService } from "@/lib/itinerary-service";
 import { supabase } from "@/lib/supabase";
 import { supabaseStorage } from "@/lib/supabase-storage";
-import { useAuth } from "@/src/components/auth/AuthProvider";
+import { useAuth } from "@/hooks/useAuth";
 
 // History management for undo/redo functionality
 interface HistoryState {
@@ -412,6 +412,7 @@ const WebsiteBuilder: React.FC = () => {
 
   // Enhanced auto-save function with authentication
   const handleAutoSave = useCallback(async () => {
+    console.log("🔄 Auto-save triggered for user:", user?.email);
     try {
       setSaveLoading(true);
 
@@ -479,17 +480,44 @@ const WebsiteBuilder: React.FC = () => {
       };
 
       try {
-        // Save to Supabase user_settings table
-        const { error } = await supabase.from("user_settings").upsert({
+        // Save to Supabase user_website_settings table
+        const { error } = await supabase.from("user_website_settings").upsert({
           user_id: user.id,
-          website_settings: websiteData,
+          company_name: currentSettings.companyName || "Your Tour Company",
+          tagline: currentSettings.tagline || "Discover amazing cultural experiences",
+          description: currentSettings.description || "We specialize in authentic cultural tours",
+          contact_info: {
+            phone: "",
+            email: user.email || "",
+            address: "",
+          },
+          social_media: {},
+          branding: {
+            primary_color: currentSettings.primaryColor || "#3B82F6",
+            theme: currentSettings.theme || "classic",
+          },
+          website_settings: {
+            show_booking: true,
+            show_reviews: true,
+            show_testimonials: true,
+            currency: "USD",
+            language: "en",
+            timezone: "UTC",
+          },
+          seo_settings: {
+            keywords: ["cultural tours", "authentic experiences", "travel"],
+          },
+          published_url: publishedUrl,
+          is_published: false,
           updated_at: new Date().toISOString(),
         });
 
         if (error) {
+          console.error("❌ Supabase save error:", error);
           throw new Error(`Supabase save failed: ${error.message}`);
         }
 
+        console.log("✅ Auto-save successful for user:", user.email);
         setLastSaved(new Date());
         setHasUnsavedChanges(false);
         setSaveStatus("saved");
@@ -515,15 +543,19 @@ const WebsiteBuilder: React.FC = () => {
     // Trigger auto-save if enabled
     if (autoSaveEnabled) {
       const timeoutId = setTimeout(() => {
-        handleAutoSave();
+        // Call handleAutoSave directly to avoid circular dependency
+        if (user?.id && isLoggedIn) {
+          handleAutoSave();
+        }
       }, 2000);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [autoSaveEnabled]);
+  }, [autoSaveEnabled, user?.id, isLoggedIn]);
 
   // Enhanced manual save function with authentication
   const handleManualSave = useCallback(async () => {
+    console.log("💾 Manual save triggered for user:", user?.email);
     if (!user?.id) {
       toast.error("Please log in to save your website");
       return;
@@ -627,7 +659,25 @@ const WebsiteBuilder: React.FC = () => {
         // Force preview refresh
         setPreviewKey((prev) => prev + 1);
       } else {
-        throw new Error("Failed to save to database");
+        console.log("⚠️ Database save failed, falling back to localStorage");
+        // Fallback to localStorage
+        localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
+          settings: updatedSettings,
+          itineraries: itineraries.slice(0, 10),
+          blocks: [],
+          publishedUrl: publishedUrl,
+          lastSaved: new Date().toISOString(),
+        }));
+        
+        toast.success("Website saved locally!", {
+          description: "Data saved to browser storage (database unavailable)",
+        });
+        
+        setHasUnsavedChanges(false);
+        setLastSaved(new Date());
+        setSaveStatus("saved");
+        setPreviewKey((prev) => prev + 1);
+        return; // Don't throw error, just return
       }
     } catch (error) {
       console.error("Save error:", error);
