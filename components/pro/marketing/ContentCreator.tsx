@@ -720,28 +720,30 @@ const ContentCreator: React.FC = () => {
   const handleUserInput = async (input: string) => {
     if (!input.trim()) return;
 
-    // Check if we have a current project, if not, create one first
-    if (!currentProject) {
-      console.log("No current project, creating one first...");
-      const projectData = {
-        title: `Chat about: ${input.substring(0, 50)}...`,
-        type: "scratch" as const,
-        platform: "general" as any,
-      };
+    console.log("Handling user input:", input);
 
+    // Try to create a project, but don't fail if it doesn't work
+    if (!currentProject) {
+      console.log("No current project, attempting to create one...");
       try {
+        const projectData = {
+          title: `Chat about: ${input.substring(0, 50)}...`,
+          type: "scratch" as const,
+          platform: "general" as any,
+        };
+
         const newProject = await createProject(projectData);
         if (newProject) {
           setCurrentProject(newProject.id);
           console.log("Project created successfully:", newProject.id);
         } else {
-          toast.error("Failed to create project. Please try again.");
-          return;
+          console.log("Project creation failed, continuing without project");
+          // Continue without a project - we'll still process the input
         }
       } catch (error) {
         console.error("Error creating project:", error);
-        toast.error("Failed to create project. Please try again.");
-        return;
+        console.log("Continuing without project due to error");
+        // Continue without a project - we'll still process the input
       }
     }
 
@@ -763,7 +765,16 @@ const ContentCreator: React.FC = () => {
 
     // Get AI response - use current messages array
     const currentMessages = messages || [];
-    const aiResponse = await callOpenAI(input, currentMessages);
+    
+    // Add a timeout to prevent infinite loading
+    const responseTimeout = setTimeout(() => {
+      console.log("AI response timeout - resetting generating state");
+      setIsGenerating(false);
+    }, 30000); // 30 second timeout
+    
+    try {
+      const aiResponse = await callOpenAI(input, currentMessages);
+      clearTimeout(responseTimeout);
 
     // Remove thinking message and add real response
     setMessages((prev) => prev.filter((msg) => msg.id !== thinkingMessageId));
@@ -818,6 +829,16 @@ const ContentCreator: React.FC = () => {
           playAudio(audioUrl);
         }
       }
+    }
+    } catch (error) {
+      console.error("Error in handleUserInput:", error);
+      // Remove thinking message on error
+      setMessages((prev) => prev.filter((msg) => msg.id !== thinkingMessageId));
+      
+      // Add error message
+      addBotMessage("I apologize, but I'm having trouble processing your request right now. Please try again.");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -1977,6 +1998,7 @@ Description 2: ${data.content.description2 || ""}`;
                 }}
                 placeholder="Ask anything..."
                 className="h-14 pl-14 pr-20 text-base bg-card border-2 border-border hover:border-primary focus:border-primary transition-colors"
+                disabled={false} // Never disable the input
               />
 
               {/* Right Side Icons */}

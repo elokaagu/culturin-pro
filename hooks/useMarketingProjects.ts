@@ -29,9 +29,9 @@ export function useMarketingProjects() {
         if (isMounted && loading) {
           console.warn("Projects loading timeout - forcing loading to false");
           setLoading(false);
-          setError("Loading timeout - please refresh the page");
+          setError(null); // Don't show error, just stop loading
         }
-      }, 8000); // 8 second timeout
+      }, 5000); // Reduced to 5 second timeout
     } else {
       if (isMounted) {
         setProjects([]);

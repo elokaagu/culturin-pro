@@ -147,7 +147,7 @@ export const useAuth = () => {
           isReady: true,
         }));
       }
-    }, 5000); // 5 second timeout
+    }, 3000); // Reduced to 3 second timeout
 
     initAuth().finally(() => {
       clearTimeout(timeoutId);
