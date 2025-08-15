@@ -1127,12 +1127,7 @@ Description 2: ${data.content.description2 || ""}`;
     setCurrentProject(null);
   };
 
-  const resetStuckStates = () => {
-    console.log("Resetting stuck states");
-    setIsCreatingProject(false);
-    setIsGenerating(false);
-    toast.info("States reset - try again");
-  };
+
 
   const handleStartChat = async (
     projectType?: string,
@@ -2075,7 +2070,7 @@ Description 2: ${data.content.description2 || ""}`;
           </div>
 
                     {/* Quick Actions */}
-          <div className="grid grid-cols-4 gap-3 max-w-md mx-auto">
+          <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
             <Button
               variant="outline"
               size="sm"
@@ -2102,28 +2097,6 @@ Description 2: ${data.content.description2 || ""}`;
               className="h-10 text-xs"
             >
               Upload Files
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={resetStuckStates}
-              className="h-10 text-xs text-orange-600 hover:text-orange-700"
-            >
-              Reset
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                console.log("Test button clicked");
-                const testInput = "This is a test message";
-                setInputValue(testInput);
-                console.log("Input value set to:", testInput);
-                toast.info("Test input set. Press Enter to submit.");
-              }}
-              className="h-10 text-xs text-blue-600 hover:text-blue-700"
-            >
-              Test
             </Button>
           </div>
 
@@ -2161,7 +2134,7 @@ Description 2: ${data.content.description2 || ""}`;
                         e.stopPropagation();
                         handleDeleteProject(project.id);
                       }}
-                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:text-red-600"
+                      className="h-6 w-6 p-0 hover:bg-red-50 hover:text-red-600 text-red-500"
                       title="Delete project"
                     >
                       <X className="h-3 w-3" />
@@ -2258,6 +2231,77 @@ Description 2: ${data.content.description2 || ""}`;
                   )}
                 </Button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View All Projects Modal */}
+      {showAllProjects && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-hidden">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  All Projects ({filteredProjects.length})
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAllProjects(false)}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              <div className="space-y-3">
+                {filteredProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="flex items-center gap-3 p-4 bg-card border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer group"
+                    onClick={() => {
+                      handleStartChat(project.type, project.title);
+                      setShowAllProjects(false);
+                    }}
+                  >
+                    <div className="w-10 h-10 bg-muted rounded flex items-center justify-center">
+                      {getPlatformIcon(project.platform)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-medium text-foreground truncate">
+                        {project.title}
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(project.last_accessed).toLocaleDateString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Type: {project.type} • Platform: {project.platform || 'General'}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteProject(project.id);
+                      }}
+                      className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 text-red-500"
+                      title="Delete project"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              
+              {filteredProjects.length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">No projects found</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
