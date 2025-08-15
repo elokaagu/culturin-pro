@@ -48,7 +48,7 @@ import ContentCanvas from "./ContentCanvas";
 import FlyerCanvas from "./FlyerCanvas";
 import { toast } from "sonner";
 import { useMarketingProjects } from "@/hooks/useMarketingProjects";
-import { useAuth } from "@/src/components/auth/AuthProvider";
+import { useAuth } from "@/hooks/useAuth";
 import { StudioSettings } from "./StudioSettings";
 import { LoadingStateManager } from "@/components/ui/LoadingStateManager";
 

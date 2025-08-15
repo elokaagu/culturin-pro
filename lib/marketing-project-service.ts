@@ -66,6 +66,7 @@ class MarketingProjectService {
       const { data: projects, error } = await supabase
         .from("marketing_projects")
         .select("*")
+        .eq("user_id", user.id)
         .eq("status", "active")
         .order("last_accessed", { ascending: false });
 
@@ -84,10 +85,19 @@ class MarketingProjectService {
   // Get a specific project by ID
   async getProject(id: string): Promise<MarketingProject | null> {
     try {
+      // Get current user for filtering
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.log("User not authenticated, returning null");
+        return null;
+      }
+
       const { data: project, error } = await supabase
         .from("marketing_projects")
         .select("*")
         .eq("id", id)
+        .eq("user_id", user.id)
         .single();
 
       if (error) {
@@ -150,10 +160,32 @@ class MarketingProjectService {
     updates: Partial<MarketingProject>
   ): Promise<MarketingProject | null> {
     try {
+      // Get current user for verification
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.error("User not authenticated");
+        throw new Error("User not authenticated");
+      }
+
+      // Verify the project belongs to the user
+      const { data: existingProject, error: projectError } = await supabase
+        .from("marketing_projects")
+        .select("user_id")
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .single();
+
+      if (projectError || !existingProject) {
+        console.error("Project not found or access denied");
+        throw new Error("Project not found or access denied");
+      }
+
       const { data: project, error } = await supabase
         .from("marketing_projects")
         .update(updates)
         .eq("id", id)
+        .eq("user_id", user.id)
         .select()
         .single();
 
@@ -172,10 +204,32 @@ class MarketingProjectService {
   // Delete a project (soft delete by setting status to deleted)
   async deleteProject(id: string): Promise<boolean> {
     try {
+      // Get current user for verification
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.error("User not authenticated");
+        throw new Error("User not authenticated");
+      }
+
+      // Verify the project belongs to the user
+      const { data: existingProject, error: projectError } = await supabase
+        .from("marketing_projects")
+        .select("user_id")
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .single();
+
+      if (projectError || !existingProject) {
+        console.error("Project not found or access denied");
+        throw new Error("Project not found or access denied");
+      }
+
       const { error } = await supabase
         .from("marketing_projects")
         .update({ status: "deleted" })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user.id);
 
       if (error) {
         console.error("Error deleting project:", error);
@@ -194,6 +248,27 @@ class MarketingProjectService {
     projectId: string
   ): Promise<MarketingConversation[]> {
     try {
+      // Get current user for filtering
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.log("User not authenticated, returning empty conversations");
+        return [];
+      }
+
+      // First verify the project belongs to the user
+      const { data: project, error: projectError } = await supabase
+        .from("marketing_projects")
+        .select("user_id")
+        .eq("id", projectId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (projectError || !project) {
+        console.log("Project not found or access denied");
+        return [];
+      }
+
       const { data: conversations, error } = await supabase
         .from("marketing_conversations")
         .select("*")
@@ -217,6 +292,27 @@ class MarketingProjectService {
     conversationData: CreateConversationData
   ): Promise<MarketingConversation | null> {
     try {
+      // Get current user for verification
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.error("User not authenticated");
+        throw new Error("User not authenticated");
+      }
+
+      // Verify the project belongs to the user
+      const { data: project, error: projectError } = await supabase
+        .from("marketing_projects")
+        .select("user_id")
+        .eq("id", conversationData.project_id)
+        .eq("user_id", user.id)
+        .single();
+
+      if (projectError || !project) {
+        console.error("Project not found or access denied");
+        throw new Error("Project not found or access denied");
+      }
+
       // Get the next sequence order for this project
       const { data: lastMessage } = await supabase
         .from("marketing_conversations")
@@ -257,9 +353,18 @@ class MarketingProjectService {
   // Search projects by title or type
   async searchProjects(query: string): Promise<MarketingProject[]> {
     try {
+      // Get current user for filtering
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.log("User not authenticated, returning empty search results");
+        return [];
+      }
+
       const { data: projects, error } = await supabase
         .from("marketing_projects")
         .select("*")
+        .eq("user_id", user.id)
         .eq("status", "active")
         .or(`title.ilike.%${query}%,type.ilike.%${query}%`)
         .order("last_accessed", { ascending: false });
@@ -282,9 +387,18 @@ class MarketingProjectService {
     byType: Record<string, number>;
   }> {
     try {
+      // Get current user for filtering
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.log("User not authenticated, returning empty stats");
+        return { total: 0, byType: {} };
+      }
+
       const { data: projects, error } = await supabase
         .from("marketing_projects")
         .select("type")
+        .eq("user_id", user.id)
         .eq("status", "active");
 
       if (error) {
