@@ -794,7 +794,7 @@ const ContentCreator: React.FC = () => {
       const aiResponse = await callOpenAI(input, currentMessages);
       clearTimeout(responseTimeout);
 
-    // Remove thinking message and add real response
+      // Remove thinking message and add real response
     setMessages((prev) => prev.filter((msg) => msg.id !== thinkingMessageId));
 
     if (aiResponse.generatedImage && !aiResponse.flyerDesign) {

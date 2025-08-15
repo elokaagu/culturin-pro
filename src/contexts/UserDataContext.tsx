@@ -121,13 +121,20 @@ export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) 
         console.warn("User data loading timeout - forcing loading to false");
         setIsLoading(false);
       }
-    }, 10000); // 10 second timeout
+    }, 5000); // Reduced to 5 second timeout
 
-    loadUserData();
+    loadUserData().finally(() => {
+      // Clear timeout when data loading completes (success or failure)
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+      }
+    });
 
     return () => {
       isMounted = false;
-      clearTimeout(loadingTimeout);
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+      }
     };
   }, [user, isLoggedIn]);
 
