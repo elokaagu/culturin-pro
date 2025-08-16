@@ -201,8 +201,10 @@ const WebsiteBuilder: React.FC = () => {
       setPublishLoading(true);
 
       // Generate unique URL for the user's website
+      const companyName = userData?.settings?.company_name || "culturin";
+      const sanitizedCompanyName = companyName.toLowerCase().replace(/[^a-z0-9]/g, '-');
       const uniqueId = user.id.slice(0, 8);
-      const newPublishedUrl = `https://culturin-pro.vercel.app/tour/${uniqueId}`;
+      const newPublishedUrl = `https://culturin-pro.vercel.app/tour/${sanitizedCompanyName}-${uniqueId}`;
 
       // Update website settings with published URL
       if (userData?.settings) {

@@ -23,7 +23,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { ExperienceType } from "@/data/experienceData";
 import { Experience } from "@/lib/experience-service";
 import { toast } from "sonner";
 import { useUserData } from "../../../src/contexts/UserDataContext";
@@ -32,7 +31,7 @@ import {
   UserWebsiteData,
   UserWebsiteSettings,
 } from "./UserWebsiteService";
-import { useAuth } from "@/src/components/auth/AuthProvider";
+import { useAuth } from "@/hooks/useAuth";
 
 interface WebsitePreviewProps {
   experiences?: Experience[];
@@ -59,8 +58,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     externalViewMode || "desktop"
   );
   const [refreshKey, setRefreshKey] = useState(0);
-  const [currentItineraries, setCurrentItineraries] =
-    useState<Experience[]>(experiences);
+  const [currentExperiences, setCurrentExperiences] = useState<Experience[]>(experiences);
   const [websiteData, setWebsiteData] = useState<UserWebsiteData | null>(null);
   const [loading, setLoading] = useState(true);
   const { userData } = useUserData();
@@ -97,107 +95,30 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
 
         if (isMounted) {
           setWebsiteData(data);
-          setCurrentItineraries(data.experiences || []);
+          setCurrentExperiences(data.experiences || []);
           setLoading(false);
-          console.log("✅ Website data loaded successfully:", data);
         }
       } catch (error) {
-        console.error("❌ Error loading website data:", error);
+        console.error("Error loading website data:", error);
         if (isMounted) {
-          toast.error("Failed to load website data");
           setLoading(false);
-        }
-      } finally {
-        if (loadingTimeout) {
-          clearTimeout(loadingTimeout);
         }
       }
     };
 
     loadWebsiteData();
 
-    // Cleanup function to prevent state updates on unmounted component
     return () => {
       isMounted = false;
       if (loadingTimeout) {
         clearTimeout(loadingTimeout);
       }
     };
-  }, [user?.id, externalRefreshKey]);
-
-  // Dynamic settings from user data
-  const settings = websiteData?.settings;
-  const companyName = settings?.company_name || "Your Cultural Tours";
-  const tagline =
-    settings?.tagline || "Discover Authentic Cultural Experiences";
-  const description =
-    settings?.description || "We specialize in authentic cultural tours";
-  const primaryColor = settings?.branding?.primary_color || "#9b87f5";
-  const headerImage = settings?.branding?.header_image || null;
-  const theme = settings?.branding?.theme || "classic";
-
-  const headerSettings = {
-    backgroundColor: "#ffffff",
-    textColor: "#000000",
-    height: 80,
-  };
-
-  const footerSettings = {
-    backgroundColor: "#f8f9fa",
-    textColor: "#6c757d",
-    showSocialMedia: true,
-    showContactInfo: true,
-    layout: "3-column",
-    showLogo: false,
-    logo: settings?.branding?.logo_url || null,
-    copyrightText: `© ${new Date().getFullYear()} ${companyName}. All rights reserved.`,
-    contactInfo: {
-      phone: settings?.contact_info?.phone || "",
-      email: settings?.contact_info?.email || "",
-      address: settings?.contact_info?.address || "",
-    },
-    socialMediaLinks: {
-      facebook: settings?.social_media?.facebook || "",
-      twitter: settings?.social_media?.twitter || "",
-      instagram: settings?.social_media?.instagram || "",
-      youtube: settings?.social_media?.youtube || "",
-    },
-  };
-
-  const fontSettings = {
-    headingFont: "Inter",
-    headingFontWeight: "600",
-    headingFontSize: "32",
-    lineHeight: "1.2",
-    letterSpacing: "0",
-    bodyFont: "Inter",
-    bodyFontWeight: "400",
-    bodyFontSize: "16",
-    bodyLetterSpacing: "0",
-  };
-
-  const animationSettings = {
-    enableAnimations: true,
-    animationSpeed: 0.3,
-    animationType: "fade",
-    enableHoverEffects: true,
-    enableScrollAnimations: true,
-  };
-
-  const placedBlocks = [];
-
-  // Update internal refresh key when external key changes
-  useEffect(() => {
-    if (externalRefreshKey !== undefined) {
-      setRefreshKey(externalRefreshKey);
-      // Reset loading state when refresh key changes
-      setLoading(true);
-    }
-  }, [externalRefreshKey]);
+  }, [user?.id]);
 
   // Update experiences when prop changes
   useEffect(() => {
-    setCurrentItineraries(experiences);
+    setCurrentExperiences(experiences);
   }, [experiences]);
 
   // Update viewMode when external viewMode changes
@@ -207,57 +128,93 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     }
   }, [externalViewMode]);
 
-  // Get theme styles
-  const themeStyles = {
-    heroClass: "bg-gradient-to-r from-blue-50 to-purple-50",
-    headingClass: "text-gray-900 font-bold",
-    textClass: "text-gray-700",
-    cardClass: "bg-white border border-gray-200 rounded-lg shadow-sm",
-    buttonClass: "bg-blue-600 text-white hover:bg-blue-700",
-    navClass: "bg-white",
-    sectionClass: "bg-white",
-  };
+  // Get website settings with fallbacks
+  const websiteSettings = websiteData?.settings || userData?.settings || {};
+  const companyName = websiteSettings.company_name || "Your Tour Company";
+  const tagline = websiteSettings.tagline || "Discover Amazing Cultural Experiences";
+  const description = websiteSettings.description || "We specialize in creating authentic cultural experiences that connect you with local traditions and communities.";
+  const primaryColor = websiteSettings.branding?.primary_color || "#3B82F6";
+  const theme = websiteSettings.branding?.theme || "classic";
+  const logoUrl = websiteSettings.branding?.logo_url || "";
+  const headerImage = websiteSettings.branding?.header_image || "";
 
-  const fontStyles = {
-    headingStyle: {
-      fontFamily: fontSettings.headingFont,
-      fontWeight: fontSettings.headingFontWeight,
-      fontSize: `${fontSettings.headingFontSize}px`,
-      lineHeight: fontSettings.lineHeight,
-      letterSpacing: `${fontSettings.letterSpacing}px`,
-    },
-    bodyStyle: {
-      fontFamily: fontSettings.bodyFont,
-      fontWeight: fontSettings.bodyFontWeight,
-      fontSize: `${fontSettings.bodyFontSize}px`,
-      letterSpacing: `${fontSettings.bodyLetterSpacing}px`,
-    },
-  };
-
-  const animationClasses = {
-    animationClass: animationSettings.enableAnimations
-      ? animationSettings.animationType === "slide"
-        ? "transform transition-transform duration-300 hover:scale-105"
-        : "transition-opacity duration-300"
-      : "",
-    hoverClass: animationSettings.enableHoverEffects
-      ? "hover:shadow-lg transition-shadow duration-300"
-      : "",
-  };
-
-  const renderPlacedBlocks = () => {
-    if (!placedBlocks || placedBlocks.length === 0) {
-      return null;
+  // Get theme styles based on selected theme
+  const getThemeStyles = () => {
+    switch (theme) {
+      case "adventure":
+        return {
+          heroClass: "bg-gradient-to-br from-green-400 to-blue-500",
+          headingClass: "text-white font-bold",
+          textClass: "text-white",
+          cardClass: "bg-white border border-gray-200 rounded-lg shadow-lg",
+          buttonClass: "bg-white text-green-600 hover:bg-gray-100",
+          navClass: "bg-white",
+          sectionClass: "bg-gray-50",
+        };
+      case "cultural":
+        return {
+          heroClass: "bg-gradient-to-br from-amber-400 to-orange-500",
+          headingClass: "text-white font-bold",
+          textClass: "text-white",
+          cardClass: "bg-white border border-gray-200 rounded-lg shadow-lg",
+          buttonClass: "bg-white text-amber-600 hover:bg-gray-100",
+          navClass: "bg-white",
+          sectionClass: "bg-amber-50",
+        };
+      case "luxury":
+        return {
+          heroClass: "bg-gradient-to-br from-purple-400 to-pink-500",
+          headingClass: "text-white font-bold",
+          textClass: "text-white",
+          cardClass: "bg-white border border-gray-200 rounded-lg shadow-lg",
+          buttonClass: "bg-white text-purple-600 hover:bg-gray-100",
+          navClass: "bg-white",
+          sectionClass: "bg-purple-50",
+        };
+      case "family":
+        return {
+          heroClass: "bg-gradient-to-br from-blue-400 to-cyan-500",
+          headingClass: "text-white font-bold",
+          textClass: "text-white",
+          cardClass: "bg-white border border-gray-200 rounded-lg shadow-lg",
+          buttonClass: "bg-white text-blue-600 hover:bg-gray-100",
+          navClass: "bg-white",
+          sectionClass: "bg-blue-50",
+        };
+      case "eco":
+        return {
+          heroClass: "bg-gradient-to-br from-emerald-400 to-teal-500",
+          headingClass: "text-white font-bold",
+          textClass: "text-white",
+          cardClass: "bg-white border border-gray-200 rounded-lg shadow-lg",
+          buttonClass: "bg-white text-emerald-600 hover:bg-gray-100",
+          navClass: "bg-white",
+          sectionClass: "bg-emerald-50",
+        };
+      case "urban":
+        return {
+          heroClass: "bg-gradient-to-br from-gray-400 to-slate-500",
+          headingClass: "text-white font-bold",
+          textClass: "text-white",
+          cardClass: "bg-white border border-gray-200 rounded-lg shadow-lg",
+          buttonClass: "bg-white text-gray-600 hover:bg-gray-100",
+          navClass: "bg-white",
+          sectionClass: "bg-gray-50",
+        };
+      default: // classic
+        return {
+          heroClass: "bg-gradient-to-r from-blue-50 to-purple-50",
+          headingClass: "text-gray-900 font-bold",
+          textClass: "text-gray-700",
+          cardClass: "bg-white border border-gray-200 rounded-lg shadow-sm",
+          buttonClass: "bg-blue-600 text-white hover:bg-blue-700",
+          navClass: "bg-white",
+          sectionClass: "bg-white",
+        };
     }
-
-    return placedBlocks
-      .sort((a, b) => a.position - b.position)
-      .map((block) => (
-        <div key={block.id} className="w-full">
-          {/* Block rendering logic would go here */}
-        </div>
-      ));
   };
+
+  const themeStyles = getThemeStyles();
 
   const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
@@ -352,14 +309,18 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                     {/* Header/Hero section preview */}
                     <div
                       className={cn("p-6 text-center", themeStyles.heroClass)}
-                      style={{ backgroundColor: primaryColor + "10" }}
+                      style={headerImage ? { backgroundImage: `url(${headerImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
                     >
+                      {logoUrl && (
+                        <div className="mb-4">
+                          <img src={logoUrl} alt={companyName} className="h-16 mx-auto" />
+                        </div>
+                      )}
                       <h1
                         className={cn(
                           "text-2xl font-bold mb-2",
                           themeStyles.headingClass
                         )}
-                        style={{ color: primaryColor }}
                       >
                         {companyName}
                       </h1>
@@ -368,14 +329,11 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                       </p>
                       <Button
                         size="sm"
-                        style={{ backgroundColor: primaryColor }}
+                        className={themeStyles.buttonClass}
                       >
-                        Explore Tours
+                        Explore Our Tours
                       </Button>
                     </div>
-
-                    {/* Placed Blocks from Drag & Drop Builder */}
-                    {renderPlacedBlocks()}
 
                     {/* Tours Section */}
                     <div className={cn("p-6", themeStyles.navClass)}>
@@ -412,7 +370,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                       )}
 
                       {/* Tours Grid */}
-                      {!isLoading && !error && currentItineraries.length > 0 ? (
+                      {!isLoading && !error && currentExperiences.length > 0 ? (
                         <div
                           className={cn(
                             "grid gap-4 mb-4",
@@ -421,16 +379,13 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                               : "grid-cols-3"
                           )}
                         >
-                          {currentItineraries.slice(0, 6).map((item, index) => (
+                          {currentExperiences.slice(0, 6).map((item, index) => (
                             <div
                               key={item.id || index}
                               className={cn(
                                 "border rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow",
-                                themeStyles.cardClass,
-                                animationClasses.hoverClass,
-                                animationClasses.animationClass
+                                themeStyles.cardClass
                               )}
-                              style={{ animationDelay: `${index * 0.1}s` }}
                               onClick={() => onTourSelect?.(item)}
                             >
                               {item.image && (
@@ -441,16 +396,10 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                                 />
                               )}
                               <div className="p-3">
-                                <h3
-                                  className="font-medium text-sm mb-1"
-                                  style={fontStyles.headingStyle}
-                                >
+                                <h3 className="font-medium text-sm mb-1">
                                   {item.title}
                                 </h3>
-                                <p
-                                  className="text-xs text-gray-600 mb-2"
-                                  style={fontStyles.bodyStyle}
-                                >
+                                <p className="text-xs text-gray-600 mb-2">
                                   {item.description?.substring(0, 60)}...
                                 </p>
                                 <div className="flex justify-between items-center">
@@ -496,7 +445,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
 
                     {/* About Section */}
                     <div
-                      className={cn("p-6 bg-gray-50", themeStyles.sectionClass)}
+                      className={cn("p-6", themeStyles.sectionClass)}
                     >
                       <h2
                         className={cn(
@@ -543,18 +492,18 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                           >
                             Contact
                           </h4>
-                          {footerSettings.contactInfo.email && (
+                          {websiteSettings.contact_info?.email && (
                             <p className="mb-1">
-                              📧 {footerSettings.contactInfo.email}
+                              📧 {websiteSettings.contact_info.email}
                             </p>
                           )}
-                          {footerSettings.contactInfo.phone && (
+                          {websiteSettings.contact_info?.phone && (
                             <p className="mb-1">
-                              📞 {footerSettings.contactInfo.phone}
+                              📞 {websiteSettings.contact_info.phone}
                             </p>
                           )}
-                          {footerSettings.contactInfo.address && (
-                            <p>📍 {footerSettings.contactInfo.address}</p>
+                          {websiteSettings.contact_info?.address && (
+                            <p>📍 {websiteSettings.contact_info.address}</p>
                           )}
                         </div>
 
@@ -566,13 +515,13 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                             Follow Us
                           </h4>
                           <div className="flex gap-2">
-                            {footerSettings.socialMediaLinks.facebook && (
+                            {websiteSettings.social_media?.facebook && (
                               <div className="w-6 h-6 bg-blue-500 rounded"></div>
                             )}
-                            {footerSettings.socialMediaLinks.instagram && (
+                            {websiteSettings.social_media?.instagram && (
                               <div className="w-6 h-6 bg-pink-500 rounded"></div>
                             )}
-                            {footerSettings.socialMediaLinks.twitter && (
+                            {websiteSettings.social_media?.twitter && (
                               <div className="w-6 h-6 bg-blue-400 rounded"></div>
                             )}
                           </div>
@@ -580,7 +529,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
 
                         <div>
                           <p className="text-xs text-gray-600">
-                            {footerSettings.copyrightText}
+                            © {new Date().getFullYear()} {companyName}. All rights reserved.
                           </p>
                         </div>
                       </div>
