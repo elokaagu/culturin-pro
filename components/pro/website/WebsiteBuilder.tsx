@@ -262,10 +262,16 @@ const WebsiteBuilder: React.FC = () => {
         setSaveTimeoutId(null);
       }
 
-      // Enhanced auto-save notification (less intrusive)
+      // Enhanced auto-save notification (subtle but informative)
       toast.success("💾 Auto-saved", {
-        duration: 2000,
-        description: `Saved at ${new Date().toLocaleTimeString()}`,
+        duration: 2500,
+        description: `Changes automatically saved at ${new Date().toLocaleTimeString()}`,
+        style: {
+          background: "#f0f9ff",
+          color: "#0369a1",
+          border: "1px solid #0ea5e9",
+          fontSize: "14px",
+        },
       });
     } catch (error) {
       console.error("Auto-save failed:", error);
@@ -278,7 +284,16 @@ const WebsiteBuilder: React.FC = () => {
         setSaveTimeoutId(null);
       }
       
-      toast.error("Auto-save failed");
+      toast.error("⚠️ Auto-save Failed", {
+        description: "Automatic save failed. Your changes are still safe locally.",
+        duration: 4000,
+        style: {
+          background: "#fef3c7",
+          color: "#92400e",
+          border: "1px solid #f59e0b",
+          fontSize: "14px",
+        },
+      });
     }
   }, [
     user?.id,
@@ -369,16 +384,23 @@ const WebsiteBuilder: React.FC = () => {
       // Clear manual save timeout
       clearTimeout(manualSaveTimeout);
       
-      // Enhanced save notification
-      toast.success("✅ Website saved successfully!", {
-        duration: 3000,
-        description: `Last saved at ${new Date().toLocaleTimeString()}`,
+      // Enhanced save notification with more prominent styling
+      toast.success("🎉 Website Saved Successfully!", {
+        duration: 4000,
+        description: `All changes have been saved at ${new Date().toLocaleTimeString()}`,
         action: {
-          label: "View Changes",
+          label: "View Site",
           onClick: () => {
-            // Could add logic to show what was saved
-            console.log("Save completed at:", new Date().toLocaleTimeString());
+            // Navigate to preview tab to show the saved changes
+            setActiveTab("preview");
           },
+        },
+        style: {
+          background: "linear-gradient(135deg, #10b981, #059669)",
+          color: "white",
+          border: "none",
+          fontSize: "16px",
+          fontWeight: "600",
         },
       });
 
@@ -395,7 +417,21 @@ const WebsiteBuilder: React.FC = () => {
       // Clear manual save timeout
       clearTimeout(manualSaveTimeout);
       
-      toast.error("Failed to save website");
+      toast.error("❌ Save Failed", {
+        description: "There was an error saving your website. Please try again.",
+        duration: 5000,
+        action: {
+          label: "Retry",
+          onClick: () => handleManualSave(),
+        },
+        style: {
+          background: "linear-gradient(135deg, #ef4444, #dc2626)",
+          color: "white",
+          border: "none",
+          fontSize: "16px",
+          fontWeight: "600",
+        },
+      });
       
       // Reset save button clicked state on error
       setSaveButtonClicked(false);

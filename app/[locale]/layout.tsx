@@ -1,6 +1,6 @@
 import React from "react";
 import "../globals.css";
-import { Toaster } from "../../components/ui/toaster";
+import { Toaster } from "../../components/ui/sonner";
 import { UserDataProvider } from "../../src/contexts/UserDataContext";
 import { TranslationProvider } from "../../src/contexts/TranslationContext";
 
