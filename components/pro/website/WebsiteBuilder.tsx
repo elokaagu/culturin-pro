@@ -140,16 +140,7 @@ const WebsiteBuilder: React.FC = () => {
     }
   }, [user?.id]);
 
-  // Auto-save functionality
-  useEffect(() => {
-    if (!autoSaveEnabled || !hasUnsavedChanges || !user?.id) return;
 
-    const autoSaveTimer = setTimeout(async () => {
-      await handleAutoSave();
-    }, 2000);
-
-    return () => clearTimeout(autoSaveTimer);
-  }, [hasUnsavedChanges, autoSaveEnabled, user?.id]);
 
   const handleAutoSave = useCallback(async () => {
     if (!user?.id || !hasUnsavedChanges) return;
@@ -168,6 +159,21 @@ const WebsiteBuilder: React.FC = () => {
       const newHistory = [...history.slice(0, historyIndex + 1), currentState];
       setHistory(newHistory);
       setHistoryIndex(newHistory.length - 1);
+
+      // Save website settings to database
+      if (userData?.settings) {
+        const currentSettings = await userWebsiteService.getUserWebsiteSettings(user.id);
+        const updatedSettings = {
+          ...currentSettings,
+          ...userData.settings,
+          updated_at: new Date().toISOString(),
+        };
+        
+        const saveSuccess = await userWebsiteService.saveUserWebsiteSettings(updatedSettings);
+        if (!saveSuccess) {
+          throw new Error("Failed to save to database");
+        }
+      }
 
       // Update last saved time
       setLastSaved(new Date());
@@ -189,6 +195,17 @@ const WebsiteBuilder: React.FC = () => {
     historyIndex,
   ]);
 
+  // Auto-save functionality
+  useEffect(() => {
+    if (!autoSaveEnabled || !hasUnsavedChanges || !user?.id) return;
+
+    const autoSaveTimer = setTimeout(async () => {
+      await handleAutoSave();
+    }, 2000);
+
+    return () => clearTimeout(autoSaveTimer);
+  }, [hasUnsavedChanges, autoSaveEnabled, user?.id, handleAutoSave]);
+
   const handleManualSave = useCallback(async () => {
     if (!user?.id) return;
 
@@ -196,10 +213,21 @@ const WebsiteBuilder: React.FC = () => {
       setSaveLoading(true);
       setSaveStatus("saving");
 
-      // Save current state
+      // Save current state to history and database
       await handleAutoSave();
 
+              // Also save experiences if they've changed
+        if (experiences.length > 0) {
+          // Update experiences in the database
+          for (const experience of experiences) {
+            if (experience.id) {
+              await experienceService.updateExperience(experience);
+            }
+          }
+        }
+
       setSaveLoading(false);
+      setSaveStatus("saved");
       toast.success("Website saved successfully");
     } catch (error) {
       console.error("Manual save failed:", error);
@@ -207,7 +235,7 @@ const WebsiteBuilder: React.FC = () => {
       setSaveLoading(false);
       toast.error("Failed to save website");
     }
-  }, [user?.id, handleAutoSave]);
+  }, [user?.id, handleAutoSave, experiences]);
 
   const handlePublish = useCallback(async () => {
     if (!user?.id) return;
@@ -266,10 +294,19 @@ const WebsiteBuilder: React.FC = () => {
     setHasUnsavedChanges(true);
   }, []);
 
+  const handleExperiencesChange = useCallback((newExperiences: Experience[]) => {
+    setExperiences(newExperiences);
+    setHasUnsavedChanges(true);
+  }, []);
+
   const handleSettingsChange = useCallback(() => {
     setWebsiteSettingsChanged(true);
     setHasUnsavedChanges(true);
     setPreviewKey((prev) => prev + 1);
+  }, []);
+
+  const handleContentChange = useCallback(() => {
+    setHasUnsavedChanges(true);
   }, []);
 
   const handleUndo = useCallback(() => {
