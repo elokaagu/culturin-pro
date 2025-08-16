@@ -37,8 +37,8 @@ import { ThemeAwareImage } from "@/components/ui/theme-aware-image";
 const menuItems = [
   { name: "Dashboard", path: "/pro-dashboard", icon: LayoutDashboard },
   {
-    name: "Itineraries",
-    path: "/pro-dashboard/itinerary",
+    name: "Experiences",
+    path: "/pro-dashboard/experience",
     icon: PencilRuler,
   },
   {

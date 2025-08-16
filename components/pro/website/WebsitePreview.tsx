@@ -23,8 +23,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { ItineraryType } from "@/data/itineraryData";
-import { Itinerary } from "@/lib/itinerary-service";
+import { ExperienceType } from "@/data/experienceData";
+import { Experience } from "@/lib/experience-service";
 import { toast } from "sonner";
 import { useUserData } from "../../../src/contexts/UserDataContext";
 import {
@@ -35,10 +35,10 @@ import {
 import { useAuth } from "@/src/components/auth/AuthProvider";
 
 interface WebsitePreviewProps {
-  itineraries?: Itinerary[];
+  experiences?: Experience[];
   refreshKey?: number;
   viewMode?: "desktop" | "mobile" | "tablet";
-  onTourSelect?: (tour: Itinerary) => void;
+  onTourSelect?: (tour: Experience) => void;
   websiteSlug?: string;
   isLoading?: boolean;
   error?: string | null;
@@ -46,7 +46,7 @@ interface WebsitePreviewProps {
 }
 
 const WebsitePreview: React.FC<WebsitePreviewProps> = ({
-  itineraries = [],
+  experiences = [],
   refreshKey: externalRefreshKey,
   viewMode: externalViewMode,
   onTourSelect,
@@ -60,7 +60,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
   );
   const [refreshKey, setRefreshKey] = useState(0);
   const [currentItineraries, setCurrentItineraries] =
-    useState<Itinerary[]>(itineraries);
+    useState<Experience[]>(experiences);
   const [websiteData, setWebsiteData] = useState<UserWebsiteData | null>(null);
   const [loading, setLoading] = useState(true);
   const { userData } = useUserData();
@@ -97,7 +97,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
 
         if (isMounted) {
           setWebsiteData(data);
-          setCurrentItineraries(data.itineraries || []);
+          setCurrentItineraries(data.experiences || []);
           setLoading(false);
           console.log("✅ Website data loaded successfully:", data);
         }
@@ -195,10 +195,10 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
     }
   }, [externalRefreshKey]);
 
-  // Update itineraries when prop changes
+  // Update experiences when prop changes
   useEffect(() => {
-    setCurrentItineraries(itineraries);
-  }, [itineraries]);
+    setCurrentItineraries(experiences);
+  }, [experiences]);
 
   // Update viewMode when external viewMode changes
   useEffect(() => {
@@ -335,7 +335,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
                       <p className="text-sm text-gray-600">
-                        {isLoading ? "Loading your website and itineraries..." : "Loading website data..."}
+                        {isLoading ? "Loading your website and experiences..." : "Loading website data..."}
                       </p>
                       {loading && !isLoading && (
                         <button 
@@ -487,7 +487,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                             No published tours yet
                           </p>
                           <p className="text-xs text-gray-500">
-                            Create and publish your first itinerary to see it
+                            Create and publish your first experience to see it
                             here
                           </p>
                         </div>

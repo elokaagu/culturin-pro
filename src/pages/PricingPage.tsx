@@ -21,7 +21,7 @@ const PricingPage = () => {
       buttonIcon: null,
       buttonVariant: "outline" as const,
       features: [
-        "Create up to 3 cultural itineraries",
+        "Create up to 3 cultural experiences",
         "Basic booking management",
         "Standard customer support",
       ],
@@ -37,7 +37,7 @@ const PricingPage = () => {
       buttonIcon: null,
       buttonVariant: "default" as const,
       features: [
-        "Unlimited cultural itineraries & experiences",
+        "Unlimited cultural experiences & experiences",
         "AI-powered content generation for marketing",
         "Advanced analytics & booking insights",
         "Priority support & dedicated account manager",

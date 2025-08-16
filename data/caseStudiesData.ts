@@ -66,7 +66,7 @@ export const caseStudies: CaseStudy[] = [
     ],
     testimonial: {
       quote:
-        "Since using Culturin, our bookings have increased by 65% and the itinerary builder saved me countless hours of work.",
+        "Since using Culturin, our bookings have increased by 65% and the experience builder saved me countless hours of work.",
       author: "Maria Sanchez",
       position: "Owner, Barcelona Tapas Tours",
     },

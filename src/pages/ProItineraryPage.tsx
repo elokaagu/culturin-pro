@@ -7,23 +7,23 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabaseStorage } from "@/lib/supabase-storage";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import ItineraryEditor from "@/components/pro/itinerary/ItineraryEditor";
-import { ItineraryType } from "@/data/itineraryData";
+import ExperienceEditor from "@/components/pro/experience/ExperienceEditor";
+import { ExperienceType } from "@/data/experienceData";
 import { useAuth } from "@/src/components/auth/AuthProvider";
-import ItineraryCard from "@/components/pro/itinerary/ItineraryCard";
+import ExperienceCard from "@/components/pro/experience/ExperienceCard";
 
 const ProItineraryPage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, isReady } = useAuth();
-  const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
+  const [experiences, setItineraries] = useState<ExperienceType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedItinerary, setSelectedItinerary] =
-    useState<ItineraryType | null>(null);
+  const [selectedExperience, setSelectedItinerary] =
+    useState<ExperienceType | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
 
-  // Default images for itineraries
+  // Default images for experiences
   const defaultImages = [
     "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
     "/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
@@ -35,21 +35,21 @@ const ProItineraryPage: React.FC = () => {
     "/lovable-uploads/ce237026-d67e-4a7a-b81a-868868b7676d.png",
   ];
 
-  // Helper function to ensure itinerary has an image
+  // Helper function to ensure experience has an image
   const ensureItineraryHasImage = (
-    itinerary: ItineraryType,
+    experience: ExperienceType,
     index: number
-  ): ItineraryType => {
-    if (!itinerary.image) {
+  ): ExperienceType => {
+    if (!experience.image) {
       return {
-        ...itinerary,
+        ...experience,
         image: defaultImages[index % defaultImages.length],
       };
     }
-    return itinerary;
+    return experience;
   };
 
-  // Simplified and reliable itinerary loading with timeout protection
+  // Simplified and reliable experience loading with timeout protection
   useEffect(() => {
     console.log(
       "🔄 ProItineraryPage loading - user:",
@@ -66,13 +66,13 @@ const ProItineraryPage: React.FC = () => {
         if (isMounted) {
           setLoading(true);
         }
-        console.log("🔄 Starting itinerary load process");
+        console.log("🔄 Starting experience load process");
 
         let foundItineraries: any[] = [];
 
         // Primary storage key based on user
         const primaryKey = user?.id
-          ? `userItineraries_${user.id}`
+          ? `userExperiences_${user.id}`
           : "userItineraries";
 
         console.log("📦 Checking primary storage key:", primaryKey);
@@ -85,7 +85,7 @@ const ProItineraryPage: React.FC = () => {
             if (Array.isArray(parsed) && parsed.length > 0) {
               foundItineraries = parsed;
               console.log(
-                `✅ Found ${foundItineraries.length} itineraries in localStorage`
+                `✅ Found ${foundItineraries.length} experiences in localStorage`
               );
             }
           }
@@ -101,7 +101,7 @@ const ProItineraryPage: React.FC = () => {
             if (Array.isArray(supabaseData) && supabaseData.length > 0) {
               foundItineraries = supabaseData;
               console.log(
-                `✅ Found ${foundItineraries.length} itineraries in Supabase storage`
+                `✅ Found ${foundItineraries.length} experiences in Supabase storage`
               );
 
               // Sync back to localStorage for faster future access
@@ -122,9 +122,9 @@ const ProItineraryPage: React.FC = () => {
           const legacyKeys = [
             "userItineraries",
             user?.email
-              ? `userItineraries_${user.email.replace(/[@.]/g, "_")}`
+              ? `userExperiences_${user.email.replace(/[@.]/g, "_")}`
               : null,
-            "itineraries",
+            "experiences",
           ].filter(Boolean);
 
           for (const key of legacyKeys) {
@@ -135,7 +135,7 @@ const ProItineraryPage: React.FC = () => {
                 if (Array.isArray(parsed) && parsed.length > 0) {
                   foundItineraries = parsed;
                   console.log(
-                    `✅ Found ${foundItineraries.length} itineraries in legacy key: ${key}`
+                    `✅ Found ${foundItineraries.length} experiences in legacy key: ${key}`
                   );
 
                   // Migrate to primary key
@@ -153,9 +153,9 @@ const ProItineraryPage: React.FC = () => {
           }
         }
 
-        // If no itineraries found anywhere, create some sample ones for demo
+        // If no experiences found anywhere, create some sample ones for demo
         if (foundItineraries.length === 0) {
-          console.log("📝 No itineraries found, creating sample itineraries");
+          console.log("📝 No experiences found, creating sample experiences");
           foundItineraries = [
             {
               id: "sample-florence-tour",
@@ -184,20 +184,20 @@ const ProItineraryPage: React.FC = () => {
             },
           ];
 
-          // Save sample itineraries to storage for future use
+          // Save sample experiences to storage for future use
           try {
             localStorage.setItem(primaryKey, JSON.stringify(foundItineraries));
             if (user?.id) {
               await supabaseStorage.setItem(primaryKey, foundItineraries);
             }
-            console.log("💾 Saved sample itineraries to storage");
+            console.log("💾 Saved sample experiences to storage");
           } catch (error) {
-            console.log("❌ Error saving sample itineraries:", error);
+            console.log("❌ Error saving sample experiences:", error);
           }
         }
 
         console.log(
-          `🎯 Final result: ${foundItineraries.length} itineraries loaded`
+          `🎯 Final result: ${foundItineraries.length} experiences loaded`
         );
 
         if (isMounted) {
@@ -205,7 +205,7 @@ const ProItineraryPage: React.FC = () => {
           setLoading(false);
         }
       } catch (error) {
-        console.error("❌ Critical error loading itineraries:", error);
+        console.error("❌ Critical error loading experiences:", error);
         if (isMounted) {
           setItineraries([]);
           setLoading(false);
@@ -233,36 +233,36 @@ const ProItineraryPage: React.FC = () => {
   }, [isReady, user?.id, user?.email]);
 
   const handleCreateNew = () => {
-    const newItinerary: ItineraryType = {
+    const newItinerary: ExperienceType = {
       id: `new-${Date.now()}`,
-      title: "New Itinerary",
+      title: "New Experience",
       days: 3,
       lastUpdated: "just now",
       status: "draft",
       image: "/lovable-uploads/38b3d0e5-8ce3-41eb-bc8f-7dd21ee77dc2.png",
       themeType: "cultural",
-      description: "Start building your cultural experience itinerary",
+      description: "Start building your cultural experience experience",
       regions: [],
     };
     setSelectedItinerary(newItinerary);
     setShowEditor(true);
   };
 
-  const handleEditItinerary = (itinerary: ItineraryType) => {
-    setSelectedItinerary(itinerary);
+  const handleEditItinerary = (experience: ExperienceType) => {
+    setSelectedItinerary(experience);
     setShowEditor(true);
   };
 
   const handleDeleteItinerary = async (itineraryId: string) => {
     try {
-      const updatedItineraries = itineraries.filter(
+      const updatedItineraries = experiences.filter(
         (it) => it.id !== itineraryId
       );
       setItineraries(updatedItineraries);
 
       // Save to storage with user-specific key and fallback
       const storageKey = user?.id
-        ? `userItineraries_${user.id}`
+        ? `userExperiences_${user.id}`
         : "userItineraries";
       console.log("🗑️ Deleting from storage key:", storageKey);
 
@@ -273,7 +273,7 @@ const ProItineraryPage: React.FC = () => {
         console.error("Error updating Supabase storage:", storageError);
         // Fallback to localStorage with user-specific key
         const localStorageKey = user?.id
-          ? `userItineraries_${user.id}`
+          ? `userExperiences_${user.id}`
           : "userItineraries";
         localStorage.setItem(
           localStorageKey,
@@ -286,14 +286,14 @@ const ProItineraryPage: React.FC = () => {
       }
 
       toast({
-        title: "Itinerary Deleted",
-        description: "The itinerary has been successfully deleted.",
+        title: "Experience Deleted",
+        description: "The experience has been successfully deleted.",
       });
     } catch (error) {
-      console.error("Error deleting itinerary:", error);
+      console.error("Error deleting experience:", error);
       toast({
         title: "Error",
-        description: "An error occurred while deleting the itinerary.",
+        description: "An error occurred while deleting the experience.",
         variant: "destructive",
       });
     }
@@ -305,7 +305,7 @@ const ProItineraryPage: React.FC = () => {
     setShowAIAssistant(false);
   };
 
-  const handleItinerarySave = async (savedItinerary: ItineraryType) => {
+  const handleItinerarySave = async (savedItinerary: ExperienceType) => {
     try {
       console.log(
         "🏠 Parent handling save for:",
@@ -317,29 +317,29 @@ const ProItineraryPage: React.FC = () => {
       let updatedItineraries;
 
       if (savedItinerary.id.startsWith("new-")) {
-        // New itinerary - generate a proper ID
+        // New experience - generate a proper ID
         const newItinerary = {
           ...savedItinerary,
-          id: `itinerary-${Date.now()}`,
+          id: `experience-${Date.now()}`,
           lastUpdated: "just now",
         };
-        updatedItineraries = [newItinerary, ...itineraries];
-        console.log("✅ Created new itinerary with ID:", newItinerary.id);
+        updatedItineraries = [newItinerary, ...experiences];
+        console.log("✅ Created new experience with ID:", newItinerary.id);
       } else {
-        // Existing itinerary - update
-        updatedItineraries = itineraries.map((it) =>
+        // Existing experience - update
+        updatedItineraries = experiences.map((it) =>
           it.id === savedItinerary.id
             ? { ...savedItinerary, lastUpdated: "just now" }
             : it
         );
-        console.log("✅ Updated existing itinerary:", savedItinerary.id);
+        console.log("✅ Updated existing experience:", savedItinerary.id);
       }
 
       setItineraries(updatedItineraries);
 
       // Save to storage with user-specific key and fallback
       const storageKey = user?.id
-        ? `userItineraries_${user.id}`
+        ? `userExperiences_${user.id}`
         : "userItineraries";
       console.log("💾 Saving with storage key:", storageKey);
 
@@ -350,7 +350,7 @@ const ProItineraryPage: React.FC = () => {
         console.error("Error saving to Supabase storage:", storageError);
         // Fallback to localStorage with user-specific key
         const localStorageKey = user?.id
-          ? `userItineraries_${user.id}`
+          ? `userExperiences_${user.id}`
           : "userItineraries";
         localStorage.setItem(
           localStorageKey,
@@ -365,22 +365,22 @@ const ProItineraryPage: React.FC = () => {
       // Different toast messages for save vs publish
       if (savedItinerary.status === "published") {
         toast({
-          title: "Itinerary Published! 🎉",
+          title: "Experience Published! 🎉",
           description: `"${savedItinerary.title}" is now live and available.`,
         });
       } else {
         toast({
-          title: "Itinerary Saved",
+          title: "Experience Saved",
           description: `"${savedItinerary.title}" has been saved successfully.`,
         });
       }
 
       handleEditorClose();
     } catch (error) {
-      console.error("Error saving itinerary:", error);
+      console.error("Error saving experience:", error);
       toast({
         title: "Error",
-        description: "Failed to save the itinerary.",
+        description: "Failed to save the experience.",
         variant: "destructive",
       });
     }
@@ -398,27 +398,27 @@ const ProItineraryPage: React.FC = () => {
     );
   }
 
-  // Show editor if selectedItinerary exists
-  if (showEditor && selectedItinerary) {
+  // Show editor if selectedExperience exists
+  if (showEditor && selectedExperience) {
     return (
-      <ItineraryEditor
+      <ExperienceEditor
         showEditor={showEditor}
-        selectedItinerary={selectedItinerary}
+        selectedExperience={selectedExperience}
         showAIAssistant={showAIAssistant}
         onAIAssistantClose={() => setShowAIAssistant(false)}
         onEditorClose={handleEditorClose}
-        onItinerarySave={handleItinerarySave}
+        onExperienceSave={handleItinerarySave}
         onQuickAction={(action: string) => {
           console.log(
             "🎯 Quick action:",
             action,
-            "for itinerary:",
-            selectedItinerary.id
+            "for experience:",
+            selectedExperience.id
           );
           if (action === "delete") {
-            handleDeleteItinerary(selectedItinerary.id);
+            handleDeleteItinerary(selectedExperience.id);
           }
-          // Other quick actions will be handled by the ItineraryEditor
+          // Other quick actions will be handled by the ExperienceEditor
         }}
       />
     );
@@ -430,26 +430,26 @@ const ProItineraryPage: React.FC = () => {
         <div className="mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-2">
-              Itineraries
+              Experiences
             </h1>
             <p className="text-muted-foreground">
-              Create and manage your experience itineraries
+              Create and manage your experience experiences
             </p>
           </div>
           <Button onClick={handleCreateNew} className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
-            Create New Itinerary
+            Create New Experience
           </Button>
         </div>
 
-        {itineraries.length === 0 ? (
+        {experiences.length === 0 ? (
           <div className="text-center py-12">
             <div className="max-w-md mx-auto">
               <h3 className="text-lg font-medium text-foreground mb-2">
-                No itineraries yet
+                No experiences yet
               </h3>
               <p className="text-muted-foreground mb-6">
-                Create your first itinerary to get started with your cultural
+                Create your first experience to get started with your cultural
                 experiences.
               </p>
               <Button
@@ -457,52 +457,52 @@ const ProItineraryPage: React.FC = () => {
                 className="flex items-center gap-2 mx-auto"
               >
                 <Plus className="h-4 w-4" />
-                Create Your First Itinerary
+                Create Your First Experience
               </Button>
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {itineraries.map((itinerary, index) => {
+            {experiences.map((experience, index) => {
               const itineraryWithImage = ensureItineraryHasImage(
-                itinerary,
+                experience,
                 index
               );
               return (
                 <div
-                  key={itinerary.id}
+                  key={experience.id}
                   onClick={() => {
                     console.log(
                       "🖱️ Card clicked, opening modal for:",
-                      itinerary.title
+                      experience.title
                     );
-                    handleEditItinerary(itinerary);
+                    handleEditItinerary(experience);
                   }}
                 >
-                  <ItineraryCard
-                    id={itinerary.id}
-                    title={itinerary.title}
+                  <ExperienceCard
+                    id={experience.id}
+                    title={experience.title}
                     description={
-                      itinerary.description ||
-                      "Start building your cultural experience itinerary"
+                      experience.description ||
+                      "Start building your cultural experience experience"
                     }
-                    days={itinerary.days}
-                    lastUpdated={itinerary.lastUpdated || "Recently updated"}
-                    status={itinerary.status}
+                    days={experience.days}
+                    lastUpdated={experience.lastUpdated || "Recently updated"}
+                    status={experience.status}
                     image={itineraryWithImage.image || defaultImages[0]}
-                    themeType={itinerary.themeType}
-                    regions={itinerary.regions}
-                    onEdit={() => handleEditItinerary(itinerary)}
-                    onDelete={() => handleDeleteItinerary(itinerary.id)}
+                    themeType={experience.themeType}
+                    regions={experience.regions}
+                    onEdit={() => handleEditItinerary(experience)}
+                    onDelete={() => handleDeleteItinerary(experience.id)}
                     onQuickAction={(id, action) => {
                       if (action === "edit") {
-                        handleEditItinerary(itinerary);
+                        handleEditItinerary(experience);
                       } else if (action === "delete") {
-                        handleDeleteItinerary(itinerary.id);
+                        handleDeleteItinerary(experience.id);
                       }
                     }}
                     completionPercentage={
-                      itinerary.status === "published" ? 100 : 60
+                      experience.status === "published" ? 100 : 60
                     }
                     disableNavigation={true}
                   />

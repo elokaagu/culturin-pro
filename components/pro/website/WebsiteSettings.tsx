@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ItineraryType } from "@/data/itineraryData";
+import { ExperienceType } from "@/data/experienceData";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,20 +10,20 @@ import { Badge } from "@/components/ui/badge";
 import { Settings, Eye, EyeOff, Save } from "lucide-react";
 
 interface WebsiteSettingsProps {
-  itineraries: ItineraryType[];
-  setItineraries: React.Dispatch<React.SetStateAction<ItineraryType[]>>;
+  experiences: ExperienceType[];
+  setItineraries: React.Dispatch<React.SetStateAction<ExperienceType[]>>;
   onSettingsChange?: () => void; // Add callback for settings changes
 }
 
 const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
-  itineraries,
+  experiences,
   setItineraries,
   onSettingsChange,
 }) => {
   const [selectedItineraries, setSelectedItineraries] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
-  // Initialize selected itineraries
+  // Initialize selected experiences
   useEffect(() => {
     const stored = localStorage.getItem("selectedWebsiteItineraries");
     if (stored) {
@@ -31,13 +31,13 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
         setSelectedItineraries(JSON.parse(stored));
       } catch (e) {
         // If parsing fails, select all by default
-        setSelectedItineraries(itineraries.map((it) => it.id));
+        setSelectedItineraries(experiences.map((it) => it.id));
       }
     } else {
-      // Default to all itineraries selected
-      setSelectedItineraries(itineraries.map((it) => it.id));
+      // Default to all experiences selected
+      setSelectedItineraries(experiences.map((it) => it.id));
     }
-  }, [itineraries]);
+  }, [experiences]);
 
   const handleItineraryToggle = (id: string) => {
     setSelectedItineraries((prev) => {
@@ -64,7 +64,7 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
   };
 
   const handleSelectAll = () => {
-    const allIds = itineraries.map((it) => it.id);
+    const allIds = experiences.map((it) => it.id);
     setSelectedItineraries(allIds);
     localStorage.setItem("selectedWebsiteItineraries", JSON.stringify(allIds));
 
@@ -73,7 +73,7 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
       onSettingsChange();
     }
 
-    toast.success("All itineraries selected");
+    toast.success("All experiences selected");
   };
 
   const handleSelectNone = () => {
@@ -85,19 +85,19 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
       onSettingsChange();
     }
 
-    toast.success("All itineraries deselected");
+    toast.success("All experiences deselected");
   };
 
   const saveSettings = async () => {
     setSaving(true);
 
     try {
-      // Filter itineraries based on selection
-      const filteredItineraries = itineraries.filter((item) =>
+      // Filter experiences based on selection
+      const filteredItineraries = experiences.filter((item) =>
         selectedItineraries.includes(item.id)
       );
 
-      // Update the itineraries state
+      // Update the experiences state
       setItineraries(filteredItineraries);
 
       // Save to localStorage for website display
@@ -131,7 +131,7 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
       }
 
       toast.success("Website settings saved successfully", {
-        description: `${selectedItineraries.length} itineraries will be displayed on your website. Preview updated automatically.`,
+        description: `${selectedItineraries.length} experiences will be displayed on your website. Preview updated automatically.`,
       });
     } catch (error) {
       toast.error("Failed to save settings", {
@@ -151,18 +151,18 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
             Website Settings
           </h2>
           <p className="text-gray-600 text-sm">
-            Configure which itineraries appear on your public website
+            Configure which experiences appear on your public website
           </p>
         </div>
         <Badge variant="outline">
-          {selectedItineraries.length} of {itineraries.length} selected
+          {selectedItineraries.length} of {experiences.length} selected
         </Badge>
       </div>
 
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle className="text-base">Itineraries to Display</CardTitle>
+            <CardTitle className="text-base">Experiences to Display</CardTitle>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={handleSelectAll}>
                 Select All
@@ -174,43 +174,43 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
           </div>
         </CardHeader>
         <CardContent>
-          {itineraries.length > 0 ? (
+          {experiences.length > 0 ? (
             <div className="space-y-3">
-              {itineraries.map((itinerary) => (
+              {experiences.map((experience) => (
                 <div
-                  key={itinerary.id}
+                  key={experience.id}
                   className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <Checkbox
-                    id={`itinerary-${itinerary.id}`}
-                    checked={selectedItineraries.includes(itinerary.id)}
-                    onCheckedChange={() => handleItineraryToggle(itinerary.id)}
+                    id={`experience-${experience.id}`}
+                    checked={selectedItineraries.includes(experience.id)}
+                    onCheckedChange={() => handleItineraryToggle(experience.id)}
                   />
                   <div className="flex-1">
                     <label
-                      htmlFor={`itinerary-${itinerary.id}`}
+                      htmlFor={`experience-${experience.id}`}
                       className="text-sm font-medium cursor-pointer"
                     >
-                      {itinerary.title}
+                      {experience.title}
                     </label>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs text-gray-500">
-                        {itinerary.days} {itinerary.days === 1 ? "day" : "days"}
+                        {experience.days} {experience.days === 1 ? "day" : "days"}
                       </span>
                       <Badge variant="secondary" className="text-xs">
-                        {itinerary.status}
+                        {experience.status}
                       </Badge>
                     </div>
                   </div>
-                  {selectedItineraries.includes(itinerary.id) ? (
+                  {selectedItineraries.includes(experience.id) ? (
                     <Eye className="h-4 w-4 text-green-600" />
                   ) : (
                     <EyeOff className="h-4 w-4 text-gray-400" />
                   )}
-                  {itinerary.image && (
+                  {experience.image && (
                     <img
-                      src={itinerary.image}
-                      alt={itinerary.title}
+                      src={experience.image}
+                      alt={experience.title}
                       className="w-12 h-12 object-cover rounded-md"
                     />
                   )}
@@ -220,9 +220,9 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
           ) : (
             <div className="p-8 text-center text-gray-500">
               <Settings className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-              <p className="font-medium">No itineraries available</p>
+              <p className="font-medium">No experiences available</p>
               <p className="text-sm mt-1">
-                Create itineraries in the Itinerary Builder to display them on
+                Create experiences in the Experience Builder to display them on
                 your website.
               </p>
             </div>
@@ -232,7 +232,7 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
 
       <div className="flex justify-between items-center">
         <div className="text-sm text-gray-500">
-          Selected itineraries will appear on your public website
+          Selected experiences will appear on your public website
         </div>
         <Button
           onClick={saveSettings}

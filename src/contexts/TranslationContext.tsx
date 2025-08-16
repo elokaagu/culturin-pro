@@ -804,7 +804,7 @@ const mockTranslations: Record<string, Record<string, string>> = {
     vi: "Tạo ra những trải nghiệm tuyệt vời",
     tr: "Güzel deneyimler yaratın",
   },
-  "Build engaging cultural experiences with our easy to use itinerary builder":
+  "Build engaging cultural experiences with our easy to use experience builder":
     {
       es: "Construye experiencias culturales atractivas con nuestro creador de itinerarios fácil de usar",
       fr: "Construisez des expériences culturelles engageantes avec notre créateur d'itinéraires facile à utiliser",

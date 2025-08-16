@@ -1,4 +1,4 @@
-// Script to check itineraries for eloka@satellitelabs.xyz
+// Script to check experiences for eloka@satellitelabs.xyz
 const { createClient } = require("@supabase/supabase-js");
 
 // Initialize Supabase client
@@ -17,7 +17,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function checkUserItineraries() {
   try {
-    console.log("🔍 Checking itineraries for eloka@satellitelabs.xyz...\n");
+    console.log("🔍 Checking experiences for eloka@satellitelabs.xyz...\n");
 
     // First, try to find the user by email
     const { data: userData, error: userError } =
@@ -41,24 +41,24 @@ async function checkUserItineraries() {
     console.log(`   Created: ${user.created_at}`);
     console.log(`   Last sign in: ${user.last_sign_in_at}\n`);
 
-    // Check database itineraries
-    console.log("📊 Checking database itineraries...");
+    // Check database experiences
+    console.log("📊 Checking database experiences...");
     const { data: dbItineraries, error: dbError } = await supabase
-      .from("itineraries")
+      .from("experiences")
       .select("*")
       .eq("operator_id", user.id)
       .order("created_at", { ascending: false });
 
     if (dbError) {
-      console.log("❌ Error fetching database itineraries:", dbError.message);
+      console.log("❌ Error fetching database experiences:", dbError.message);
     } else {
-      console.log(`✅ Found ${dbItineraries.length} itineraries in database:`);
-      dbItineraries.forEach((itinerary, index) => {
-        console.log(`   ${index + 1}. ${itinerary.title}`);
-        console.log(`      ID: ${itinerary.id}`);
-        console.log(`      Status: ${itinerary.status}`);
-        console.log(`      Created: ${itinerary.created_at}`);
-        console.log(`      Updated: ${itinerary.updated_at}`);
+      console.log(`✅ Found ${dbItineraries.length} experiences in database:`);
+      dbItineraries.forEach((experience, index) => {
+        console.log(`   ${index + 1}. ${experience.title}`);
+        console.log(`      ID: ${experience.id}`);
+        console.log(`      Status: ${experience.status}`);
+        console.log(`      Created: ${experience.created_at}`);
+        console.log(`      Updated: ${experience.updated_at}`);
         console.log("");
       });
     }

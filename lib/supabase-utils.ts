@@ -354,7 +354,7 @@ export const loyaltyUtils = {
         "Private guide services",
         "VIP airport transfers",
         "24/7 emergency support",
-        "Custom itinerary planning",
+        "Custom experience planning",
       ],
       platinum: [
         "All Gold benefits",

@@ -12,18 +12,18 @@ import {
 import { Laptop, Smartphone, Tablet, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { ItineraryType } from "@/data/itineraryData";
+import { ExperienceType } from "@/data/experienceData";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 // Note: localStorage utilities have been replaced with Supabase storage
 import Image from "@/components/ui/image";
 
 interface WebsitePreviewProps {
-  itineraries?: ItineraryType[];
+  experiences?: ExperienceType[];
 }
 
 const WebsitePreview: React.FC<WebsitePreviewProps> = ({
-  itineraries = [],
+  experiences = [],
 }) => {
   const [viewMode, setViewMode] = useState("desktop");
   const [primaryColor, setPrimaryColor] = useState("#9b87f5");
@@ -169,7 +169,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
               Our Tours
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {itineraries.map((item) => (
+              {experiences.map((item) => (
                 <Card
                   key={item.id}
                   className="overflow-hidden border-2 border-blue-200 shadow-lg"
@@ -203,7 +203,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
             Culturin Magazine
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-8 pb-16">
-            {itineraries.slice(0, 4).map((item, index) => (
+            {experiences.slice(0, 4).map((item, index) => (
               <Card
                 key={item.id}
                 className="bg-white rounded-lg shadow-xl p-4 flex flex-col border-2 border-purple-200"
@@ -233,7 +233,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
             Culturin Times
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {itineraries.slice(0, 6).map((item, index) => (
+            {experiences.slice(0, 6).map((item, index) => (
               <Card
                 key={item.id}
                 className="bg-white rounded shadow p-3 flex flex-col border border-gray-300"
@@ -263,7 +263,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
             Latest Experiences Feed
           </div>
           <div className="space-y-4 max-w-2xl mx-auto">
-            {itineraries.map((item, index) => (
+            {experiences.map((item, index) => (
               <div
                 key={item.id}
                 className="flex items-center gap-4 border-b pb-3"
@@ -331,7 +331,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
               viewMode === "mobile" ? "grid-cols-1" : "grid-cols-3"
             )}
           >
-            {itineraries.slice(0, 3).map((item, index) => (
+            {experiences.slice(0, 3).map((item, index) => (
               <div
                 key={item.id || index}
                 className={cn(
@@ -351,7 +351,7 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({
                 </div>
               </div>
             ))}
-            {itineraries.length === 0 && (
+            {experiences.length === 0 && (
               <>
                 <div
                   className={cn("h-32 rounded", themeStyles.cardClass)}

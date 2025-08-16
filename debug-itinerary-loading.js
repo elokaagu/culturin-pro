@@ -1,4 +1,4 @@
-// Debug script to check itinerary loading
+// Debug script to check experience loading
 const { createClient } = require('@supabase/supabase-js');
 
 // Load environment variables
@@ -15,13 +15,13 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function debugItineraryLoading() {
-  console.log('🔍 Debugging itinerary loading...\n');
+  console.log('🔍 Debugging experience loading...\n');
 
   try {
     // Check if we can connect to Supabase
     console.log('1. Testing Supabase connection...');
     const { data: testData, error: testError } = await supabase
-      .from('itineraries')
+      .from('experiences')
       .select('count')
       .limit(1);
     
@@ -47,24 +47,24 @@ async function debugItineraryLoading() {
       });
     }
 
-    // Check for itineraries
-    console.log('\n3. Checking itineraries table...');
-    const { data: itineraries, error: itinerariesError } = await supabase
-      .from('itineraries')
+    // Check for experiences
+    console.log('\n3. Checking experiences table...');
+    const { data: experiences, error: itinerariesError } = await supabase
+      .from('experiences')
       .select('id, title, operator_id, created_at')
       .limit(10);
 
     if (itinerariesError) {
-      console.error('❌ Error fetching itineraries:', itinerariesError);
+      console.error('❌ Error fetching experiences:', itinerariesError);
     } else {
-      console.log(`✅ Found ${itineraries?.length || 0} itineraries:`);
-      itineraries?.forEach(itinerary => {
-        console.log(`   - ${itinerary.title} (operator: ${itinerary.operator_id})`);
+      console.log(`✅ Found ${experiences?.length || 0} experiences:`);
+      experiences?.forEach(experience => {
+        console.log(`   - ${experience.title} (operator: ${experience.operator_id})`);
       });
     }
 
-    // Check specific user itineraries
-    console.log('\n4. Checking itineraries for specific users...');
+    // Check specific user experiences
+    console.log('\n4. Checking experiences for specific users...');
     const testEmails = ['eloka@satellitelabs.xyz', 'eloka.agu@icloud.com'];
     
     for (const email of testEmails) {
@@ -82,18 +82,18 @@ async function debugItineraryLoading() {
       } else {
         console.log(`   ✅ User found: ${user.email} (${user.role})`);
         
-        // Check their itineraries
+        // Check their experiences
         const { data: userItineraries, error: userItinerariesError } = await supabase
-          .from('itineraries')
+          .from('experiences')
           .select('id, title, status')
           .eq('operator_id', user.id);
 
         if (userItinerariesError) {
-          console.log(`   ❌ Error fetching itineraries: ${userItinerariesError.message}`);
+          console.log(`   ❌ Error fetching experiences: ${userItinerariesError.message}`);
         } else {
-          console.log(`   ✅ Found ${userItineraries?.length || 0} itineraries:`);
-          userItineraries?.forEach(itinerary => {
-            console.log(`      - ${itinerary.title} (${itinerary.status})`);
+          console.log(`   ✅ Found ${userItineraries?.length || 0} experiences:`);
+          userItineraries?.forEach(experience => {
+            console.log(`      - ${experience.title} (${experience.status})`);
           });
         }
       }

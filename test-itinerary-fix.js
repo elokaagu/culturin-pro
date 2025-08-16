@@ -1,4 +1,4 @@
-// Test script to verify itinerary functionality after fix
+// Test script to verify experience functionality after fix
 const { createClient } = require("@supabase/supabase-js");
 
 // Load environment variables
@@ -15,7 +15,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function testItineraryFunctionality() {
-  console.log("🧪 Testing itinerary functionality after fix...\n");
+  console.log("🧪 Testing experience functionality after fix...\n");
 
   try {
     // Step 1: Check user sync
@@ -34,17 +34,17 @@ async function testItineraryFunctionality() {
       console.log("   ❌ User sync incomplete");
     }
 
-    // Step 2: Check itineraries table structure
-    console.log("\n2. Checking itineraries table...");
-    const { data: itineraries, error: itinerariesError } = await supabase
-      .from("itineraries")
+    // Step 2: Check experiences table structure
+    console.log("\n2. Checking experiences table...");
+    const { data: experiences, error: itinerariesError } = await supabase
+      .from("experiences")
       .select("*")
       .limit(1);
 
     if (itinerariesError) {
-      console.log("   ❌ Itineraries table error:", itinerariesError.message);
+      console.log("   ❌ Experiences table error:", itinerariesError.message);
     } else {
-      console.log("   ✅ Itineraries table accessible");
+      console.log("   ✅ Experiences table accessible");
     }
 
     // Step 3: Test basic operations
@@ -55,22 +55,22 @@ async function testItineraryFunctionality() {
       const testUser = publicUsers[0];
       console.log(`   Testing with user: ${testUser.email}`);
 
-      // Try to fetch itineraries for this user
+      // Try to fetch experiences for this user
       const { data: userItineraries, error: fetchError } = await supabase
-        .from("itineraries")
+        .from("experiences")
         .select("*")
         .eq("operator_id", testUser.id);
 
       if (fetchError) {
-        console.log("   ❌ Error fetching itineraries:", fetchError.message);
+        console.log("   ❌ Error fetching experiences:", fetchError.message);
       } else {
         console.log(
-          `   ✅ Can fetch itineraries (${userItineraries.length} found)`
+          `   ✅ Can fetch experiences (${userItineraries.length} found)`
         );
       }
 
       // Test if we can theoretically insert (we won't actually insert)
-      console.log("   ✅ Ready for itinerary creation");
+      console.log("   ✅ Ready for experience creation");
     } else {
       console.log("   ❌ No users available for testing");
     }
@@ -83,7 +83,7 @@ async function testItineraryFunctionality() {
           : "INCOMPLETE")
     );
     console.log(
-      "   - Itineraries table: " + (itinerariesError ? "ERROR" : "OK")
+      "   - Experiences table: " + (itinerariesError ? "ERROR" : "OK")
     );
     console.log(
       "   - Ready for operations: " +

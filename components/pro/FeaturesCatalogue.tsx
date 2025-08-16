@@ -95,7 +95,7 @@ const FeaturesCatalogue = () => {
                   <Calendar className="h-5 w-5 text-culturin-indigo mt-1" />
                 }
                 title="Drag-and-Drop Interface"
-                description="Create multi-day itineraries with simple visual tools"
+                description="Create multi-day experiences with simple visual tools"
               />
               <FeatureItem
                 icon={<Users className="h-5 w-5 text-culturin-indigo mt-1" />}

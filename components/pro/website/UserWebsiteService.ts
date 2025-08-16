@@ -1,6 +1,6 @@
 // User-specific website service for managing website content and settings
 import { supabase } from "@/lib/supabase";
-import { Itinerary } from "@/lib/itinerary-service";
+import { Experience } from "@/lib/experience-service";
 
 export interface UserWebsiteSettings {
   id?: string;
@@ -48,7 +48,7 @@ export interface UserWebsiteSettings {
 
 export interface UserWebsiteData {
   settings: UserWebsiteSettings;
-  itineraries: Itinerary[];
+  experiences: Experience[];
   stats: {
     total_tours: number;
     total_bookings: number;
@@ -124,27 +124,27 @@ class UserWebsiteService {
   }
 
   /**
-   * Get complete user website data (settings + itineraries)
+   * Get complete user website data (settings + experiences)
    */
   async getUserWebsiteData(userId: string): Promise<UserWebsiteData> {
     try {
       // Get user settings
       const settings = await this.getUserWebsiteSettings(userId);
 
-      // Get user's published itineraries
-      const { data: itineraries, error: itinerariesError } = await supabase
-        .from("itineraries")
+      // Get user's published experiences
+      const { data: experiences, error: itinerariesError } = await supabase
+        .from("experiences")
         .select("*")
         .eq("operator_id", userId)
         .eq("status", "published")
         .order("created_at", { ascending: false });
 
       if (itinerariesError) {
-        console.error("Error fetching itineraries:", itinerariesError);
+        console.error("Error fetching experiences:", itinerariesError);
       }
 
-      // Transform itineraries to match interface
-      const transformedItineraries = (itineraries || []).map((item: any) => ({
+      // Transform experiences to match interface
+      const transformedItineraries = (experiences || []).map((item: any) => ({
         id: item.id,
         title: item.title,
         description: item.description,
@@ -174,14 +174,14 @@ class UserWebsiteService {
 
       return {
         settings,
-        itineraries: transformedItineraries,
+        experiences: transformedItineraries,
         stats,
       };
     } catch (error) {
       console.error("Error in getUserWebsiteData:", error);
       return {
         settings: this.getDefaultSettings(userId),
-        itineraries: [],
+        experiences: [],
         stats: {
           total_tours: 0,
           total_bookings: 0,

@@ -17,14 +17,14 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
-import { ItineraryType } from "@/data/itineraryData";
+import { ExperienceType } from "@/data/experienceData";
 import Image from "@/components/ui/image";
 
 const BookingFlowPreview: React.FC = () => {
   const { itineraryId } = useParams();
   const navigate = useNavigate();
-  const [itinerary, setItinerary] = useState<
-    ItineraryType & {
+  const [experience, setItinerary] = useState<
+    ExperienceType & {
       price?: number;
       rating?: number;
       ratingCount?: number;
@@ -66,17 +66,17 @@ const BookingFlowPreview: React.FC = () => {
     // In a real app, this would fetch from an API
     setLoading(true);
 
-    // Simulate API call to fetch itinerary data
+    // Simulate API call to fetch experience data
     setTimeout(() => {
-      // Try to load the itinerary from localStorage if it exists
+      // Try to load the experience from localStorage if it exists
       const allItineraries = JSON.parse(
-        localStorage.getItem("itineraries") || "[]"
+        localStorage.getItem("experiences") || "[]"
       );
       const foundItinerary = allItineraries.find(
         (item: any) => item.id === itineraryId
       );
 
-      const mockItinerary: ItineraryType & {
+      const mockItinerary: ExperienceType & {
         price?: number;
         rating?: number;
         ratingCount?: number;
@@ -307,22 +307,22 @@ const BookingFlowPreview: React.FC = () => {
                   <div className="bg-white rounded-lg border border-gray-200 p-4">
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span>{itinerary.title}</span>
+                        <span>{experience.title}</span>
                         <span>
-                          €{itinerary.price} x {guests}
+                          €{experience.price} x {guests}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Booking fee</span>
-                        <span>€{(itinerary.price || 0) * 0.05 * guests}</span>
+                        <span>€{(experience.price || 0) * 0.05 * guests}</span>
                       </div>
                       <div className="border-t my-2"></div>
                       <div className="flex justify-between font-bold">
                         <span>Total</span>
                         <span>
                           €
-                          {(itinerary.price || 0) * guests +
-                            (itinerary.price || 0) * 0.05 * guests}
+                          {(experience.price || 0) * guests +
+                            (experience.price || 0) * 0.05 * guests}
                         </span>
                       </div>
                     </div>
@@ -453,22 +453,22 @@ const BookingFlowPreview: React.FC = () => {
                       <MapPin className="h-5 w-5 text-gray-500 mt-0.5 mr-3 flex-shrink-0" />
                       <div>
                         <p className="font-medium">Location</p>
-                        <p className="text-gray-600">{itinerary.location}</p>
+                        <p className="text-gray-600">{experience.location}</p>
                       </div>
                     </div>
 
                     <div className="border-t border-gray-200 my-4"></div>
 
                     <div className="flex justify-between">
-                      <span>{itinerary.title}</span>
+                      <span>{experience.title}</span>
                       <span>
-                        €{itinerary.price} x {guests}
+                        €{experience.price} x {guests}
                       </span>
                     </div>
 
                     <div className="flex justify-between">
                       <span>Booking fee</span>
-                      <span>€{(itinerary.price || 0) * 0.05 * guests}</span>
+                      <span>€{(experience.price || 0) * 0.05 * guests}</span>
                     </div>
 
                     <div className="border-t border-gray-200 mt-2 pt-2">
@@ -476,8 +476,8 @@ const BookingFlowPreview: React.FC = () => {
                         <span>Total</span>
                         <span>
                           €
-                          {(itinerary.price || 0) * guests +
-                            (itinerary.price || 0) * 0.05 * guests}
+                          {(experience.price || 0) * guests +
+                            (experience.price || 0) * 0.05 * guests}
                         </span>
                       </div>
                     </div>
@@ -600,8 +600,8 @@ const BookingFlowPreview: React.FC = () => {
                     <div className="flex items-start">
                       <MapPin className="h-5 w-5 text-gray-500 mt-0.5 mr-3 flex-shrink-0" />
                       <div>
-                        <p className="font-medium">{itinerary.title}</p>
-                        <p className="text-gray-600">{itinerary.location}</p>
+                        <p className="font-medium">{experience.title}</p>
+                        <p className="text-gray-600">{experience.location}</p>
                       </div>
                     </div>
 
@@ -635,15 +635,15 @@ const BookingFlowPreview: React.FC = () => {
                     <div className="border-t border-gray-200 my-4"></div>
 
                     <div className="flex justify-between">
-                      <span>{itinerary.title}</span>
+                      <span>{experience.title}</span>
                       <span>
-                        €{itinerary.price} x {guests}
+                        €{experience.price} x {guests}
                       </span>
                     </div>
 
                     <div className="flex justify-between">
                       <span>Booking fee</span>
-                      <span>€{(itinerary.price || 0) * 0.05 * guests}</span>
+                      <span>€{(experience.price || 0) * 0.05 * guests}</span>
                     </div>
 
                     <div className="border-t border-gray-200 mt-2 pt-2">
@@ -651,8 +651,8 @@ const BookingFlowPreview: React.FC = () => {
                         <span>Total</span>
                         <span>
                           €
-                          {(itinerary.price || 0) * guests +
-                            (itinerary.price || 0) * 0.05 * guests}
+                          {(experience.price || 0) * guests +
+                            (experience.price || 0) * 0.05 * guests}
                         </span>
                       </div>
                     </div>
@@ -673,7 +673,7 @@ const BookingFlowPreview: React.FC = () => {
             <div className="space-y-2">
               <h2 className="text-3xl font-bold">Booking Confirmed!</h2>
               <p className="text-gray-600 text-lg">
-                Thank you for booking {itinerary.title}. We've sent a
+                Thank you for booking {experience.title}. We've sent a
                 confirmation to your email.
               </p>
             </div>
@@ -691,7 +691,7 @@ const BookingFlowPreview: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Experience</p>
-                    <p className="font-medium">{itinerary.title}</p>
+                    <p className="font-medium">{experience.title}</p>
                   </div>
                 </div>
 
@@ -722,8 +722,8 @@ const BookingFlowPreview: React.FC = () => {
                     <p className="text-sm text-gray-500">Total Paid</p>
                     <p className="font-medium">
                       €
-                      {(itinerary.price || 0) * guests +
-                        (itinerary.price || 0) * 0.05 * guests}
+                      {(experience.price || 0) * guests +
+                        (experience.price || 0) * 0.05 * guests}
                     </p>
                   </div>
                   <div>
@@ -761,8 +761,8 @@ const BookingFlowPreview: React.FC = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <h1 className="text-xl font-bold">{itinerary.title}</h1>
-              <p className="ml-4 text-sm text-gray-500">{itinerary.location}</p>
+              <h1 className="text-xl font-bold">{experience.title}</h1>
+              <p className="ml-4 text-sm text-gray-500">{experience.location}</p>
             </div>
 
             {step < 4 && (
@@ -844,25 +844,25 @@ const BookingFlowPreview: React.FC = () => {
             <div className="flex items-start gap-4">
               <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-md bg-gray-200">
                 <img
-                  src={itinerary.image || "https://placehold.co/300x300"}
-                  alt={itinerary.title}
+                  src={experience.image || "https://placehold.co/300x300"}
+                  alt={experience.title}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div>
-                <h2 className="text-xl font-bold">{itinerary.title}</h2>
+                <h2 className="text-xl font-bold">{experience.title}</h2>
                 <div className="flex items-center text-sm mt-1">
                   <MapPin className="h-4 w-4 text-gray-500 mr-1" />
-                  <span>{itinerary.location}</span>
+                  <span>{experience.location}</span>
                 </div>
                 <div className="flex items-center text-sm mt-1">
                   <Star className="h-4 w-4 text-yellow-500 mr-1" />
                   <span>
-                    {itinerary.rating} ({itinerary.ratingCount} reviews)
+                    {experience.rating} ({experience.ratingCount} reviews)
                   </span>
                 </div>
                 <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                  {itinerary.description}
+                  {experience.description}
                 </p>
               </div>
             </div>

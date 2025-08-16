@@ -125,11 +125,11 @@ export default function BookingPage({
             try {
               const websiteData = JSON.parse(websiteDataStr);
               if (
-                websiteData.itineraries &&
-                websiteData.itineraries.length > 0
+                websiteData.experiences &&
+                websiteData.experiences.length > 0
               ) {
                 // Find the specific tour by ID
-                const foundItinerary = websiteData.itineraries.find(
+                const foundItinerary = websiteData.experiences.find(
                   (it: any) => it.id === params.tourId
                 );
                 if (foundItinerary) {
@@ -208,7 +208,7 @@ export default function BookingPage({
             ],
             rating: realTour.rating || 0,
             reviews: realTour.reviews || 0,
-            source: "Real Itinerary Data",
+            source: "Real Experience Data",
           };
 
           setTour(transformedTour);

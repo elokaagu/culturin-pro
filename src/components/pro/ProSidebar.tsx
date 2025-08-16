@@ -22,8 +22,8 @@ import { useThemeAwareLogo } from "../../hooks/useThemeAwareLogo";
 const menuItems = [
   { name: "Dashboard", path: "/pro-dashboard", icon: LayoutDashboard },
   {
-    name: "Itineraries",
-    path: "/pro-dashboard/itinerary",
+    name: "Experiences",
+    path: "/pro-dashboard/experience",
     icon: PencilRuler,
   },
   {

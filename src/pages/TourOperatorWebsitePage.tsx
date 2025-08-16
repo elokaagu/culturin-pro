@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation, useNavigate } from '../../lib/navigation';
-import { ItineraryType } from '@/data/itineraryData';
+import { ExperienceType } from '@/data/experienceData';
 import BookingWidget from '@/components/pro/website/BookingWidget';
 import AboutSection from '@/components/pro/website/AboutSection';
 import ContactSection from '@/components/pro/website/ContactSection';
@@ -30,10 +30,10 @@ const TourOperatorWebsitePage: React.FC = () => {
     theme: 'classic',
   });
   
-  const [itineraries, setItineraries] = useState<ItineraryType[]>([]);
+  const [experiences, setItineraries] = useState<ExperienceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState('home');
-  const [selectedTour, setSelectedTour] = useState<ItineraryType | null>(null);
+  const [selectedTour, setSelectedTour] = useState<ExperienceType | null>(null);
 
   // Extract view from path
   useEffect(() => {
@@ -43,7 +43,7 @@ const TourOperatorWebsitePage: React.FC = () => {
       // Extract tour id if present
       const tourId = location.pathname.split('/').pop();
       if (tourId && tourId !== 'booking') {
-        const tour = itineraries.find(it => it.id === tourId);
+        const tour = experiences.find(it => it.id === tourId);
         if (tour) {
           setSelectedTour(tour);
         }
@@ -57,7 +57,7 @@ const TourOperatorWebsitePage: React.FC = () => {
     } else {
       setCurrentView('home');
     }
-  }, [location.pathname, itineraries]);
+  }, [location.pathname, experiences]);
 
   useEffect(() => {
     // Fetch website data from Supabase storage
@@ -91,7 +91,7 @@ const TourOperatorWebsitePage: React.FC = () => {
     navigate(`/tour/${slug}/${path}`);
   };
 
-  const handleTourSelect = (tour: ItineraryType) => {
+  const handleTourSelect = (tour: ExperienceType) => {
     setSelectedTour(tour);
     navigate(`/tour/${slug}/booking/${tour.id}`);
   };
@@ -217,7 +217,7 @@ const TourOperatorWebsitePage: React.FC = () => {
         {currentView === 'booking' ? (
           <div className="container mx-auto px-4">
             <BookingWidget 
-              tour={selectedTour || itineraries[0]} 
+              tour={selectedTour || experiences[0]} 
               primaryColor={websiteData.primaryColor}
               companyName={websiteData.companyName}
             />
@@ -230,7 +230,7 @@ const TourOperatorWebsitePage: React.FC = () => {
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-10">All Our Experiences</h2>
             <ToursGrid 
-              itineraries={itineraries} 
+              experiences={experiences} 
               onTourSelect={handleTourSelect} 
               primaryColor={websiteData.primaryColor} 
             />
@@ -243,12 +243,12 @@ const TourOperatorWebsitePage: React.FC = () => {
               <div className="container mx-auto px-4">
                 <h2 className="text-3xl font-bold text-center mb-10">Our Experiences</h2>
                 <ToursGrid 
-                  itineraries={itineraries.slice(0, 3)} 
+                  experiences={experiences.slice(0, 3)} 
                   onTourSelect={handleTourSelect} 
                   primaryColor={websiteData.primaryColor} 
                 />
                 
-                {itineraries.length > 3 && (
+                {experiences.length > 3 && (
                   <div className="text-center mt-8">
                     <button 
                       className="px-6 py-2 rounded-md text-white font-medium"

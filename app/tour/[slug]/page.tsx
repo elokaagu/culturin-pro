@@ -17,7 +17,7 @@ import {
   MapIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Itinerary as ItineraryType } from "@/hooks/useItineraries";
+import { Experience as ExperienceType } from "@/hooks/useExperiences";
 import { userWebsiteService } from "@/components/pro/website/UserWebsiteService";
 
 type Tour = {
@@ -59,7 +59,7 @@ export default function TourOperatorPage({
   const [theme, setTheme] = useState("classic");
   const [layout, setLayout] = useState("hero-top");
   const [publishedItineraries, setPublishedItineraries] = useState<
-    ItineraryType[]
+    ExperienceType[]
   >([]);
 
   useEffect(() => {
@@ -144,7 +144,7 @@ export default function TourOperatorPage({
 
       // Load website data - prioritize user customizations
       let websiteData = null;
-      let itineraries: ItineraryType[] = [];
+      let experiences: ExperienceType[] = [];
       let finalWebsiteSettings = null;
 
       if (userId) {
@@ -218,8 +218,8 @@ export default function TourOperatorPage({
               };
               console.log("Loaded from database:", finalWebsiteSettings);
 
-              // Also load itineraries from database
-              itineraries = dbWebsiteData.itineraries.map((item) => ({
+              // Also load experiences from database
+              experiences = dbWebsiteData.experiences.map((item) => ({
                 id:
                   item.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
                 title: item.title,
@@ -252,29 +252,29 @@ export default function TourOperatorPage({
           }
         }
 
-        // Load itineraries if not loaded from database
-        if (itineraries.length === 0) {
+        // Load experiences if not loaded from database
+        if (experiences.length === 0) {
           try {
-            const userItinerariesKey = `userItineraries_${userId}`;
+            const userItinerariesKey = `userExperiences_${userId}`;
             const itinerariesStr = localStorage.getItem(userItinerariesKey);
             if (itinerariesStr) {
               const savedItineraries = JSON.parse(itinerariesStr);
-              itineraries = savedItineraries.filter(
+              experiences = savedItineraries.filter(
                 (item: any) => item.status === "published"
               );
               console.log(
-                "Loaded itineraries from localStorage:",
-                itineraries.length
+                "Loaded experiences from localStorage:",
+                experiences.length
               );
             }
           } catch (e) {
-            console.error("Error loading itineraries:", e);
+            console.error("Error loading experiences:", e);
           }
         }
       }
 
       // Set the loaded data
-      setPublishedItineraries(itineraries);
+      setPublishedItineraries(experiences);
 
       // Store final settings for use below
       websiteData = { settings: finalWebsiteSettings };
@@ -320,22 +320,22 @@ export default function TourOperatorPage({
         tours: [],
       };
 
-      // Convert real itineraries to tours - only use actual data, no fallbacks
-      const toursFromItineraries: Tour[] = itineraries.map((itinerary) => ({
-        id: itinerary.id || "",
-        name: itinerary.title || "",
-        duration: itinerary.days
-          ? `${itinerary.days} ${itinerary.days === 1 ? "day" : "days"}`
+      // Convert real experiences to tours - only use actual data, no fallbacks
+      const toursFromItineraries: Tour[] = experiences.map((experience) => ({
+        id: experience.id || "",
+        name: experience.title || "",
+        duration: experience.days
+          ? `${experience.days} ${experience.days === 1 ? "day" : "days"}`
           : "",
-        price: itinerary.price || 0,
-        image: itinerary.image || "",
-        description: itinerary.description || "",
-        highlights: itinerary.highlights || [],
+        price: experience.price || 0,
+        image: experience.image || "",
+        description: experience.description || "",
+        highlights: experience.highlights || [],
         rating: 0, // No fake ratings
         reviews: 0, // No fake reviews
       }));
 
-      // Only use real itineraries, no fallback to sample tours
+      // Only use real experiences, no fallback to sample tours
       defaultData.tours = toursFromItineraries;
 
       setOperatorData(defaultData);
@@ -658,7 +658,7 @@ export default function TourOperatorPage({
                     </div>
                   )}
 
-                  {/* Tours/Itineraries section */}
+                  {/* Tours/Experiences section */}
                   {operatorData?.tours && operatorData.tours.length > 0 && (
                     <div className="mb-16">
                       <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">

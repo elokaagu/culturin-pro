@@ -729,7 +729,7 @@ const ProductMarketingPage = () => {
                   icon: <Image className="h-12 w-12 text-blue-600" />,
                   title: "Visual Materials",
                   description:
-                    "Design professional flyers, itineraries, and visual assets for your experiences.",
+                    "Design professional flyers, experiences, and visual assets for your experiences.",
                 },
                 {
                   icon: <Calendar className="h-12 w-12 text-blue-600" />,

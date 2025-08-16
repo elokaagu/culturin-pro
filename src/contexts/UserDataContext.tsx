@@ -13,7 +13,7 @@ interface UserData {
   studio_access?: boolean;
   preferences?: Record<string, any>;
   settings?: Record<string, any>;
-  itineraries?: any[];
+  experiences?: any[];
   lastLogin?: string;
 }
 
@@ -77,10 +77,10 @@ export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) 
         }
 
         // Load additional data from Supabase storage
-        const [preferences, settings, itineraries, lastLogin] = await Promise.all([
+        const [preferences, settings, experiences, lastLogin] = await Promise.all([
           supabaseStorage.getItem(`userPreferences_${user.id}`),
           supabaseStorage.getItem(`userSettings_${user.id}`),
-          supabaseStorage.getItem(`userItineraries_${user.id}`),
+          supabaseStorage.getItem(`userExperiences_${user.id}`),
           supabaseStorage.getItem(`userLastLogin_${user.id}`),
         ]);
 
@@ -92,7 +92,7 @@ export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) 
           studio_access: userProfile?.studio_access ?? true,
           preferences: preferences || {},
           settings: settings || {},
-          itineraries: itineraries || [],
+          experiences: experiences || [],
           lastLogin: lastLogin || new Date().toISOString(),
         };
 
@@ -174,8 +174,8 @@ export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) 
         await supabaseStorage.setItem(`userSettings_${user.id}`, updates.settings);
       }
 
-      if (updates.itineraries) {
-        await supabaseStorage.setItem(`userItineraries_${user.id}`, updates.itineraries);
+      if (updates.experiences) {
+        await supabaseStorage.setItem(`userExperiences_${user.id}`, updates.experiences);
       }
 
       console.log("User data updated:", updates);
@@ -201,10 +201,10 @@ export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) 
         console.error("Error refreshing user profile:", error);
       }
 
-      const [preferences, settings, itineraries, lastLogin] = await Promise.all([
+      const [preferences, settings, experiences, lastLogin] = await Promise.all([
         supabaseStorage.getItem(`userPreferences_${user.id}`),
         supabaseStorage.getItem(`userSettings_${user.id}`),
-        supabaseStorage.getItem(`userItineraries_${user.id}`),
+        supabaseStorage.getItem(`userExperiences_${user.id}`),
         supabaseStorage.getItem(`userLastLogin_${user.id}`),
       ]);
 
@@ -216,7 +216,7 @@ export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) 
         studio_access: userProfile?.studio_access ?? true,
         preferences: preferences || {},
         settings: settings || {},
-        itineraries: itineraries || [],
+        experiences: experiences || [],
         lastLogin: lastLogin || new Date().toISOString(),
       };
 
@@ -238,7 +238,7 @@ export const UserDataProvider: React.FC<UserDataProviderProps> = ({ children }) 
       const keysToRemove = [
         `userPreferences_${user.id}`,
         `userSettings_${user.id}`,
-        `userItineraries_${user.id}`,
+        `userExperiences_${user.id}`,
         `userLastLogin_${user.id}`,
       ];
 

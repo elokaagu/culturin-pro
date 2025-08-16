@@ -24,7 +24,7 @@ const ProBookingPage = () => {
 
   const handleCreateNewExperience = () => {
     // Route to the experience creation flow
-    navigate("/pro-dashboard/itinerary?new=true");
+    navigate("/pro-dashboard/experience?new=true");
   };
 
   return (

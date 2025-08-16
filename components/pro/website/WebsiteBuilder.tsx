@@ -45,11 +45,11 @@ import {
   X,
 } from "lucide-react";
 import { useNavigate } from "../../../lib/navigation";
-import { Itinerary } from "@/hooks/useItineraries";
+import { Experience } from "@/hooks/useExperiences";
 import { useUserData } from "../../../src/contexts/UserDataContext";
 import MediaLibrary from "./MediaLibrary";
 import { settingsService } from "@/lib/settings-service";
-import { itineraryService } from "@/lib/itinerary-service";
+import { experienceService } from "@/lib/experience-service";
 import { supabase } from "@/lib/supabase";
 import { supabaseStorage } from "@/lib/supabase-storage";
 import { useAuth } from "@/hooks/useAuth";
@@ -57,19 +57,19 @@ import { useAuth } from "@/hooks/useAuth";
 // History management for undo/redo functionality
 interface HistoryState {
   websiteSettings: any;
-  itineraries: Itinerary[];
+  experiences: Experience[];
   timestamp: number;
 }
 
 interface HistoryInput {
   websiteSettings: any;
-  itineraries: Itinerary[];
+  experiences: Experience[];
 }
 
 // Website data structure for persistence
 interface WebsiteData {
   settings: any;
-  itineraries: Itinerary[];
+  experiences: Experience[];
   blocks: any[];
   theme: string;
   publishedUrl: string;
@@ -83,7 +83,7 @@ const WebsiteBuilder: React.FC = () => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("preview");
   const [publishedUrl, setPublishedUrl] = useState("");
-  const [itineraries, setItineraries] = useState<Itinerary[]>([]);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
   const [previewKey, setPreviewKey] = useState(0);
   const [websiteSettingsChanged, setWebsiteSettingsChanged] = useState(false);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
@@ -96,10 +96,10 @@ const WebsiteBuilder: React.FC = () => {
     "desktop"
   );
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [selectedTour, setSelectedTour] = useState<Itinerary | null>(null);
+  const [selectedTour, setSelectedTour] = useState<Experience | null>(null);
   const [showBookingPreview, setShowBookingPreview] = useState(false);
-  const [itinerariesLoading, setItinerariesLoading] = useState(false);
-  const [itinerariesError, setItinerariesError] = useState<string | null>(null);
+  const [experiencesLoading, setExperiencesLoading] = useState(false);
+  const [experiencesError, setExperiencesError] = useState<string | null>(null);
 
   // History management
   const [history, setHistory] = useState<HistoryState[]>([]);
@@ -120,30 +120,30 @@ const WebsiteBuilder: React.FC = () => {
       try {
         if (!user?.id) {
           console.log("No authenticated user, using defaults");
-          setItineraries([]);
+          setExperiences([]);
           setPublishedUrl("tour/demo");
           setHasUnsavedChanges(false);
-          setItinerariesLoading(false);
+          setExperiencesLoading(false);
           return;
         }
 
-        setItinerariesLoading(true);
-        setItinerariesError(null);
+        setExperiencesLoading(true);
+        setExperiencesError(null);
 
         // Set a timeout to prevent infinite loading
         loadingTimeout = setTimeout(() => {
           console.warn("Website data loading timeout - forcing loading to false");
-          setItinerariesLoading(false);
-          setItinerariesError("Loading timeout - please refresh the page");
+          setExperiencesLoading(false);
+          setExperiencesError("Loading timeout - please refresh the page");
           
           // Try to load from localStorage as fallback
           try {
             const savedData = localStorage.getItem(`websiteData_${user.id}`);
             if (savedData) {
               const parsed = JSON.parse(savedData);
-              if (parsed.itineraries && Array.isArray(parsed.itineraries)) {
-                setItineraries(parsed.itineraries);
-                console.log("✅ Loaded itineraries from localStorage fallback:", parsed.itineraries.length);
+              if (parsed.experiences && Array.isArray(parsed.experiences)) {
+                setExperiences(parsed.experiences);
+                console.log("✅ Loaded experiences from localStorage fallback:", parsed.experiences.length);
               }
             }
           } catch (localError) {
@@ -170,14 +170,14 @@ const WebsiteBuilder: React.FC = () => {
               setPublishedUrl(defaultUrl);
             }
 
-            // Set itineraries
-            setItineraries(websiteData.itineraries || []);
-            console.log("✅ Itineraries loaded successfully:", websiteData.itineraries?.length || 0);
+            // Set experiences
+            setExperiences(websiteData.experiences || []);
+            console.log("✅ Experiences loaded successfully:", websiteData.experiences?.length || 0);
             
             // Save to localStorage for fallback
             localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
               settings: websiteData.settings,
-              itineraries: websiteData.itineraries,
+              experiences: websiteData.experiences,
               publishedUrl: websiteData.settings.published_url,
               lastLoaded: new Date().toISOString(),
             }));
@@ -187,7 +187,7 @@ const WebsiteBuilder: React.FC = () => {
               `websiteData_${user.id}`,
               JSON.stringify({
                 settings: websiteData.settings,
-                itineraries: websiteData.itineraries,
+                experiences: websiteData.experiences,
                 publishedUrl: websiteData.settings.published_url,
                 lastLoaded: new Date().toISOString(),
               })
@@ -216,21 +216,21 @@ const WebsiteBuilder: React.FC = () => {
           if (savedData) {
             try {
               const parsed = JSON.parse(savedData);
-              setItineraries(parsed.itineraries || []);
-              console.log("📦 Itineraries loaded from localStorage:", parsed.itineraries?.length || 0);
+              setExperiences(parsed.experiences || []);
+              console.log("📦 Experiences loaded from localStorage:", parsed.experiences?.length || 0);
               if (parsed.publishedUrl) setPublishedUrl(parsed.publishedUrl);
             } catch (e) {
               console.error("Error parsing saved data:", e);
-              setItinerariesError("Failed to load saved data");
+              setExperiencesError("Failed to load saved data");
             }
           } else {
-            // Try to load itineraries from the itinerary service as fallback
+            // Try to load experiences from the experience service as fallback
             try {
-              console.log("🔄 Trying itinerary service fallback...");
+              console.log("🔄 Trying experience service fallback...");
               const { data: { session } } = await supabase.auth.getSession();
               if (session?.user) {
                 const { data: dbItineraries, error: itineraryError } = await supabase
-                  .from("itineraries")
+                  .from("experiences")
                   .select("*")
                   .eq("operator_id", session.user.id)
                   .order("created_at", { ascending: false });
@@ -256,24 +256,24 @@ const WebsiteBuilder: React.FC = () => {
                     status: item.status || "draft",
                   }));
                   
-                  setItineraries(transformedItineraries);
-                  console.log("✅ Itineraries loaded from direct database query:", transformedItineraries.length);
+                  setExperiences(transformedItineraries);
+                  console.log("✅ Experiences loaded from direct database query:", transformedItineraries.length);
                   
                   // Save to localStorage for future use
                   localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
                     settings: {},
-                    itineraries: transformedItineraries,
+                    experiences: transformedItineraries,
                     publishedUrl: "tour/demo",
                     lastLoaded: new Date().toISOString(),
                   }));
                 } else {
-                  console.log("📭 No itineraries found in database, starting with empty list");
-                  setItineraries([]);
+                  console.log("📭 No experiences found in database, starting with empty list");
+                  setExperiences([]);
                 }
               }
             } catch (fallbackError) {
-              console.error("Itinerary service fallback failed:", fallbackError);
-              setItineraries([]);
+              console.error("Experience service fallback failed:", fallbackError);
+              setExperiences([]);
             }
           }
 
@@ -285,7 +285,7 @@ const WebsiteBuilder: React.FC = () => {
         // Add initial state to history
         const initialHistory: HistoryState = {
           websiteSettings: {},
-          itineraries: itineraries || [],
+          experiences: experiences || [],
           timestamp: Date.now(),
         };
         setHistory([initialHistory]);
@@ -297,11 +297,11 @@ const WebsiteBuilder: React.FC = () => {
         setSaveStatus("saved");
       } catch (error) {
         console.error("Error loading website data:", error);
-        setItineraries([]);
+        setExperiences([]);
         setPublishedUrl("tour/demo");
-        setItinerariesError("Failed to load website data");
+        setExperiencesError("Failed to load website data");
       } finally {
-        setItinerariesLoading(false);
+        setExperiencesLoading(false);
         if (loadingTimeout) {
           clearTimeout(loadingTimeout);
         }
@@ -337,7 +337,7 @@ const WebsiteBuilder: React.FC = () => {
     setIsUndoRedoAction(false);
   }, [autoSaveEnabled]);
 
-  // Auto-save when itineraries or website data changes
+  // Auto-save when experiences or website data changes
   useEffect(() => {
     if (autoSaveEnabled && hasUnsavedChanges && !isUndoRedoAction) {
       const timeoutId = setTimeout(() => {
@@ -346,7 +346,7 @@ const WebsiteBuilder: React.FC = () => {
 
       return () => clearTimeout(timeoutId);
     }
-  }, [itineraries, publishedUrl, autoSaveEnabled, hasUnsavedChanges, isUndoRedoAction]);
+  }, [experiences, publishedUrl, autoSaveEnabled, hasUnsavedChanges, isUndoRedoAction]);
 
   // Listen for website settings changes
   useEffect(() => {
@@ -355,12 +355,12 @@ const WebsiteBuilder: React.FC = () => {
       setHasUnsavedChanges(true);
       setSaveStatus("saving");
 
-      // Update itineraries if they changed
+      // Update experiences if they changed
       if (event.detail?.filteredItineraries) {
-        setItineraries(event.detail.filteredItineraries);
+        setExperiences(event.detail.filteredItineraries);
         addToHistory({
           websiteSettings: {},
-          itineraries: event.detail.filteredItineraries,
+          experiences: event.detail.filteredItineraries,
         });
       }
       toast.success("Preview updated", {
@@ -374,7 +374,7 @@ const WebsiteBuilder: React.FC = () => {
       setSaveStatus("saving");
       addToHistory({
         websiteSettings: {},
-        itineraries,
+        experiences,
       });
       toast.success("Theme applied", {
         description: `Applied "${event.detail.theme}" theme to preview`,
@@ -383,28 +383,28 @@ const WebsiteBuilder: React.FC = () => {
 
     const handleItineraryChange = async (event: CustomEvent) => {
       try {
-        // Refresh itineraries from database when itinerary changes
+        // Refresh experiences from database when experience changes
         const { data: user } = await supabase.auth.getUser();
         if (user.user) {
-          const dbItineraries = await itineraryService.getItineraries();
+          const dbItineraries = await experienceService.getExperiences();
 
-          // Always update itineraries, even if empty
-          setItineraries(dbItineraries || []);
+          // Always update experiences, even if empty
+          setExperiences(dbItineraries || []);
 
           if (dbItineraries && dbItineraries.length > 0) {
-            // Note: Itineraries are now saved to Supabase storage
+            // Note: Experiences are now saved to Supabase storage
           } else {
-            // Note: Itineraries are now saved to Supabase storage
+            // Note: Experiences are now saved to Supabase storage
           }
 
           setPreviewKey((prev) => prev + 1);
-          toast.success("Itineraries updated", {
-            description: "Website preview reflects latest itinerary changes",
+          toast.success("Experiences updated", {
+            description: "Website preview reflects latest experience changes",
           });
         }
       } catch (error) {
-        console.error("Error updating itineraries:", error);
-        toast.error("Failed to update itineraries", {
+        console.error("Error updating experiences:", error);
+        toast.error("Failed to update experiences", {
           description: "Please try refreshing the page",
         });
       }
@@ -467,8 +467,8 @@ const WebsiteBuilder: React.FC = () => {
 
       // Restore state
       // Note: Website settings would be saved to a separate service in the new structure
-      setItineraries(previousState.itineraries);
-      // Note: Itineraries are now saved to Supabase storage
+      setExperiences(previousState.experiences);
+      // Note: Experiences are now saved to Supabase storage
 
       toast.success("Undone", {
         description: "Reverted to previous state",
@@ -484,8 +484,8 @@ const WebsiteBuilder: React.FC = () => {
 
       // Restore state
       // Note: Website settings would be saved to a separate service in the new structure
-      setItineraries(nextState.itineraries);
-      // Note: Itineraries are now saved to Supabase storage
+      setExperiences(nextState.experiences);
+      // Note: Experiences are now saved to Supabase storage
 
       toast.success("Redone", {
         description: "Applied next state",
@@ -563,7 +563,7 @@ const WebsiteBuilder: React.FC = () => {
       // Save website data to Supabase for authenticated users
       const websiteData = {
         settings: currentSettings,
-        itineraries: itineraries.slice(0, 5), // Limit to 5 itineraries
+        experiences: experiences.slice(0, 5), // Limit to 5 experiences
         blocks: blocks, // Include block data
         publishedUrl: publishedUrl,
         lastModified: new Date().toISOString(),
@@ -623,7 +623,7 @@ const WebsiteBuilder: React.FC = () => {
     } finally {
       setSaveLoading(false);
     }
-  }, [itineraries, publishedUrl, autoSaveEnabled, isLoggedIn, user]);
+  }, [experiences, publishedUrl, autoSaveEnabled, isLoggedIn, user]);
 
   // Function to mark changes and trigger auto-save
   const markChanges = useCallback(() => {
@@ -751,7 +751,7 @@ const WebsiteBuilder: React.FC = () => {
           `websiteData_${user.id}`,
           JSON.stringify({
             settings: updatedSettings,
-            itineraries: itineraries.slice(0, 10), // Save current itineraries
+            experiences: experiences.slice(0, 10), // Save current experiences
             blocks: blocks, // Include block data
             publishedUrl: publishedUrl,
             lastSaved: new Date().toISOString(),
@@ -765,7 +765,7 @@ const WebsiteBuilder: React.FC = () => {
         // Fallback to localStorage
         localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
           settings: updatedSettings,
-          itineraries: itineraries.slice(0, 10),
+          experiences: experiences.slice(0, 10),
           blocks: [],
           publishedUrl: publishedUrl,
           lastSaved: new Date().toISOString(),
@@ -791,7 +791,7 @@ const WebsiteBuilder: React.FC = () => {
     } finally {
       setSaveLoading(false);
     }
-  }, [user?.id, itineraries, publishedUrl]);
+  }, [user?.id, experiences, publishedUrl]);
 
   // Handle block changes in the website builder
   const handleBlockChange = useCallback(() => {
@@ -811,7 +811,7 @@ const WebsiteBuilder: React.FC = () => {
           theme: "classic",
           enableBooking: true,
         },
-        itineraries: itineraries,
+        experiences: experiences,
         blocks: [],
         theme: "classic",
         publishedUrl: publishedUrl,
@@ -841,7 +841,7 @@ const WebsiteBuilder: React.FC = () => {
         description: "Please try again",
       });
     }
-  }, [itineraries, publishedUrl]);
+  }, [experiences, publishedUrl]);
 
   // Import website data
   const handleImportWebsite = useCallback(
@@ -857,9 +857,9 @@ const WebsiteBuilder: React.FC = () => {
           );
 
           // Validate the imported data
-          if (websiteData.settings && websiteData.itineraries) {
+          if (websiteData.settings && websiteData.experiences) {
             // Note: Website settings would be saved to a separate service in the new structure
-            setItineraries(websiteData.itineraries);
+            setExperiences(websiteData.experiences);
             if (websiteData.publishedUrl) {
               setPublishedUrl(websiteData.publishedUrl);
               localStorage.setItem(
@@ -1012,23 +1012,23 @@ const WebsiteBuilder: React.FC = () => {
     setRefreshLoading(true);
 
     try {
-      // Refresh itineraries from database
+      // Refresh experiences from database
       const { data: user } = await supabase.auth.getUser();
       if (user.user) {
-        const dbItineraries = await itineraryService.getItineraries();
+        const dbItineraries = await experienceService.getExperiences();
 
-        // Always update itineraries, even if empty
-        setItineraries(dbItineraries || []);
+        // Always update experiences, even if empty
+        setExperiences(dbItineraries || []);
 
-        // Note: Itineraries are now saved to Supabase storage
+        // Note: Experiences are now saved to Supabase storage
       } else {
-        setItineraries([]);
-        // Note: Itineraries are now saved to Supabase storage
+        setExperiences([]);
+        // Note: Experiences are now saved to Supabase storage
       }
 
       setPreviewKey((prev) => prev + 1);
       toast.success("Preview refreshed", {
-        description: "Website preview has been updated with latest itineraries",
+        description: "Website preview has been updated with latest experiences",
       });
     } catch (error) {
       console.error("Error refreshing preview:", error);
@@ -1062,7 +1062,7 @@ const WebsiteBuilder: React.FC = () => {
     );
   };
 
-  const handleTourSelect = (tour: Itinerary) => {
+  const handleTourSelect = (tour: Experience) => {
     setSelectedTour(tour);
     setShowBookingPreview(true);
     // Store tour data in localStorage for the booking page to access
@@ -1083,11 +1083,11 @@ const WebsiteBuilder: React.FC = () => {
     }
   };
 
-  const retryLoadItineraries = async () => {
+  const retryLoadExperiences = async () => {
     if (!user?.id) return;
     
-    setItinerariesError(null);
-    setItinerariesLoading(true);
+    setExperiencesError(null);
+    setExperiencesLoading(true);
     
     try {
       // Clear localStorage and try fresh load
@@ -1095,22 +1095,22 @@ const WebsiteBuilder: React.FC = () => {
       
       const websiteData = await userWebsiteService.getUserWebsiteData(user.id);
       if (websiteData) {
-        setItineraries(websiteData.itineraries || []);
-        console.log("🔄 Retry successful - itineraries loaded:", websiteData.itineraries?.length || 0);
+        setExperiences(websiteData.experiences || []);
+        console.log("🔄 Retry successful - experiences loaded:", websiteData.experiences?.length || 0);
         
         // Update localStorage with fresh data
         localStorage.setItem(`websiteData_${user.id}`, JSON.stringify({
           settings: websiteData.settings,
-          itineraries: websiteData.itineraries,
+          experiences: websiteData.experiences,
           publishedUrl: websiteData.settings.published_url,
           lastLoaded: new Date().toISOString(),
         }));
       }
     } catch (error) {
       console.error("Retry failed:", error);
-      setItinerariesError("Retry failed - please refresh the page");
+      setExperiencesError("Retry failed - please refresh the page");
     } finally {
-      setItinerariesLoading(false);
+      setExperiencesLoading(false);
     }
   };
 
@@ -1450,13 +1450,13 @@ const WebsiteBuilder: React.FC = () => {
             <div className="h-full">
               <WebsitePreview
                 key={`preview-${previewKey}-${activeTab}`}
-                itineraries={itineraries}
+                experiences={experiences}
                 viewMode={viewMode}
                 onTourSelect={handleTourSelect}
                 websiteSlug={publishedUrl}
-                isLoading={itinerariesLoading}
-                error={itinerariesError}
-                onRetry={retryLoadItineraries}
+                isLoading={experiencesLoading}
+                error={experiencesError}
+                onRetry={retryLoadExperiences}
               />
 
               {/* Booking Preview Modal */}

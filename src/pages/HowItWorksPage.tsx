@@ -25,7 +25,7 @@ const HowItWorksPage = () => {
     {
       title: "Create beautiful experiences",
       description:
-        "Build engaging cultural experiences with our easy-to-use itinerary builder",
+        "Build engaging cultural experiences with our easy-to-use experience builder",
       icon: <PencilRuler className="h-8 w-8 text-blue-600" />,
     },
     {
@@ -124,7 +124,7 @@ const HowItWorksPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {[
                   {
-                    title: "Itinerary Builder",
+                    title: "Experience Builder",
                     description:
                       "Create compelling experiences with our visual tour builder",
                   },

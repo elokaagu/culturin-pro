@@ -106,9 +106,9 @@ export const faqItems: FAQ[] = [
   {
     id: "faq-5",
     category: "features",
-    question: "How do I use the itinerary builder?",
+    question: "How do I use the experience builder?",
     answer:
-      'Access the itinerary builder from your dashboard by clicking "Create New Experience". You can add locations, activities, timing, and custom details. Drag and drop elements to reorder, and use our templates for quick setup.',
+      'Access the experience builder from your dashboard by clicking "Create New Experience". You can add locations, activities, timing, and custom details. Drag and drop elements to reorder, and use our templates for quick setup.',
     createdAt: "2024-01-15T10:00:00Z",
     updatedAt: "2024-01-15T10:00:00Z",
     isActive: true,

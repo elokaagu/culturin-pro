@@ -18,7 +18,7 @@ import {
   Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ItineraryType } from "@/data/itineraryData";
+import { ExperienceType } from "@/data/experienceData";
 
 type Tour = {
   id: string;
@@ -60,7 +60,7 @@ const TourOperatorWebsite: React.FC = () => {
   const [operatorData, setOperatorData] = useState<OperatorData | null>(null);
   const [theme, setTheme] = useState("classic");
   const [publishedItineraries, setPublishedItineraries] = useState<
-    ItineraryType[]
+    ExperienceType[]
   >([]);
   const navigate = useNavigate();
 
@@ -75,7 +75,7 @@ const TourOperatorWebsite: React.FC = () => {
 
     let publishedContent = null;
     let headerImage = null;
-    let itineraries: ItineraryType[] = [];
+    let experiences: ExperienceType[] = [];
 
     if (publishedContentStr) {
       try {
@@ -88,10 +88,10 @@ const TourOperatorWebsite: React.FC = () => {
 
     if (publishedItinerariesStr) {
       try {
-        itineraries = JSON.parse(publishedItinerariesStr);
-        setPublishedItineraries(itineraries);
+        experiences = JSON.parse(publishedItinerariesStr);
+        setPublishedItineraries(experiences);
       } catch (e) {
-        console.error("Error parsing published itineraries:", e);
+        console.error("Error parsing published experiences:", e);
       }
     }
 
@@ -133,15 +133,15 @@ const TourOperatorWebsite: React.FC = () => {
         defaultData.coverImage = publishedContent.headerImage || null;
       }
 
-      // Convert itineraries to tours
-      const toursFromItineraries: Tour[] = itineraries.map((itinerary) => ({
-        id: itinerary.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
-        name: itinerary.title,
-        duration: `${itinerary.days} ${itinerary.days === 1 ? "day" : "days"}`,
+      // Convert experiences to tours
+      const toursFromItineraries: Tour[] = experiences.map((experience) => ({
+        id: experience.id || `tour-${Math.random().toString(36).substr(2, 9)}`,
+        name: experience.title,
+        duration: `${experience.days} ${experience.days === 1 ? "day" : "days"}`,
         price: Math.floor(Math.random() * 50) + 40, // Generate random price between 40-90
-        image: itinerary.image || "https://placehold.co/600x400",
+        image: experience.image || "https://placehold.co/600x400",
         description:
-          itinerary.description || `Experience the best of ${itinerary.title}.`,
+          experience.description || `Experience the best of ${experience.title}.`,
         highlights: [
           "Expert local guides",
           "Small groups of max 10 people",
@@ -151,7 +151,7 @@ const TourOperatorWebsite: React.FC = () => {
         reviews: Math.floor(Math.random() * 100) + 50, // Random number of reviews between 50-150
       }));
 
-      // If we have itineraries, use those; otherwise fallback to sample tours
+      // If we have experiences, use those; otherwise fallback to sample tours
       if (toursFromItineraries.length > 0) {
         defaultData.tours = toursFromItineraries;
       } else {

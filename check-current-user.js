@@ -65,17 +65,17 @@ async function checkCurrentUser() {
         console.log(`   Role: ${publicUser.role}`);
       }
 
-      // Check if user can access itineraries
-      console.log("\n4. Testing itinerary access...");
-      const { data: itineraries, error: itinerariesError } = await supabase
-        .from("itineraries")
+      // Check if user can access experiences
+      console.log("\n4. Testing experience access...");
+      const { data: experiences, error: itinerariesError } = await supabase
+        .from("experiences")
         .select("*")
         .eq("operator_id", session.user.id);
 
       if (itinerariesError) {
-        console.log("❌ Cannot access itineraries:", itinerariesError.message);
+        console.log("❌ Cannot access experiences:", itinerariesError.message);
       } else {
-        console.log(`✅ Can access itineraries (${itineraries.length} found)`);
+        console.log(`✅ Can access experiences (${experiences.length} found)`);
       }
     } else {
       console.log("❌ No active session found");

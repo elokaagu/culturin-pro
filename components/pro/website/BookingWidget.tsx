@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Itinerary } from "@/hooks/useItineraries";
+import { Experience } from "@/hooks/useExperiences";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ import { toast } from "sonner";
 import { useUserData } from "../../../src/contexts/UserDataContext";
 
 interface BookingWidgetProps {
-  tour: Itinerary & {
+  tour: Experience & {
     price?: number;
     currency?: string;
     groupSize?: { min: number; max: number };

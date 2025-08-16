@@ -130,7 +130,7 @@ const TrustedOperators = () => {
       name: "Maria Sanchez",
       company: "Barcelona Tapas Tours",
       quote:
-        "Since using Culturin, our bookings have increased by 65% and the itinerary builder saved me countless hours of work.",
+        "Since using Culturin, our bookings have increased by 65% and the experience builder saved me countless hours of work.",
       image:
         "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1000&auto=format&fit=crop",
       category: "Food Tours",

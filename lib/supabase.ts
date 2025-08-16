@@ -170,7 +170,7 @@ export type Database = {
           status?: "active" | "inactive" | "draft";
         };
       };
-      itineraries: {
+      experiences: {
         Row: {
           id: string;
           created_at: string;

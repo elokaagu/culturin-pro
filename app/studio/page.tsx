@@ -28,7 +28,7 @@ import { useAuth } from "@/src/components/auth/AuthProvider";
 // Import our modular components
 import BookingFlowBuilder from "@/components/pro/website/BookingFlowBuilder";
 import BookingWidget from "@/components/pro/website/BookingWidget";
-import { ItineraryType } from "@/data/itineraryData";
+import { ExperienceType } from "@/data/experienceData";
 import { useUserData } from "@/src/contexts/UserDataContext";
 import Image from "@/components/ui/image";
 
@@ -51,8 +51,8 @@ function StudioContent() {
     }
   };
 
-  // Sample tour for booking preview - ensure we always have a valid ItineraryType
-  const sampleItinerary: ItineraryType & {
+  // Sample tour for booking preview - ensure we always have a valid ExperienceType
+  const sampleExperience: ExperienceType & {
     price?: number;
     currency?: string;
     groupSize?: { min: number; max: number };
@@ -119,11 +119,11 @@ function StudioContent() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => router.push("/pro-dashboard/itinerary")}
+              onClick={() => router.push("/pro-dashboard/experience")}
               className="text-sm"
             >
               <Calendar className="h-4 w-4 mr-2" />
-              Itineraries
+              Experiences
             </Button>
             <Button
               variant="outline"
@@ -363,7 +363,7 @@ function StudioContent() {
                   </p>
                 </div>
                 <BookingWidget
-                  tour={sampleItinerary}
+                  tour={sampleExperience}
                   primaryColor="#9b87f5"
                   companyName="Your Business"
                 />

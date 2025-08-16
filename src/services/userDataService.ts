@@ -9,7 +9,7 @@ export interface UserData {
   studio_access?: boolean;
   preferences?: Record<string, any>;
   settings?: Record<string, any>;
-  itineraries?: any[];
+  experiences?: any[];
   lastLogin?: string;
 }
 
@@ -42,17 +42,17 @@ class UserDataService {
       }
 
       // Load additional data from Supabase storage
-      const [preferences, settings, itineraries] = await Promise.all([
+      const [preferences, settings, experiences] = await Promise.all([
         supabaseStorage.getItem(`userPreferences_${user.id}`),
         supabaseStorage.getItem(`userSettings_${user.id}`),
-        supabaseStorage.getItem(`userItineraries_${user.id}`),
+        supabaseStorage.getItem(`userExperiences_${user.id}`),
       ]);
 
       const completeUserData: UserData = {
         ...userData,
         preferences: preferences || {},
         settings: settings || {},
-        itineraries: itineraries || [],
+        experiences: experiences || [],
         lastLogin: new Date().toISOString(),
       };
 
@@ -84,10 +84,10 @@ class UserDataService {
       console.log("Database load failed, trying Supabase storage fallback");
 
       // Fallback to Supabase storage
-      const [preferences, settings, itineraries, lastLogin] = await Promise.all([
+      const [preferences, settings, experiences, lastLogin] = await Promise.all([
         supabaseStorage.getItem(`userPreferences_${user.id}`),
         supabaseStorage.getItem(`userSettings_${user.id}`),
-        supabaseStorage.getItem(`userItineraries_${user.id}`),
+        supabaseStorage.getItem(`userExperiences_${user.id}`),
         supabaseStorage.getItem(`userLastLogin_${user.id}`),
       ]);
 
@@ -96,7 +96,7 @@ class UserDataService {
         email: user.email,
         preferences: preferences || {},
         settings: settings || {},
-        itineraries: itineraries || [],
+        experiences: experiences || [],
         lastLogin: lastLogin || new Date().toISOString(),
       };
 
@@ -151,22 +151,22 @@ class UserDataService {
   }
 
   /**
-   * Save user itineraries to Supabase storage
+   * Save user experiences to Supabase storage
    */
-  async saveUserItineraries(userId: string, itineraries: any[]): Promise<boolean> {
+  async saveUserItineraries(userId: string, experiences: any[]): Promise<boolean> {
     try {
-      const success = await supabaseStorage.setItem(`userItineraries_${userId}`, itineraries);
+      const success = await supabaseStorage.setItem(`userExperiences_${userId}`, experiences);
       if (success) {
         // Update cache if exists
         const cached = this.cache.get(userId);
         if (cached) {
-          cached.itineraries = itineraries;
+          cached.experiences = experiences;
           this.cache.set(userId, cached);
         }
       }
       return success;
     } catch (error) {
-      console.error("Error saving user itineraries:", error);
+      console.error("Error saving user experiences:", error);
       return false;
     }
   }
@@ -183,7 +183,7 @@ class UserDataService {
       const keysToRemove = [
         `userPreferences_${userId}`,
         `userSettings_${userId}`,
-        `userItineraries_${userId}`,
+        `userExperiences_${userId}`,
         `userLastLogin_${userId}`,
       ];
 

@@ -1,17 +1,17 @@
-// Browser console script to check itineraries for eloka@satellitelabs.xyz
+// Browser console script to check experiences for eloka@satellitelabs.xyz
 // Run this in your browser console on the Culturin Studio page
 
-console.log("🔍 Checking itineraries for eloka@satellitelabs.xyz...\n");
+console.log("🔍 Checking experiences for eloka@satellitelabs.xyz...\n");
 
-// Check localStorage for itineraries
+// Check localStorage for experiences
 function checkLocalStorage() {
-  console.log("💾 Checking localStorage for itineraries...\n");
+  console.log("💾 Checking localStorage for experiences...\n");
 
   // Get all localStorage keys
   const allKeys = Object.keys(localStorage);
   const itineraryKeys = allKeys.filter(
     (key) =>
-      key.includes("itinerary") ||
+      key.includes("experience") ||
       key.includes("culturin") ||
       key.includes("website")
   );
@@ -88,4 +88,4 @@ checkLocalStorage();
 checkUserSpecificKeys();
 checkCurrentUser();
 
-console.log("\n✅ Check complete! Look for itinerary data above.");
+console.log("\n✅ Check complete! Look for experience data above.");

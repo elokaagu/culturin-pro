@@ -143,7 +143,7 @@ async function testWebsiteData() {
         companyName: 'Test Company',
         theme: 'classic'
       },
-      itineraries: [],
+      experiences: [],
       blocks: [],
       theme: 'classic',
       publishedUrl: 'https://test.com'
