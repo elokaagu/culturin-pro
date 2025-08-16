@@ -1,426 +1,348 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { Upload, X, Eye, EyeOff } from "lucide-react";
 import { useUserData } from "../../../src/contexts/UserDataContext";
+import { useAuth } from "@/hooks/useAuth";
 import { userWebsiteService } from "./UserWebsiteService";
-import { settingsService } from "@/lib/settings-service";
+import { Image, Globe, Phone, Mail, MapPin, Facebook, Twitter, Instagram, Youtube, Linkedin } from "lucide-react";
 
 const WebsiteContent: React.FC = () => {
-  const { userData } = useUserData();
-  const [previewChanges, setPreviewChanges] = useState(false);
+  const { userData, updateUserData } = useUserData();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState({
+    companyName: "",
+    tagline: "",
+    description: "",
+    email: "",
+    phone: "",
+    address: "",
+    website: "",
+    facebook: "",
+    twitter: "",
+    instagram: "",
+    youtube: "",
+    linkedin: "",
+  });
 
-  // Local state for form inputs
-  const [companyName, setCompanyName] = useState("");
-  const [tagline, setTagline] = useState("");
-  const [description, setDescription] = useState("");
-  const [primaryColor, setPrimaryColor] = useState("");
-  const [headerImage, setHeaderImage] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-
-  // Initialize form with user data
   useEffect(() => {
-    // Note: Website settings would be loaded from a separate service in the new structure
-    setCompanyName("Your Tour Company");
-    setTagline("Discover amazing cultural experiences");
-    setDescription("We specialize in authentic cultural tours");
-    setPrimaryColor("#9b87f5");
-    setHeaderImage(null);
-  }, []);
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Check if file is an image
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file", {
-        description: "Only image files are supported",
-      });
-      return;
-    }
-
-    // Check file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size too large", {
-        description: "Please upload an image smaller than 5MB",
-      });
-      return;
-    }
-
-    try {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imageUrl = e.target?.result as string;
-        setHeaderImage(imageUrl);
-        handleQuickSave("headerImage", imageUrl);
-        toast.success("Image uploaded successfully");
-      };
-      reader.onerror = () => {
-        toast.error("Failed to read image file", {
-          description: "Please try again with a different image",
-        });
-      };
-      reader.readAsDataURL(file);
-    } catch (error) {
-      toast.error("Failed to upload image", {
-        description: "Please try again",
+    if (userData?.settings) {
+      // Load existing content from user settings
+      const settings = userData.settings;
+      setContent({
+        companyName: settings.company_name || "",
+        tagline: settings.tagline || "",
+        description: settings.description || "",
+        email: settings.contact_info?.email || "",
+        phone: settings.contact_info?.phone || "",
+        address: settings.contact_info?.address || "",
+        website: settings.contact_info?.website || "",
+        facebook: settings.social_media?.facebook || "",
+        twitter: settings.social_media?.twitter || "",
+        instagram: settings.social_media?.instagram || "",
+        youtube: settings.social_media?.youtube || "",
+        linkedin: settings.social_media?.linkedin || "",
       });
     }
-  };
+  }, [userData]);
 
-  const handleRemoveImage = () => {
-    try {
-      setHeaderImage(null);
-      handleQuickSave("headerImage", null);
-      toast.success("Header image removed");
-    } catch (error) {
-      toast.error("Failed to remove image", {
-        description: "Please try again",
-      });
-    }
-  };
-
-  const handleQuickSave = async (field: string, value: any) => {
-    try {
-      // Note: Website settings would be saved to a separate service in the new structure
-      toast.success(`${field} updated`, {
-        description: "Changes will appear in your website preview",
-      });
-    } catch (error) {
-      toast.error("Failed to save changes", {
-        description: "Please try again",
-      });
-    }
+  const handleContentChange = (field: string, value: string) => {
+    setContent(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleSave = async () => {
-    setIsSaving(true);
+    if (!user?.id) {
+      toast.error("Please sign in to save content");
+      return;
+    }
+
+    setLoading(true);
     try {
-      // Validate required fields
-      if (!companyName.trim()) {
-        toast.error("Company name is required");
-        return;
-      }
+      // Get current website settings
+      const currentSettings = await userWebsiteService.getUserWebsiteSettings(user.id);
 
-      if (!tagline.trim()) {
-        toast.error("Tagline is required");
-        return;
-      }
-
-      if (!description.trim()) {
-        toast.error("Description is required");
-        return;
-      }
-
-      if (!primaryColor) {
-        toast.error("Primary color is required");
-        return;
-      }
-
-      // Check if user is logged in
-      if (!userData?.id) {
-        toast.error("Please log in to save website content");
-        return;
-      }
-
-      const updates = {
-        companyName: companyName.trim(),
-        tagline: tagline.trim(),
-        description: description.trim(),
-        primaryColor,
-        headerImage,
-      };
-
-      // Get current user website settings
-      const currentSettings = await userWebsiteService.getUserWebsiteSettings(userData.id);
-      
       // Update settings with new content
       const updatedSettings = {
         ...currentSettings,
-        company_name: updates.companyName,
-        tagline: updates.tagline,
-        description: updates.description,
-        branding: {
-          ...currentSettings.branding,
-          primary_color: updates.primaryColor,
-          header_image: updates.headerImage,
-        }
+        company_name: content.companyName,
+        tagline: content.tagline,
+        description: content.description,
+        contact_info: {
+          ...currentSettings.contact_info,
+          email: content.email,
+          phone: content.phone,
+          address: content.address,
+          website: content.website,
+        },
+        social_media: {
+          ...currentSettings.social_media,
+          facebook: content.facebook,
+          twitter: content.twitter,
+          instagram: content.instagram,
+          youtube: content.youtube,
+          linkedin: content.linkedin,
+        },
+        updated_at: new Date().toISOString(),
       };
 
-      // Save to UserWebsiteService
+      // Save to database
       const success = await userWebsiteService.saveUserWebsiteSettings(updatedSettings);
 
       if (success) {
-        toast.success("Website content saved successfully!", {
-          description: "Your changes have been applied and are live on your website",
+        // Update local state
+        await updateUserData({
+          settings: {
+            ...userData?.settings,
+            company_name: content.companyName,
+            tagline: content.tagline,
+            description: content.description,
+            contact_info: updatedSettings.contact_info,
+            social_media: updatedSettings.social_media,
+          },
         });
 
-        // Save published content for backward compatibility
-        const publishedContent = {
-          companyName: updates.companyName,
-          tagline: updates.tagline,
-          description: updates.description,
-          primaryColor: updates.primaryColor,
-          headerImage: updates.headerImage,
-          theme: "classic",
-          lastUpdated: new Date().toISOString(),
-        };
-
-        localStorage.setItem("publishedWebsiteContent", JSON.stringify(publishedContent));
-        
-        // Update user-specific storage
-        localStorage.setItem(`websiteData_${userData.id}`, JSON.stringify({
-          settings: updatedSettings,
-          lastSaved: new Date().toISOString()
-        }));
-        
-        // Also update the userWebsiteSettings format for the published site
-        localStorage.setItem(`userWebsiteSettings_${userData.id}`, JSON.stringify(updatedSettings));
-
-        // Trigger preview refresh by dispatching a custom event
-        window.dispatchEvent(new CustomEvent('websiteContentUpdated', { 
-          detail: updatedSettings 
-        }));
+        toast.success("Content saved successfully!");
       } else {
-        throw new Error("Failed to save to database");
+        toast.error("Failed to save content");
       }
     } catch (error) {
-      console.error("Save error:", error);
-      toast.error("Failed to save content", {
-        description:
-          error instanceof Error
-            ? error.message
-            : "Please try again or contact support if the issue persists",
-      });
+      console.error("Error saving content:", error);
+      toast.error("Failed to save content");
     } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleReset = () => {
-    try {
-      const defaultSettings = {
-        companyName: "Your Tour Company",
-        tagline: "Authentic cultural experiences curated by Your Tour Company",
-        description: "Add your business description here",
-        primaryColor: "#9b87f5",
-        headerImage: null,
-      };
-
-      setCompanyName(defaultSettings.companyName);
-      setTagline(defaultSettings.tagline);
-      setDescription(defaultSettings.description);
-      setPrimaryColor(defaultSettings.primaryColor);
-      setHeaderImage(defaultSettings.headerImage);
-
-      // Note: Website settings would be saved to a separate service in the new structure
-
-      toast.success("Content reset to defaults");
-    } catch (error) {
-      toast.error("Failed to reset content", {
-        description: "Please try again",
-      });
+      setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-6 max-w-3xl">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-lg font-medium">Website Content</h2>
-          <p className="text-gray-600 text-sm">
-            Customize the content of your tour operator website with real-time
-            updates
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setPreviewChanges(!previewChanges)}
-            size="sm"
-          >
-            {previewChanges ? (
-              <EyeOff className="h-4 w-4 mr-2" />
-            ) : (
-              <Eye className="h-4 w-4 mr-2" />
-            )}
-            {previewChanges ? "Hide" : "Show"} Preview
-          </Button>
-          <Button variant="outline" onClick={handleReset} size="sm">
-            Reset to Defaults
+    <div className="h-full p-6 pl-8">
+      <div className="space-y-6 h-full">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold">Website Content</h3>
+            <p className="text-sm text-gray-600">
+              Customize your website content and contact information
+            </p>
+          </div>
+          <Button onClick={handleSave} disabled={loading}>
+            {loading ? "Saving..." : "Save Content"}
           </Button>
         </div>
-      </div>
 
-      {previewChanges && (
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h3 className="font-medium mb-2">Live Preview</h3>
-          <div
-            className="bg-white p-4 rounded border"
-            style={{ color: primaryColor }}
-          >
-            <h4 className="text-xl font-bold">{companyName}</h4>
-            <p className="text-sm italic">{tagline}</p>
-            <p className="text-sm mt-2">{description}</p>
-          </div>
-        </div>
-      )}
-
-      <div className="space-y-4">
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="companyName">Company Name</Label>
-          <Input
-            id="companyName"
-            value={companyName}
-            onChange={(e) => {
-              setCompanyName(e.target.value);
-              handleQuickSave("companyName", e.target.value);
-            }}
-            placeholder="Your company name"
-          />
-          <p className="text-xs text-gray-500">
-            This will be the main heading on your website
-          </p>
-        </div>
-
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="tagline">Tagline</Label>
-          <Input
-            id="tagline"
-            value={tagline}
-            onChange={(e) => {
-              setTagline(e.target.value);
-              handleQuickSave("tagline", e.target.value);
-            }}
-            placeholder="A short, catchy tagline"
-          />
-          <p className="text-xs text-gray-500">
-            Appears below your company name
-          </p>
-        </div>
-
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            value={description}
-            onChange={(e) => {
-              setDescription(e.target.value);
-              handleQuickSave("description", e.target.value);
-            }}
-            placeholder="Describe your tour company"
-            rows={4}
-          />
-          <p className="text-xs text-gray-500">
-            Main description for your business
-          </p>
-        </div>
-
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="primaryColor">Primary Brand Color</Label>
-          <div className="flex items-center gap-3">
-            <Input
-              id="primaryColor"
-              type="color"
-              value={primaryColor}
-              onChange={(e) => {
-                setPrimaryColor(e.target.value);
-                handleQuickSave("primaryColor", e.target.value);
-              }}
-              className="w-16 h-10 p-1 cursor-pointer"
-            />
-            <Input
-              type="text"
-              value={primaryColor}
-              onChange={(e) => {
-                setPrimaryColor(e.target.value);
-                handleQuickSave("primaryColor", e.target.value);
-              }}
-              className="w-32"
-              placeholder="#9b87f5"
-            />
-            <div
-              className="w-8 h-8 rounded border-2 border-gray-300"
-              style={{ backgroundColor: primaryColor }}
-            />
-          </div>
-          <p className="text-xs text-gray-500">
-            This color will be used for buttons, links, and accents
-          </p>
-        </div>
-
-        <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="headerImage">Header Image</Label>
-          <div className="flex items-center gap-3">
-            {headerImage ? (
-              <div className="relative">
-                <img
-                  src={headerImage}
-                  alt="Header"
-                  className="w-32 h-20 object-cover rounded border"
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Basic Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                Basic Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="companyName">Company Name</Label>
+                <Input
+                  id="companyName"
+                  value={content.companyName}
+                  onChange={(e) => handleContentChange("companyName", e.target.value)}
+                  placeholder="Your Tour Company"
                 />
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleRemoveImage}
-                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
               </div>
-            ) : (
-              <div className="w-32 h-20 border-2 border-dashed border-gray-300 rounded flex items-center justify-center">
-                <span className="text-sm text-gray-500">No image</span>
+              <div>
+                <Label htmlFor="tagline">Tagline</Label>
+                <Input
+                  id="tagline"
+                  value={content.tagline}
+                  onChange={(e) => handleContentChange("tagline", e.target.value)}
+                  placeholder="Discover Amazing Cultural Experiences"
+                />
               </div>
-            )}
-            <div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                id="image-upload"
-              />
-              <Button
-                variant="outline"
-                onClick={() => document.getElementById("image-upload")?.click()}
-                className="flex items-center gap-2"
-              >
-                <Upload className="h-4 w-4" />
-                Upload Image
-              </Button>
-            </div>
-          </div>
-          <p className="text-xs text-gray-500">
-            Optional header image for your website (recommended: 1200x400px)
-          </p>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={content.description}
+                  onChange={(e) => handleContentChange("description", e.target.value)}
+                  placeholder="We specialize in creating authentic cultural experiences that connect you with local traditions and communities."
+                  rows={4}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Contact Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Phone className="h-5 w-5" />
+                Contact Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={content.email}
+                  onChange={(e) => handleContentChange("email", e.target.value)}
+                  placeholder="contact@yourcompany.com"
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  value={content.phone}
+                  onChange={(e) => handleContentChange("phone", e.target.value)}
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+              <div>
+                <Label htmlFor="address">Address</Label>
+                <Textarea
+                  id="address"
+                  value={content.address}
+                  onChange={(e) => handleContentChange("address", e.target.value)}
+                  placeholder="Your business address"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="website">Website</Label>
+                <Input
+                  id="website"
+                  value={content.website}
+                  onChange={(e) => handleContentChange("website", e.target.value)}
+                  placeholder="https://yourcompany.com"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Social Media */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Facebook className="h-5 w-5" />
+                Social Media
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="facebook">Facebook</Label>
+                <Input
+                  id="facebook"
+                  value={content.facebook}
+                  onChange={(e) => handleContentChange("facebook", e.target.value)}
+                  placeholder="https://facebook.com/yourcompany"
+                />
+              </div>
+              <div>
+                <Label htmlFor="twitter">Twitter</Label>
+                <Input
+                  id="twitter"
+                  value={content.twitter}
+                  onChange={(e) => handleContentChange("twitter", e.target.value)}
+                  placeholder="https://twitter.com/yourcompany"
+                />
+              </div>
+              <div>
+                <Label htmlFor="instagram">Instagram</Label>
+                <Input
+                  id="instagram"
+                  value={content.instagram}
+                  onChange={(e) => handleContentChange("instagram", e.target.value)}
+                  placeholder="https://instagram.com/yourcompany"
+                />
+              </div>
+              <div>
+                <Label htmlFor="youtube">YouTube</Label>
+                <Input
+                  id="youtube"
+                  value={content.youtube}
+                  onChange={(e) => handleContentChange("youtube", e.target.value)}
+                  placeholder="https://youtube.com/yourcompany"
+                />
+              </div>
+              <div>
+                <Label htmlFor="linkedin">LinkedIn</Label>
+                <Input
+                  id="linkedin"
+                  value={content.linkedin}
+                  onChange={(e) => handleContentChange("linkedin", e.target.value)}
+                  placeholder="https://linkedin.com/company/yourcompany"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Content Preview */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Image className="h-5 w-5" />
+                Content Preview
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-lg mb-2">{content.companyName || "Your Company Name"}</h4>
+                <p className="text-gray-600 mb-3">{content.tagline || "Your tagline will appear here"}</p>
+                <p className="text-sm text-gray-700">{content.description || "Your description will appear here"}</p>
+              </div>
+              
+              <Separator />
+              
+              <div className="space-y-2">
+                <h5 className="font-medium text-sm">Contact Details:</h5>
+                {content.email && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Mail className="h-4 w-4" />
+                    {content.email}
+                  </div>
+                )}
+                {content.phone && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Phone className="h-4 w-4" />
+                    {content.phone}
+                  </div>
+                )}
+                {content.address && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <MapPin className="h-4 w-4" />
+                    {content.address}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="flex justify-between pt-4">
-          <div className="text-sm text-gray-500">
-            Changes are automatically saved as you type
-          </div>
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="min-w-[140px]"
-          >
-            {isSaving ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Saving...
-              </>
-            ) : (
-              "Save All Changes"
-            )}
-          </Button>
-        </div>
+        {/* Content Tips */}
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <h4 className="font-medium text-blue-800 mb-2">
+                Content Tips
+              </h4>
+              <p className="text-sm text-blue-700">
+                Write compelling content that tells your story and connects with your audience. 
+                Use clear, engaging language and include specific details about your experiences 
+                and what makes your tours unique.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default function WebsitePage() {
   return (
-    <ProDashboardLayout title="Website" subtitle="Manage your online presence">
+    <ProDashboardLayout>
       <WebsiteBuilder />
     </ProDashboardLayout>
   );

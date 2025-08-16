@@ -1,11 +1,7 @@
-import React, { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -19,6 +15,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useUserData } from "../../../src/contexts/UserDataContext";
+import { useAuth } from "@/hooks/useAuth";
+import { userWebsiteService } from "./UserWebsiteService";
 
 interface Template {
   id: string;
@@ -43,311 +41,340 @@ const templates: Template[] = [
   {
     id: "adventure",
     name: "Adventure Explorer",
-    description:
-      "Perfect for adventure tour operators with stunning imagery and bold typography",
+    description: "Perfect for outdoor and adventure tours",
     category: "Adventure",
-    image: "/lovable-uploads/2e9a9e9e-af76-4913-8148-9fce248d55c9.png",
+    image: "bg-gradient-to-br from-green-400 to-blue-500",
     features: [
-      "Hero video background",
-      "Adventure gallery",
-      "Trip difficulty levels",
-      "Booking calendar",
+      "Hero section with action shots",
+      "Adventure-focused content",
+      "Dynamic color scheme",
     ],
     isPopular: true,
     themeSettings: {
-      primaryColor: "#059669",
+      primaryColor: "#10B981",
       fontFamily: "Inter",
-      heroClass: "bg-gradient-to-r from-green-600 to-green-800",
-      headerStyle: "modern",
-      footerStyle: "clean",
-      animationStyle: "smooth",
-    },
-  },
-  {
-    id: "luxury",
-    name: "Luxury Retreat",
-    description:
-      "Elegant design for high-end travel experiences with sophisticated styling",
-    category: "Luxury",
-    image: "/lovable-uploads/6b9d2182-4ba4-43fa-b8ca-2a778431a9cb.png",
-    features: [
-      "Premium imagery",
-      "Luxury amenities",
-      "Concierge booking",
-      "VIP testimonials",
-    ],
-    isNew: true,
-    themeSettings: {
-      primaryColor: "#7C3AED",
-      fontFamily: "Playfair Display",
-      heroClass: "bg-gradient-to-r from-purple-600 to-purple-800",
-      headerStyle: "elegant",
-      footerStyle: "sophisticated",
-      animationStyle: "subtle",
-    },
-  },
-  {
-    id: "city-tours",
-    name: "City Explorer",
-    description:
-      "Urban-focused design perfect for city tour operators and cultural experiences",
-    category: "City Tours",
-    image: "/lovable-uploads/31055680-5e98-433a-a30a-747997259663.png",
-    features: [
-      "Interactive maps",
-      "Local highlights",
-      "Cultural insights",
-      "Group bookings",
-    ],
-    themeSettings: {
-      primaryColor: "#1E40AF",
-      fontFamily: "Inter",
-      heroClass: "bg-gradient-to-r from-blue-600 to-blue-800",
-      headerStyle: "urban",
-      footerStyle: "modern",
-      animationStyle: "dynamic",
+      heroClass: "hero-adventure",
+      headerStyle: "header-modern",
+      footerStyle: "footer-dark",
+      animationStyle: "fade-in-up",
     },
   },
   {
     id: "cultural",
-    name: "Cultural Immersion",
-    description:
-      "Deep cultural experiences with rich storytelling and local connections",
+    name: "Cultural Heritage",
+    description: "Ideal for cultural and historical tours",
     category: "Cultural",
-    image: "/lovable-uploads/1a12120c-6cfd-4fe3-9571-0ea00be99ff3.png",
+    image: "bg-gradient-to-br from-amber-400 to-orange-500",
     features: [
-      "Story-driven content",
-      "Local guides",
-      "Cultural workshops",
-      "Community impact",
+      "Elegant typography",
+      "Cultural imagery focus",
+      "Warm color palette",
     ],
+    isPopular: true,
     themeSettings: {
-      primaryColor: "#DC2626",
-      fontFamily: "Merriweather",
-      heroClass: "bg-gradient-to-r from-red-600 to-red-800",
-      headerStyle: "traditional",
-      footerStyle: "warm",
-      animationStyle: "gentle",
+      primaryColor: "#F59E0B",
+      fontFamily: "Playfair Display",
+      heroClass: "hero-cultural",
+      headerStyle: "header-elegant",
+      footerStyle: "footer-elegant",
+      animationStyle: "slide-in-left",
     },
   },
   {
-    id: "eco-tourism",
-    name: "Eco Adventure",
-    description:
-      "Sustainable tourism focus with nature-inspired design and eco-friendly messaging",
-    category: "Eco-Tourism",
-    image: "/lovable-uploads/1b4ba777-0a40-4904-98a9-11b727de21a6.png",
+    id: "luxury",
+    name: "Luxury Premium",
+    description: "High-end luxury tour experiences",
+    category: "Luxury",
+    image: "bg-gradient-to-br from-purple-400 to-pink-500",
     features: [
-      "Sustainability focus",
-      "Nature photography",
-      "Eco-certifications",
-      "Conservation impact",
+      "Premium design elements",
+      "Luxury-focused messaging",
+      "Sophisticated layout",
+    ],
+    isNew: true,
+    themeSettings: {
+      primaryColor: "#8B5CF6",
+      fontFamily: "Cormorant Garamond",
+      heroClass: "hero-luxury",
+      headerStyle: "header-premium",
+      footerStyle: "footer-premium",
+      animationStyle: "fade-in-scale",
+    },
+  },
+  {
+    id: "family",
+    name: "Family Friendly",
+    description: "Great for family-oriented tours",
+    category: "Family",
+    image: "bg-gradient-to-br from-blue-400 to-cyan-500",
+    features: [
+      "Family-friendly design",
+      "Bright, cheerful colors",
+      "Easy navigation",
     ],
     themeSettings: {
-      primaryColor: "#16A34A",
-      fontFamily: "Inter",
-      heroClass: "bg-gradient-to-r from-green-500 to-green-700",
-      headerStyle: "natural",
-      footerStyle: "eco-friendly",
-      animationStyle: "organic",
+      primaryColor: "#3B82F6",
+      fontFamily: "Nunito",
+      heroClass: "hero-family",
+      headerStyle: "header-friendly",
+      footerStyle: "footer-friendly",
+      animationStyle: "bounce-in",
+    },
+  },
+  {
+    id: "eco",
+    name: "Eco Conscious",
+    description: "Perfect for sustainable and eco tours",
+    category: "Eco",
+    image: "bg-gradient-to-br from-emerald-400 to-teal-500",
+    features: [
+      "Nature-inspired design",
+      "Eco-friendly messaging",
+      "Organic layouts",
+    ],
+    themeSettings: {
+      primaryColor: "#059669",
+      fontFamily: "Source Sans Pro",
+      heroClass: "hero-eco",
+      headerStyle: "header-natural",
+      footerStyle: "footer-natural",
+      animationStyle: "grow-in",
+    },
+  },
+  {
+    id: "urban",
+    name: "Urban Explorer",
+    description: "Ideal for city and urban tours",
+    category: "Urban",
+    image: "bg-gradient-to-br from-gray-400 to-slate-500",
+    features: [
+      "Modern urban aesthetic",
+      "City-focused design",
+      "Contemporary layout",
+    ],
+    themeSettings: {
+      primaryColor: "#6B7280",
+      fontFamily: "Roboto",
+      heroClass: "hero-urban",
+      headerStyle: "header-modern",
+      footerStyle: "footer-modern",
+      animationStyle: "slide-in-right",
     },
   },
 ];
 
 const WebsiteThemes: React.FC = () => {
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-  const [applyingTemplate, setApplyingTemplate] = useState(false);
-  const { userData } = useUserData();
+  const [selectedTheme, setSelectedTheme] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const { userData, updateUserData } = useUserData();
+  const { user } = useAuth();
 
-  const handleTemplateSelect = (templateId: string) => {
-    setSelectedTemplate(templateId);
-  };
+  useEffect(() => {
+    if (userData?.settings?.branding?.theme) {
+      setSelectedTheme(userData.settings.branding.theme);
+    }
+  }, [userData]);
 
-  const handleApplyTemplate = async (template: Template) => {
-    setApplyingTemplate(true);
+  const handleThemeSelect = async (themeId: string) => {
+    if (!user?.id) {
+      toast.error("Please sign in to apply themes");
+      return;
+    }
 
+    setLoading(true);
     try {
-      // Note: Website settings would be saved to a separate service in the new structure
-      const updatedSettings = {
-        theme: template.id,
-        primaryColor: template.themeSettings.primaryColor,
-        fontSettings: {
-          family: template.themeSettings.fontFamily,
-        },
-        headerSettings: {
-          style: template.themeSettings.headerStyle,
-        },
-        footerSettings: {
-          style: template.themeSettings.footerStyle,
-        },
-        animationSettings: {
-          style: template.themeSettings.animationStyle,
-        },
-      };
-
-      // Note: Website settings would be saved to a separate service
-
-      // Dispatch theme change event for preview update
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("themeChanged", {
-            detail: { theme: template.id, settings: template.themeSettings },
-          })
-        );
+      const theme = templates.find((t) => t.id === themeId);
+      if (!theme) {
+        toast.error("Theme not found");
+        return;
       }
 
-      toast.success(`${template.name} template applied successfully!`);
-      setSelectedTemplate(null);
+      // Get current website settings
+      const currentSettings = await userWebsiteService.getUserWebsiteSettings(
+        user.id
+      );
+
+      // Update settings with new theme
+      const updatedSettings = {
+        ...currentSettings,
+        branding: {
+          ...currentSettings.branding,
+          theme: themeId,
+          primary_color: theme.themeSettings.primaryColor,
+        },
+        updated_at: new Date().toISOString(),
+      };
+
+      // Save to database
+      const success = await userWebsiteService.saveUserWebsiteSettings(
+        updatedSettings
+      );
+
+      if (success) {
+        // Update local state
+        await updateUserData({
+          settings: {
+            ...userData?.settings,
+            branding: updatedSettings.branding,
+          },
+        });
+
+        setSelectedTheme(themeId);
+        toast.success(`Applied ${theme.name} theme successfully!`);
+      } else {
+        toast.error("Failed to apply theme");
+      }
     } catch (error) {
-      toast.error("Failed to apply template", {
-        description: "Please try again",
-      });
+      console.error("Error applying theme:", error);
+      toast.error("Failed to apply theme");
     } finally {
-      setApplyingTemplate(false);
+      setLoading(false);
     }
   };
 
   const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "Adventure":
-        return <Mountain className="h-4 w-4" />;
-      case "Luxury":
-        return <Crown className="h-4 w-4" />;
-      case "City Tours":
-        return <Building2 className="h-4 w-4" />;
-      case "Cultural":
-        return <Heart className="h-4 w-4" />;
-      case "Eco-Tourism":
-        return <Leaf className="h-4 w-4" />;
+    switch (category.toLowerCase()) {
+      case "adventure":
+        return <Mountain className="h-5 w-5" />;
+      case "luxury":
+        return <Crown className="h-5 w-5" />;
+      case "cultural":
+        return <Building2 className="h-5 w-5" />;
+      case "family":
+        return <Heart className="h-5 w-5" />;
+      case "eco":
+        return <Leaf className="h-5 w-5" />;
+      case "urban":
+        return <Building2 className="h-5 w-5" />;
       default:
-        return <Sparkles className="h-4 w-4" />;
+        return <Sparkles className="h-5 w-5" />;
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Choose Your Template
-        </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Select a template that matches your brand and tour style. Each
-          template is fully customizable and optimized for tour operators.
-        </p>
-      </div>
+    <div className="h-full p-6 pl-8">
+      <div className="space-y-6 h-full">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold">Website Themes</h3>
+            <p className="text-sm text-gray-600">
+              Choose a theme to customize your website's appearance
+            </p>
+          </div>
+        </div>
 
-      {/* Template Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {templates.map((template) => (
-          <Card
-            key={template.id}
-            className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
-              selectedTemplate === template.id
-                ? "ring-2 ring-culturin-indigo border-culturin-indigo"
-                : "hover:border-gray-300"
-            }`}
-            onClick={() => handleTemplateSelect(template.id)}
-          >
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  {getCategoryIcon(template.category)}
-                  <Badge variant="outline" className="text-xs">
-                    {template.category}
-                  </Badge>
-                </div>
-                <div className="flex gap-1">
-                  {template.isPopular && (
-                    <Badge className="bg-orange-100 text-orange-700 text-xs">
-                      Popular
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {templates.map((template) => (
+            <Card
+              key={template.id}
+              className={`relative cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                selectedTheme === template.id
+                  ? "ring-2 ring-blue-500 border-blue-200"
+                  : "hover:border-gray-300"
+              }`}
+              onClick={() => handleThemeSelect(template.id)}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    {getCategoryIcon(template.category)}
+                    <Badge variant="secondary" className="text-xs">
+                      {template.category}
                     </Badge>
-                  )}
-                  {template.isNew && (
-                    <Badge className="bg-green-100 text-green-700 text-xs">
-                      New
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              <CardTitle className="text-lg">{template.name}</CardTitle>
-              <CardDescription className="text-sm">
-                {template.description}
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="pt-0">
-              {/* Template Preview Image */}
-              <div className="relative mb-4">
-                <img
-                  src={template.image}
-                  alt={template.name}
-                  className="w-full h-32 object-cover rounded-lg"
-                />
-                {selectedTemplate === template.id && (
-                  <div className="absolute inset-0 bg-culturin-indigo/20 rounded-lg flex items-center justify-center">
-                    <Check className="h-8 w-8 text-white bg-culturin-indigo rounded-full p-1" />
                   </div>
-                )}
-              </div>
+                  <div className="flex items-center space-x-2">
+                    {template.isPopular && (
+                      <Badge
+                        variant="default"
+                        className="text-xs bg-orange-500"
+                      >
+                        Popular
+                      </Badge>
+                    )}
+                    {template.isNew && (
+                      <Badge variant="default" className="text-xs bg-green-500">
+                        New
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                <CardTitle className="text-lg">{template.name}</CardTitle>
+                <p className="text-sm text-gray-600">{template.description}</p>
+              </CardHeader>
 
-              {/* Features */}
-              <div className="space-y-2 mb-4">
-                <h4 className="text-sm font-medium text-gray-700">
-                  Key Features:
-                </h4>
-                <ul className="space-y-1">
-                  {template.features.map((feature, index) => (
-                    <li
-                      key={index}
-                      className="text-xs text-gray-600 flex items-center gap-1"
-                    >
-                      <Check className="h-3 w-3 text-green-500" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <CardContent className="space-y-4">
+                {/* Theme Preview */}
+                <div
+                  className={`h-32 rounded-lg ${template.image} flex items-center justify-center`}
+                >
+                  <div className="text-white text-center">
+                    <div className="text-2xl font-bold">{template.name}</div>
+                    <div className="text-sm opacity-90">Preview</div>
+                  </div>
+                </div>
 
-              {/* Apply Button */}
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleApplyTemplate(template);
-                }}
-                disabled={applyingTemplate}
-                className="w-full"
-              >
-                {applyingTemplate ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    Applying...
-                  </>
-                ) : (
-                  "Apply Template"
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+                {/* Features */}
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">Features:</h4>
+                  <ul className="space-y-1">
+                    {template.features.map((feature, index) => (
+                      <li
+                        key={index}
+                        className="text-xs text-gray-600 flex items-center"
+                      >
+                        <Check className="h-3 w-3 text-green-500 mr-2 flex-shrink-0" />
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Apply Button */}
+                <Button
+                  className={`w-full ${
+                    selectedTheme === template.id
+                      ? "bg-green-600 hover:bg-green-700"
+                      : ""
+                  }`}
+                  disabled={loading}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleThemeSelect(template.id);
+                  }}
+                >
+                  {loading ? (
+                    "Applying..."
+                  ) : selectedTheme === template.id ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Applied
+                    </>
+                  ) : (
+                    "Apply Theme"
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Theme Customization Info */}
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <h4 className="font-medium text-blue-800 mb-2">
+                Customize Your Theme
+              </h4>
+              <p className="text-sm text-blue-700">
+                After selecting a theme, you can further customize colors,
+                fonts, and layouts in the Settings tab. Each theme provides a
+                unique starting point that you can adapt to match your brand
+                perfectly.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Custom Template Option */}
-      <Card className="border-dashed border-2 border-gray-300 hover:border-culturin-indigo transition-colors">
-        <CardContent className="p-6 text-center">
-          <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Custom Template
-          </h3>
-          <p className="text-gray-600 mb-4">
-            Start from scratch and build your perfect website with our
-            drag-and-drop builder.
-          </p>
-          <Button variant="outline" className="w-full">
-            Start from Scratch
-          </Button>
-        </CardContent>
-      </Card>
     </div>
   );
 };

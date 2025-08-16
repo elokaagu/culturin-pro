@@ -76,7 +76,9 @@ class UserWebsiteService {
           return this.getDefaultSettings(userId);
         } else if (error.code === "42P01") {
           // Table doesn't exist
-          console.warn("user_website_settings table doesn't exist, using defaults");
+          console.warn(
+            "user_website_settings table doesn't exist, using defaults"
+          );
           return this.getDefaultSettings(userId);
         } else {
           console.error("Error fetching website settings:", error);
@@ -99,87 +101,53 @@ class UserWebsiteService {
     settings: UserWebsiteSettings
   ): Promise<boolean> {
     try {
-      console.log("🗄️ UserWebsiteService: Starting database save...");
-      console.log("📝 Settings to save:", settings);
-      
       const { error } = await supabase.from("user_website_settings").upsert({
         ...settings,
         updated_at: new Date().toISOString(),
       });
 
       if (error) {
-        if (error.code === "42P01") {
-          // Table doesn't exist
-          console.warn("❌ user_website_settings table doesn't exist, cannot save");
-          console.log("💡 You need to create this table in your Supabase database");
-          return false;
-        } else {
-          console.error("❌ Error saving website settings:", error);
-          console.log("🔍 Error details:", { code: error.code, message: error.message, details: error.details });
-          return false;
-        }
+        console.error("Error saving website settings:", error);
+        return false;
       }
 
-      console.log("✅ UserWebsiteService: Database save successful");
       return true;
     } catch (error) {
-      console.error("❌ Error in saveUserWebsiteSettings:", error);
+      console.error("Error in saveUserWebsiteSettings:", error);
       return false;
     }
   }
 
   /**
-   * Get complete user website data (settings + experiences)
+   * Get complete website data for a user
    */
   async getUserWebsiteData(userId: string): Promise<UserWebsiteData> {
     try {
-      // Get user settings
+      // Get website settings
       const settings = await this.getUserWebsiteSettings(userId);
 
-      // Get user's published experiences
-      const { data: experiences, error: itinerariesError } = await supabase
+      // Get user's experiences
+      const { data: experiences, error: expError } = await supabase
         .from("experiences")
         .select("*")
         .eq("operator_id", userId)
-        .eq("status", "published")
         .order("created_at", { ascending: false });
 
-      if (itinerariesError) {
-        console.error("Error fetching experiences:", itinerariesError);
+      if (expError) {
+        console.error("Error fetching experiences:", expError);
       }
-
-      // Transform experiences to match interface
-      const transformedItineraries = (experiences || []).map((item: any) => ({
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        days: item.days,
-        price: item.price,
-        currency: item.currency || "USD",
-        image: item.image,
-        highlights: item.highlights || [],
-        activities: item.activities || [],
-        accommodations: item.accommodations || [],
-        transportation: item.transportation || [],
-        meals: item.meals || [],
-        notes: item.notes || [],
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-        operator_id: item.operator_id,
-        status: item.status || "draft",
-      }));
 
       // Calculate stats
       const stats = {
-        total_tours: transformedItineraries.length,
-        total_bookings: 0, // TODO: Implement when bookings system is ready
-        rating: 4.8, // TODO: Calculate from reviews
-        reviews_count: transformedItineraries.length * 15, // Estimated
+        total_tours: experiences?.length || 0,
+        total_bookings: 0, // TODO: Implement booking count
+        rating: 0, // TODO: Implement rating calculation
+        reviews_count: 0, // TODO: Implement review count
       };
 
       return {
         settings,
-        experiences: transformedItineraries,
+        experiences: experiences || [],
         stats,
       };
     } catch (error) {
@@ -198,39 +166,39 @@ class UserWebsiteService {
   }
 
   /**
-   * Generate unique website URL for user
-   */
-  generateWebsiteUrl(userId: string, companyName: string): string {
-    const slug = companyName
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-
-    const shortUserId = userId.substring(0, 8);
-    return `tour/${slug}-${shortUserId}`;
-  }
-
-  /**
    * Publish user's website
    */
   async publishWebsite(
     userId: string
   ): Promise<{ success: boolean; url?: string }> {
     try {
-      const settings = await this.getUserWebsiteSettings(userId);
-      const url = this.generateWebsiteUrl(userId, settings.company_name);
+      // Get current settings
+      const currentSettings = await this.getUserWebsiteSettings(userId);
+
+      // Generate unique URL
+      const uniqueId = userId.slice(0, 8);
+      const timestamp = Date.now().toString(36);
+      const newUrl = `tour/${
+        currentSettings.company_name
+          ?.toLowerCase()
+          .replace(/[^a-z0-9]/g, "-") || "experience"
+      }-${uniqueId}-${timestamp}`;
 
       // Update settings with published URL
-      const updatedSettings = {
-        ...settings,
-        published_url: url,
+      const updatedSettings: UserWebsiteSettings = {
+        ...currentSettings,
+        published_url: newUrl,
         is_published: true,
         updated_at: new Date().toISOString(),
       };
 
       const success = await this.saveUserWebsiteSettings(updatedSettings);
 
-      return { success, url: success ? url : undefined };
+      if (success) {
+        return { success: true, url: newUrl };
+      } else {
+        return { success: false };
+      }
     } catch (error) {
       console.error("Error publishing website:", error);
       return { success: false };
@@ -238,23 +206,32 @@ class UserWebsiteService {
   }
 
   /**
-   * Get default settings for new user
+   * Get default website settings for a new user
    */
   private getDefaultSettings(userId: string): UserWebsiteSettings {
     return {
       user_id: userId,
-      company_name: "Your Cultural Tours",
-      tagline: "Discover Authentic Cultural Experiences",
+      company_name: "Your Tour Company",
+      tagline: "Discover Amazing Cultural Experiences",
       description:
-        "We specialize in creating immersive cultural experiences that connect you with local traditions and communities.",
+        "We specialize in creating authentic cultural experiences that connect you with local traditions and communities.",
       contact_info: {
-        phone: "",
-        email: "",
-        address: "",
+        phone: "+1 (555) 123-4567",
+        email: "contact@yourcompany.com",
+        address: "Your business address",
+        website: "",
       },
-      social_media: {},
+      social_media: {
+        facebook: "https://facebook.com/yourcompany",
+        twitter: "",
+        instagram: "",
+        youtube: "",
+        linkedin: "",
+      },
       branding: {
-        primary_color: "#9b87f5",
+        primary_color: "#3B82F6",
+        logo_url: "",
+        header_image: "",
         theme: "classic",
       },
       website_settings: {
@@ -266,10 +243,55 @@ class UserWebsiteService {
         timezone: "UTC",
       },
       seo_settings: {
-        keywords: ["cultural tours", "authentic experiences", "travel"],
+        title: "Your Tour Company - Cultural Experiences",
+        description: "Discover authentic cultural experiences and tours",
+        keywords: [
+          "cultural tours",
+          "authentic experiences",
+          "travel",
+          "tourism",
+        ],
       },
+      published_url: "",
       is_published: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
+  }
+
+  /**
+   * Generate a unique website URL for a user
+   */
+  generateWebsiteUrl(userId: string, companyName?: string): string {
+    const uniqueId = userId.slice(0, 8);
+    const timestamp = Date.now().toString(36);
+    const cleanCompanyName = companyName
+      ? companyName.toLowerCase().replace(/[^a-z0-9]/g, "-")
+      : "experience";
+
+    return `tour/${cleanCompanyName}-${uniqueId}-${timestamp}`;
+  }
+
+  /**
+   * Delete user's website settings
+   */
+  async deleteUserWebsiteSettings(userId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from("user_website_settings")
+        .delete()
+        .eq("user_id", userId);
+
+      if (error) {
+        console.error("Error deleting website settings:", error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error in deleteUserWebsiteSettings:", error);
+      return false;
+    }
   }
 }
 
