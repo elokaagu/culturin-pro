@@ -69,6 +69,7 @@ const WebsiteBuilder: React.FC = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [experiencesLoading, setExperiencesLoading] = useState(false);
   const [experiencesError, setExperiencesError] = useState<string | null>(null);
+  const [saveButtonClicked, setSaveButtonClicked] = useState(false);
 
   // History management
   const [history, setHistory] = useState<HistoryState[]>([]);
@@ -180,7 +181,11 @@ const WebsiteBuilder: React.FC = () => {
       setHasUnsavedChanges(false);
       setSaveStatus("saved");
 
-      toast.success("Auto-saved successfully");
+      // Enhanced auto-save notification (less intrusive)
+      toast.success("💾 Auto-saved", {
+        duration: 2000,
+        description: `Saved at ${new Date().toLocaleTimeString()}`,
+      });
     } catch (error) {
       console.error("Auto-save failed:", error);
       setSaveStatus("error");
@@ -210,6 +215,7 @@ const WebsiteBuilder: React.FC = () => {
     if (!user?.id) return;
 
     try {
+      setSaveButtonClicked(true);
       setSaveLoading(true);
       setSaveStatus("saving");
 
@@ -228,7 +234,24 @@ const WebsiteBuilder: React.FC = () => {
 
       setSaveLoading(false);
       setSaveStatus("saved");
-      toast.success("Website saved successfully");
+      
+      // Enhanced save notification
+      toast.success("✅ Website saved successfully!", {
+        duration: 3000,
+        description: `Last saved at ${new Date().toLocaleTimeString()}`,
+        action: {
+          label: "View Changes",
+          onClick: () => {
+            // Could add logic to show what was saved
+            console.log("Save completed at:", new Date().toLocaleTimeString());
+          },
+        },
+      });
+
+      // Reset save button clicked state after a delay
+      setTimeout(() => {
+        setSaveButtonClicked(false);
+      }, 2000);
     } catch (error) {
       console.error("Manual save failed:", error);
       setSaveStatus("error");
@@ -417,9 +440,14 @@ const WebsiteBuilder: React.FC = () => {
               </div>
             )}
             {saveStatus === "saved" && (
-              <div className="flex items-center space-x-2 text-green-600">
+              <div className="flex items-center space-x-2 text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
                 <Check className="h-4 w-4" />
-                <span>Saved</span>
+                <span className="font-medium">Saved</span>
+                {lastSaved && (
+                  <span className="text-xs text-green-500">
+                    at {lastSaved.toLocaleTimeString()}
+                  </span>
+                )}
               </div>
             )}
             {saveStatus === "error" && (
@@ -474,13 +502,17 @@ const WebsiteBuilder: React.FC = () => {
             onClick={handleManualSave}
             disabled={saveLoading || !hasUnsavedChanges}
             size="sm"
+            className={cn(
+              "transition-all duration-200",
+              saveButtonClicked && "bg-green-100 border-green-300 text-green-700 scale-105"
+            )}
           >
             {saveLoading ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : (
               <Save className="h-4 w-4 mr-2" />
             )}
-            Save
+            {saveButtonClicked && !saveLoading ? "Saved!" : "Save"}
           </Button>
 
           {/* Publish Button */}
