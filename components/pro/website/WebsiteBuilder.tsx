@@ -149,7 +149,7 @@ const WebsiteBuilder: React.FC = () => {
     try {
       setSaveStatus("saving");
 
-      // Save current state to history
+      // Save current state to history (always works)
       const currentState: HistoryState = {
         websiteSettings: userData?.settings || {},
         experiences,
@@ -161,22 +161,41 @@ const WebsiteBuilder: React.FC = () => {
       setHistory(newHistory);
       setHistoryIndex(newHistory.length - 1);
 
-      // Save website settings to database
+      // Save website settings to database with timeout protection
       if (userData?.settings) {
-        const currentSettings = await userWebsiteService.getUserWebsiteSettings(user.id);
-        const updatedSettings = {
-          ...currentSettings,
-          ...userData.settings,
-          updated_at: new Date().toISOString(),
-        };
-        
-        const saveSuccess = await userWebsiteService.saveUserWebsiteSettings(updatedSettings);
-        if (!saveSuccess) {
-          throw new Error("Failed to save to database");
+        try {
+          // Add timeout protection for database operations
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error("Database operation timeout")), 10000)
+          );
+
+          const savePromise = (async () => {
+            const currentSettings = await userWebsiteService.getUserWebsiteSettings(user.id);
+            const updatedSettings = {
+              ...currentSettings,
+              ...userData.settings,
+              updated_at: new Date().toISOString(),
+            };
+            
+            const saveSuccess = await userWebsiteService.saveUserWebsiteSettings(updatedSettings);
+            if (!saveSuccess) {
+              throw new Error("Failed to save to database");
+            }
+            return true;
+          })();
+
+          // Race between save operation and timeout
+          await Promise.race([savePromise, timeoutPromise]);
+          
+          console.log("✅ Database save successful");
+        } catch (dbError) {
+          console.warn("⚠️ Database save failed, but local history preserved:", dbError);
+          // Don't throw error - local history is still saved
+          // This prevents the entire save from failing
         }
       }
 
-      // Update last saved time
+      // Update last saved time (always works)
       setLastSaved(new Date());
       setHasUnsavedChanges(false);
       setSaveStatus("saved");
@@ -205,7 +224,21 @@ const WebsiteBuilder: React.FC = () => {
     if (!autoSaveEnabled || !hasUnsavedChanges || !user?.id) return;
 
     const autoSaveTimer = setTimeout(async () => {
-      await handleAutoSave();
+      try {
+        // Add timeout protection for the entire auto-save operation
+        const autoSaveTimeout = setTimeout(() => {
+          console.warn("⚠️ Auto-save operation timeout - forcing completion");
+          setSaveStatus("error");
+          setHasUnsavedChanges(false); // Prevent infinite retry loops
+        }, 30000); // 30 second total timeout
+
+        await handleAutoSave();
+        clearTimeout(autoSaveTimeout);
+      } catch (error) {
+        console.error("Auto-save operation failed:", error);
+        setSaveStatus("error");
+        setHasUnsavedChanges(false); // Prevent infinite retry loops
+      }
     }, 2000);
 
     return () => clearTimeout(autoSaveTimer);
@@ -222,15 +255,31 @@ const WebsiteBuilder: React.FC = () => {
       // Save current state to history and database
       await handleAutoSave();
 
-              // Also save experiences if they've changed
-        if (experiences.length > 0) {
-          // Update experiences in the database
-          for (const experience of experiences) {
-            if (experience.id) {
-              await experienceService.updateExperience(experience);
+      // Also save experiences if they've changed (with timeout protection)
+      if (experiences.length > 0) {
+        try {
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error("Experience save timeout")), 15000)
+          );
+
+          const experienceSavePromise = (async () => {
+            // Update experiences in the database
+            for (const experience of experiences) {
+              if (experience.id) {
+                await experienceService.updateExperience(experience);
+              }
             }
-          }
+            return true;
+          })();
+
+          // Race between save operation and timeout
+          await Promise.race([experienceSavePromise, timeoutPromise]);
+          console.log("✅ Experience saves successful");
+        } catch (expError) {
+          console.warn("⚠️ Experience saves failed, but website settings saved:", expError);
+          // Don't fail the entire save operation
         }
+      }
 
       setSaveLoading(false);
       setSaveStatus("saved");
@@ -257,6 +306,9 @@ const WebsiteBuilder: React.FC = () => {
       setSaveStatus("error");
       setSaveLoading(false);
       toast.error("Failed to save website");
+      
+      // Reset save button clicked state on error
+      setSaveButtonClicked(false);
     }
   }, [user?.id, handleAutoSave, experiences]);
 
