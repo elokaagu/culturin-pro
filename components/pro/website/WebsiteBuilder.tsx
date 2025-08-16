@@ -70,6 +70,8 @@ const WebsiteBuilder: React.FC = () => {
   const [experiencesLoading, setExperiencesLoading] = useState(false);
   const [experiencesError, setExperiencesError] = useState<string | null>(null);
   const [saveButtonClicked, setSaveButtonClicked] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveTimeoutId, setSaveTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   // History management
   const [history, setHistory] = useState<HistoryState[]>([]);
@@ -101,38 +103,79 @@ const WebsiteBuilder: React.FC = () => {
     }
   }, [isFullScreen]);
 
+  // Cleanup save timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutId) {
+        clearTimeout(saveTimeoutId);
+      }
+    };
+  }, [saveTimeoutId]);
+
   const initializeWebsiteData = useCallback(async () => {
     if (!user?.id) return;
 
     try {
       setExperiencesLoading(true);
 
-      // Load user's website settings
-      const websiteSettings = await userWebsiteService.getUserWebsiteSettings(
-        user.id
-      );
+      // Add aggressive timeout protection for initialization
+      const initTimeout = setTimeout(() => {
+        console.warn("⚠️ Website data initialization timeout - forcing completion");
+        setExperiencesLoading(false);
+        setExperiencesError("Initialization timeout - please refresh");
+      }, 15000); // 15 second timeout
 
-      // Load user's experiences
-      const userExperiences = await experienceService.getExperiences();
-      setExperiences(userExperiences);
+      try {
+        // Load user's website settings with timeout
+        const websiteSettingsPromise = userWebsiteService.getUserWebsiteSettings(user.id);
+        const websiteSettings = await Promise.race([
+          websiteSettingsPromise,
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Settings timeout")), 8000))
+        ]) || {};
 
-      // Set published URL if available
-      if (websiteSettings.published_url) {
-        setPublishedUrl(websiteSettings.published_url);
+        // Load user's experiences with timeout
+        const experiencesPromise = experienceService.getExperiences();
+        const userExperiences = await Promise.race([
+          experiencesPromise,
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Experiences timeout")), 8000))
+        ]) || [];
+
+        setExperiences(userExperiences as Experience[]);
+
+        // Set published URL if available
+        if (websiteSettings && typeof websiteSettings === 'object' && 'published_url' in websiteSettings) {
+          setPublishedUrl(websiteSettings.published_url as string);
+        }
+
+        // Initialize history
+        const initialState: HistoryState = {
+          websiteSettings: websiteSettings as any,
+          experiences: userExperiences as Experience[],
+          blocks: [],
+          timestamp: Date.now(),
+        };
+        setHistory([initialState]);
+        setHistoryIndex(0);
+
+        setLastSaved(new Date());
+        setHasUnsavedChanges(false);
+        
+        clearTimeout(initTimeout);
+        console.log("✅ Website data initialized successfully");
+      } catch (initError) {
+        console.warn("⚠️ Partial initialization failure:", initError);
+        // Set fallback data to prevent complete failure
+        setExperiences([]);
+        setHistory([{
+          websiteSettings: {},
+          experiences: [] as Experience[],
+          blocks: [],
+          timestamp: Date.now(),
+        }]);
+        setHistoryIndex(0);
+        setLastSaved(new Date());
+        setHasUnsavedChanges(false);
       }
-
-      // Initialize history
-      const initialState: HistoryState = {
-        websiteSettings,
-        experiences: userExperiences,
-        blocks: [],
-        timestamp: Date.now(),
-      };
-      setHistory([initialState]);
-      setHistoryIndex(0);
-
-      setLastSaved(new Date());
-      setHasUnsavedChanges(false);
     } catch (error) {
       console.error("Error initializing website data:", error);
       setExperiencesError("Failed to load website data");
@@ -144,10 +187,22 @@ const WebsiteBuilder: React.FC = () => {
 
 
   const handleAutoSave = useCallback(async () => {
-    if (!user?.id || !hasUnsavedChanges) return;
+    if (!user?.id || !hasUnsavedChanges || isSaving) return;
 
     try {
+      setIsSaving(true);
       setSaveStatus("saving");
+      
+      // Set a global timeout to force completion
+      const globalTimeout = setTimeout(() => {
+        console.warn("⚠️ Global save timeout - forcing completion");
+        setSaveStatus("error");
+        setHasUnsavedChanges(false);
+        setIsSaving(false);
+        toast.error("Save timeout - please try again");
+      }, 25000); // 25 second global timeout
+      
+      setSaveTimeoutId(globalTimeout);
 
       // Save current state to history (always works)
       const currentState: HistoryState = {
@@ -199,6 +254,13 @@ const WebsiteBuilder: React.FC = () => {
       setLastSaved(new Date());
       setHasUnsavedChanges(false);
       setSaveStatus("saved");
+      setIsSaving(false);
+      
+      // Clear global timeout
+      if (saveTimeoutId) {
+        clearTimeout(saveTimeoutId);
+        setSaveTimeoutId(null);
+      }
 
       // Enhanced auto-save notification (less intrusive)
       toast.success("💾 Auto-saved", {
@@ -208,6 +270,14 @@ const WebsiteBuilder: React.FC = () => {
     } catch (error) {
       console.error("Auto-save failed:", error);
       setSaveStatus("error");
+      setIsSaving(false);
+      
+      // Clear global timeout
+      if (saveTimeoutId) {
+        clearTimeout(saveTimeoutId);
+        setSaveTimeoutId(null);
+      }
+      
       toast.error("Auto-save failed");
     }
   }, [
@@ -245,12 +315,23 @@ const WebsiteBuilder: React.FC = () => {
   }, [hasUnsavedChanges, autoSaveEnabled, user?.id, handleAutoSave]);
 
   const handleManualSave = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.id || isSaving) return;
+
+    // Set manual save timeout
+    const manualSaveTimeout = setTimeout(() => {
+      console.warn("⚠️ Manual save timeout - forcing completion");
+      setSaveStatus("error");
+      setSaveLoading(false);
+      setIsSaving(false);
+      setSaveButtonClicked(false);
+      toast.error("Manual save timeout - please try again");
+    }, 20000); // 20 second timeout for manual save
 
     try {
       setSaveButtonClicked(true);
       setSaveLoading(true);
       setSaveStatus("saving");
+      setIsSaving(true);
 
       // Save current state to history and database
       await handleAutoSave();
@@ -283,6 +364,10 @@ const WebsiteBuilder: React.FC = () => {
 
       setSaveLoading(false);
       setSaveStatus("saved");
+      setIsSaving(false);
+      
+      // Clear manual save timeout
+      clearTimeout(manualSaveTimeout);
       
       // Enhanced save notification
       toast.success("✅ Website saved successfully!", {
@@ -305,6 +390,11 @@ const WebsiteBuilder: React.FC = () => {
       console.error("Manual save failed:", error);
       setSaveStatus("error");
       setSaveLoading(false);
+      setIsSaving(false);
+      
+      // Clear manual save timeout
+      clearTimeout(manualSaveTimeout);
+      
       toast.error("Failed to save website");
       
       // Reset save button clicked state on error
