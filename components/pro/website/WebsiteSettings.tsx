@@ -11,13 +11,13 @@ import { Settings, Eye, EyeOff, Save } from "lucide-react";
 
 interface WebsiteSettingsProps {
   experiences: ExperienceType[];
-  setItineraries: React.Dispatch<React.SetStateAction<ExperienceType[]>>;
+  setExperiences: React.Dispatch<React.SetStateAction<ExperienceType[]>>;
   onSettingsChange?: () => void; // Add callback for settings changes
 }
 
 const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
   experiences,
-  setItineraries,
+  setExperiences,
   onSettingsChange,
 }) => {
   const [selectedItineraries, setSelectedItineraries] = useState<string[]>([]);
@@ -98,7 +98,7 @@ const WebsiteSettings: React.FC<WebsiteSettingsProps> = ({
       );
 
       // Update the experiences state
-      setItineraries(filteredItineraries);
+      setExperiences(filteredItineraries);
 
       // Save to localStorage for website display
       localStorage.setItem(

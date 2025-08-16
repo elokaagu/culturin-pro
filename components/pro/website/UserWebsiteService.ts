@@ -99,6 +99,9 @@ class UserWebsiteService {
     settings: UserWebsiteSettings
   ): Promise<boolean> {
     try {
+      console.log("🗄️ UserWebsiteService: Starting database save...");
+      console.log("📝 Settings to save:", settings);
+      
       const { error } = await supabase.from("user_website_settings").upsert({
         ...settings,
         updated_at: new Date().toISOString(),
@@ -107,18 +110,20 @@ class UserWebsiteService {
       if (error) {
         if (error.code === "42P01") {
           // Table doesn't exist
-          console.warn("user_website_settings table doesn't exist, cannot save");
-          // In a real app, you might want to create the table here or show a setup message
+          console.warn("❌ user_website_settings table doesn't exist, cannot save");
+          console.log("💡 You need to create this table in your Supabase database");
           return false;
         } else {
-          console.error("Error saving website settings:", error);
+          console.error("❌ Error saving website settings:", error);
+          console.log("🔍 Error details:", { code: error.code, message: error.message, details: error.details });
           return false;
         }
       }
 
+      console.log("✅ UserWebsiteService: Database save successful");
       return true;
     } catch (error) {
-      console.error("Error in saveUserWebsiteSettings:", error);
+      console.error("❌ Error in saveUserWebsiteSettings:", error);
       return false;
     }
   }

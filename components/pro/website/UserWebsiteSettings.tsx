@@ -202,42 +202,62 @@ const UserWebsiteSettingsComponent: React.FC<UserWebsiteSettingsProps> = ({
   };
 
   const handleSave = async () => {
-    if (!settings || !user?.id) return;
+    if (!settings || !user?.id) {
+      console.log("❌ Cannot save: settings or user missing", { settings: !!settings, userId: user?.id });
+      return;
+    }
+
+    console.log("🔄 Starting save process for user:", user.id);
+    console.log("📝 Settings to save:", settings);
 
     try {
       setSaving(true);
-      const success = await userWebsiteService.saveUserWebsiteSettings(
-        settings
-      );
+      
+      // First try to save to database
+      console.log("🗄️ Attempting to save to database...");
+      const success = await userWebsiteService.saveUserWebsiteSettings(settings);
 
       if (success) {
+        console.log("✅ Database save successful");
         toast.success("Website settings saved successfully!");
+        
+        // Also save to localStorage as backup
+        try {
+          localStorage.setItem(`userWebsiteSettings_${user.id}`, JSON.stringify(settings));
+          console.log("💾 Also saved to localStorage as backup");
+        } catch (localError) {
+          console.warn("Failed to save to localStorage backup:", localError);
+        }
       } else {
+        console.log("❌ Database save failed, falling back to localStorage");
         // Fallback to localStorage
         try {
           localStorage.setItem(`userWebsiteSettings_${user.id}`, JSON.stringify(settings));
           toast.success("Website settings saved locally!", {
-            description: "Data saved to browser storage"
+            description: "Data saved to browser storage (database unavailable)"
           });
+          console.log("💾 Saved to localStorage successfully");
         } catch (localError) {
           console.error("Failed to save to localStorage:", localError);
           toast.error("Failed to save website settings");
         }
       }
     } catch (error) {
-      console.error("Error saving settings:", error);
+      console.error("❌ Error saving settings:", error);
       // Try localStorage fallback
       try {
         localStorage.setItem(`userWebsiteSettings_${user.id}`, JSON.stringify(settings));
         toast.success("Website settings saved locally!", {
-          description: "Data saved to browser storage"
+          description: "Data saved to browser storage (error occurred)"
         });
+        console.log("💾 Saved to localStorage after error");
       } catch (localError) {
         console.error("Failed to save to localStorage:", localError);
         toast.error("An error occurred while saving");
       }
     } finally {
       setSaving(false);
+      console.log("🏁 Save process completed");
     }
   };
 
