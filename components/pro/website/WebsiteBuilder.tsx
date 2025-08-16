@@ -38,6 +38,7 @@ import { useUserData } from "../../../src/contexts/UserDataContext";
 import MediaLibrary from "./MediaLibrary";
 import { experienceService } from "@/lib/experience-service";
 import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 
 // History management for undo/redo functionality
 interface HistoryState {
@@ -84,6 +85,20 @@ const WebsiteBuilder: React.FC = () => {
       initializeWebsiteData();
     }
   }, [isLoggedIn, user]);
+
+  // Handle escape key to exit fullscreen
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isFullScreen) {
+        setIsFullScreen(false);
+      }
+    };
+
+    if (isFullScreen) {
+      document.addEventListener("keydown", handleEscape);
+      return () => document.removeEventListener("keydown", handleEscape);
+    }
+  }, [isFullScreen]);
 
   const initializeWebsiteData = useCallback(async () => {
     if (!user?.id) return;
@@ -202,7 +217,9 @@ const WebsiteBuilder: React.FC = () => {
 
       // Generate unique URL for the user's website
       const companyName = userData?.settings?.company_name || "culturin";
-      const sanitizedCompanyName = companyName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      const sanitizedCompanyName = companyName
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-");
       const uniqueId = user.id.slice(0, 8);
       const newPublishedUrl = `https://culturin-pro.vercel.app/tour/${sanitizedCompanyName}-${uniqueId}`;
 
@@ -304,17 +321,56 @@ const WebsiteBuilder: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div
+      className={cn(
+        "h-full flex flex-col",
+        isFullScreen && "fixed inset-0 z-50 bg-white"
+      )}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-white">
+      <div
+        className={cn(
+          "flex items-center justify-between p-4 border-b bg-white",
+          isFullScreen && "border-b-2"
+        )}
+      >
         <div className="flex items-center space-x-4">
           <div>
-            <h1 className="text-xl font-semibold">Website</h1>
-            <p className="text-sm text-gray-600">Manage your online presence</p>
+            <h1
+              className={cn(
+                "text-xl font-semibold",
+                isFullScreen && "text-2xl"
+              )}
+            >
+              Website
+            </h1>
+            <p
+              className={cn(
+                "text-sm text-gray-600",
+                isFullScreen && "text-base"
+              )}
+            >
+              {isFullScreen
+                ? "Fullscreen Preview Mode"
+                : "Manage your online presence"}
+            </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-3">
+          {/* Fullscreen Close Button */}
+          {isFullScreen && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleToggleFullScreen}
+              className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+            >
+              <Monitor className="h-4 w-4 mr-2" />
+              Exit Fullscreen
+            </Button>
+          )}
+
           {/* Save Status */}
           <div className="flex items-center space-x-2 text-sm">
             {saveStatus === "saving" && (
@@ -629,7 +685,12 @@ const WebsiteBuilder: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-                <div className="flex-1 bg-white border rounded-lg overflow-hidden">
+                <div
+                  className={cn(
+                    "flex-1 bg-white border rounded-lg overflow-hidden",
+                    isFullScreen && "border-0"
+                  )}
+                >
                   <WebsitePreview
                     key={previewKey}
                     viewMode={viewMode}
