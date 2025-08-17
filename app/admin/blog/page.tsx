@@ -1,16 +1,7 @@
 import BlogManagement from "../../../src/pages/admin/BlogManagement";
-import { ProtectedRoute } from "@/src/components/auth/ProtectedRoute";
 
-export const metadata = {
-  title: "Blog Management | Admin - Culturin",
-  description:
-    "Manage blog posts, create new articles, and edit existing content.",
-};
+export const dynamic = "force-dynamic";
 
-export default function BlogAdmin() {
-  return (
-    <ProtectedRoute requireSuperAdmin>
-      <BlogManagement />
-    </ProtectedRoute>
-  );
+export default function AdminBlogPage() {
+  return <BlogManagement />;
 }

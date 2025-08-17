@@ -1,4 +1,6 @@
-import PressPage from "../../src/pages/PressPage";
+import Press from "../../src/pages/Press";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Press & Media | Culturin",
@@ -11,6 +13,6 @@ export const metadata = {
   },
 };
 
-export default function Press() {
-  return <PressPage />;
+export default function PressPage() {
+  return <Press />;
 }

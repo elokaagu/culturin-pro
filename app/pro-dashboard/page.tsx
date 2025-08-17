@@ -1,6 +1,6 @@
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 
-const ProDashboardPage = dynamic(
+const ProDashboardPage = dynamicImport(
   () => import("../../src/pages/ProDashboardPage"),
   {
     ssr: false,
@@ -14,6 +14,8 @@ const ProDashboardPage = dynamic(
     ),
   }
 );
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: "Dashboard | Culturin Studio",

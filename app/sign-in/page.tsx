@@ -1,17 +1,6 @@
-import { Suspense } from "react";
-import dynamic from "next/dynamic";
+import SignIn from "../../src/pages/SignIn";
 
-const SignIn = dynamic(() => import("@/src/pages/SignIn"), {
-  ssr: false,
-  loading: () => (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading...</p>
-      </div>
-    </div>
-  ),
-});
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: "Sign In | Culturin",
@@ -19,23 +8,6 @@ export const metadata = {
     "Sign in to your Culturin account to access exclusive features and manage your cultural experiences.",
 };
 
-function SignInContent() {
-  return <SignIn />;
-}
-
 export default function SignInPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading...</p>
-          </div>
-        </div>
-      }
-    >
-      <SignInContent />
-    </Suspense>
-  );
+  return <SignIn />;
 }
